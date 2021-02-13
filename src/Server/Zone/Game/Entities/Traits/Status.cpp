@@ -152,39 +152,16 @@ void Status::initialize_player(std::shared_ptr<Entity> entity)
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(res.front().robe_view_id)));
 	set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(res.front().body_id)));
 
-	initialize_sub_attributes(job);
+	initialize_compound_attributes(job);
 
 	initialize_observable_statuses();
 
 	pl->get_session()->clif()->notify_initial_status(shared_from_this());
 
-	// notify other statuses.
-	max_weight()->set_base(max_weight()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_MAX_WEIGHT, max_weight()->get_base() + max_weight()->get_equip());
-
-	status_atk()->set_base(status_atk()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_STATUS_ATK, status_atk()->get_base());
-
-	status_matk()->set_base(status_matk()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_STATUS_MATK, status_matk()->get_base());
-
-	soft_def()->set_base(soft_def()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_SOFT_MDEF, soft_mdef()->get_base());
-
-	soft_mdef()->set_base(soft_mdef()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_SOFT_MDEF, soft_mdef()->get_base());
-
-	hit()->set_base(hit()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_HIT, hit()->get_base());
-
-	crit()->set_base(crit()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_CRITICAL, crit()->get_base());
-
-	flee()->set_base(flee()->compute());
-	pl->get_session()->clif()->notify_complex_attribute_update(STATUS_FLEE, flee()->get_base());
+	compute_and_notify_compound_attributes();
 }
 
-void Status::initialize_sub_attributes(std::shared_ptr<const job_db_data> job)
+void Status::initialize_compound_attributes(std::shared_ptr<const job_db_data> job)
 {
 	std::shared_ptr<StatusATK> status_atk;
 	std::shared_ptr<EquipATK> equip_atk;
@@ -194,6 +171,7 @@ void Status::initialize_sub_attributes(std::shared_ptr<const job_db_data> job)
 	std::shared_ptr<HIT> hit;
 	std::shared_ptr<CRIT> crit;
 	std::shared_ptr<FLEE> flee;
+	std::shared_ptr<AttackSpeed> aspd;
 	std::shared_ptr<MaxWeight> max_weight;
 
 	set_max_weight(max_weight = std::make_shared<MaxWeight>(_entity, job->max_weight));
@@ -239,6 +217,11 @@ void Status::initialize_sub_attributes(std::shared_ptr<const job_db_data> job)
 	flee->set_base_level(base_level());
 	flee->set_agility(agility());
 	flee->set_luck(luck());
+
+	set_aspd(aspd = std::make_shared<AttackSpeed>(_entity));
+	aspd->set_base_level(base_level());
+	aspd->set_agility(agility());
+	aspd->set_dexterity(dexterity());
 }
 
 //! @brief Registers status observers for observable statuses.
@@ -258,15 +241,32 @@ void Status::initialize_observable_statuses()
 
 	// Register Status Observers
 	strength()->register_observers(strength_cost(), max_weight(), status_atk(), equip_atk());
-	agility()->register_observers(agility_cost(), flee());
+	agility()->register_observers(agility_cost(), flee(), aspd());
 	vitality()->register_observers(vitality_cost(), soft_def(), soft_mdef());
 	intelligence()->register_observers(intelligence_cost(), status_matk(), soft_mdef());
-	dexterity()->register_observers(dexterity_cost(), status_atk(), equip_atk(), status_matk(), soft_mdef(), hit());
+	dexterity()->register_observers(dexterity_cost(), status_atk(), equip_atk(), status_matk(), soft_mdef(), hit(), aspd());
 	luck()->register_observers(luck_cost(), status_atk(), status_matk(), hit(), crit(), flee());
-	base_level()->register_observers(status_point(), next_base_experience(), status_atk(), status_matk(), soft_mdef(), hit(), flee());
+	base_level()->register_observers(status_point(), next_base_experience(), status_atk(), status_matk(), soft_mdef(), hit(), flee(), aspd());
 	job_level()->register_observers(skill_point(), next_job_experience());
 	base_experience()->register_observers(base_level());
 	job_experience()->register_observers(job_level());
+}
+
+void Status::compute_and_notify_compound_attributes()
+{	
+	std::shared_ptr<Player> pl = entity()->template downcast<Player>();
+
+	// notify other statuses.
+	max_weight()->compute(true);
+	status_atk()->compute(true);
+	equip_atk()->compute(true);
+	status_matk()->compute(true);
+	soft_def()->compute(true);
+	soft_mdef()->compute(true);
+	hit()->compute(true);
+	crit()->compute(true);
+	flee()->compute(true);
+	aspd()->compute(true);
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)
@@ -279,7 +279,7 @@ uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)
 	return sp;
 }
 
-uint32_t Status::get_status_total(status_point_type type)
+uint32_t Status::get_status_base(status_point_type type)
 {
 	uint32_t value = 0;
 	switch (type)
@@ -316,16 +316,16 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 	uint32_t available_points = status_point()->get_base();
 	uint32_t required_points = 0;
 
-	limit += get_status_total(type);
+	limit += get_status_base(type);
 
 #define notify_status(t, amount, result) \
 		entity()->template downcast<Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
-#define notify_complex_attribute(t, amount) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_complex_attribute_update(t, amount)
+#define notify_compound_attribute(t, amount) \
+		entity()->template downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(t, amount)
 #define notify_required_attribute(t, amount) \
 		entity()->template downcast<Player>()->get_session()->clif()->notify_required_attribute_update(t, amount)
 	do {
-		value = get_status_total(type);
+		value = get_status_base(type);
 		required_points = get_required_statpoints(value + 1, value + 2);
 
 		if (required_points > available_points || value >= MAX_STATUS_POINTS)
@@ -336,53 +336,41 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 		{
 			case STATUS_STRENGTH:
 				strength()->add_base(1);
-				notify_complex_attribute(STATUS_STATUS_ATK, status_atk()->get_base());
-				notify_complex_attribute(STATUS_EQUIP_ATK, equip_atk()->get_base());
-				notify_complex_attribute(STATUS_MAX_WEIGHT, max_weight()->get_base() + max_weight()->get_equip());
+				notify_required_attribute(STATUS_STRENGTH_COST, required_points);
 				break;
 			case STATUS_AGILITY:
 				agility()->add_base(1);
-				notify_complex_attribute(STATUS_FLEE, flee()->get_base());
+				notify_required_attribute(STATUS_AGILITY_COST, required_points);
 				break;
 			case STATUS_VITALITY:
 				vitality()->add_base(1);
-				notify_complex_attribute(STATUS_SOFT_DEF, soft_def()->get_base());
-				notify_complex_attribute(STATUS_SOFT_MDEF, soft_mdef()->get_base());
+				notify_required_attribute(STATUS_VITALITY_COST, required_points);
 				break;
 			case STATUS_INTELLIGENCE:
 				intelligence()->add_base(1);
-				notify_complex_attribute(STATUS_STATUS_MATK, status_matk()->get_base());
-				notify_complex_attribute(STATUS_SOFT_MDEF, soft_mdef()->get_base());
+				notify_required_attribute(STATUS_INTELLIGENCE_COST, required_points);
 				break;
 			case STATUS_DEXTERITY:
 				dexterity()->add_base(1);
-				notify_complex_attribute(STATUS_STATUS_ATK, status_atk()->get_base());
-				notify_complex_attribute(STATUS_EQUIP_ATK, equip_atk()->get_base());
-				notify_complex_attribute(STATUS_STATUS_MATK, status_matk()->get_base());
-				notify_complex_attribute(STATUS_SOFT_MDEF, soft_mdef()->get_base());
-				notify_complex_attribute(STATUS_HIT, hit()->get_base());
+				notify_required_attribute(STATUS_DEXTERITY_COST, required_points);
 				break;
 			case STATUS_LUCK:
 				luck()->add_base(1);
-				notify_complex_attribute(STATUS_STATUS_ATK, status_atk()->get_base());
-				notify_complex_attribute(STATUS_STATUS_MATK, status_matk()->get_base());
-				notify_complex_attribute(STATUS_HIT, hit()->get_base());
-				notify_complex_attribute(STATUS_CRITICAL, crit()->get_base());
-				notify_complex_attribute(STATUS_FLEE, flee()->get_base());
+				notify_required_attribute(STATUS_LUCK_COST, required_points);
 				break;
 			default:
-				notify_status(type, get_status_total(type), false);
+				notify_status(type, get_status_base(type), false);
 				return false;
 		}
 
-		status_point()->set_base(available_points);
+		notify_status(type, get_status_base(type), true);
 
-		notify_status(type, get_status_total(type), true);
-		notify_complex_attribute(STATUS_STATUSPOINT, available_points);
-		notify_required_attribute(STATUS_STRENGTH_COST, required_points);
-	} while (get_status_total(type) < limit);
+		status_point()->set_base(available_points);
+		notify_compound_attribute(STATUS_STATUSPOINT, available_points);
+
+	} while (get_status_base(type) < limit);
 #undef notify_status
-#undef notify_complex_attribute
+#undef notify_compound_attribute
 #undef notify_required_attribute
 	return true;
 }

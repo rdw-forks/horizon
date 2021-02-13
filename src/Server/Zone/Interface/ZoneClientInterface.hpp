@@ -90,7 +90,7 @@ public:
 	 */
 	void notify_initial_status(std::shared_ptr<Entities::Traits::Status> status);
 	bool notify_appearance_update(entity_appearance_type type, int32_t value, int32_t value2);
-	bool notify_complex_attribute_update(status_point_type type, int32_t value);
+	bool notify_compound_attribute_update(status_point_type type, int32_t value);
 	bool notify_status_attribute_update(status_point_type type, int32_t value, bool success);
 	bool notify_required_attribute_update(status_point_type type, int32_t value);
 	bool notify_cart_weight_update();

@@ -26,14 +26,10 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
 #ifndef HORIZON_ZONE_GAME_ENTITIES_DEFINITIONS
 #define HORIZON_ZONE_GAME_ENTITIES_DEFINITIONS
 
 #include "Server/Common/Configuration/Horizon.hpp"
-
-#include <stdint.h>
-#include <cstring>
 
 enum entity_size_type
 {

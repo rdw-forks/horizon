@@ -26,17 +26,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
 #ifndef HORIZON_ZONE_GAME_ITEM_DEFINITIONS
 #define HORIZON_ZONE_GAME_ITEM_DEFINITIONS
-
-#include <cstring>
-#include <iostream>
-#include <cstdlib>
-#include <cstdint>
-#include <vector>
-#include <array>
-#include <memory>
 
 #define ITEM_NAME_LENGTH 50
 #define UNKNOWN_ITEM_ID 512 // Apple
@@ -97,7 +88,17 @@ enum item_weapon_type
 	IT_WT_GRENADE   = 21,
 	IT_WT_HUUMA     = 22,
 	IT_WT_2HSTAFF   = 23,
-	IT_WT_MAX
+	IT_WT_SINGLE_MAX,
+	// dual-wield constants
+	IT_WT_DOUBLE_DAGGERS, ///< 2 daggers
+	IT_WT_DOUBLE_SWORDS, ///< 2 swords
+	IT_WT_DOUBLE_AXES, ///< 2 axes
+	IT_WT_DOUBLE_DAGGER_SWORD, ///< dagger + sword
+	IT_WT_DOUBLE_DAGGER_AXE, ///< dagger + axe
+	IT_WT_DOUBLE_SWORD_AXE, ///< sword + axe
+#ifndef MAX_WEAPON_TYPE
+	IT_WT_MAX_WEAPON_TYPE,
+#endif
 };
 
 enum item_weapon_type_mask

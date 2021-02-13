@@ -510,7 +510,7 @@ bool ItemDatabase::load_weapon_target_size_modifiers_db()
 
 		sol::table size_mod_tbl = lua["weapon_target_size_modifiers"];
 
-		for (int i = IT_WT_FIST; i < IT_WT_MAX; i++) {
+		for (int i = IT_WT_FIST; i < IT_WT_SINGLE_MAX; i++) {
 			std::shared_ptr<std::array<uint8_t, ESZ_MAX>> arr = std::make_shared<std::array<uint8_t, ESZ_MAX>>();
 			for (int j = ESZ_SMALL; j < ESZ_MAX; j++) {
 				std::string size = j == ESZ_SMALL ? "Small" : j == ESZ_MEDIUM ? "Medium" : "Large";

@@ -71,6 +71,7 @@ namespace Traits
 	class NextBaseExperience;
 	class NextJobExperience;
 	class MaxWeight;
+	class AttackSpeed;
 
 	template <class T>
 	class Attribute;
@@ -168,12 +169,12 @@ namespace Traits
 
 	class BaseLevel
 	: public Attribute<BaseLevel>,
-	  public ObservableStatus<std::weak_ptr<BaseLevel>, std::weak_ptr<StatusPoint>, std::weak_ptr<NextBaseExperience>, std::weak_ptr<StatusATK>, std::weak_ptr<StatusMATK>, std::weak_ptr<SoftMDEF>, std::weak_ptr<HIT>, std::weak_ptr<FLEE>>
+	  public ObservableStatus<std::weak_ptr<BaseLevel>, std::weak_ptr<StatusPoint>, std::weak_ptr<NextBaseExperience>, std::weak_ptr<StatusATK>, std::weak_ptr<StatusMATK>, std::weak_ptr<SoftMDEF>, std::weak_ptr<HIT>, std::weak_ptr<FLEE>, std::weak_ptr<AttackSpeed>>
 	{
 	public:
 		BaseLevel(std::weak_ptr<Entity> entity,  uint32_t base = 0)
 		: Attribute(entity, base, 0, 0),
-		  ObservableStatus(std::weak_ptr<StatusPoint>(), std::weak_ptr<NextBaseExperience>(), std::weak_ptr<StatusATK>(), std::weak_ptr<StatusMATK>(), std::weak_ptr<SoftMDEF>(), std::weak_ptr<HIT>(), std::weak_ptr<FLEE>())
+		  ObservableStatus(std::weak_ptr<StatusPoint>(), std::weak_ptr<NextBaseExperience>(), std::weak_ptr<StatusATK>(), std::weak_ptr<StatusMATK>(), std::weak_ptr<SoftMDEF>(), std::weak_ptr<HIT>(), std::weak_ptr<FLEE>(), std::weak_ptr<AttackSpeed>())
 		{ }
 		~BaseLevel() { };
 
@@ -302,12 +303,12 @@ namespace Traits
 
 	class Agility
 	: public Attribute<Agility>,
-	  public ObservableStatus<std::weak_ptr<Agility>, std::weak_ptr<AgilityPointCost>, std::weak_ptr<FLEE>>
+	  public ObservableStatus<std::weak_ptr<Agility>, std::weak_ptr<AgilityPointCost>, std::weak_ptr<FLEE>, std::weak_ptr<AttackSpeed>>
 	{
 	public:
 		Agility(std::weak_ptr<Entity> entity, uint32_t base = 0, uint32_t equip = 0, uint32_t status = 0)
 		: Attribute(entity, base, equip, status),
-		  ObservableStatus(std::weak_ptr<AgilityPointCost>(), std::weak_ptr<FLEE>())
+		  ObservableStatus(std::weak_ptr<AgilityPointCost>(), std::weak_ptr<FLEE>(), std::weak_ptr<AttackSpeed>())
 		{ }
 		~Agility() { };
 
@@ -356,12 +357,12 @@ namespace Traits
 
 	class Dexterity
 	: public Attribute<Dexterity>,
-	  public ObservableStatus<std::weak_ptr<Dexterity>, std::weak_ptr<DexterityPointCost>, std::weak_ptr<StatusATK>, std::weak_ptr<EquipATK>, std::weak_ptr<StatusMATK>, std::weak_ptr<SoftMDEF>, std::weak_ptr<HIT>>
+	  public ObservableStatus<std::weak_ptr<Dexterity>, std::weak_ptr<DexterityPointCost>, std::weak_ptr<StatusATK>, std::weak_ptr<EquipATK>, std::weak_ptr<StatusMATK>, std::weak_ptr<SoftMDEF>, std::weak_ptr<HIT>, std::weak_ptr<AttackSpeed>>
 	{
 	public:
 		Dexterity(std::weak_ptr<Entity> entity, uint32_t base = 0, uint32_t equip = 0, uint32_t status = 0)
 		: Attribute(entity, base, equip, status),
-		  ObservableStatus(std::weak_ptr<DexterityPointCost>(), std::weak_ptr<StatusATK>(), std::weak_ptr<EquipATK>(), std::weak_ptr<StatusMATK>(), std::weak_ptr<SoftMDEF>(), std::weak_ptr<HIT>())
+		  ObservableStatus(std::weak_ptr<DexterityPointCost>(), std::weak_ptr<StatusATK>(), std::weak_ptr<EquipATK>(), std::weak_ptr<StatusMATK>(), std::weak_ptr<SoftMDEF>(), std::weak_ptr<HIT>(), std::weak_ptr<AttackSpeed>())
 		{ }
 		~Dexterity() { };
 

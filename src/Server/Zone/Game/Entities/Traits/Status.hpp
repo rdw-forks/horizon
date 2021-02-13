@@ -54,15 +54,15 @@ public:
 
 	void initialize();
 	void initialize_player(std::shared_ptr<Entity> entity);
-	void initialize_sub_attributes(std::shared_ptr<const job_db_data> job);
+	void initialize_compound_attributes(std::shared_ptr<const job_db_data> job);
 	void initialize_observable_statuses();
 	void initialize_notifiable_statuses();
-	void compute_and_notify();
+	void compute_and_notify_compound_attributes();
 	
 	uint32_t get_required_statpoints(uint16_t from, uint16_t to);
-	uint32_t get_status_total(status_point_type type);
+	uint32_t get_status_base(status_point_type type);
 	bool increase_status_point(status_point_type type, uint16_t amount);
-	uint32_t modify_base_level(uint32_t blvl);
+	
 //	bool sync_to_model(std::shared_ptr<Models::Character::Status> status);
 	/**
 	 * Attributes
@@ -175,6 +175,9 @@ public:
 	std::shared_ptr<FLEE> flee() { return _flee; }
 	void set_flee(std::shared_ptr<FLEE> flee) { _flee = flee; }
 
+	std::shared_ptr<AttackSpeed> aspd() { return _aspd; }
+	void set_aspd(std::shared_ptr<AttackSpeed> aspd) { _aspd = aspd; }
+
 	/**
 	 * Appearance
 	 */
@@ -253,6 +256,7 @@ private:
 	std::shared_ptr<HIT> _hit;
 	std::shared_ptr<CRIT> _crit;
 	std::shared_ptr<FLEE> _flee;
+	std::shared_ptr<AttackSpeed> _aspd;
 	/* Appearance */
 	std::shared_ptr<BaseAppearance> _base_appearance;
 	std::shared_ptr<HairColor> _hair_color;

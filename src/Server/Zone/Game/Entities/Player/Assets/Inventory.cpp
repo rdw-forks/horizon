@@ -340,7 +340,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 				notify_add(*(*invitem), amount, INVENTORY_ADD_SUCCESS);
 
 				current_weight->add_base(item->weight * amount);
-				player()->get_session()->clif()->notify_complex_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+				player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
 			}
 		} else {
 			data.amount += amount;
@@ -349,7 +349,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 			notify_add(data, amount, INVENTORY_ADD_SUCCESS);
 
 			current_weight->add_base(item->weight * amount);
-			player()->get_session()->clif()->notify_complex_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+			player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
 		}
 	} else {
 		for (int i = 0; i < amount; i++) {
@@ -361,7 +361,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 			notify_add(*itd, itd->amount, INVENTORY_ADD_SUCCESS);
 		}
 		current_weight->add_base(item->weight * amount);
-		player()->get_session()->clif()->notify_complex_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+		player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
 	}
 
 	return INVENTORY_ADD_SUCCESS;

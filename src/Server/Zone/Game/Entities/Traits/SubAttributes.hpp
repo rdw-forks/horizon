@@ -61,9 +61,9 @@ namespace Traits
 		{ }
 		~MaxWeight() { };
 
-		void on_observable_changed(std::weak_ptr<Strength> wstr) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Strength> wstr) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_strength(std::weak_ptr<Strength> str) { _str = str; }
 
@@ -90,18 +90,18 @@ namespace Traits
 		{ }
 		~StatusATK() { }
 
-		void on_observable_changed(std::weak_ptr<Strength>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Dexterity>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Luck>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<BaseLevel>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Strength>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Dexterity>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Luck>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<BaseLevel>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
 		void set_strength(std::weak_ptr<Strength> str) { _str = str; }
 		void set_dexterity(std::weak_ptr<Dexterity> dex) { _dex = dex; }
 		void set_luck(std::weak_ptr<Luck> luk) { _luk = luk; }
-		void set_weapon_type(item_weapon_type type) { _weapon_type = type; set_base(compute()); }
+		void set_weapon_type(item_weapon_type type) { _weapon_type = type; compute(true); }
 
 	private:
 		std::weak_ptr<BaseLevel> _blvl;
@@ -120,14 +120,14 @@ namespace Traits
 		{ }
 		~EquipATK() { }
 
-		void on_observable_changed(std::weak_ptr<Strength>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Dexterity>) { set_base(compute()); }
-		void on_equipment_change() { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Strength>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Dexterity>) { compute(true); }
+		void on_weapon_changed() { compute(true); }
 
 		void set_strength(std::weak_ptr<Strength> str) { _str = str; }
 		void set_dexterity(std::weak_ptr<Dexterity> dex) { _dex = dex; }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 		uint32_t compute_variance(uint8_t weapon_lvl, uint32_t base_weapon_dmg);
 
 		//void notify_update() override { _notifier.notify_sum(); }
@@ -153,12 +153,12 @@ namespace Traits
 		{ }
 		~StatusMATK() { }
 
-		void on_observable_changed(std::weak_ptr<Intelligence>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Dexterity>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Luck>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<BaseLevel>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Intelligence>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Dexterity>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Luck>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<BaseLevel>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
 		void set_intelligence(std::weak_ptr<Intelligence> int_) { _int = int_; }
@@ -181,9 +181,9 @@ namespace Traits
 		{ }
 		~SoftDEF() { }
 
-		void on_observable_changed(std::weak_ptr<Vitality>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Vitality>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_vitality(std::weak_ptr<Vitality> vit) { _vit = vit; }
 
@@ -200,12 +200,12 @@ namespace Traits
 		{ }
 		~SoftMDEF() { }
 
-		void on_observable_changed(std::weak_ptr<Intelligence>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Dexterity>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Vitality>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<BaseLevel>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Intelligence>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Dexterity>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Vitality>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<BaseLevel>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
 		void set_intelligence(std::weak_ptr<Intelligence> int_) { _int = int_; }
@@ -228,11 +228,11 @@ namespace Traits
 		{ }
 		~HIT() { }
 
-		void on_observable_changed(std::weak_ptr<Dexterity>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Luck>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<BaseLevel>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Dexterity>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Luck>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<BaseLevel>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
 		void set_dexterity(std::weak_ptr<Dexterity> dex) { _dex = dex; }
@@ -253,9 +253,9 @@ namespace Traits
 		{ }
 		~CRIT() { }
 
-		void on_observable_changed(std::weak_ptr<Luck>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Luck>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_luck(std::weak_ptr<Luck> luk) { _luk = luk; }
 
@@ -272,11 +272,11 @@ namespace Traits
 		{ }
 		~FLEE() { }
 
-		void on_observable_changed(std::weak_ptr<Agility>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<BaseLevel>) { set_base(compute()); }
-		void on_observable_changed(std::weak_ptr<Luck>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Agility>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<BaseLevel>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Luck>) { compute(true); }
 
-		uint32_t compute();
+		uint32_t compute(bool notify);
 
 		void set_agility(std::weak_ptr<Agility> agi) { _agi = agi; }
 		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
@@ -288,33 +288,31 @@ namespace Traits
 		std::weak_ptr<Luck> _luk;
 	};
 
-	// class AttackSpeed
-	// : public Attribute<AttackSpeed>
-	// {
-	// public:
-	// 	FLEE(std::weak_ptr<Entity> entity)
-	// 	: Attribute(entity)
-	// 	{ }
-	// 	~FLEE() { }
+	class AttackSpeed
+	: public Attribute<AttackSpeed>
+	{
+	public:
+		AttackSpeed(std::weak_ptr<Entity> entity)
+		: Attribute(entity)
+		{ }
+		~AttackSpeed() { }
 
-	// 	void on_observable_changed(std::weak_ptr<Agility>) { set_base(compute()); }
-	// 	void on_observable_changed(std::weak_ptr<BaseLevel>) { set_base(compute()); }
-	// 	void on_observable_changed(std::weak_ptr<Dexterity>) { set_base(compute()); }
+		void on_observable_changed(std::weak_ptr<Agility>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<BaseLevel>) { compute(true); }
+		void on_observable_changed(std::weak_ptr<Dexterity>) { compute(true); }
+		void on_weapon_changed() { compute(true); }
 
-	// 	uint32_t compute();
+		uint32_t compute(bool notify);
 
-	// 	void set_agility(std::weak_ptr<Agility> agi) { _agi = agi; }
-	// 	void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
-	// 	void set_luck(std::weak_ptr<Dexterity> dex) { _dex = dex; }
-	// 	void set_weapon_type1(item_weapon_type type) { _weapon_type1 = type; set_base(compute()); }
-	// 	void set_weapon_type2(item_weapon_type type) { _weapon_type2 = type; set_base(compute()); }
+		void set_agility(std::weak_ptr<Agility> agi) { _agi = agi; }
+		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }
+		void set_dexterity(std::weak_ptr<Dexterity> dex) { _dex = dex; }
 
-	// private:
-	// 	std::weak_ptr<Agility> _agi{1};
-	// 	std::weak_ptr<BaseLevel> _blvl{1};
-	// 	std::weak_ptr<Dexterity> _dex{1};
-	// 	item_weapon_type _weapon_type1{IT_WT_FIST}, _weapon_type2{IT_WT_FIST};
-	// };
+	private:
+		std::weak_ptr<Agility> _agi;
+		std::weak_ptr<BaseLevel> _blvl;
+		std::weak_ptr<Dexterity> _dex;
+	};
 }
 }
 }

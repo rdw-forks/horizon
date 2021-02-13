@@ -370,7 +370,7 @@ void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> 
 	data.luck = status->luck()->get_base();
 	data.luck_req_stats = status->luck_cost()->get_base();
 	data.status_atk = status->status_atk()->total();
-	data.equip_atk = 0;
+	data.equip_atk = status->equip_atk()->total();
 	data.status_matk = status->status_matk()->total();
 	data.equip_matk = 0;
 	data.soft_def = status->soft_def()->total();
@@ -381,7 +381,7 @@ void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> 
 	data.flee = status->flee()->total();
 	data.perfect_dodge = 0;
 	data.critical = status->crit()->total();
-	data.attack_speed = 0;
+	data.attack_speed = status->aspd()->total();
 	data.plus_aspd = 0;
 	
 	zcs.deliver(data);
@@ -395,7 +395,7 @@ bool ZoneClientInterface::notify_appearance_update(entity_appearance_type type, 
 }
 
 // 0x00b0
-bool ZoneClientInterface::notify_complex_attribute_update(status_point_type type, int32_t value)
+bool ZoneClientInterface::notify_compound_attribute_update(status_point_type type, int32_t value)
 {
 	ZC_PAR_CHANGE pkt(get_session());
 	pkt.deliver(type, value);
@@ -436,7 +436,7 @@ bool ZoneClientInterface::notify_attack_range_update(int32_t value)
 // 0x0acb
 bool ZoneClientInterface::notify_experience_update(status_point_type type, int32_t value)
 {
-	notify_complex_attribute_update(type, value);
+	notify_compound_attribute_update(type, value);
 	return true;
 }
 

@@ -97,11 +97,11 @@ public:
 private:
 	int load_items(sol::table const &item_tbl, std::string file_path);
 	bool load_refine_table(refine_type tbl_type, sol::table const &refine_table, std::string table_name, std::string file_path);
-	std::array<std::string, IT_WT_MAX> _weapontype2name_db;
-	LockedLookupTable<uint32_t, std::shared_ptr<const item_config_data>> _item_db;
-	LockedLookupTable<uint32_t, std::shared_ptr<const refine_config>> _refine_db;
-	LockedLookupTable<uint32_t, std::shared_ptr<std::array<uint8_t, ESZ_MAX>>> _weapon_target_size_modifiers_db;
-	LockedLookupTable<uint32_t, std::shared_ptr<std::array<std::array<uint8_t, IT_ELE_MAX>, IT_ELE_MAX>>> _weapon_attribute_modifiers_db;
+	std::array<std::string, IT_WT_SINGLE_MAX> _weapontype2name_db;
+	LockedLookupTable<int32_t, std::shared_ptr<const item_config_data>> _item_db;
+	LockedLookupTable<int32_t, std::shared_ptr<const refine_config>> _refine_db;
+	LockedLookupTable<int32_t, std::shared_ptr<std::array<uint8_t, ESZ_MAX>>> _weapon_target_size_modifiers_db;
+	LockedLookupTable<int32_t, std::shared_ptr<std::array<std::array<uint8_t, IT_ELE_MAX>, IT_ELE_MAX>>> _weapon_attribute_modifiers_db;
 };
 }
 }

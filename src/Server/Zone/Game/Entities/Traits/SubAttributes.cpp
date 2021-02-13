@@ -33,13 +33,16 @@
 #include "Server/Zone/Game/Entities/Traits/Attributes.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Interface/ZoneClientInterface.hpp"
+#include "Server/Zone/Session/ZoneSession.hpp"
 
 #include <time.h>
 #include <random>
 
+using namespace Horizon::Zone::Entities;
 using namespace Horizon::Zone::Entities::Traits;
 
-uint32_t MaxWeight::compute()
+uint32_t MaxWeight::compute(bool notify)
 {
 	if (get_entity() == nullptr || _str.expired())
 		return 0;
@@ -47,10 +50,15 @@ uint32_t MaxWeight::compute()
 	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
 	std::shared_ptr<Strength> str = _str.lock();
 
-	return job->max_weight + str->get_base() * 300;
+	set_base(job->max_weight + str->get_base() * 300);
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MAX_WEIGHT, total());
+	
+	return total();
 }
 
-uint32_t StatusATK::compute()
+uint32_t StatusATK::compute(bool notify)
 {
 	uint32_t blvl = 1, str = 1, dex = 1, luk = 1;
 
@@ -73,13 +81,18 @@ uint32_t StatusATK::compute()
 
 	// Ranged: floor[(BaseLevel ÷ 4) + (Str ÷ 5) + Dex + (Luk ÷ 3)]
 	if (((1ULL << _weapon_type) & IT_WTM_RANGED) & ~(1ULL<<IT_WT_FIST))
-		return dex + (blvl / 4) + (str / 5) + (luk / 3);
+		set_base(dex + (blvl / 4) + (str / 5) + (luk / 3));
 
 	// Melee: floor[(BaseLevel ÷ 4) + Str + (Dex ÷ 5) + (Luk ÷ 3)]
-	return str + (blvl / 4) + (dex / 5) + (luk / 3);
+	set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_ATK, total());
+	
+	return total();
 }
 
-uint32_t StatusMATK::compute()
+uint32_t StatusMATK::compute(bool notify)
 {
 	uint32_t blvl = 1, int_ = 1, dex = 1, luk = 1;
 
@@ -98,10 +111,15 @@ uint32_t StatusMATK::compute()
 		luk = sluk->total();
 
 	// floor[floor[BaseLevel ÷ 4] + Int + floor[Int ÷ 2] + floor[Dex ÷ 5] + floor[Luk ÷ 3]]
-	return int_ + (blvl / 4) + (int_ / 2) + (dex / 5) + (luk / 3);
+	set_base(int_ + (blvl / 4) + (int_ / 2) + (dex / 5) + (luk / 3));
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_MATK, total());
+	
+	return total();
 }
 
-uint32_t SoftDEF::compute()
+uint32_t SoftDEF::compute(bool notify)
 {
 	uint32_t vit = 1;
 
@@ -111,10 +129,15 @@ uint32_t SoftDEF::compute()
 		vit = svit->total();
 
 	// (VIT ÷ 2) + Max[(VIT × 0.3), (VIT ^ 2 ÷ 150) − 1]
-	return (vit / 2) + std::max((vit * 0.3), (std::pow(vit, 2) / 150) - 1);
+	set_base((vit / 2) + std::max((vit * 0.3), (std::pow(vit, 2) / 150) - 1));
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_DEF, total());
+	
+	return total();
 }
 
-uint32_t SoftMDEF::compute()
+uint32_t SoftMDEF::compute(bool notify)
 {
 	uint32_t blvl = 1, int_ = 1, dex = 1, vit = 1;
 
@@ -133,10 +156,15 @@ uint32_t SoftMDEF::compute()
 		vit = svit->total();
 
 	// INT + VIT ÷ 5 + DEX ÷ 5 + BaseLv ÷ 4
-	return int_ + (vit / 5) + (dex / 5) + (blvl / 4);
+	set_base(int_ + (vit / 5) + (dex / 5) + (blvl / 4));
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_MDEF, total());
+	
+	return total();
 }
 
-uint32_t HIT::compute()
+uint32_t HIT::compute(bool notify)
 {
 	uint32_t blvl = 1, dex = 1, luk = 1;
 
@@ -152,10 +180,15 @@ uint32_t HIT::compute()
 		luk = sluk->total();
 
 	// 175 + BaseLv + DEX + Floor(LUK ÷ 3) + Bonus
-	return 175 + blvl + dex + (luk / 3);
+	set_base(175 + blvl + dex + (luk / 3));
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_HIT, total());
+	
+	return total();
 }
 
-uint32_t CRIT::compute()
+uint32_t CRIT::compute(bool notify)
 {
 	uint32_t luk = 1;
 
@@ -165,12 +198,17 @@ uint32_t CRIT::compute()
 		luk = sluk->total();
 
 	// LUK × 0.3 + Bonus
-	return (luk / 3);
+	set_base(luk / 3);
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CRITICAL, total());
+	
+	return total();
 }
 
 //! @brief Computes FLEE status based on agility, luck and Base Level.
 //! FLEE = 100 + BaseLv + AGI + Floor(LUK ÷ 5)
-uint32_t FLEE::compute()
+uint32_t FLEE::compute(bool notify)
 {
 	uint32_t blvl = 1, agi = 1, luk = 1;
 
@@ -185,15 +223,19 @@ uint32_t FLEE::compute()
 	if (sluk != nullptr)
 		luk = sluk->total();
 
-	return 100 + blvl + agi + (luk / 5);
+	set_base(100 + blvl + agi + (luk / 5));
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_FLEE, total());
+	
+	return total();
 }
 
 //! @brief Computes the EquipATK property of physical attacks.
 //! EquipATK = floor[((BaseWeaponDamage + Variance + StatBonus + RefinementBonus + OverUpgradeBonus) × SizePenaltyMultiplier]
-uint32_t EquipATK::compute()
+uint32_t EquipATK::compute(bool notify)
 {
 	uint32_t str = 1, dex = 1;
-	using namespace Horizon::Zone::Entities;
 
 	if (get_entity() == nullptr || get_entity()->type() != ENTITY_PLAYER)
 		return 0;
@@ -232,86 +274,123 @@ uint32_t EquipATK::compute()
 		_right_hand_val = 0;
 	}
 
-	return _left_hand_val + _right_hand_val;
+	set_base(_left_hand_val + _right_hand_val);
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_EQUIP_ATK, total());
+
+	return total();
 }
 
 uint32_t EquipATK::compute_variance(uint8_t weapon_lvl, uint32_t base_weapon_dmg)
 {
-	using namespace Horizon::Zone::Entities;
-
 	srand(time(0));
 
 	return floor(((rand() % 1000 + (-500)) / 10000.f) * weapon_lvl * base_weapon_dmg);
 }
 
-// uint32_t AttackSpeed::compute()
-// {
-// 	int amotion;
-// 	int classidx = pc_class2idx(get_entity()->job_id());
+uint32_t AttackSpeed::compute(bool notify)
+{
+	float temp_aspd = 0.00f;
+	int amotion = 0;
 
-// 	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+	// int amotion;
+	// float temp;
+	// int skill_lv, val = 0;
 
-// #ifdef RENEWAL_ASPD
-// 	int16 skill_lv, val = 0;
-// 	float temp_aspd = 0;
+	// nullpo_ret(sd);
+	// nullpo_ret(st);
 
-// 	amotion = job->weapon_base_aspd[_weapon_type1]; // Single weapon
-	
-// 	EquipmentListType const &equipments = player->inventory()->get_equipments();
+	// amotion = status->dbs->aspd_base[pc->class2idx(sd->status.class)][sd->weapontype1];
+	// if (sd->weapontype > MAX_SINGLE_WEAPON_TYPE)
+	// 	amotion += status->dbs->aspd_base[pc->class2idx(sd->status.class)][sd->weapontype2] / 4;
+	// if (sd->has_shield)
+	// 	amotion += status->dbs->aspd_base[pc->class2idx(sd->status.class)][MAX_SINGLE_WEAPON_TYPE];
+	// switch (sd->weapontype) {
+	// 	case W_BOW:
+	// 	case W_MUSICAL:
+	// 	case W_WHIP:
+	// 	case W_REVOLVER:
+	// 	case W_RIFLE:
+	// 	case W_GATLING:
+	// 	case W_SHOTGUN:
+	// 	case W_GRENADE:
+	// 		temp = st->dex * st->dex / 7.0f + st->agi * st->agi * 0.5f;
+	// 		break;
+	// 	default:
+	// 		temp = st->dex * st->dex / 5.0f + st->agi * st->agi * 0.5f;
+	// }
+	// temp = (float)(sqrt(temp) * 0.25f) + 0xc4;
+	// if (sd->weapontype == W_BOOK && (skill_lv = pc->checkskill(sd, SA_ADVANCEDBOOK)) > 0)
+	// 	val += (skill_lv - 1) / 2 + 1;
+	// if ( (skill_lv = pc->checkskill(sd, GS_SINGLEACTION)) > 0 )
+	// 	val += ((skill_lv + 1) / 2);
+	// amotion = ((int)(temp + ((float)(status->calc_aspd(&sd->bl, &sd->sc, 1) + val) * st->agi / 200)) - min(amotion, 200));
 
-// 	std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
-// 	std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
+	// return amotion;
 
-// 	if (_weapon_type2 != W_FIST && lhw != rhw)
-// 		amotion += job_info[classidx].aspd_base[sd->weapontype2] / 4; // Dual-wield
+	if (get_entity()->type() == ENTITY_PLAYER) {
+		EquipmentListType const &equipments = get_entity()->downcast<Player>()->inventory()->equipments();
+		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
+		std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
+		std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
 
-// 	switch(sd->status.weapon) {
-// 		case W_BOW:
-// 		case W_MUSICAL:
-// 		case W_WHIP:
-// 		case W_REVOLVER:
-// 		case W_RIFLE:
-// 		case W_GATLING:
-// 		case W_SHOTGUN:
-// 		case W_GRENADE:
-// 			temp_aspd = status->dex * status->dex / 7.0f + status->agi * status->agi * 0.5f;
-// 			break;
-// 		default:
-// 			temp_aspd = status->dex * status->dex / 5.0f + status->agi * status->agi * 0.5f;
-// 			break;
-// 	}
-// 	temp_aspd = (float)(sqrt(temp_aspd) * 0.25f) + 0xc4;
-// 	if ((skill_lv = pc_checkskill(sd,SA_ADVANCEDBOOK)) > 0 && sd->status.weapon == W_BOOK)
-// 		val += (skill_lv - 1) / 2 + 1;
-// 	if ((skill_lv = pc_checkskill(sd, SG_DEVIL)) > 0 && ((sd->class_&MAPID_THIRDMASK) == MAPID_STAR_EMPEROR || pc_is_maxjoblv(sd)))
-// 		val += 1 + skill_lv;
-// 	if ((skill_lv = pc_checkskill(sd,GS_SINGLEACTION)) > 0 && (sd->status.weapon >= W_REVOLVER && sd->status.weapon <= W_GRENADE))
-// 		val += ((skill_lv + 1) / 2);
-// 	if ((skill_lv = pc_checkskill(sd, RG_PLAGIARISM)) > 0)
-// 		val += skill_lv;
-// 	if (pc_isriding(sd))
-// 		val -= 50 - 10 * pc_checkskill(sd, KN_CAVALIERMASTERY);
-// 	else if (pc_isridingdragon(sd))
-// 		val -= 25 - 5 * pc_checkskill(sd, RK_DRAGONTRAINING);
-// 	amotion = ((int)(temp_aspd + ((float)(status_calc_aspd(&sd->bl, &sd->sc, true) + val) * status->agi / 200)) - min(amotion, 200));
-// #else
-// 	// Angra Manyu disregards aspd_base and similar
-// 	if (pc_checkequip2(sd, ITEMID_ANGRA_MANYU, EQI_ACC_L, EQI_MAX))
-// 		return 0;
+		item_weapon_type rhw_type, lhw_type;
 
-// 	// Base weapon delay
-// 	amotion = (sd->status.weapon < MAX_WEAPON_TYPE)
-// 	 ? (job_info[classidx].aspd_base[sd->status.weapon]) // Single weapon
-// 	 : (job_info[classidx].aspd_base[sd->weapontype1] + job_info[classidx].aspd_base[sd->weapontype2]) * 7 / 10; // Dual-wield
+		if (rhw == nullptr) { 
+			rhw_type = IT_WT_FIST;
+		} else {
+			std::shared_ptr<const item_config_data> rhwc = ItemDB->get_item_by_id(rhw->item_id);
+			rhw_type = rhwc->sub_type.weapon_t;
+		}
 
-// 	// Percentual delay reduction from stats
-// 	amotion -= amotion * (4 * status->agi + status->dex) / 1000;
+		amotion = job->weapon_base_aspd[rhw_type];
 
-// 	// Raw delay adjustment from bAspd bonus
-// 	amotion += sd->bonus.aspd_add;
-// #endif
+		if (rhw_type > IT_WT_SINGLE_MAX && lhw != nullptr) {
+			std::shared_ptr<const item_config_data> lhwc = ItemDB->get_item_by_id(lhw->item_id);
+			lhw_type = lhwc->sub_type.weapon_t;
+			amotion += job->weapon_base_aspd[lhw_type] / 4; // Dual-wield
+		}
 
-//  	return amotion;
-// }
+		std::shared_ptr<Dexterity> dex = _dex.lock();
+		std::shared_ptr<BaseLevel> blvl = _blvl.lock();
+		std::shared_ptr<Agility> agi = _agi.lock();
 
+		if (dex == nullptr || blvl == nullptr || agi == nullptr) {
+			HLog(error) << "AttackSpeed::compute: Couldn't compute... Dex, Blvl or Agi were null.";
+			return amotion;
+		}
+
+		switch(rhw_type) {
+			case IT_WT_BOW:
+			case IT_WT_MUSICAL:
+			case IT_WT_WHIP:
+			case IT_WT_REVOLVER:
+			case IT_WT_RIFLE:
+			case IT_WT_GATLING:
+			case IT_WT_SHOTGUN:
+			case IT_WT_GRENADE:
+				temp_aspd = dex->get_base() * dex->get_base() / 7.0f + agi->get_base() * agi->get_base() * 0.5f;
+				break;
+			default:
+				temp_aspd = dex->get_base() * dex->get_base() / 5.0f + agi->get_base() * agi->get_base() * 0.5f;
+				break;
+		}
+
+		temp_aspd = (float)(sqrt(temp_aspd) * 0.25f) + 196;
+
+#define ASPD_FROM_STATUS_EFFECTS 0
+#define ASPD_FROM_SKILLS 0
+		amotion = (int)(temp_aspd + ((float)((ASPD_FROM_STATUS_EFFECTS + ASPD_FROM_SKILLS) * agi->get_base() / 200)) - std::min(amotion, 200));
+#undef ASPD_FROM_STATUS_EFFECTS
+#undef ASPD_FROM_SKILLS
+	}
+
+ 	set_base(amotion);
+
+	if (get_entity()->type() == ENTITY_PLAYER && notify)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_ASPD, total());
+
+	return total();
+}
 

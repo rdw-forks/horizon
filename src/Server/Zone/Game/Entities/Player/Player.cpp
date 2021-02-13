@@ -74,12 +74,12 @@ void Player::initialize()
 {
 	Entity::initialize();
 
-	// Initialize Status.
-	status()->initialize_player(shared_from_this());
-
 	// Inventory.
 	_inventory = std::make_shared<Assets::Inventory>(downcast<Player>(), get_max_inventory_size());
 	_inventory->sync_from_model();
+
+	// Initialize Status.
+	status()->initialize_player(shared_from_this());
 
 	// Ensure grid for entity.
 	map()->ensure_grid_for_entity(this, map_coords());
@@ -301,7 +301,8 @@ void Player::on_item_equip(std::shared_ptr<const item_entry_data> item)
 
 	if (item->type == IT_TYPE_WEAPON) {
 		s->status_atk()->set_weapon_type(itemd->sub_type.weapon_t);
-		s->equip_atk()->on_equipment_change();
+		s->equip_atk()->on_weapon_changed();
+		s->aspd()->on_weapon_changed();
 	}
 }
 
@@ -312,7 +313,8 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 
 	if (item->type == IT_TYPE_WEAPON) {
 		s->status_atk()->set_weapon_type(IT_WT_FIST);
-		s->equip_atk()->on_equipment_change();
+		s->equip_atk()->on_weapon_changed();
+		s->aspd()->on_weapon_changed();
 	}
 }
 

@@ -454,7 +454,7 @@ void sync_item_definitions(sol::state &state)
 		"GrenadeLauncher", (int) IT_WT_GRENADE,
 		"FuumaShuriken", (int) IT_WT_HUUMA,
 		"TwoHandedStaff", (int) IT_WT_2HSTAFF,
-		"Max", (int) IT_WT_MAX
+		"MaxSingleWeaponType", (int) IT_WT_SINGLE_MAX
 	);
 
 	state.create_named_table("WeaponTypeMask",
