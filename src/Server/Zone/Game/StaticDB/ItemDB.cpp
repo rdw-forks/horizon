@@ -403,6 +403,7 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 		id.unequip_script = tbl.get_or("OnUnequipScript", std::string(""));
 
 		_item_db.insert(id.item_id, std::make_shared<item_config_data>(id));
+		_item_db_str.insert(id.key_name, std::make_shared<item_config_data>(id));
 	});
 
 	return _item_db.size();
@@ -541,6 +542,7 @@ bool ItemDatabase::load_weapon_attribute_modifiers_db()
 
 	lua.open_libraries(sol::lib::base);
 
+	sync_entity_definitions(lua);
 	sync_item_definitions(lua);
 	
 	int total_entries = 0;
@@ -553,25 +555,25 @@ bool ItemDatabase::load_weapon_attribute_modifiers_db()
 		sol::table attr_mod_tbl = lua["weapon_attribute_modifiers"];
 
 		struct {
-			item_element_type type;
+			element_type type;
 			std::string ele_name;
 		} attr_s[] = {
-			{ IT_ELE_NEUTRAL, "Neutral" },
-			{ IT_ELE_WATER, "Water" },
-			{ IT_ELE_EARTH, "Earth" },
-			{ IT_ELE_FIRE, "Fire" },
-			{ IT_ELE_WIND, "Wind" },
-			{ IT_ELE_POISON, "Poison" },
-			{ IT_ELE_HOLY, "Holy" },
-			{ IT_ELE_DARK, "Dark" },
-			{ IT_ELE_GHOST, "Ghost" },
-			{ IT_ELE_UNDEAD, "Undead" },
+			{ ELE_NEUTRAL, "Neutral" },
+			{ ELE_WATER, "Water" },
+			{ ELE_EARTH, "Earth" },
+			{ ELE_FIRE, "Fire" },
+			{ ELE_WIND, "Wind" },
+			{ ELE_POISON, "Poison" },
+			{ ELE_HOLY, "Holy" },
+			{ ELE_DARK, "Dark" },
+			{ ELE_GHOST, "Ghost" },
+			{ ELE_UNDEAD, "Undead" },
 		};
 
 		for (int i = IT_LVL_WEAPON1; i < IT_LVL_MAX; i++) {
-			std::shared_ptr<std::array<std::array<uint8_t, IT_ELE_MAX>, IT_ELE_MAX>> arr = std::make_shared<std::array<std::array<uint8_t, IT_ELE_MAX>, IT_ELE_MAX>>();
-			for (int j = IT_ELE_NEUTRAL; j < IT_ELE_MAX; j++) {
-				for (int k = IT_ELE_NEUTRAL; k < IT_ELE_MAX; k++) {
+			std::shared_ptr<std::array<std::array<uint8_t, ELE_MAX>, ELE_MAX>> arr = std::make_shared<std::array<std::array<uint8_t, ELE_MAX>, ELE_MAX>>();
+			for (int j = ELE_NEUTRAL; j < ELE_MAX; j++) {
+				for (int k = ELE_NEUTRAL; k < ELE_MAX; k++) {
 					try {
 						(*arr)[j][k] = attr_mod_tbl[i][j][k + 1];
 					} catch (std::exception &err) {

@@ -674,5 +674,22 @@ struct entity_viewport_entry
 	int32_t move_start_time;
 };
 
+enum element_type : uint8_t
+{
+	ELE_NEUTRAL = 0,
+	ELE_WATER   = 1,
+	ELE_EARTH   = 2,
+	ELE_FIRE    = 3,
+	ELE_WIND    = 4,
+	ELE_POISON  = 5,
+	ELE_HOLY    = 6,
+	ELE_DARK    = 7,
+	ELE_GHOST   = 8,
+	ELE_UNDEAD  = 9,
+	ELE_MAX     = 10,
+	ELE_WEAPON  = 11,
+	ELE_ENDOWED = 12,
+	ELE_RANDOM  = 13
+};
 
 #endif /* HORIZON_ZONE_GAME_ENTITIES_DEFINITIONS */

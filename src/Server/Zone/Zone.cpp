@@ -35,6 +35,8 @@
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
+#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
 #include <iostream>
 #include <boost/make_shared.hpp>
@@ -190,6 +192,8 @@ void ZoneServer::initialize_core()
 	ItemDB->load_refine_db();
 	ItemDB->load_weapon_target_size_modifiers_db();
 	ItemDB->load_weapon_attribute_modifiers_db();
+	SkillDB->load();
+	MonsterDB->load();
 
 	// Start Network
 	ClientSocktMgr->start(get_io_service(),

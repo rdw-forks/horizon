@@ -62,7 +62,6 @@ target_precompile_headers(zone
 		<string>
 		<vector>
 		<memory>
-		${COMMON_HEADERS}
 		<cstdio>
 		<map>
 		<string>

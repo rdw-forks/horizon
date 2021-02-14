@@ -27,53 +27,44 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP
-#define HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP
+#ifndef HORIZON_ZONE_GAME_MONSTERDB_HPP
+#define HORIZON_ZONE_GAME_MONSTERDB_HPP
 
-#include "EntityDefinitions.hpp"
-#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
+#include <cstdlib>
 
-#include <memory>
-#include <string>
-
-#define NPC_START_GUID 500000000
-
-enum npc_type
-{
-	FAKE_NPC               =    -1,
-	NPC_TYPE_PORTAL        =    45,
-	NPC_TYPE_PORTAL_HIDDEN =   139,
-	NPC_TYPE_MOB_TOMB      =   565,
-	NPC_TYPE_PORTAL_DBG    =   722,
-	NPC_TYPE_FLAG          =   722,
-	NPC_TYPE_INVISIBLE     = 32767
-};
+#include <sol.hpp>
 
 namespace Horizon
 {
-	namespace Zone
+namespace Zone
+{
+struct monster_config_data
+{
+	int _monster_id;
+};
+class MonsterDatabase
+{
+public:
+	MonsterDatabase();
+	~MonsterDatabase();
+	
+	static MonsterDatabase *get_instance()
 	{
-		namespace Game
-		{
-			namespace Entities
-			{
-				class NPC;
-			}
-		}
+		static MonsterDatabase instance;
+		return &instance;
 	}
+	
+	bool load();
+
+protected:
+	bool load_internal(sol::object const &key, sol::object const &value);
+
+private:
+	LockedLookupTable<uint32_t, std::shared_ptr<monster_config_data>> _monster_db;
+};
+}
 }
 
-struct npc_db_data
-{
-	std::string npc_name{};
-	std::string map_name{};
-	MapCoords coords;
-	directions direction{DIR_SOUTH};
-	uint16_t sprite_id{0};
-	std::string script{""};
-	std::shared_ptr<Horizon::Zone::Entities::NPC> _npc;
-	bool script_is_file;
-	uint16_t trigger_range;
-};
+#define MonsterDB Horizon::Zone::MonsterDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP */
+#endif /* HORIZON_ZONE_GAME_MONSTERDB_HPP */

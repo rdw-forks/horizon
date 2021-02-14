@@ -29,6 +29,8 @@
 #ifndef HORIZON_ZONE_GAME_ITEM_DEFINITIONS
 #define HORIZON_ZONE_GAME_ITEM_DEFINITIONS
 
+#include "Server/Common/Definitions/EntityDefinitions.hpp"
+
 #define ITEM_NAME_LENGTH 50
 #define UNKNOWN_ITEM_ID 512 // Apple
 #define MAX_ITEM_OPTIONS 5
@@ -249,22 +251,6 @@ enum item_ammunition_type
 	IT_AT_MAX
 };
 
-enum item_element_type : uint8_t
-{
-	IT_ELE_NEUTRAL = 0,
-	IT_ELE_WATER   = 1,
-	IT_ELE_EARTH   = 2,
-	IT_ELE_FIRE    = 3,
-	IT_ELE_WIND    = 4,
-	IT_ELE_POISON  = 5,
-	IT_ELE_HOLY    = 6,
-	IT_ELE_DARK    = 7,
-	IT_ELE_GHOST   = 8,
-	IT_ELE_UNDEAD  = 9,
-	IT_ELE_MAX     = 10,
-	IT_ELE_ALL     = 0xFF
-};
-
 enum item_bind_type : uint16_t
 {
 	IT_BIND_NONE      = 0x0,
@@ -436,7 +422,7 @@ struct item_entry_data
 	uint32_t hire_expire_date{0};
 	uint16_t sprite_id{0};
 
-	item_element_type element_type{IT_ELE_NEUTRAL};
+	element_type element_type{ELE_NEUTRAL};
 	uint8_t option_count{0};
 	struct options {
 		int16_t get_index() { return index; }

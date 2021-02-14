@@ -26,7 +26,6 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
 #ifndef HORIZON_ZONE_GAME_BATTLE_DEFINITIONS_HPP
 #define HORIZON_ZONE_GAME_BATTLE_DEFINITIONS_HPP
 
@@ -36,10 +35,15 @@ enum battle_target_check_type
 	BTC_SELF               =   0x010000,
 	BTC_ENEMY              =   0x020000,
 	BTC_PARTY              =   0x040000,
-	BTC_GUILD              =   0x080000,
-	BTC_GUILD_ALLY         =   0x100000,
+	BTC_GUILD_ALLY         =   0x080000, ///< Only allies, NOT guildmates
+	BTC_NEUTRAL            =   0x100000,
+	BTC_GUILD              =   0x200000, ///< No Guild Allies
+	BTC_GUILD_AND_ALLY     =   0x280000, ///< Guild AND allies (BCT_SAMEGUILD|BCT_GUILDALLY)
+	BTC_ALL_EXCEPT_GUILD   =   0x170000, ///< This must be (~BCT_GUILD&BCT_ALL)
+	BTC_ALL_EXCEPT_PARTY   =   0x3b0000, ///< This must be (~BCT_PARTY&BCT_ALL)
+	BTC_ALL_EXCEPT_ENEMY   =   0x3d0000, ///< This must be (~BCT_ENEMY&BCT_ALL)
 
-	BTC_ALL                =   0xFF0000,
+	BTC_ALL                =   0x3F0000, ///< Sum of BCT_NOONE to BCT_SAMEGUILD
 };
 
 enum battle_attack_type
@@ -61,13 +65,29 @@ enum damage_behavior_type
 {
 	DMG_BHVR_NONE                  = 0x00,
 	DMG_BHVR_NON_OFFENSIVE         = 0x01, //< This skill will not cause any damage.
-	DMG_BHVR_AOE                   = 0x02, //< Has splash area (requires source modification)
+	DMG_BHVR_SPLASH                = 0x02, //< Has splash area (requires source modification)
 	DMG_BHVR_SPLIT_BW_TARGETS      = 0x04, //< Damage should be split among targets (requires 'SplashArea' in order to work)
 	DMG_BHVR_IGNORE_EQUIP_ATK      = 0x08, //< Skill ignores caster's % damage cards (misc type always ignores)
 	DMG_BHVR_IGNORE_DEF_ELE        = 0x10, //< Skill ignores elemental adjustments
 	DMG_BHVR_IGNORE_SOFT_DEF       = 0x20, //< Skill ignores target's defense (misc type always ignores)
 	DMG_BHVR_IGNORE_FLEE           = 0x40, //< Skill ignores target's flee (magic type always ignores)
 	DMG_BHVR_IGNORE_EQUIP_DEF      = 0x80, //< Skill ignores target's def cards
+};
+
+enum battle_damage_type {
+	BDT_NORMAL      = 0,  // Normal attack
+	//BDT_PICKUP      = 1,  // Pick up item
+	BDT_SITDOWN     = 2,  // Sit down
+	BDT_STANDUP     = 3,  // Stand up
+	BDT_ENDURE      = 4,  // Damage (endure)
+	BDT_SPLASH      = 5,  // Splash
+	BDT_SKILL       = 6,  // Skill
+	//BDT_REPEAT      = 7,  // (repeat damage?)
+	BDT_MULTIHIT    = 8,  // Multi-hit damage
+	BDT_MULTIENDURE = 9,  // Multi-hit damage (endure)
+	BDT_CRIT        = 10, // Critical hit
+	BDT_PDODGE      = 11, // Lucky dodge
+	//BDT_TOUCH       = 12, // (touch skill?)
 };
 
 #endif /* HORIZON_ZONE_GAME_BATTLE_DEFINITIONS_HPP */

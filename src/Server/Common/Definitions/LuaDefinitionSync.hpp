@@ -26,7 +26,6 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
 #ifndef HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP
 #define HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP
 
@@ -37,5 +36,9 @@ void sync_battle_definitions(sol::state &state);
 void sync_entity_definitions(sol::state &state);
 
 void sync_item_definitions(sol::state &state);
+
+void sync_monster_definitions(sol::state &state);
+
+void sync_skill_definitions(sol::state &state);
 
 #endif /* HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP */

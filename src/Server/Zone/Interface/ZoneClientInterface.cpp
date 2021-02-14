@@ -380,7 +380,7 @@ void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> 
 	data.hit = status->hit()->total();
 	data.flee = status->flee()->total();
 	data.perfect_dodge = 0;
-	data.critical = status->crit()->total();
+	data.critical = status->crit()->total() / 10;
 	data.attack_speed = status->aspd()->total();
 	data.plus_aspd = 0;
 	

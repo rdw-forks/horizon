@@ -30,6 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 #define HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 
+#include "Core/Networking/Buffer/ByteBuffer.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"

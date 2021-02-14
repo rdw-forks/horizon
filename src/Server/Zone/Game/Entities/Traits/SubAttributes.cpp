@@ -294,41 +294,6 @@ uint32_t AttackSpeed::compute(bool notify)
 	float temp_aspd = 0.00f;
 	int amotion = 0;
 
-	// int amotion;
-	// float temp;
-	// int skill_lv, val = 0;
-
-	// nullpo_ret(sd);
-	// nullpo_ret(st);
-
-	// amotion = status->dbs->aspd_base[pc->class2idx(sd->status.class)][sd->weapontype1];
-	// if (sd->weapontype > MAX_SINGLE_WEAPON_TYPE)
-	// 	amotion += status->dbs->aspd_base[pc->class2idx(sd->status.class)][sd->weapontype2] / 4;
-	// if (sd->has_shield)
-	// 	amotion += status->dbs->aspd_base[pc->class2idx(sd->status.class)][MAX_SINGLE_WEAPON_TYPE];
-	// switch (sd->weapontype) {
-	// 	case W_BOW:
-	// 	case W_MUSICAL:
-	// 	case W_WHIP:
-	// 	case W_REVOLVER:
-	// 	case W_RIFLE:
-	// 	case W_GATLING:
-	// 	case W_SHOTGUN:
-	// 	case W_GRENADE:
-	// 		temp = st->dex * st->dex / 7.0f + st->agi * st->agi * 0.5f;
-	// 		break;
-	// 	default:
-	// 		temp = st->dex * st->dex / 5.0f + st->agi * st->agi * 0.5f;
-	// }
-	// temp = (float)(sqrt(temp) * 0.25f) + 0xc4;
-	// if (sd->weapontype == W_BOOK && (skill_lv = pc->checkskill(sd, SA_ADVANCEDBOOK)) > 0)
-	// 	val += (skill_lv - 1) / 2 + 1;
-	// if ( (skill_lv = pc->checkskill(sd, GS_SINGLEACTION)) > 0 )
-	// 	val += ((skill_lv + 1) / 2);
-	// amotion = ((int)(temp + ((float)(status->calc_aspd(&sd->bl, &sd->sc, 1) + val) * st->agi / 200)) - min(amotion, 200));
-
-	// return amotion;
-
 	if (get_entity()->type() == ENTITY_PLAYER) {
 		EquipmentListType const &equipments = get_entity()->downcast<Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
@@ -382,6 +347,8 @@ uint32_t AttackSpeed::compute(bool notify)
 #define ASPD_FROM_STATUS_EFFECTS 0
 #define ASPD_FROM_SKILLS 0
 		amotion = (int)(temp_aspd + ((float)((ASPD_FROM_STATUS_EFFECTS + ASPD_FROM_SKILLS) * agi->get_base() / 200)) - std::min(amotion, 200));
+		amotion += (std::max(0xc3 - amotion, 2) * (ASPD_FROM_STATUS_EFFECTS)) / 100;
+		amotion = 10 * (200 - amotion);
 #undef ASPD_FROM_STATUS_EFFECTS
 #undef ASPD_FROM_SKILLS
 	}
@@ -393,4 +360,5 @@ uint32_t AttackSpeed::compute(bool notify)
 
 	return total();
 }
+
 

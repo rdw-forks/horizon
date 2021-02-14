@@ -32,6 +32,7 @@
 
 #include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
+#include "Core/Logging/Logger.hpp"
 
 template <class T>
 void GridViewPortUpdater::update(GridRefManager<T> &m)

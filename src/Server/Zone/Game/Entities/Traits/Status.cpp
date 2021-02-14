@@ -156,9 +156,18 @@ void Status::initialize_player(std::shared_ptr<Entity> entity)
 
 	initialize_observable_statuses();
 
-	pl->get_session()->clif()->notify_initial_status(shared_from_this());
+	max_weight()->compute(false);
+	status_atk()->compute(false);
+	equip_atk()->compute(false);
+	status_matk()->compute(false);
+	soft_def()->compute(false);
+	soft_mdef()->compute(false);
+	hit()->compute(false);
+	crit()->compute(false);
+	flee()->compute(false);
+	aspd()->compute(false);
 
-	compute_and_notify_compound_attributes();
+	pl->get_session()->clif()->notify_initial_status(shared_from_this());
 }
 
 void Status::initialize_compound_attributes(std::shared_ptr<const job_db_data> job)
@@ -254,9 +263,6 @@ void Status::initialize_observable_statuses()
 
 void Status::compute_and_notify_compound_attributes()
 {	
-	std::shared_ptr<Player> pl = entity()->template downcast<Player>();
-
-	// notify other statuses.
 	max_weight()->compute(true);
 	status_atk()->compute(true);
 	equip_atk()->compute(true);

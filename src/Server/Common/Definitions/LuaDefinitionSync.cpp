@@ -11,12 +11,17 @@
 void sync_battle_definitions(sol::state &state)
 {
 	state.create_named_table("TargetCheckType",
-		"None", (int) BTC_NONE,
-		"Self",(int) BTC_SELF,
+		"Noone", (int) BTC_NONE,
+		"Self", (int) BTC_SELF,
 		"Enemy", (int) BTC_ENEMY,
 		"Party", (int) BTC_PARTY,
+		"AllianceOnly", (int) BTC_GUILD_ALLY,
+		"Neutral", (int) BTC_NEUTRAL,
 		"Guild", (int) BTC_GUILD,
-		"GuildAlly", (int) BTC_GUILD_ALLY,
+		"GuildAndAlliance", (int) BTC_GUILD_AND_ALLY,
+		"AllExceptGuild", (int) BTC_ALL_EXCEPT_GUILD,
+		"AllExceptParty", (int) BTC_ALL_EXCEPT_PARTY,
+		"AllExceptEnemy", (int) BTC_ALL_EXCEPT_ENEMY,
 		"All", (int) BTC_ALL
 	);
 
@@ -26,10 +31,11 @@ void sync_battle_definitions(sol::state &state)
 		"Magic", (int) BAT_MAGIC,
 		"Misc", (int) BAT_MISC
 	);
+
 	state.create_named_table("DamageBehavior",
-		"None", (int) DMG_BHVR_NONE,
+		"NoDamage", (int) DMG_BHVR_NONE,
 		"NonOffensive", (int) DMG_BHVR_NON_OFFENSIVE,
-		"AreaOfEffect", (int) DMG_BHVR_AOE,
+		"SplashArea", (int) DMG_BHVR_SPLASH,
 		"SplitBetweenTargets", (int) DMG_BHVR_SPLIT_BW_TARGETS,
 		"IgnoreEquipATK", (int) DMG_BHVR_IGNORE_EQUIP_ATK,
 		"IgnoreDefElement", (int) DMG_BHVR_IGNORE_DEF_ELE,
@@ -39,9 +45,25 @@ void sync_battle_definitions(sol::state &state)
 	);
 }
 
-
 void sync_entity_definitions(sol::state &state)
 {
+	state.create_named_table("Element",
+		"Neutral", (int) ELE_NEUTRAL,
+		"Water", (int) ELE_WATER,
+		"Earth", (int) ELE_EARTH,
+		"Fire", (int) ELE_FIRE,
+		"Wind", (int) ELE_WIND,
+		"Poison", (int) ELE_POISON,
+		"Holy", (int) ELE_HOLY,
+		"Dark", (int) ELE_DARK,
+		"Ghost", (int) ELE_GHOST,
+		"Undead", (int) ELE_UNDEAD,
+		"Max", (int) ELE_MAX,
+		"Weapon", (int) ELE_WEAPON,
+		"Endowed", (int) ELE_ENDOWED,
+		"Random", (int) ELE_RANDOM
+	);
+
 	state.create_named_table("EntityType",
 		"Player", (int) ENTITY_MASK_PLAYER,
 		"NPC", (int) ENTITY_MASK_NPC,
@@ -410,6 +432,7 @@ void sync_entity_definitions(sol::state &state)
 		"All", (int) JMASK_ALL
 	);
 }
+
 void sync_item_definitions(sol::state &state)
 {
 	state.create_named_table("RefineType",
@@ -454,7 +477,12 @@ void sync_item_definitions(sol::state &state)
 		"GrenadeLauncher", (int) IT_WT_GRENADE,
 		"FuumaShuriken", (int) IT_WT_HUUMA,
 		"TwoHandedStaff", (int) IT_WT_2HSTAFF,
-		"MaxSingleWeaponType", (int) IT_WT_SINGLE_MAX
+		"DWDaggers", (int) IT_WT_DOUBLE_DAGGERS, ///< 2 daggers
+		"DWSwords", (int) IT_WT_DOUBLE_SWORDS, ///< 2 swords
+		"DWAxes", (int) IT_WT_DOUBLE_AXES, ///< 2 axes
+		"DWDaggerSword", (int) IT_WT_DOUBLE_DAGGER_SWORD, ///< dagger + sword
+		"DWDaggerAxe", (int) IT_WT_DOUBLE_DAGGER_AXE, ///< dagger + axe
+		"DWSwordAxe", (int) IT_WT_DOUBLE_SWORD_AXE ///< sword + axe
 	);
 
 	state.create_named_table("WeaponTypeMask",
@@ -586,21 +614,6 @@ void sync_item_definitions(sol::state &state)
 		"Max", (int) IT_AT_MAX
 	);
 
-	state.create_named_table("Element",
-		"Neutral", (int) IT_ELE_NEUTRAL,
-		"Water", (int) IT_ELE_WATER,
-		"Earth", (int) IT_ELE_EARTH,
-		"Fire", (int) IT_ELE_FIRE,
-		"Wind", (int) IT_ELE_WIND,
-		"Poison", (int) IT_ELE_POISON,
-		"Holy", (int) IT_ELE_HOLY,
-		"Dark", (int) IT_ELE_DARK,
-		"Ghost", (int) IT_ELE_GHOST,
-		"Undead", (int) IT_ELE_UNDEAD,
-		"Max", (int) IT_ELE_MAX,
-		"All", (int) IT_ELE_ALL
-	);
-
 	state.create_named_table("ItemBindType",
 		"None", (int) IT_BIND_NONE,
 		"Account", (int) IT_BIND_ACCOUNT,
@@ -608,5 +621,131 @@ void sync_item_definitions(sol::state &state)
 		"Party", (int) IT_BIND_PARTY,
 		"Character", (int) IT_BIND_CHARACTER,
 		"Max", (int) IT_BIND_MAX
+	);
+}
+
+void sync_monster_definitions(sol::state &state)
+{
+	state.create_named_table("MonsterSize",
+		"Small", (int) MONSTER_SIZE_SMALL,
+		"Medium", (int) MONSTER_SIZE_MEDIUM,
+		"Large", (int) MONSTER_SIZE_LARGE
+	);
+
+	state.create_named_table("MonsterRace",
+		"Formless", (int) MONSTER_RACE_FORMLESS,
+		"Undead", (int) MONSTER_RACE_UNDEAD,
+		"Brute", (int) MONSTER_RACE_BRUTE,
+		"Plant", (int) MONSTER_RACE_PLANT,
+		"Insect", (int) MONSTER_RACE_INSECT,
+		"Fish", (int) MONSTER_RACE_FISH,
+		"Demon", (int) MONSTER_RACE_DEMON,
+		"DemiHuman", (int) MONSTER_RACE_DEMIHUMAN,
+		"Angel", (int) MONSTER_RACE_ANGEL,
+		"Dragon", (int) MONSTER_RACE_DRAGON,
+		"Player", (int) MONSTER_RACE_PLAYER,
+		"Boss", (int) MONSTER_RACE_BOSS,
+		"NonBoss", (int) MONSTER_RACE_NONBOSS
+	);
+
+	state.create_named_table("MonsterMode",
+		"None", (int) MONSTER_MODE_MASK_NONE,
+		"CanMove", (int) MONSTER_MODE_MASK_CANMOVE,
+		"Looter", (int) MONSTER_MODE_MASK_LOOTER,
+		"Aggressive", (int) MONSTER_MODE_MASK_AGGRESSIVE,
+		"Assist", (int) MONSTER_MODE_MASK_ASSIST,
+		"CastSensorIdle", (int) MONSTER_MODE_MASK_CASTSENSOR_IDLE,
+		"Boss", (int) MONSTER_MODE_MASK_BOSS,
+		"Plant", (int) MONSTER_MODE_MASK_PLANT,
+		"CanAttack", (int) MONSTER_MODE_MASK_CANATTACK,
+		"Detector", (int) MONSTER_MODE_MASK_DETECTOR,
+		"CastSensorChase", (int) MONSTER_MODE_MASK_CASTSENSOR_CHASE,
+		"ChangeChase", (int) MONSTER_MODE_MASK_CHANGECHASE,
+		"Angry", (int) MONSTER_MODE_MASK_ANGRY,
+		"ChangeTargetMelee", (int) MONSTER_MODE_MASK_CHANGETARGET_MELEE,
+		"ChangeTargetChase", (int) MONSTER_MODE_MASK_CHANGETARGET_CHASE,
+		"TargetWeak", (int) MONSTER_MODE_MASK_TARGETWEAK,
+		"NoKnockBack", (int) MONSTER_MODE_MASK_NOKNOCKBACK
+	);
+}
+
+void sync_skill_definitions(sol::state &state)
+{
+	state.create_named_table("SkillType",
+		"Passive", SK_TYPE_PASSIVE,
+		"Attack", SK_TYPE_ATTACK,
+		"Placement", SK_TYPE_PLACEMENT,
+		"Self", SK_TYPE_SELF,
+		"Friendly", SK_TYPE_FRIENDLY,
+		"Trap", SK_TYPE_TRAP
+	);
+
+	state.create_named_table("SkillPlacementBehavior", 
+		"None", (int) SPB_NONE,
+		"DefNotEnemy", (int) SPB_DEFNOTENEMY,
+		"CannotOverlap", (int) SPB_NOREITERATION,
+		"AllowPlacementOnTarget", (int) SPB_NOFOOTSET,
+		"CannotOverlap", (int) SPB_NOOVERLAP,
+		"CheckObstructionInPath", (int) SPB_PATHCHECK,
+		"WontTargetPlayers", (int) SPB_NOPC,
+		"WontTargetMobs", (int) SPB_NOMOB,
+		"CanTargetSkills", (int) SPB_SKILL,
+		"IsDance", (int) SPB_DANCE,
+		"IsEnsemble", (int) SPB_ENSEMBLE,
+		"IsSong", (int) SPB_SONG,
+		"AffectOnContact", (int) SPB_DUALMODE,
+		"OnlyDisplayCenter", (int) SPB_RANGEDSINGLEUNIT
+	);
+
+	state.create_named_table("SkillRequiredState",
+		"None", (int) SRS_NONE,
+		"Hiding", (int) SRS_HIDING,
+		"Cloaking", (int) SRS_CLOAKING,
+		"Hidden", (int) SRS_HIDDEN,
+		"Riding", (int) SRS_RIDING,
+		"Falcon", (int) SRS_FALCON,
+		"Cart", (int) SRS_CART,
+		"Shield", (int) SRS_SHIELD,
+		"Sight", (int) SRS_SIGHT,
+		"ExplosionSpirits", (int) SRS_EXPLOSIONSPIRITS,
+		"CartBoost", (int) SRS_CARTBOOST,
+		"NotOverWeight", (int) SRS_RECOV_WEIGHT_RATE,
+		"Moveable", (int) SRS_MOVE_ENABLE,
+		"InWater", (int) SRS_WATER,
+		"Dragon", (int) SRS_RIDINGDRAGON,
+		"Warg", (int) SRS_WUG,
+		"RidingWarg", (int) SRS_RIDINGWUG,
+		"MadoGear", (int) SRS_MADO,
+		"ElementalSpirit", (int) SRS_ELEMENTALSPIRIT,
+		"PoisonWeapon", (int) SRS_POISONINGWEAPON,
+		"RollingCutter", (int) SRS_ROLLINGCUTTER,
+		"MH_Fighting", (int) SRS_MH_FIGHTING,
+		"MH_Grappling", (int) SRS_MH_GRAPPLING,
+		"Peco", (int) SRS_PECO
+	);
+
+	state.create_named_table("SkillSubType",
+		"None", SK_SUBTYPE_NONE,
+		"Quest", SK_SUBTYPE_QUEST_SKILL,
+		"NPC", SK_SUBTYPE_NPC_SKILL,
+		"Wedding", SK_SUBTYPE_WEDDING_SKILL,
+		"Spirit", SK_SUBTYPE_SPIRIT_SKILL,
+		"Guild", SK_SUBTYPE_GUILD_SKILL,
+		"Song", SK_SUBTYPE_SONG_DANCE,
+		"Ensemble", SK_SUBTYPE_ENSEMBLE_SKILL,
+		"Trap", SK_SUBTYPE_TRAP_SKILL,
+		"TargetSelf", SK_SUBTYPE_TARGET_SELF,
+		"NoTargetSelf", SK_SUBTYPE_NO_TARGET_SELF,
+		"PartyOnly", SK_SUBTYPE_PARTY_ONLY,
+		"GuildOnly", SK_SUBTYPE_GUILD_ONLY,
+		"NoEnemy", SK_SUBTYPE_NO_ENEMY,
+		"IgnoreLandProtector", SK_SUBTYPE_NO_LAND_PROTECTOR,
+		"Chorus", SK_SUBTYPE_CHORUS_SKILL,
+		"FreeCastNormal", SK_SUBTYPE_FREE_CAST_NORMAL,
+		"FreeCastReduced", SK_SUBTYPE_FREE_CAST_REDUCED,
+		"ShowSkillScale", SK_SUBTYPE_SHOW_SKILL_SCALE,
+		"AllowReproduce", SK_SUBTYPE_ALLOW_REPRODUCE,
+		"HiddenTrap", SK_SUBTYPE_HIDDEN_TRAP,
+		"IsCombo", SK_SUBTYPE_IS_COMBO_SKILL   
 	);
 }

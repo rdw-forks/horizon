@@ -303,6 +303,7 @@ namespace Traits
 		void on_weapon_changed() { compute(true); }
 
 		uint32_t compute(bool notify);
+		uint32_t compute_amotion();
 
 		void set_agility(std::weak_ptr<Agility> agi) { _agi = agi; }
 		void set_base_level(std::weak_ptr<BaseLevel> blvl) { _blvl = blvl; }

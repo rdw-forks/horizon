@@ -27,53 +27,58 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP
-#define HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP
+#include "MonsterDB.hpp"
 
-#include "EntityDefinitions.hpp"
-#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
+#include "Server/Common/Definitions/LuaDefinitionSync.hpp"
+#include "Server/Zone/Zone.hpp"
 
-#include <memory>
-#include <string>
+using namespace Horizon::Zone;
 
-#define NPC_START_GUID 500000000
-
-enum npc_type
+MonsterDatabase::MonsterDatabase()
 {
-	FAKE_NPC               =    -1,
-	NPC_TYPE_PORTAL        =    45,
-	NPC_TYPE_PORTAL_HIDDEN =   139,
-	NPC_TYPE_MOB_TOMB      =   565,
-	NPC_TYPE_PORTAL_DBG    =   722,
-	NPC_TYPE_FLAG          =   722,
-	NPC_TYPE_INVISIBLE     = 32767
-};
-
-namespace Horizon
-{
-	namespace Zone
-	{
-		namespace Game
-		{
-			namespace Entities
-			{
-				class NPC;
-			}
-		}
-	}
+	//
 }
 
-struct npc_db_data
+MonsterDatabase::~MonsterDatabase()
 {
-	std::string npc_name{};
-	std::string map_name{};
-	MapCoords coords;
-	directions direction{DIR_SOUTH};
-	uint16_t sprite_id{0};
-	std::string script{""};
-	std::shared_ptr<Horizon::Zone::Entities::NPC> _npc;
-	bool script_is_file;
-	uint16_t trigger_range;
-};
+	//
+}
 
-#endif /* HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP */
+bool MonsterDatabase::load()
+{
+	sol::state lua;
+	int total_entries = 0;
+
+	lua.open_libraries(sol::lib::base);
+	lua.open_libraries(sol::lib::package);
+
+	sync_monster_definitions(lua);
+	sync_item_definitions(lua);
+	sync_entity_definitions(lua);
+
+	std::string tmp_string;
+	std::string file_path = sZone->config().get_static_db_path().string() + "mob_db.lua";
+
+
+	// Read the file. If there is an error, report it and exit.
+	try {
+		lua.script_file(file_path);
+		sol::table mob_tbl = lua.get<sol::table>("mob_db");
+		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
+			total_entries += load_internal(key, value);
+		});
+		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
+	} catch(const std::exception &e) {
+		HLog(error) << "Monster::load: " << e.what();
+		return false;
+	}
+
+	return true;
+}
+
+bool MonsterDatabase::load_internal(const sol::object &key, const sol::object &value)
+{
+	monster_config_data data;
+	
+	return true;
+}
