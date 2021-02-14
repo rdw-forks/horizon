@@ -38,8 +38,6 @@
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
 #include "Server/Common/SQL/Character/Character.hpp"
 
-#include <memory>
-
 #include <sol.hpp>
 
 namespace Horizon

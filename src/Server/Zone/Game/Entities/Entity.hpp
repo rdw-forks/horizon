@@ -39,10 +39,6 @@
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
 
-#include <stdlib.h>
-#include <memory>
-#include <iostream>
-
 enum entity_task_schedule_group
 {
 	ENTITY_SCHEDULE_WALK = 1,

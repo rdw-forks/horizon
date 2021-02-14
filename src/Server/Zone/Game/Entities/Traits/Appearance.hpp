@@ -32,9 +32,6 @@
 
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 
-#include <cstdint>
-#include <memory>
-
 namespace Horizon
 {
 namespace Zone

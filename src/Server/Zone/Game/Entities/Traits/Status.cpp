@@ -32,8 +32,6 @@
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
-#include "Server/Zone/Game/Entities/Traits/Attributes.hpp"
-#include "Server/Zone/Game/Entities/Traits/SubAttributes.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Common/SQL/Character/Status.hpp"

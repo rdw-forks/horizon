@@ -31,7 +31,6 @@
 #define HORIZON_ZONE_GAME_ENTITIES_CREATURE_HPP
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
-#include <memory>
 
 namespace Horizon
 {

@@ -27,20 +27,133 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#include "SubAttributes.hpp"
-#include "Server/Zone/Game/StaticDB/JobDB.hpp"
-#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
-#include "Server/Zone/Game/Entities/Traits/Attributes.hpp"
-#include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Zone/Interface/ZoneClientInterface.hpp"
+#include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/StaticDB/JobDB.hpp"
+#include "Server/Zone/Game/StaticDB/ExpDB.hpp"
+#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
+#include "Server/Zone/Interface/ZoneClientInterface.hpp"
+#include "Core/Logging/Logger.hpp"
 
-#include <time.h>
-#include <random>
-
-using namespace Horizon::Zone::Entities;
+using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities::Traits;
+
+template <class STATUS_COST_T, class STATUS_T>
+void set_new_point_cost(std::shared_ptr<Horizon::Zone::Entity> entity, STATUS_COST_T *cost_t, std::weak_ptr<STATUS_T> stat)
+{
+	std::shared_ptr<STATUS_T> sstat = stat.lock();
+	if (!entity || !sstat)
+		return;
+
+	uint32_t new_cost = entity->status()->get_required_statpoints(sstat->get_base(), sstat->get_base() + 1);
+
+	cost_t->set_base(new_cost);
+}
+
+void StrengthPointCost::on_observable_changed(std::weak_ptr<Strength> str)
+{
+	set_new_point_cost(get_entity(), this, str);
+}
+
+void AgilityPointCost::on_observable_changed(std::weak_ptr<Agility> agi)
+{
+	set_new_point_cost(get_entity(), this, agi);
+}
+
+void VitalityPointCost::on_observable_changed(std::weak_ptr<Vitality> vit)
+{
+	set_new_point_cost(get_entity(), this, vit);
+}
+
+void IntelligencePointCost::on_observable_changed(std::weak_ptr<Intelligence> _int)
+{
+	set_new_point_cost(get_entity(), this, _int);
+}
+
+void DexterityPointCost::on_observable_changed(std::weak_ptr<Dexterity> dex)
+{
+	set_new_point_cost(get_entity(), this, dex);
+}
+
+void LuckPointCost::on_observable_changed(std::weak_ptr<Luck> luk)
+{
+	set_new_point_cost(get_entity(), this, luk);
+}
+
+void BaseLevel::on_observable_changed(std::weak_ptr<BaseExperience> wbexp)
+{
+	std::shared_ptr<BaseExperience> bexp = wbexp.lock();
+
+	if (get_entity() == nullptr || wbexp.expired())
+		return;
+
+	if (get_base() >= MAX_LEVEL)
+		return;
+
+	if (bexp->get_base() == get_entity()->status()->next_base_experience()->get_base()) {
+		add_base(1);
+		bexp->set_base(0);
+	}
+}
+
+void JobLevel::on_observable_changed(std::weak_ptr<JobExperience> wjexp)
+{
+	std::shared_ptr<JobExperience> jexp = wjexp.lock();
+
+	if (get_entity() == nullptr || wjexp.expired())
+		return;
+
+	if (jexp->get_base() == get_entity()->status()->next_job_experience()->get_base()) {
+		add_base(1);
+		jexp->set_base(0);
+	}
+}
+
+void NextBaseExperience::on_observable_changed(std::weak_ptr<BaseLevel> wblvl)
+{
+	if (get_entity() == nullptr || wblvl.expired())
+		return;
+
+	std::shared_ptr<BaseLevel> blvl = wblvl.lock();
+	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
+
+	set_base(bexpg->exp[blvl->get_base() - 1]);
+}
+
+void NextJobExperience::on_observable_changed(std::weak_ptr<JobLevel> jlvl)
+{
+	if (get_entity() == nullptr || jlvl.expired())
+		return;
+
+	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
+
+	set_base(jexpg->exp[get_base() - 1]);
+}
+
+void StatusPoint::on_observable_changed(std::weak_ptr<BaseLevel> wblvl)
+{
+	std::shared_ptr<BaseLevel> blvl = wblvl.lock();
+
+	if (get_entity() == nullptr || wblvl.expired())
+		return;
+
+	add_base(ExpDB->get_status_point(blvl->get_base()) - ExpDB->get_status_point(*blvl - 1));
+}
+
+void SkillPoint::on_observable_changed(std::weak_ptr<JobLevel> wjlvl)
+{
+	std::shared_ptr<JobLevel> jlvl = wjlvl.lock();
+
+	if (get_entity() == nullptr || wjlvl.expired())
+		return;
+
+	add_base(1);
+}
 
 uint32_t MaxWeight::compute(bool notify)
 {
@@ -360,5 +473,3 @@ uint32_t AttackSpeed::compute(bool notify)
 
 	return total();
 }
-
-

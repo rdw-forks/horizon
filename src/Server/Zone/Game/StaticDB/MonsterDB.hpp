@@ -30,18 +30,14 @@
 #ifndef HORIZON_ZONE_GAME_MONSTERDB_HPP
 #define HORIZON_ZONE_GAME_MONSTERDB_HPP
 
-#include <cstdlib>
-
+#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Common/Definitions/MonsterDefinitions.hpp"
 #include <sol.hpp>
 
 namespace Horizon
 {
 namespace Zone
 {
-struct monster_config_data
-{
-	int _monster_id;
-};
 class MonsterDatabase
 {
 public:

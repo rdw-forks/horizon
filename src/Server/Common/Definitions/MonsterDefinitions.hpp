@@ -31,6 +31,7 @@
 
 #define MAX_MOB_DROP 10
 #define MAX_MVP_DROP 10
+#define MAX_MOB_DB 22000
 
 enum monster_boss_type {
 	BOSS_TYPE_NONE = 0,
@@ -44,7 +45,7 @@ enum monster_size_type {
 	MONSTER_SIZE_LARGE,
 };
 
-enum monster_race_type {
+enum monster_primary_race_type {
 	// Base Races
 	MONSTER_RACE_FORMLESS = 0,  ///< Formless
 	MONSTER_RACE_UNDEAD,        ///< Undead
@@ -71,14 +72,44 @@ enum monster_race_type {
 	MONSTER_RACE_ALL = 0xFF,     ///< Every race (implemented as equivalent to RC_BOSS and RC_NONBOSS)
 };
 
+enum monster_secondary_race_type {
+	MONSTER_RACE2_NONE       = 0,
+	MONSTER_RACE2_GOBLIN     = 1,
+	MONSTER_RACE2_KOBOLD     = 2,
+	MONSTER_RACE2_ORC        = 3,
+	MONSTER_RACE2_GOLEM      = 4,
+	MONSTER_RACE2_GUARDIAN   = 5,
+	MONSTER_RACE2_NINJA      = 6,
+	MONSTER_RACE2_SCARABA    = 7,
+	MONSTER_RACE2_TURTLE     = 8,
+	MONSTER_RACE2_MAX
+};
+
 struct monster_config_data
 {
-	int monster_id;
-	char sprite_name[MAX_UNIT_NAME_LENGTH], name[MAX_UNIT_NAME_LENGTH], alt_name[MAX_UNIT_NAME_LENGTH];
+	struct mob_drop {
+		int nameid; //< Item ID
+		int p; //< Drop chance
+		// struct optdrop_group *options; //< Option Drop Group associated with this drop (NULL if none)
+	};
 
-	short view_range, chase_range;
-	short group_id;
-	unsigned short lv;
+	uint16_t monster_id;
+	char sprite_name[MAX_UNIT_NAME_LENGTH];
+	char name[MAX_UNIT_NAME_LENGTH];
+	char alt_name[MAX_UNIT_NAME_LENGTH];
+
+	uint64_t base_exp{0};
+	uint64_t job_exp{0};
+	uint64_t mvp_exp{0};
+
+	uint16_t level{1};
+
+	short view_range{0};
+	short chase_range{0};
+	short group_id{0};
+
+	struct mob_drop dropitem[MAX_MOB_DROP];
+	struct mob_drop mvpitem[MAX_MVP_DROP];
 	//struct view_data vd;
 	unsigned int option;
 	//struct mob_skill skill[MAX_MOBSKILL];

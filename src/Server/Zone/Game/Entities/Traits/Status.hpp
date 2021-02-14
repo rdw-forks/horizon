@@ -30,11 +30,8 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_STATUS_HPP
 #define HORIZON_ZONE_GAME_TRAITS_STATUS_HPP
 
-#include "Server/Zone/Game/Entities/Traits/Attributes.hpp"
-#include "Server/Zone/Game/Entities/Traits/SubAttributes.hpp"
+#include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
-
-#include <memory>
 
 namespace Horizon
 {

@@ -99,7 +99,6 @@ bool ZoneServer::read_config()
 	
 	HLog(info) << "Maps will be managed by '" << MAX_MAP_CONTAINER_THREADS << "' thread containers.";
 
-
 	config().set_session_max_timeout(tbl.get<int32_t>("session_max_timeout"));
 
 	HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "'.";
@@ -137,7 +136,7 @@ void ZoneServer::update(uint64_t diff)
 	/**
 	 * Task Scheduler Update.
 	 */
-	_task_scheduler.Update();
+	_task_scheduler.Update(Microseconds(diff));
 
 	/**
 	 * Process Packets.

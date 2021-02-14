@@ -79,6 +79,126 @@ bool MonsterDatabase::load()
 bool MonsterDatabase::load_internal(const sol::object &key, const sol::object &value)
 {
 	monster_config_data data;
+
+// 	-- ================ Mandatory fields ==============================
+	std::string sprite_name = key.as<std::string>();
+	std::strncpy(data.sprite_name, sprite_name.c_str(), MAX_UNIT_NAME_LENGTH);
+
+	if (value.get_type() != sol::type::table) {
+		HLog(error) << "Value for '" << data.sprite_name << "' is not a table... skipping.";
+		return false;
+	}
+
+	sol::table m_tbl = value.as<sol::table>();
+	
+	data.monster_id = m_tbl.get_or<uint16_t>("Id", 0);
+
+	if (data.monster_id <= 0 || data.monster_id > MAX_MOB_DB) {
+		HLog(warning) << "Monster ID for '" << data.name << "' is out of range... skipping.";
+		return false;
+	}
+
+	std::string name = m_tbl.get_or<std::string>("Name", "");
+	std::strncpy(data.name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+
+	if (name.size() == 0) {
+		HLog(warning) << "Monster Name for '" << data.monster_id << "' is a mandatory field... skipping.";
+		return false;
+	}
+
+// 	-- ================ Optional fields ==============================
+	std::string alt_name = m_tbl.get_or<std::string>("JName", "");
+	std::strncpy(data.alt_name, alt_name.c_str(), MAX_UNIT_NAME_LENGTH);
+
+	try {
+		sol::optional<int> maybe_val = m_tbl.get<sol::optional<int>>("Lv");
+		if (maybe_val) {
+			data.level = maybe_val.value();
+		}
+	} catch (sol::error &error) {
+		HLog(error) << "Error parsing Lv for monster '" << data.name << "' - " << error.what() << ".";
+	}
+
 	
 	return true;
 }
+
+// {
+// 	-- ================ Mandatory fields ==============================
+// 	Id = ID                                (int),
+// 	SpriteName = "SPRITE_NAME"             (string),
+// 	Name = "Mob name"                      (string),
+// 	-- ================ Optional fields ===============================
+// 	JName = "Mob name"                     (string),
+// 	Lv = level                             (int, defaults to 1),
+// 	Hp = health                            (int, defaults to 1),
+// 	Sp = mana                              (int, defaults to 0),
+// 	Exp = basic experience                 (int, defaults to 0),
+// 	JExp = job experience                  (int, defaults to 0),
+// 	AttackRange = attack range             (int, defaults to 1),
+// 	Attack = [attack1, attack2]            (int, defaults to 0),
+// 	Def = defence                          (int, defaults to 0),
+// 	Mdef = magic defence                   (int, defaults to 0),
+// 	Stats = {
+// 		Str = strength                 (int, defaults to 0),
+// 		Agi = agility                  (int, defaults to 0),
+// 		Vit = vitality                 (int, defaults to 0),
+// 		Int = intelligence             (int, defaults to 0),
+// 		Dex = dexterity                (int, defaults to 0),
+// 		Luk = luck                     (int, defaults to 0),
+// 	},
+// 	ViewRange = view range                 (int, defaults to 1),
+// 	ChaseRange = chase range               (int, defaults to 1),
+// 	Size = size                            (string, defaults to "Size_Small"),
+// 	Race = race                            (string, defaults to "RC_Formless"),
+// 	Element = (type, level)                (string/int, defaults to "Ele_Neutral"/1),
+// 	Mode = {
+// 		MonsterMode.CanMove                (bool, defaults to false),
+// 		MonsterMode.Looter                 (bool, defaults to false),
+// 		MonsterMode.Aggressive             (bool, defaults to false),
+// 		MonsterMode.Assist                 (bool, defaults to false),
+// 		MonsterMode.CastSensorIdle         (bool, defaults to false),
+// 		MonsterMode.Boss                   (bool, defaults to false),
+// 		MonsterMode.Plant                  (bool, defaults to false),
+// 		MonsterMode.CanAttack              (bool, defaults to false),
+// 		MonsterMode.Detector               (bool, defaults to false),
+// 		MonsterMode.CastSensorChase        (bool, defaults to false),
+// 		MonsterMode.ChangeChase            (bool, defaults to false),
+// 		MonsterMode.Angry                  (bool, defaults to false),
+// 		MonsterMode.ChangeTargetMelee      (bool, defaults to false),
+// 		MonsterMode.ChangeTargetChase      (bool, defaults to false),
+// 		MonsterMode.TargetWeak             (bool, defaults to false),
+// 		MonsterMode.NoKnockback            (bool, defaults to false),
+// 	},
+// 	MoveSpeed = move speed                 (int, defaults to 0),
+// 	AttackDelay = attack delay             (int, defaults to 4000),
+// 	AttackMotion = attack motion           (int, defaults to 2000),
+// 	DamageMotion = damage motion           (int, defaults to 0),
+// 	MvpExp = mvp experience                (int, defaults to 0),
+// 	MvpDrops = {
+// 		AegisName = chance             (string = int),
+// 		-- ...
+// 	},
+// 	Drops = {
+// 		AegisName = chance         (string = int),
+// 		-- or,
+// 		AegisName = (chance, "Option Drop Group"),
+// 		-- ...
+// 	},
+// 	DamageTakenRate = damage taken rate    (int, defaults to 100),
+// 	ViewData = {
+// 		SpriteId = sprite id              (int, defaults to Id),
+// 		WeaponId = weapon id              (int, defaults to 0),
+// 		ShieldId = shield id              (int, defaults to 0),
+// 		RobeId = garment id               (int, defaults to 0),
+// 		HeadTopId = top headgear id       (int, defaults to 0),
+// 		HeadMidId = middle headgear id    (int, defaults to 0),
+// 		HeadLowId = lower headgear id     (int, defaults to 0),
+// 		HairStyleId = hair style id       (int, defaults to 1),
+// 		BodyStyleId = clothes id          (int, defaults to 0),
+// 		HairColorId = hair color id       (int, defaults to 0),
+// 		BodyColorId = clothes color id    (int, defaults to 0),
+// 		Gender = gender                   (string, defaults to "SEX_FEMALE"),
+// 		Options = options                 (int, defaults to 0),
+// 	},
+// },
