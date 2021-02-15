@@ -29,7 +29,7 @@
 
 #include "ItemDB.hpp"
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Zone/Script/LuaDefinitionSync.hpp"
+#include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
 #include <chrono>

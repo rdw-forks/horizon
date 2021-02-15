@@ -29,7 +29,7 @@
 
 #include "SkillDB.hpp"
 
-#include "Server/Zone/Script/LuaDefinitionSync.hpp"
+#include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Zone.hpp"
 
@@ -1756,6 +1756,11 @@ bool SkillDatabase::parse_req_items(sol::table const &table, skill_config_data &
 				}
 				i++;
 			}
+
+			if (equips)
+				data.req_equip = rdata;
+			else
+				data.req_items = rdata;
 		}
 	} catch (sol::error &error) {
 		HLog(error) << "Error parsing SpiritSphereCost for skill '" << data.name << "' - " << error.what() << ".";

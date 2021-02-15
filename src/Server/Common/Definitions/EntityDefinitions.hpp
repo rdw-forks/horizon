@@ -692,4 +692,10 @@ enum element_type : uint8_t
 	ELE_RANDOM  = 13
 };
 
+enum entity_gender_types : int8_t
+{
+	ENTITY_GENDER_FEMALE = 0,
+	ENTITY_GENDER_MALE   = 1,
+};
+
 #endif /* HORIZON_ZONE_GAME_ENTITIES_DEFINITIONS */

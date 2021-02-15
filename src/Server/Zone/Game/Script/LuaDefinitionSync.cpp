@@ -75,6 +75,13 @@ void sync_battle_definitions(sol::state &state)
 
 void sync_entity_definitions(sol::state &state)
 {
+	state.create_named_table("EntitySize",
+		"Small", (int) ESZ_SMALL,
+		"Medium", (int) ESZ_MEDIUM,
+		"Large", (int) ESZ_LARGE,
+		"Max", (int) ESZ_MAX
+	);
+
 	state.create_named_table("Element",
 		"Neutral", (int) ELE_NEUTRAL,
 		"Water", (int) ELE_WATER,
@@ -654,12 +661,6 @@ void sync_item_definitions(sol::state &state)
 
 void sync_monster_definitions(sol::state &state)
 {
-	state.create_named_table("MonsterSize",
-		"Small", (int) MONSTER_SIZE_SMALL,
-		"Medium", (int) MONSTER_SIZE_MEDIUM,
-		"Large", (int) MONSTER_SIZE_LARGE
-	);
-
 	state.create_named_table("MonsterRace",
 		"Formless", (int) MONSTER_RACE_FORMLESS,
 		"Undead", (int) MONSTER_RACE_UNDEAD,

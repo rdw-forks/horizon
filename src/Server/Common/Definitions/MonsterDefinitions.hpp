@@ -29,20 +29,16 @@
 #ifndef HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP
 #define HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP
 
+#include "Server/Common/Definitions/EntityDefinitions.hpp"
+
 #define MAX_MOB_DROP 10
 #define MAX_MVP_DROP 10
 #define MAX_MOB_DB 22000
 
 enum monster_boss_type {
 	BOSS_TYPE_NONE = 0,
-	BOSS_TYPE_BOSS = 1,
+	BOSS_TYPE_MINI = 1,
 	BOSS_TYPE_MVP = 2,
-};
-
-enum monster_size_type {
-	MONSTER_SIZE_SMALL = 0,
-	MONSTER_SIZE_MEDIUM,
-	MONSTER_SIZE_LARGE,
 };
 
 enum monster_primary_race_type {
@@ -85,45 +81,6 @@ enum monster_secondary_race_type {
 	MONSTER_RACE2_MAX
 };
 
-struct monster_config_data
-{
-	struct mob_drop {
-		int nameid; //< Item ID
-		int p; //< Drop chance
-		// struct optdrop_group *options; //< Option Drop Group associated with this drop (NULL if none)
-	};
-
-	uint16_t monster_id;
-	char sprite_name[MAX_UNIT_NAME_LENGTH];
-	char name[MAX_UNIT_NAME_LENGTH];
-	char alt_name[MAX_UNIT_NAME_LENGTH];
-
-	uint64_t base_exp{0};
-	uint64_t job_exp{0};
-	uint64_t mvp_exp{0};
-
-	uint16_t level{1};
-
-	short view_range{0};
-	short chase_range{0};
-	short group_id{0};
-
-	struct mob_drop dropitem[MAX_MOB_DROP];
-	struct mob_drop mvpitem[MAX_MVP_DROP];
-	//struct view_data vd;
-	unsigned int option;
-	//struct mob_skill skill[MAX_MOBSKILL];
-	//struct spawn_info spawn[10];
-
-	struct rewards
-	{
-		unsigned int base_exp, job_exp;
-		unsigned int mvp_exp;
-		struct { int item_id, rate; } items[MAX_MOB_DROP];
-		struct { int item_id, rate; } items_mvp[MAX_MVP_DROP];
-	} rewards;
-};
-
 enum monster_mode_type
 {
 	MONSTER_MODE_MASK_NONE               = 0x00000000,
@@ -146,6 +103,72 @@ enum monster_mode_type
 	//MD_RANDOMTARGET     = 0x00010000, // Not implemented
 	// Note: This should be kept within INT_MAX, since it's often cast to int.
 	MONSTER_MODE_MASK_ALL               = 0x7FFFFFFF,
+};
+
+struct monster_config_data
+{
+	uint16_t monster_id{0};
+	char sprite_name[MAX_UNIT_NAME_LENGTH]{0};
+	char name[MAX_UNIT_NAME_LENGTH]{0};
+	char alt_name[MAX_UNIT_NAME_LENGTH]{0};
+
+	uint16_t level{1};
+	int32_t hp{0};
+	int32_t sp{0};
+	int32_t attack_range{0};
+	int32_t attack_damage[2]{0};
+	int32_t defense{0};
+	int32_t magic_defense{0};
+
+	struct {
+		int16_t str{0};
+		int16_t agi{0};
+		int16_t vit{0};
+		int16_t int_{0};
+		int16_t dex{0};
+		int16_t luk{0};
+	} stats;
+
+	short view_range{1};
+	short chase_range{1};
+	entity_size_type size{ESZ_MEDIUM};
+	monster_primary_race_type race{MONSTER_RACE_FORMLESS};
+	element_type element{ELE_NEUTRAL};
+	int8_t element_level{0};
+	int32_t mode{0};
+	int32_t move_speed{0};
+	int32_t attack_delay{0};
+	int32_t attack_motion{0};
+	int32_t damage_motion{0};
+	int32_t damage_taken_rate{100};
+
+	struct monster_view_data {
+		int32_t sprite_id{0};
+		int32_t weapon_id{0};
+		int32_t shield_id{0};
+		int32_t robe_id{0};
+		int32_t headgear_top_id{0};
+		int32_t headgear_middle_id{0};
+		int32_t headgear_bottom_id{0};
+		int32_t hair_style_id{0};
+		int32_t body_style_id{0};
+		int32_t hair_color_id{0};
+		int32_t body_color_id{0};
+		entity_gender_types gender{ENTITY_GENDER_FEMALE};
+	} view{0};
+	//struct view_data vd;
+	unsigned int option;
+	//struct mob_skill skill[MAX_MOBSKILL];
+	//struct spawn_info spawn[10];
+	struct rewards
+	{
+		struct drops { int item_id{0}, chance{0}; };
+
+		unsigned int base_exp{0}, job_exp{0};
+		unsigned int mvp_exp{0};
+		struct drops items[MAX_MOB_DROP]{0};
+		struct drops items_mvp[MAX_MVP_DROP]{0};
+	} rewards;
 };
 
 #endif /* HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP */
