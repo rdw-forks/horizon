@@ -56,55 +56,55 @@ enum character_server_type : uint16_t
 struct character_server_configuration
 {
 	/* Start Map */
-	const std::string &get_start_map() const { return _start_map; }
+	const std::string &start_map() const { return _start_map; }
 	void set_start_map(std::string const &map) { _start_map = map; }
 	/* Start X */
-	uint16_t get_start_x() const { return _start_x; }
-	void set_start_x(uint16_t x) { _start_x = x; }
+	int16_t start_x() const { return _start_x; }
+	void set_start_x(int16_t x) { _start_x = x; }
 	/* Start Y */
-	uint16_t get_start_y() const { return _start_y; }
-	void set_start_y(uint16_t y) { _start_y = y; }
+	int16_t start_y() const { return _start_y; }
+	void set_start_y(int16_t y) { _start_y = y; }
 	/* Start Zeny */
-	uint32_t get_start_zeny() const { return _start_zeny; }
-	void set_start_zeny(uint32_t zeny) { _start_zeny = zeny; }
+	int32_t start_zeny() const { return _start_zeny; }
+	void set_start_zeny(int32_t zeny) { _start_zeny = zeny; }
 	/* Start Items */
-	void add_start_item(std::pair<uint32_t, uint32_t> item) { _start_items.push_back(item); }
-	std::pair<uint32_t, uint32_t> &get_start_item(std::size_t index) { return _start_items.at(index); }
-	std::size_t get_start_item_count() { return _start_items.size(); }
+	void add_start_item(std::pair<int32_t, int32_t> item) { _start_items.push_back(item); }
+	std::pair<int32_t, int32_t> &start_item(std::size_t index) { return _start_items.at(index); }
+	std::size_t start_item_count() { return _start_items.size(); }
 	/* Character Deletion Time */
-	time_t get_character_deletion_time() const { return _character_deletion_time; }
+	time_t character_deletion_time() const { return _character_deletion_time; }
 	void set_character_deletion_time(time_t time) { _character_deletion_time = time; }
 	/* Zone Server IP */
-	const std::string &get_zone_server_ip() const { return _zone_server_ip; }
+	const std::string &zone_server_ip() const { return _zone_server_ip; }
 	void set_zone_server_ip(std::string const &ip) { _zone_server_ip = ip; }
 	/* Zone Server Port */
-	uint16_t get_zone_server_port() const { return _zone_server_port; }
-	void set_zone_server_port(uint16_t port) { _zone_server_port = port; }
+	int16_t zone_server_port() const { return _zone_server_port; }
+	void set_zone_server_port(int16_t port) { _zone_server_port = port; }
 	
-	bool get_char_hard_delete() { return _char_hard_delete; }
+	bool char_hard_delete() { return _char_hard_delete; }
 	void set_char_hard_delete(bool d) { _char_hard_delete = d; }
 	
-	uint32_t get_pincode_expiry() { return _pincode_expiry; }
-	void set_pincode_expiry(uint32_t pincode_expiry) { _pincode_expiry = pincode_expiry; }
+	int32_t pincode_expiry() { return _pincode_expiry; }
+	void set_pincode_expiry(int32_t pincode_expiry) { _pincode_expiry = pincode_expiry; }
 	
-	int8_t get_pincode_retry() { return _pincode_retry; }
-	void set_pincode_retry(uint8_t retry) { _pincode_retry = retry; }
+	int32_t pincode_max_retry() { return _pincode_max_retry; }
+	void set_pincode_max_retry(int32_t retry) { _pincode_max_retry = retry; }
 	
-    std::time_t session_max_timeout() { return _session_max_timeout; }
-    void set_session_max_timeout(std::time_t timeout) { _session_max_timeout = timeout; }
+  std::time_t session_max_timeout() { return _session_max_timeout; }
+  void set_session_max_timeout(std::time_t timeout) { _session_max_timeout = timeout; }
 
 private:
 	std::string _start_map{"new_1-1"};
-	uint16_t _start_x{53}, _start_y{111};
-	uint32_t _start_zeny{0};
-	std::vector<std::pair<uint32_t, uint32_t>> _start_items;
+	int16_t _start_x{53}, _start_y{111};
+	int32_t _start_zeny{0};
+	std::vector<std::pair<int32_t, int32_t>> _start_items;
 	time_t _character_deletion_time;
 	std::string _zone_server_ip;
-	uint16_t _zone_server_port;
+	int16_t _zone_server_port;
 	bool _char_hard_delete;
-	uint32_t _pincode_expiry;
-	uint8_t _pincode_retry;
-    std::time_t _session_max_timeout;
+	int32_t _pincode_expiry;
+	int32_t _pincode_max_retry;
+  std::time_t _session_max_timeout;
 };
 	
 public:

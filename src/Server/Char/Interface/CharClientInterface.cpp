@@ -150,8 +150,8 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 		return false;
 	}
 	
-	std::string new_map = sChar->config().get_start_map();
-	uint16_t x = sChar->config().get_start_x(), y = sChar->config().get_start_y();
+	std::string new_map = sChar->config().start_map();
+	uint16_t x = sChar->config().start_x(), y = sChar->config().start_y();
 	
 	int c_last_insert_id = (*conn)(insert_into(tch).set(tch.account_id = get_session()->get_session_data()._account_id, tch.slot = slot, tch.name = name,
 														 tch.current_map = new_map, tch.current_x = x, tch.current_y = y,
@@ -162,14 +162,14 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 	auto multi_insert = insert_into(tci).columns(tci.char_id, tci.inventory_index, tci.item_id, tci.amount, tci.is_identified);
 	int inv_index = 2;
 	
-	for (int j = 0; j < sChar->config().get_start_item_count(); j++) {
-		std::pair<uint32_t, uint32_t> p = sChar->config().get_start_item(j);
+	for (int j = 0; j < sChar->config().start_item_count(); j++) {
+		std::pair<uint32_t, uint32_t> p = sChar->config().start_item(j);
 		int item = p.first, c = p.second;
 		multi_insert.values.add(tci.char_id = c_last_insert_id, tci.inventory_index = inv_index, tci.item_id = item, tci.amount = c, tci.is_identified = 1);
 		inv_index++;
 	}
 	
-	uint16_t start_zeny = sChar->config().get_start_zeny();
+	uint16_t start_zeny = sChar->config().start_zeny();
 	
 	HC_ACCEPT_MAKECHAR am(get_session());
 	am.deliver(c_last_insert_id, start_zeny, new_map, name, slot, hair_color, hair_style, job_class, gender);
@@ -201,7 +201,7 @@ character_delete_result CharClientInterface::character_delete_soft(uint32_t char
 		return CHAR_DEL_RESULT_PARTY_ERR;
 	
 	std::chrono::system_clock::time_point t = std::chrono::system_clock::now();
-	std::chrono::system_clock::time_point dt = t + std::chrono::seconds(sChar->config().get_character_deletion_time());
+	std::chrono::system_clock::time_point dt = t + std::chrono::seconds(sChar->config().character_deletion_time());
 	
 	(*conn)(update(tch).set(tch.deleted_at = dt).where(tch.id == character_id));
 	
@@ -253,7 +253,7 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 		return false;
 	}
 	
-	if (sChar->config().get_char_hard_delete()) {
+	if (sChar->config().char_hard_delete()) {
 		(*conn)(remove_from(tcs).where(tcs.id == character_id));
 		(*conn)(remove_from(tci).where(tci.char_id == character_id));
 		(*conn)(remove_from(tch).where(tch.id == character_id));
@@ -278,7 +278,7 @@ bool CharClientInterface::character_delete_reserve(uint32_t character_id)
 		return false;
 	}
 	
-	std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().get_character_deletion_time());
+	std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().character_deletion_time());
 	uint32_t dt = tp.time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 	uint32_t tt = std::chrono::system_clock::now().time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 	
@@ -319,7 +319,7 @@ bool CharClientInterface::pincode_create(uint32_t account_id, char *pincode)
 	
 	{
 		std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
-		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().get_pincode_expiry());
+		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().pincode_expiry());
 		uint32_t pincode_expiry = tp.time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		(*conn)(update(tga).set(tga.pincode = decrypted, tga.pincode_expiry = pincode_expiry).where(tga.id == account_id));
 	}
@@ -364,7 +364,7 @@ bool CharClientInterface::pincode_change(uint32_t account_id, char *old_pin, cha
 	}
 	
 	{
-		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().get_pincode_expiry());
+		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().pincode_expiry());
 		uint32_t pincode_expiry = tp.time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		(*conn)(update(tga).set(tga.pincode = new_decrypted, tga.pincode_expiry = pincode_expiry).where(tga.id == account_id));
 	}
@@ -410,7 +410,7 @@ bool CharClientInterface::pincode_verify(uint32_t account_id, char *pincode)
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	if (get_session()->get_session_data()._pincode_tries == sChar->config().get_pincode_retry()) {
+	if (get_session()->get_session_data()._pincode_tries == sChar->config().pincode_max_retry()) {
 #if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20180124 \
 || CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180124 \
 || CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180131
@@ -463,7 +463,7 @@ bool CharClientInterface::select_character(uint8_t slot)
 	}
 
 	HC_NOTIFY_ZONESVR hnz(get_session());
-	hnz.deliver(res.front().id, std::string(res.front().current_map).append(".gat"), inet_addr(sChar->config().get_zone_server_ip().c_str()), sChar->config().get_zone_server_port());
+	hnz.deliver(res.front().id, std::string(res.front().current_map).append(".gat"), inet_addr(sChar->config().zone_server_ip().c_str()), sChar->config().zone_server_port());
 	
 	return true;
 }

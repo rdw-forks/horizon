@@ -79,7 +79,8 @@ public:
 		_acceptor->set_socket_factory(std::bind(&BaseSocketMgr::get_new_socket, this));
 		_acceptor->async_accept_with_callback(std::bind(&AcceptSocketMgr<SocketType>::on_socket_open, this, std::placeholders::_1, std::placeholders::_2));
 
-		HLog(info) << "Networking initialized, listening on " << listen_ip << "@" << port << "Maximum Threads: " << threads;
+		HLog(info) << "Networking initialized, listening on " << listen_ip << "@" << port << ".";
+		HLog(info) << "Maximum Network Threads: " << threads;
 
 		return true;
 	}

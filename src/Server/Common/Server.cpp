@@ -134,7 +134,8 @@ bool Server::parse_common_configs(sol::table &tbl)
 		<< ":" << general_conf().get_db_pass()
 		<< "@" << general_conf().get_db_host()
 		<< ":" << general_conf().get_db_port()
-		<< "/" << general_conf().get_db_database();
+		<< "/" << general_conf().get_db_database()
+		<< ".";
 	} catch (const std::exception &error) {
 		HLog(error) << "Database configuration error:" << error.what() << ".";
 		return false;
