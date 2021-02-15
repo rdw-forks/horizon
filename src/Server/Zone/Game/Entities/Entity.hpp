@@ -37,7 +37,7 @@
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
-#include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
+#include "Server/Zone/Game/Script/ScriptManager.hpp"
 
 enum entity_task_schedule_group
 {

@@ -30,7 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERSIMPL_HPP
 #define HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERSIMPL_HPP
 
-#include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
+#include "Server/Zone/Game/Script/ScriptManager.hpp"
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
 #include "Core/Logging/Logger.hpp"
 

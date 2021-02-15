@@ -28,7 +28,6 @@
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(COMMON_DEFINITION_SOURCES
-	${DIR}/LuaDefinitionSync.cpp
 	PARENT_SCOPE)
 	
 set(COMMON_DEFINITION_HEADERS
@@ -39,5 +38,4 @@ set(COMMON_DEFINITION_HEADERS
 	${DIR}/NPCDefinitions.hpp
 	${DIR}/MonsterDefinitions.hpp
 	${DIR}/SkillDefinitions.hpp
-	${DIR}/LuaDefinitionSync.hpp
 	PARENT_SCOPE)

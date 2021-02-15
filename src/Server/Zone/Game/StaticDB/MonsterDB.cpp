@@ -29,7 +29,7 @@
 
 #include "MonsterDB.hpp"
 
-#include "Server/Common/Definitions/LuaDefinitionSync.hpp"
+#include "Server/Zone/Script/LuaDefinitionSync.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;

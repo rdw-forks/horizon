@@ -32,7 +32,7 @@
 
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
 #include "Core/Multithreading/LockedLookupTable.hpp"
-#include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
+#include "Server/Zone/Game/Script/ScriptManager.hpp"
 
 #include <stdio.h>
 #include <thread>
