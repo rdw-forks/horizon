@@ -90,7 +90,7 @@ void Status::initialize_player(std::shared_ptr<Entity> entity)
 	
 	pl->set_job_id(job_id);
 	
-	std::shared_ptr<const job_db_data> job = JobDB->get(job_id);
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(job_id);
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
@@ -168,7 +168,7 @@ void Status::initialize_player(std::shared_ptr<Entity> entity)
 	pl->get_session()->clif()->notify_initial_status(shared_from_this());
 }
 
-void Status::initialize_compound_attributes(std::shared_ptr<const job_db_data> job)
+void Status::initialize_compound_attributes(std::shared_ptr<const job_config_data> job)
 {
 	std::shared_ptr<StatusATK> status_atk;
 	std::shared_ptr<EquipATK> equip_atk;

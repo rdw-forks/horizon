@@ -1,4 +1,4 @@
-/***************************************************
+	/***************************************************
  *       _   _            _                        *
  *      | | | |          (_)                       *
  *      | |_| | ___  _ __ _ _______  _ __          *
@@ -100,6 +100,20 @@ struct skill_config_data
 	int placement_flag{0};
 };
 
+struct skill_tree_config 
+{
+	struct requirement {
+		int skill_id{0};
+		unsigned char level{0};
+	};
+
+	int skill_id{0};
+	unsigned char max_level{0};
+	unsigned char job_level{0};
+	job_class_type inherited_from{JOB_INVALID};
+	std::vector<struct requirement> requirements;
+};
+
 class SkillDatabase
 {
 public:
@@ -115,7 +129,8 @@ public:
 	bool load();
 
 protected:
-	bool load_internal(sol::object const &key, sol::object const &value);
+	bool load_internal_skill_db(sol::object const &key, sol::object const &value);
+	bool load_internal_skill_tree(sol::object const &key, sol::object const &value);
 
 	bool parse_range(sol::table const &table, skill_config_data &data);
 	bool parse_hit(sol::table const &table, skill_config_data &data);
@@ -166,8 +181,23 @@ protected:
 	template <typename T>
 	void fill_lvl_range(T *setting, T value);
 
+	std::shared_ptr<const skill_config_data> get_skill_by_id(int32_t id) { return _skill_db.at(id); }
+	std::shared_ptr<const skill_config_data> get_skill_by_name(std::string name) 
+	{
+		std::shared_ptr<const skill_config_data> data = nullptr;
+		std::map<uint32_t, std::shared_ptr<skill_config_data>> s_db = _skill_db.get_map();
+		for (auto const &sk : s_db) {
+			if (sk->name.compare(name) == 0)
+				return sk;
+			else
+				return nullptr;
+		}
+	}
+	std::shared_ptr<const skill_tree_config> get_skill_tree_by_job_id(int32_t job_id) { return _skill_tree_db.at(job_id); }
+
 private:
 	LockedLookupTable<uint32_t, std::shared_ptr<skill_config_data>> _skill_db;
+	LockedLookupTable<job_class_type, std::vector<std::shared_ptr<skill_tree_config>>> _skill_tree_db;
 };
 }
 }

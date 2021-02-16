@@ -342,7 +342,7 @@ void Player::notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t
 
 bool Player::job_change(int32_t job_id)
 {
-	std::shared_ptr<const job_db_data> job = JobDB->get(job_id);
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(job_id);
 
 	if (job == nullptr) {
 		HLog(error) << "Player::job_change: Invalid job_id " << job_id << " provided, job was not found or not supported.";

@@ -118,7 +118,7 @@ void NextBaseExperience::on_observable_changed(std::weak_ptr<BaseLevel> wblvl)
 		return;
 
 	std::shared_ptr<BaseLevel> blvl = wblvl.lock();
-	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
 	set_base(bexpg->exp[blvl->get_base() - 1]);
@@ -129,7 +129,7 @@ void NextJobExperience::on_observable_changed(std::weak_ptr<JobLevel> jlvl)
 	if (get_entity() == nullptr || jlvl.expired())
 		return;
 
-	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
 	set_base(jexpg->exp[get_base() - 1]);
@@ -160,7 +160,7 @@ uint32_t MaxWeight::compute(bool notify)
 	if (get_entity() == nullptr || _str.expired())
 		return 0;
 
-	std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
 	std::shared_ptr<Strength> str = _str.lock();
 
 	set_base(job->max_weight + str->get_base() * 300);
@@ -411,7 +411,7 @@ uint32_t AttackSpeed::compute(bool notify)
 		EquipmentListType const &equipments = get_entity()->downcast<Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 		std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
-		std::shared_ptr<const job_db_data> job = JobDB->get(get_entity()->job_id());
+		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
 
 		item_weapon_type rhw_type, lhw_type;
 

@@ -189,22 +189,22 @@ int JobDatabase::load_job(sol::table &job_tbls, std::string name)
 
 	if (name.empty()) {
 		job_tbls.for_each([this, &count](sol::object const &/*key*/, sol::object const &value) {
-			job_db_data data;
+			job_config_data data;
 			sol::table job_tbl = value.as<sol::table>();
 			std::string name = job_tbl.get_or("Name", std::string(""));
 			job_class_type jc = get_job_class_by_name(name);
 			if (load_job_internal(job_tbl, data, name) == true) {
-				_job_db.insert(jc, std::make_shared<job_db_data>(data));
+				_job_db.insert(jc, std::make_shared<job_config_data>(data));
 				count++;
 			}
 		});
 	} else {
 		sol::optional<sol::table> maybe_job = job_tbls.get<sol::optional<sol::table>>(name);
 		if (maybe_job) {
-			job_db_data data;
+			job_config_data data;
 			job_class_type jc = get_job_class_by_name(name);
 			if (load_job_internal(maybe_job.value(), data, name) == true)
-				_job_db.insert(jc, std::make_shared<job_db_data>(data));
+				_job_db.insert(jc, std::make_shared<job_config_data>(data));
 		} else {
 			HLog(warning) << "JobDB::load_job: Job named '" << name << "' was not found.";
 		}
@@ -213,7 +213,7 @@ int JobDatabase::load_job(sol::table &job_tbls, std::string name)
 	return count;
 }
 
-bool JobDatabase::load_job_internal(sol::table &job_tbl, job_db_data &data, std::string job_name)
+bool JobDatabase::load_job_internal(sol::table &job_tbl, job_config_data &data, std::string job_name)
 {
 	std::string t_str;
 
@@ -326,7 +326,7 @@ bool JobDatabase::load_job_internal(sol::table &job_tbl, job_db_data &data, std:
 	return true;
 }
 
-bool JobDatabase::load_hp_sp_table(sol::table &job_tbl, job_db_data &data, std::string &job_name, std::string table_name)
+bool JobDatabase::load_hp_sp_table(sol::table &job_tbl, job_config_data &data, std::string &job_name, std::string table_name)
 {
 	std::string t_str;
 
@@ -345,7 +345,7 @@ bool JobDatabase::load_hp_sp_table(sol::table &job_tbl, job_db_data &data, std::
 			HLog(warning) <<"JobDB::load_hp_sp_table:2: Unable to inherit " << table_name << " from non-existent job '" << t_str << "' for '" << job_name << "', make sure the job is read before being inherited. Skipping...";
 			return false;
 		}
-		std::shared_ptr<const job_db_data> inherited_data = jobi;
+		std::shared_ptr<const job_config_data> inherited_data = jobi;
 
 		data.hp_table = inherited_data->hp_table;
 		data.sp_table = inherited_data->sp_table;

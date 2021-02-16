@@ -47,7 +47,7 @@ namespace Horizon
 {
 namespace Zone
 {
-struct job_db_data
+struct job_config_data
 {
 	int id{0};
 	int max_weight{20000};
@@ -72,12 +72,12 @@ public:
 
 	bool load();
 	int load_job(sol::table &job_tbl, std::string name = "");
-	bool load_job_internal(sol::table &job_tbl, job_db_data &data, std::string job_name = "");
-	bool load_hp_sp_table(sol::table &job_tbl, job_db_data &data, std::string &job_name, std::string table_name);
+	bool load_job_internal(sol::table &job_tbl, job_config_data &data, std::string job_name = "");
+	bool load_hp_sp_table(sol::table &job_tbl, job_config_data &data, std::string &job_name, std::string table_name);
 
-	std::shared_ptr<const job_db_data> get(uint16_t job_id) { return _job_db.at((job_class_type) job_id); }
+	std::shared_ptr<const job_config_data> get_job_by_id(uint16_t job_id) { return _job_db.at((job_class_type) job_id); }
 private:
-	LockedLookupTable<uint32_t, std::shared_ptr<const job_db_data>> _job_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<const job_config_data>> _job_db;
 	std::map<std::string, int> _name2id_list;
 };
 }

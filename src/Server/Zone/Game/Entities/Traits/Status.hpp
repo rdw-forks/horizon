@@ -37,7 +37,7 @@ namespace Horizon
 {
 namespace Zone
 {
-struct job_db_data;
+struct job_config_data;
 class Entity;
 namespace Entities
 {
@@ -51,7 +51,7 @@ public:
 
 	void initialize();
 	void initialize_player(std::shared_ptr<Entity> entity);
-	void initialize_compound_attributes(std::shared_ptr<const job_db_data> job);
+	void initialize_compound_attributes(std::shared_ptr<const job_config_data> job);
 	void initialize_observable_statuses();
 	void initialize_notifiable_statuses();
 	void compute_and_notify_compound_attributes();

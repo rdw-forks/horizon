@@ -31,6 +31,7 @@
 
 #include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -48,7 +49,6 @@ SkillDatabase::~SkillDatabase()
 bool SkillDatabase::load()
 {
 	sol::state lua;
-	int total_entries = 0;
 	
 	lua.open_libraries(sol::lib::base);
 	lua.open_libraries(sol::lib::package);
@@ -58,26 +58,44 @@ bool SkillDatabase::load()
 	sync_skill_definitions(lua);
 	sync_entity_definitions(lua);
 
-	std::string tmp_string;
-	std::string file_path = sZone->config().get_static_db_path().string() + "skill_db.lua";
-
-	// Read the file. If there is an error, report it and exit.
+	/**
+	 * Skill DB
+	 */
 	try {
+		int total_entries = 0;
+		std::string file_path = sZone->config().get_static_db_path().string() + "skill_db.lua";
 		lua.script_file(file_path);
 		sol::table skill_tbl = lua.get<sol::table>("skill_db");
 		skill_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
-			total_entries += load_internal(key, value);
+			total_entries += load_internal_skill_db(key, value);
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
-		HLog(error) << "SkillDB::load: " << e.what();
+		HLog(error) << "SkillDB::load: error loading skill_db:  " << e.what();
+		return false;
+	}
+
+	/**
+	 * Skill Tree DB
+	 */
+	try {
+		int total_entries = 0;
+		std::string file_path = sZone->config().get_static_db_path().string() + "skill_tree_db.lua";
+		lua.script_file(file_path);
+		sol::table skill_tree_tbl = lua.get<sol::table>("skill_tree");
+		skill_tree_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
+			total_entries += load_internal_skill_tree(key, value);
+		});
+		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
+	} catch(const std::exception &e) {
+		HLog(error) << "SkillDB::load: error loading skill_tree: " << e.what();
 		return false;
 	}
 
 	return true;
 }
 
-bool SkillDatabase::load_internal(const sol::object &key, const sol::object &tvalue)
+bool SkillDatabase::load_internal_skill_db(sol::object const &key, sol::object const &tvalue)
 {
 	skill_config_data data;
 
@@ -89,6 +107,11 @@ bool SkillDatabase::load_internal(const sol::object &key, const sol::object &tva
 
 	if (data.skill_id == 0) {
 		HLog(warning) << "Skill ID for '" << data.name << "' was 0... skipping...";
+		return false;
+	}
+
+	if (data.skill_id > MAX_SKILL_ID) {
+		HLog(warning) << "Skill ID for '" << data.name << "' exceeds maximum " << MAX_SKILL_ID << "... skipping.";
 		return false;
 	}
 
@@ -2048,3 +2071,176 @@ bool SkillDatabase::parse_placement_flag(sol::table const &table, skill_config_d
 	return true;
 }
 
+bool SkillDatabase::load_internal_skill_tree(sol::object const &key, sol::object const &value)
+{
+	try {
+		std::vector<skill_tree_config> final_tree_vector;
+		std::shared_ptr<const job_config_data> job = nullptr;
+		if (key.is<std::string>()) {
+			std::string job_name = key.as<std::string>();
+			job_class_type job_id = JobDB->get_job_class_by_name(job_name);
+			if (job_id == JOB_INVALID) {
+				HLog(error) << "Invalid job name '" << job_name << "'' provided in skill_tree, job wasn't found.";
+				return false;
+			}
+			job = JobDB->get_job_by_id((int) job_id);
+			if (job == nullptr) {
+				HLog(error) << "Job '" << job_name << "' with ID " << job_id << " wasn't found.";
+				return false;
+			}
+		} else if (key.is<int>()) {
+			int job_id = key.as<int>();
+			job = JobDB->get_job_by_id((int) job_id);
+			if (job == nullptr) {
+				HLog(error) << "Job with ID " << job_id << " wasn't found.";
+				return false;
+			}
+		}
+
+		if (value.get_type() != sol::type::table) {
+				HLog(error) << "Value for Job " << job->id << " was not a table... skipping.";
+				return false;
+		}
+
+		sol::table jsk = value.as<sol::table>();
+		sol::optional<sol::table> maybe_inherit = jsk.get<sol::optional<sol::table>>("Inherit");
+
+		if (maybe_inherit) {
+			sol::table i_tbl = maybe_inherit.value();
+
+			for(auto const &ih : i_tbl) {
+				sol::object const &v = ih.second;
+				job_class_type jclass;
+				std::shared_ptr<const skill_tree_config> c = nullptr;
+
+				if (v.get_type() == sol::type::string) {
+					std::string job_name = v.as<std::string>();
+					jclass = JobDB->get_job_class_by_name(job_name);
+					c = _skill_tree_db.get_skill_tree_by_job_id(jclass);
+
+					if (c == nullptr) {
+						HLog(error) << "Non-existent job '" << job_name << "' couldn't be inherited for job Id '" << job->id << "'.";
+						continue;
+					}
+				} else if (v.get_type() == sol::type::number) {
+					jclass = (job_class_type) v.as<int>();
+					c = _skill_tree_db.get_skill_tree_by_job_id(jclass);
+
+					if (c == nullptr) {
+						HLog(error) << "Non-existent job " << (int) jclass << " couldn't be inherited for job Id '" << job->id << "'.";
+						continue;
+					}
+				}
+
+				for (auto it = c.begin(); it != c.end(); it++) {
+					skill_tree_config ihdata = *it;
+					ihdata.inherited_from = jclass;
+					final_tree_vector.push_back(ihdata);
+				}
+			}
+		}
+
+		sol::optional<sol::table> maybe_tbl = jsk.get<sol::optional<sol::table>>("Skills");
+		if (maybe_tbl) {
+			sol::table s_tbl = maybe_tbl.value();
+			for (auto const &sk : s_tbl) {
+				sol::object const &k = sk.first;
+				sol::object const &v = sk.second;
+				skill_tree_config tskill;
+				std::shared_ptr<skill_config_data> skill = nullptr;
+
+				if (k.is<std::string>()) {
+					std::string skill_name = k.as<std::string>();
+					skill = get_skill_by_name(skill_name);
+					if (skill == nullptr) {
+						HLog(error) << "Skill '" << skill_name << "' doesn't exist in the skill database... skipping.";
+						continue;
+					}
+				} else if (k.is<int>()) {
+					int skill_id = k.as<int>();
+					skill = get_skill_by_id(skill_id);
+					if (skill == nullptr) {
+						HLog(error) << "Skill by id (" << skill_id << ") doesn't exist in the skill database... skipping.";
+						continue;
+					}
+				} else {
+					HLog(error) << "A Key in skills of job '" << job->id << "' was of unexpected type... skipping.";
+					continue;
+				}
+
+				tskill.skill_id = skill->skill_id;
+				tskill.inherited_from = JOB_INVALID;
+
+				if (v.get_type() == sol::type::table) {
+					sol::table n_tbl = v.as<sol::table>();
+
+					for (auto const &n : n_tbl) {
+						sol::object const &nk = n.first;
+						sol::object const &nv = n.second;
+						std::shared_ptr<skill_config_data> pre_skill = nullptr;
+
+						if (nk.is<std::string>()) {
+							std::string setting_name = nk.as<std::string>();
+
+							if (setting_name.compare("MaxLevel") == 0) {
+								if (nv.get_type() != sol::type::number) {
+									HLog(error) << "MaxLevel for skill " << skill->name << " of job " << job->id << " was of non-numeric type... skipping;";
+									continue;
+								}
+
+								tskill.max_level = nv.as<int>();
+								continue;
+							} else if (setting_name.compare("MinJobLevel") == 0) {
+								if (nv.get_type() != sol::type::number) {
+									HLog(error) << "MinJobLevel for skill " << skill->name << " of job " << job->id << " was of non-numeric type... skipping;";
+									continue;
+								}
+								
+								tskill.job_level = nv.as<int>();
+								continue;
+							}
+
+							pre_skill = get_skill_by_name(setting_name);
+							if (pre_skill == nullptr) {
+								HLog(error) << "Pre-requisite skill '" << setting_name << "' doesn't exist in the skill database... skipping.";
+								continue;
+							}
+						} else if (nk.is<int>()) {
+							int skill_id = nk.as<int>();
+							pre_skill = get_skill_by_id(skill_id);
+							if (pre_skill == nullptr) {
+								HLog(error) << "Pre-requisite skill by id (" << skill_id << ") doesn't exist in the skill database... skipping.";
+								continue;
+							}
+						} else {
+							HLog(error) << "Unknown key type provided for pre-requisite skill of job " << job->id << " in skill database... skipping.";
+							continue; 
+						}
+
+						if (nv.get_type() != sol::type::number) {
+							HLog(error) << "Unknown value type for pre-requisite skill " << pre_skill->name << " of job " << job->id << "... skipping.";
+							continue;
+						}
+						skill_tree_config::requirements req;
+						req.skill_id = pre_skill->skill_id;
+						req.level = nv.as<int>();
+						tskill.requirements.push_back(req);
+					}
+				} else if (v.get_type() == sol::type::number) {
+					tskill.max_level = v.as<int>();
+				} else {
+					HLog(error) << "Invalid value type for skill " << skill->skill_id << ", expected number or table.";
+					continue;
+				}
+
+				final_tree_vector.push_back(tskill);
+			}
+		}
+
+	} catch (sol::error &err) {
+		HLog(error) << "SkillDatabase::load_internal_skill_tree:" << err.what();
+		return false;
+	}
+
+	return true;
+}

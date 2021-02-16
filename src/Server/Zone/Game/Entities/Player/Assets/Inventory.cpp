@@ -285,7 +285,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 {
 	item_entry_data data;
 	std::shared_ptr<const item_config_data> item = ItemDB->get_item_by_id(item_id);
-	std::shared_ptr<const job_db_data> job = JobDB->get(player()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(player()->job_id());
 	std::shared_ptr<CurrentWeight> current_weight = player()->status()->current_weight();
 	std::shared_ptr<MaxWeight> max_weight = player()->status()->max_weight();
 

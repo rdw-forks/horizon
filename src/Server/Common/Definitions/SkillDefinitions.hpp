@@ -37,6 +37,14 @@
 #define MAX_SKILL_UNIT_COUNT      ((MAX_SQUARE_LAYOUT*2+1)*(MAX_SQUARE_LAYOUT*2+1))
 #define MAX_SKILL_ITEM_REQUIRE    10
 
+#ifndef MAX_SKILL_ID
+#define MAX_SKILL_ID 10015 ///< Max used Skill ID
+#endif
+#ifndef MAX_SKILL_TREE
+#define MAX_SKILL_TREE 86 ///< Update this max as necessary. 86 is the value needed for Expanded Super Novice.
+#endif
+
+
 enum skill_placement_behavior_types {
 	SPB_NONE             = 0x0000,
 	SPB_DEFNOTENEMY      = 0x0001, // If 'defunit_not_enemy' is set, the target is changed to 'friend'
