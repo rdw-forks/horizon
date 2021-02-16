@@ -58,19 +58,19 @@ bool MonsterDatabase::load()
 	sync_entity_definitions(lua);
 
 	std::string tmp_string;
-	std::string file_path = sZone->config().get_static_db_path().string() + "mob_db.lua";
+	std::string file_path = sZone->config().get_static_db_path().string() + "monster_db.lua";
 
 
 	// Read the file. If there is an error, report it and exit.
 	try {
 		lua.script_file(file_path);
-		sol::table mob_tbl = lua.get<sol::table>("mob_db");
+		sol::table mob_tbl = lua.get<sol::table>("monster_db");
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value);
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
-		HLog(error) << "Monster::load: " << e.what();
+		HLog(error) << "MonsterDatabase::load: " << e.what();
 		return false;
 	}
 
