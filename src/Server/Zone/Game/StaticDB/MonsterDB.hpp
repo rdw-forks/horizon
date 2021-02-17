@@ -82,6 +82,9 @@ protected:
 	bool parse_drops(sol::table const &table, monster_config_data &data, bool mvp);
 	bool parse_view(sol::table const &table, monster_config_data &data);
 
+
+	bool load_skill_internal(sol::object const &key, sol::object const &value);
+
 private:
 	LockedLookupTable<uint32_t, std::shared_ptr<monster_config_data>> _monster_db;
 };

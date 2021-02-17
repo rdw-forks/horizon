@@ -48,7 +48,6 @@ MonsterDatabase::~MonsterDatabase()
 bool MonsterDatabase::load()
 {
 	sol::state lua;
-	int total_entries = 0;
 
 	lua.open_libraries(sol::lib::base);
 	lua.open_libraries(sol::lib::package);
@@ -57,16 +56,29 @@ bool MonsterDatabase::load()
 	sync_item_definitions(lua);
 	sync_entity_definitions(lua);
 
-	std::string tmp_string;
-	std::string file_path = sZone->config().get_static_db_path().string() + "monster_db.lua";
-
-
 	// Read the file. If there is an error, report it and exit.
 	try {
+		int total_entries = 0;
+		std::string file_path = sZone->config().get_static_db_path().string() + "monster_db.lua";
 		lua.script_file(file_path);
 		sol::table mob_tbl = lua.get<sol::table>("monster_db");
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value);
+		});
+		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
+	} catch(const std::exception &e) {
+		HLog(error) << "MonsterDatabase::load: " << e.what();
+		return false;
+	}
+
+	// Read the file. If there is an error, report it and exit.
+	try {
+		int total_entries = 0;
+		std::string file_path = sZone->config().get_static_db_path().string() + "monster_skill_db.lua";
+		lua.script_file(file_path);
+		sol::table mob_tbl = lua.get<sol::table>("monster_skill_db");
+		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
+			total_entries += load_skill_internal(key, value);
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
@@ -740,3 +752,8 @@ bool MonsterDatabase::parse_view(sol::table const &table, monster_config_data &d
 	return true;
 }
 
+bool MonsterDatabase::load_skill_internal(const sol::object &key, const sol::object &value)
+{
+	
+	return true;
+}
