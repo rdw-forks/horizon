@@ -31,6 +31,7 @@
 
 #include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -56,7 +57,6 @@ bool MonsterDatabase::load()
 	sync_item_definitions(lua);
 	sync_entity_definitions(lua);
 
-	// Read the file. If there is an error, report it and exit.
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "monster_db.lua";
@@ -71,7 +71,6 @@ bool MonsterDatabase::load()
 		return false;
 	}
 
-	// Read the file. If there is an error, report it and exit.
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "monster_skill_db.lua";
@@ -754,6 +753,183 @@ bool MonsterDatabase::parse_view(sol::table const &table, monster_config_data &d
 
 bool MonsterDatabase::load_skill_internal(const sol::object &key, const sol::object &value)
 {
-	
+	try {
+		std::vector<std::shared_ptr<const monster_skill_config_data>> skills;
+		std::shared_ptr<const monster_config_data> monster = nullptr;
+		if (key.is<std::string>()) {
+			std::string mob_name = key.as<std::string>();
+			if ((monster = MonsterDB->get_monster_by_name(mob_name)) == nullptr) {
+				HLog(error) << "Error parsing skills for non-existent monster '" << mob_name << "'.";
+				return false;
+			}
+		} else if (key.is<int>()) {
+			int mob_id = key.as<int>();
+			if ((monster = MonsterDB->get_monster_by_id(mob_id)) == nullptr) {
+				HLog(error) << "Error parsing skills for non-existent monster with ID " << mob_id << ".";
+				return false;
+			}
+		}
+
+		if (value.get_type() != sol::type::table) {
+				HLog(error) << "MonsterDatabase::load_skill_internal: Error parsing value of unexpected type, value should be a table.";
+				return false;
+		}
+
+		sol::table skill_tbl = value.as<sol::table>();
+
+		for (auto const &s : skill_tbl) {
+			sol::object const &k = s.first;
+			sol::object const &v = s.second;
+			monster_skill_config_data mskd;
+
+			std::shared_ptr<const skill_config_data> skill = nullptr;
+			if (k.is<std::string>()) {
+				std::string skill_name = k.as<std::string>();
+
+				if ((skill = SkillDB->get_skill_by_name(skill_name)) == nullptr) {
+					HLog(error) << "Error loading non-existent skill '" << skill_name << "' for monster '" << monster->sprite_name << "'.";
+					continue;
+				}
+			} else if (k.is<int>()) {
+				int skill_id = k.as<int>();
+
+				if ((skill = SkillDB->get_skill_by_id(skill_id)) == nullptr) {
+					HLog(error) << "Error loading non-existent skill with Id " << skill_id << " for monster '" << monster->sprite_name << "'.";
+					continue;
+				}
+			}
+
+			mskd.skill_id = skill->skill_id;
+
+			if (v.get_type() != sol::type::table) {
+				HLog(error) << "MonsterDatabase::load_skill_internal: Error loading value for skill '" << skill->name << "' of monster '" << monster->sprite_name << "'.";
+				continue;
+			}
+
+			sol::table stbl = v.as<sol::table>();
+
+			sol::optional<int> maybe_val = stbl.get<sol::optional<int>>("SkillLevel");
+			if (maybe_val)
+				mskd.skill_level = maybe_val.value();
+			else
+				mskd.skill_level = 1;
+
+			maybe_val = stbl.get<sol::optional<int>>("SkillTarget");
+			if (maybe_val)
+				mskd.target = (monster_skill_target_type) maybe_val.value();
+			else
+				mskd.target = MONSTER_SKILL_TARGET_CURRENT;
+
+			maybe_val = stbl.get<sol::optional<int>>("SkillState");
+			if (maybe_val)
+				mskd.state = (monster_skill_state_type) maybe_val.value();
+			else
+				mskd.state = MONSTER_SKILL_STATE_ANY;
+
+			maybe_val = stbl.get<sol::optional<int>>("Rate");
+			if (maybe_val)
+				mskd.skill_invoke_rate = maybe_val.value();
+			else
+				mskd.skill_invoke_rate = 500;
+
+			maybe_val = stbl.get<sol::optional<int>>("CastTime");
+			if (maybe_val)
+				mskd.cast_time = maybe_val.value();
+			else
+				mskd.cast_time = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("Delay");
+			if (maybe_val)
+				mskd.delay = maybe_val.value();
+			else
+				mskd.delay = 0;
+
+			sol::optional<bool> maybe_bool = stbl.get<sol::optional<bool>>("Cancellable");
+			if (maybe_bool)
+				mskd.cancelable = maybe_bool.value();
+
+			maybe_val = stbl.get<sol::optional<int>>("CastCondition");
+			if (maybe_val)
+				mskd.cast_condition = maybe_val.value();
+			else
+				mskd.cast_condition = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("ConditionData");
+			if (maybe_val)
+				mskd.condition_data = maybe_val.value();
+			else
+				mskd.condition_data = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("val0");
+			if (maybe_val)
+				mskd.val[0] = maybe_val.value();
+			else
+				mskd.val[0] = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("val1");
+			if (maybe_val)
+				mskd.val[1] = maybe_val.value();
+			else
+				mskd.val[1] = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("val2");
+			if (maybe_val)
+				mskd.val[2] = maybe_val.value();
+			else
+				mskd.val[2] = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("val3");
+			if (maybe_val)
+				mskd.val[3] = maybe_val.value();
+			else
+				mskd.val[3] = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("val4");
+			if (maybe_val)
+				mskd.val[4] = maybe_val.value();
+			else
+				mskd.val[4] = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("Emotion");
+			if (maybe_val)
+				mskd.emotion_id = maybe_val.value();
+			else
+				mskd.emotion_id = 0;
+
+			maybe_val = stbl.get<sol::optional<int>>("ChatMsgID");
+			if (maybe_val)
+				mskd.msg_id = maybe_val.value();
+			else
+				mskd.msg_id = 0;
+
+			skills.push_back(std::make_shared<const monster_skill_config_data>(mskd));
+		}
+
+		_monster_skill_db.insert(monster->monster_id, skills);
+		
+	}	catch (sol::error &e) { 
+		HLog(error) << "MonsterDatabase::load_skill_internal:" << e.what();
+	}
+
 	return true;
 }
+	// <Monster_Constant> = {
+	// 	<Skill_Constant> = {
+	// 		SkillLevel =    (int, defaults to 1)
+	// 		SkillState =    (string, defaults to "MSS_ANY")
+	// 		SkillTarget =   (string, defaults to "MST_TARGET")
+	// 		Rate =          (int, defaults to 1)
+	// 		CastTime =      (int, defaults to 0)
+	// 		Delay =         (int, defaults to 0)
+	// 		Cancelable =    (boolean, defaults to false)
+	// 		CastCondition = (string, defaults to "MSC_ALWAYS")
+	// 		ConditionData = (int, defaults to 0)
+	// 		val0 =          (int, defaults to 0)
+	// 		val1 =          (int, defaults to 0)
+	// 		val2 =          (int, defaults to 0)
+	// 		val3 =          (int, defaults to 0)
+	// 		val4 =          (int, defaults to 0)
+	// 		Emotion =       (int, defaults to -1)
+	// 		ChatMsgID =     (int, defaults to 0)
+	// 	},
+	// },

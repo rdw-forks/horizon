@@ -696,6 +696,64 @@ void sync_monster_definitions(sol::state &state)
 		"TargetWeak", (int) MONSTER_MODE_MASK_TARGETWEAK,
 		"NoKnockBack", (int) MONSTER_MODE_MASK_NOKNOCKBACK
 	);
+
+	state.create_named_table("MonsterSkillState",
+		"Any", MONSTER_SKILL_STATE_ANY,
+		"Idle", MONSTER_SKILL_STATE_IDLE,
+		"Walk", MONSTER_SKILL_STATE_WALK,
+		"Loot", MONSTER_SKILL_STATE_LOOT,
+		"Dead", MONSTER_SKILL_STATE_DEAD,
+		"Berserk", MONSTER_SKILL_STATE_BERSERK, //Aggressive mob attacking
+		"Angry", MONSTER_SKILL_STATE_ANGRY,   //Mob retaliating from being attacked.
+		"Rush", MONSTER_SKILL_STATE_RUSH,    //Mob following a player after being attacked.
+		"Follow", MONSTER_SKILL_STATE_FOLLOW,  //Mob following a player without being attacked.
+		"AnyTarget", MONSTER_SKILL_STATE_ANYTARGET
+	);
+
+	state.create_named_table("MonsterSkillTarget",
+		"CurrentTarget", MONSTER_SKILL_TARGET_CURRENT,
+		"Random", MONSTER_SKILL_TARGET_RANDOM,
+		"Self", MONSTER_SKILL_TARGET_SELF,
+		"Friend", MONSTER_SKILL_TARGET_FRIEND,
+		"Master", MONSTER_SKILL_TARGET_MASTER,
+		"Around5", MONSTER_SKILL_TARGET_AROUND5,
+		"Around6", MONSTER_SKILL_TARGET_AROUND6,
+		"Around7", MONSTER_SKILL_TARGET_AROUND7,
+		"Around8", MONSTER_SKILL_TARGET_AROUND8,
+		"Around1", MONSTER_SKILL_TARGET_AROUND1,
+		"Around2", MONSTER_SKILL_TARGET_AROUND2,
+		"Around3", MONSTER_SKILL_TARGET_AROUND3,
+		"Around4", MONSTER_SKILL_TARGET_AROUND4,
+		"Around", MONSTER_SKILL_TARGET_AROUND
+	);
+
+
+	state.create_named_table("MonsterSkillCastCondition",
+		"Always", MONSTER_SKILL_CC_ALWAYS,
+		"MyHpLtMaxRate", MONSTER_SKILL_CC_MYHPLTMAXRATE,
+		"MyHpInRate", MONSTER_SKILL_CC_MYHPINRATE,
+		"FriendHpLtMaxRate", MONSTER_SKILL_CC_FRIENDHPLTMAXRATE,
+		"FriendHpInRate", MONSTER_SKILL_CC_FRIENDHPINRATE,
+		"MyStatusOn", MONSTER_SKILL_CC_MYSTATUSON,
+		"MyStatusOff", MONSTER_SKILL_CC_MYSTATUSOFF,
+		"FriendStatusOn", MONSTER_SKILL_CC_FRIENDSTATUSON,
+		"FriendStatusOff", MONSTER_SKILL_CC_FRIENDSTATUSOFF,
+		"AttackPCGT", MONSTER_SKILL_CC_ATTACKPCGT,
+		"AttackPCGE", MONSTER_SKILL_CC_ATTACKPCGE,
+		"SlaveLT", MONSTER_SKILL_CC_SLAVELT,
+		"SlaveLE", MONSTER_SKILL_CC_SLAVELE,
+		"CloseRangeAttacked", MONSTER_SKILL_CC_CLOSERANGEATTACKED,
+		"LongRangeAttacked", MONSTER_SKILL_CC_LONGRANGEATTACKED,
+		"AfterSkill", MONSTER_SKILL_CC_AFTERSKILL,
+		"SkillUsed", MONSTER_SKILL_CC_SKILLUSED,
+		"CastTargeted", MONSTER_SKILL_CC_CASTTARGETED,
+		"RudeAttacked", MONSTER_SKILL_CC_RUDEATTACKED,
+		"MasterHPLTMaxRate", MONSTER_SKILL_CC_MASTERHPLTMAXRATE,
+		"MasterAttacked", MONSTER_SKILL_CC_MASTERATTACKED,
+		"Alchemist", MONSTER_SKILL_CC_ALCHEMIST,
+		"Spawn", MONSTER_SKILL_CC_SPAWN,
+		"MagicAttacked", MONSTER_SKILL_CC_MAGICATTACKED
+	);
 }
 
 void sync_skill_definitions(sol::state &state)

@@ -50,6 +50,7 @@ namespace Zone
 struct job_config_data
 {
 	int id{0};
+	std::string name{""};
 	int max_weight{20000};
 	std::string base_exp_group{""}, job_exp_group{""};
 	std::array<int, IT_WT_SINGLE_MAX> weapon_base_aspd;

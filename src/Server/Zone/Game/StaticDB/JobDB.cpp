@@ -58,7 +58,7 @@ JobDatabase::JobDatabase()
 	_name2id_list.emplace("Gunslinger", JOB_GUNSLINGER);
 	_name2id_list.emplace("Ninja", JOB_NINJA);
 	_name2id_list.emplace("HighNovice", JOB_NOVICE_HIGH);
-	_name2id_list.emplace("HighSwordman", JOB_SWORDMAN_HIGH);
+	_name2id_list.emplace("HighSwordsman", JOB_SWORDMAN_HIGH);
 	_name2id_list.emplace("HighMagician", JOB_MAGE_HIGH);
 	_name2id_list.emplace("HighArcher", JOB_ARCHER_HIGH);
 	_name2id_list.emplace("HighAcolyte", JOB_ACOLYTE_HIGH);
@@ -113,7 +113,7 @@ JobDatabase::JobDatabase()
 	_name2id_list.emplace("RuneKnightTrans", JOB_RUNE_KNIGHT_T);
 	_name2id_list.emplace("WarlockTrans", JOB_WARLOCK_T);
 	_name2id_list.emplace("RangerTrans", JOB_RANGER_T);
-	_name2id_list.emplace("ArchbishopTrans", JOB_ARCH_BISHOP_T);
+	_name2id_list.emplace("ArchBishopTrans", JOB_ARCH_BISHOP_T);
 	_name2id_list.emplace("MechanicTrans", JOB_MECHANIC_T);
 	_name2id_list.emplace("GuillotineCrossTrans", JOB_GUILLOTINE_CROSS_T);
 	_name2id_list.emplace("RoyalGuard", JOB_ROYAL_GUARD);
@@ -193,6 +193,8 @@ int JobDatabase::load_job(sol::table &job_tbls, std::string name)
 			sol::table job_tbl = value.as<sol::table>();
 			std::string name = job_tbl.get_or("Name", std::string(""));
 			job_class_type jc = get_job_class_by_name(name);
+			data.id = (int) jc;
+			data.name = name;
 			if (load_job_internal(job_tbl, data, name) == true) {
 				_job_db.insert(jc, std::make_shared<job_config_data>(data));
 				count++;
@@ -203,6 +205,8 @@ int JobDatabase::load_job(sol::table &job_tbls, std::string name)
 		if (maybe_job) {
 			job_config_data data;
 			job_class_type jc = get_job_class_by_name(name);
+			data.id = (int) jc;
+			data.name = name;
 			if (load_job_internal(maybe_job.value(), data, name) == true)
 				_job_db.insert(jc, std::make_shared<job_config_data>(data));
 		} else {

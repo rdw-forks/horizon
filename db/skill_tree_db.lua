@@ -30,15 +30,15 @@
 --[[-----------------------------------------------------------------------
  --------------------Entry Structure --------------------------------------
  ---------------------------------------------------------------------------
-Job_Name = { -- Job names as in src/map/pc.c (they are hard-coded at the moment so if you want to add a new job you should add it there)
-	Inherit = { "Other_Job_Name" }, -- Base job from which this job will inherit its skill tree. NV_TRICKDEAD inheritance is skipped for non-novices from the source,
+JobName = { -- Job names as in src/map/pc.c (they are hard-coded at the moment so if you want to add a new job you should add it there)
+	Inherit = { "OtherJobName" }, -- Base job from which this job will inherit its skill tree. NV_TRICKDEAD inheritance is skipped for non-novices from the source,
 
 	Skills = { -- SKILL_NAMEs come from the Name value in db/re/skill_db.conf,
-		SKILL_NAME1 = Max_Level, -- Use this for skills that don't have other skill prerequisite; Max_Level is a numeric value that should match your client side files,
+		SKILL_NAME1 = MaxLevel, -- Use this for skills that don't have other skill prerequisite; MaxLevel is a numeric value that should match your client side files,
 		SKILL_NAME2 = { -- Use this for skills which have other skills as prerequisites,
-			MaxLevel = Max_Level, -- Max_Level is a numeric value that should match your client side files,
-			SKILL_NAME_PREREQUISITE = Level_Prerequisite, -- The prerequisite skill and min level for having this skill available. Should also match your client side files,
-			SKILL_NAME_PREREQUISITE2 = Level_Prerequisite2, -- You can add as many prerequisite skills as you want. Minimum of 1 if you add a skill this way,
+			MaxLevel = MaxLevel, -- MaxLevel is a numeric value that should match your client side files,
+			SKILL_NAME_PREREQUISITE = LevelPrerequisite, -- The prerequisite skill and min level for having this skill available. Should also match your client side files,
+			SKILL_NAME_PREREQUISITE2 = LevelPrerequisite2, -- You can add as many prerequisite skills as you want. Minimum of 1 if you add a skill this way,
 	},
 },
 -----------------------------------------------------------------------------]]
@@ -1181,7 +1181,7 @@ Dancer = {
 		DC_WINKCHARM = 1,
 	},
 },
-Super_Novice = {
+SuperNovice = {
 	Inherit = { "Novice" },
 
 	Skills = {
@@ -1509,28 +1509,28 @@ Ninja = {
 		},
 	},
 },
-Novice_High = {
+NoviceHigh = {
 	Inherit = { "Novice" },
 },
-Swordsman_High = {
+SwordsmanHigh = {
 	Inherit = { "Swordsman" },
 },
-Magician_High = {
+MagicianHigh = {
 	Inherit = { "Magician" },
 },
-Archer_High = {
+ArcherHigh = {
 	Inherit = { "Archer" },
 },
-Acolyte_High = {
+AcolyteHigh = {
 	Inherit = { "Acolyte" },
 },
-Merchant_High = {
+MerchantHigh = {
 	Inherit = { "Merchant" },
 },
-Thief_High = {
+ThiefHigh = {
 	Inherit = { "Thief" },
 },
-Lord_Knight = {
+LordKnight = {
 	Inherit = { "Knight" },
 	Skills = {
 		LK_AURABLADE = {
@@ -1581,7 +1581,7 @@ Lord_Knight = {
 		},
 	},
 },
-High_Priest = {
+HighPriest = {
 	Inherit = { "Priest" },
 
 	Skills = {
@@ -1610,7 +1610,7 @@ High_Priest = {
 		},
 	},
 },
-High_Wizard = {
+HighWizard = {
 	Inherit = { "Wizard" },
 
 	Skills = {
@@ -1704,7 +1704,7 @@ Sniper = {
 		},
 	},
 },
-Assassin_Cross = {
+AssassinCross = {
 	Inherit = { "Assassin" },
 
 	Skills = {
@@ -1961,68 +1961,68 @@ Gypsy = {
 		},
 	},
 },
-Baby_Novice = {
+BabyNovice = {
 	Inherit = { "Novice" },
 },
-Baby_Swordsman = {
+BabySwordsman = {
 	Inherit = { "Swordsman" },
 },
-Baby_Magician = {
+BabyMagician = {
 	Inherit = { "Magician" },
 },
-Baby_Archer = {
+BabyArcher = {
 	Inherit = { "Archer" },
 },
-Baby_Acolyte = {
+BabyAcolyte = {
 	Inherit = { "Acolyte" },
 },
-Baby_Merchant = {
+BabyMerchant = {
 	Inherit = { "Merchant" },
 },
-Baby_Thief = {
+BabyThief = {
 	Inherit = { "Thief" },
 },
-Baby_Knight = {
+BabyKnight = {
 	Inherit = { "Knight" },
 },
-Baby_Priest = {
+BabyPriest = {
 	Inherit = { "Priest" },
 },
-Baby_Wizard = {
+BabyWizard = {
 	Inherit = { "Wizard" },
 },
-Baby_Blacksmith = {
+BabyBlacksmith = {
 	Inherit = { "Blacksmith" },
 },
-Baby_Hunter = {
+BabyHunter = {
 	Inherit = { "Hunter" },
 },
-Baby_Assassin = {
+BabyAssassin = {
 	Inherit = { "Assassin" },
 },
-Baby_Crusader = {
+BabyCrusader = {
 	Inherit = { "Crusader" },
 },
-Baby_Monk = {
+BabyMonk = {
 	Inherit = { "Monk" },
 },
-Baby_Sage = {
+BabySage = {
 	Inherit = { "Sage" },
 },
-Baby_Rogue = {
+BabyRogue = {
 	Inherit = { "Rogue" },
 },
-Baby_Alchemist = {
+BabyAlchemist = {
 	Inherit = { "Alchemist" },
 },
-Baby_Bard = {
+BabyBard = {
 	Inherit = { "Bard" },
 },
-Baby_Dancer = {
+BabyDancer = {
 	Inherit = { "Dancer" },
 },
-Super_Baby = {
-	Inherit = { "Super_Novice" },
+SuperBaby = {
+	Inherit = { "SuperNovice" },
 },
 Taekwon = {
 	Inherit = { "Novice" },
@@ -2070,7 +2070,7 @@ Taekwon = {
 		},
 	},
 },
-Star_Gladiator = {
+StarGladiator = {
 	Inherit = { "Taekwon" },
 
 	Skills = {
@@ -2136,7 +2136,7 @@ Star_Gladiator = {
 		},
 	},
 },
-Soul_Linker = {
+SoulLinker = {
 	Inherit = { "Taekwon" },
 
 	Skills = {
@@ -2231,13 +2231,13 @@ Soul_Linker = {
 Gangsi = {
 	Inherit = { "Novice" },
 },
-Death_Knight = {
+DeathKnight = {
 	Inherit = { "Novice" },
 },
-Dark_Collector = {
+DarkCollector = {
 	Inherit = { "Novice" },
 },
-Rune_Knight = {
+RuneKnight = {
 	Inherit = { "Knight" },
 
 	Skills = {
@@ -2483,7 +2483,7 @@ Ranger = {
 		ALL_FULL_THROTTLE = 5,
 	},
 },
-Arch_Bishop = {
+ArchBishop = {
 	Inherit = { "Priest" },
 
 	Skills = {
@@ -2693,7 +2693,7 @@ Mechanic = {
 		ALL_FULL_THROTTLE = 5,
 	},
 },
-Guillotine_Cross = {
+GuillotineCross = {
 	Inherit = { "Assassin" },
 
 	Skills = {
@@ -2772,25 +2772,25 @@ Guillotine_Cross = {
 		ALL_FULL_THROTTLE = 5,
 	},
 },
-Rune_Knight_Trans = {
-	Inherit = { "Lord_Knight", "Rune_Knight" },
+RuneKnightTrans = {
+	Inherit = { "LordKnight", "RuneKnight" },
 },
-Warlock_Trans = {
-	Inherit = { "High_Wizard", "Warlock" },
+WarlockTrans = {
+	Inherit = { "HighWizard", "Warlock" },
 },
-Ranger_Trans = {
+RangerTrans = {
 	Inherit = { "Sniper", "Ranger" },
 },
-Arch_Bishop_Trans = {
-	Inherit = { "High_Priest", "Arch_Bishop" },
+ArchBishopTrans = {
+	Inherit = { "HighPriest", "ArchBishop" },
 },
-Mechanic_Trans = {
+MechanicTrans = {
 	Inherit = { "Whitesmith", "Mechanic" },
 },
-Guillotine_Cross_Trans = {
-	Inherit = { "Assassin_Cross", "Guillotine_Cross" },
+GuillotineCrossTrans = {
+	Inherit = { "AssassinCross", "GuillotineCross" },
 },
-Royal_Guard = {
+RoyalGuard = {
 	Inherit = { "Crusader" },
 
 	Skills = {
@@ -3412,7 +3412,7 @@ Genetic = {
 		ALL_FULL_THROTTLE = 5,
 	},
 },
-Shadow_Chaser = {
+ShadowChaser = {
 	Inherit = { "Rogue" },
 
 	Skills = {
@@ -3513,68 +3513,68 @@ Shadow_Chaser = {
 		ALL_FULL_THROTTLE = 5,
 	},
 },
-Royal_Guard_Trans = {
-	Inherit = { "Paladin", "Royal_Guard" },
+RoyalGuardTrans = {
+	Inherit = { "Paladin", "RoyalGuard" },
 },
-Sorcerer_Trans = {
+SorcererTrans = {
 	Inherit = { "Professor", "Sorcerer" },
 },
-Minstrel_Trans = {
+MinstrelTrans = {
 	Inherit = { "Clown", "Minstrel" },
 },
-Wanderer_Trans = {
+WandererTrans = {
 	Inherit = { "Gypsy", "Wanderer" },
 },
-Sura_Trans = {
+SuraTrans = {
 	Inherit = { "Champion", "Sura" },
 },
-Genetic_Trans = {
+GeneticTrans = {
 	Inherit = { "Creator", "Genetic" },
 },
-Shadow_Chaser_Trans = {
-	Inherit = { "Stalker", "Shadow_Chaser" },
+ShadowChaserTrans = {
+	Inherit = { "Stalker", "ShadowChaser" },
 },
-Baby_Rune_Knight = {
-	Inherit = { "Rune_Knight" },
+BabyRuneKnight = {
+	Inherit = { "RuneKnight" },
 },
-Baby_Warlock = {
+BabyWarlock = {
 	Inherit = { "Warlock" },
 },
-Baby_Ranger = {
+BabyRanger = {
 	Inherit = { "Ranger" },
 },
-Baby_Arch_Bishop = {
-	Inherit = { "Arch_Bishop" },
+BabyArchBishop = {
+	Inherit = { "ArchBishop" },
 },
-Baby_Mechanic = {
+BabyMechanic = {
 	Inherit = { "Mechanic" },
 },
-Baby_Guillotine_Cross = {
-	Inherit = { "Guillotine_Cross" },
+BabyGuillotineCross = {
+	Inherit = { "GuillotineCross" },
 },
-Baby_Royal_Guard = {
-	Inherit = { "Royal_Guard" },
+BabyRoyalGuard = {
+	Inherit = { "RoyalGuard" },
 },
-Baby_Sorcerer = {
+BabySorcerer = {
 	Inherit = { "Sorcerer" },
 },
-Baby_Minstrel = {
+BabyMinstrel = {
 	Inherit = { "Minstrel" },
 },
-Baby_Wanderer = {
+BabyWanderer = {
 	Inherit = { "Wanderer" },
 },
-Baby_Sura = {
+BabySura = {
 	Inherit = { "Sura" },
 },
-Baby_Genetic = {
+BabyGenetic = {
 	Inherit = { "Genetic" },
 },
-Baby_Shadow_Chaser = {
-	Inherit = { "Shadow_Chaser" },
+BabyShadowChaser = {
+	Inherit = { "ShadowChaser" },
 },
-Expanded_Super_Novice = {
-	Inherit = { "Super_Novice" },
+ExpandedSuperNovice = {
+	Inherit = { "SuperNovice" },
 
 	Skills = {
 		PR_IMPOSITIO = 5,
@@ -3683,8 +3683,8 @@ Expanded_Super_Novice = {
 		},
 	},
 },
-Expanded_Super_Baby = {
-	Inherit = { "Expanded_Super_Novice" },
+ExpandedSuperBaby = {
+	Inherit = { "ExpandedSuperNovice" },
 },
 Kagerou = {
 	Inherit = { "Ninja" },

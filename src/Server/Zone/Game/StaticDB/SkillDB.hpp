@@ -181,23 +181,27 @@ protected:
 	template <typename T>
 	void fill_lvl_range(T *setting, T value);
 
+public:
 	std::shared_ptr<const skill_config_data> get_skill_by_id(int32_t id) { return _skill_db.at(id); }
 	std::shared_ptr<const skill_config_data> get_skill_by_name(std::string name) 
 	{
-		std::shared_ptr<const skill_config_data> data = nullptr;
-		std::map<uint32_t, std::shared_ptr<skill_config_data>> s_db = _skill_db.get_map();
+		std::map<uint32_t, std::shared_ptr<const skill_config_data>> s_db = _skill_db.get_map();
 		for (auto const &sk : s_db) {
-			if (sk->name.compare(name) == 0)
-				return sk;
-			else
-				return nullptr;
+			if (sk.second->name.compare(name) == 0)
+				return sk.second;
 		}
+		
+		return nullptr;
 	}
-	std::shared_ptr<const skill_tree_config> get_skill_tree_by_job_id(int32_t job_id) { return _skill_tree_db.at(job_id); }
+
+	std::vector<std::shared_ptr<const skill_tree_config>> get_skill_tree_by_job_id(job_class_type job_id) 
+	{
+		return _skill_tree_db.at(job_id, std::vector<std::shared_ptr<const skill_tree_config>>()); 
+	}
 
 private:
-	LockedLookupTable<uint32_t, std::shared_ptr<skill_config_data>> _skill_db;
-	LockedLookupTable<job_class_type, std::vector<std::shared_ptr<skill_tree_config>>> _skill_tree_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<const skill_config_data>> _skill_db;
+	LockedLookupTable<job_class_type, std::vector<std::shared_ptr<const skill_tree_config>>> _skill_tree_db;
 };
 }
 }

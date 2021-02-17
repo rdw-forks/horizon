@@ -27,14 +27,13 @@
 --- Renewal Monster Skill Database.
 ---------------------------------------------------------------------------
 
-[ "monster_skill_db" ] = {
+monster_skill_db = {
 {
 --[[*************************************************************************
  ************* Entry structure ********************************************
  **************************************************************************
 	<Monster_Constant> = {
 		<Skill_Constant> = {
-			ClearSkills =   (boolean, defaults to false) allows cleaning all previous defined skills for the mob.
 			SkillLevel =    (int, defaults to 1)
 			SkillState =    (string, defaults to "MSS_ANY")
 			SkillTarget =   (string, defaults to "MST_TARGET")

@@ -33,7 +33,7 @@ xcode-build/
 version.hpp
 bin
 resources/
-
+.DS_Store
 
 # Skip objects and static libraries.
 *.o
