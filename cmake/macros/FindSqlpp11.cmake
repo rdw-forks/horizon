@@ -39,6 +39,7 @@ find_file(SQLPP11_INCLUDE_DIR
     PATHS 
         ${SQLPP11_ROOT_DIR}/include
         /usr/local/include
+        /usr/include
         ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include
 )
 mark_as_advanced(SQLPP11_INCLUDE_DIR)
