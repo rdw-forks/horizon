@@ -49,12 +49,4 @@ fi
 
 brew install readline lua zlib boost mariadb
 
-if ! test -f "/usr/local/mysql-connector-c++/mysqlx/xdevapi.h"; then
-	pushd /tmp;
-	cppconn_filename="mysql-connector-c++-8.0.15-macos10.14-x86-64bit"
-	wget https://dev.mysql.com/get/Downloads/Connector-C++/${cppconn_filename}.tar.gz;
-	tar -xvf ${cppconn_filename}.tar.gz;
-	popd;
-fi
-
 popd;
