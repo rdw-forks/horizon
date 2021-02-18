@@ -47,6 +47,6 @@ else
 	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
 fi
 
-brew install readline lua zlib boost mariadb
+brew install --build-from-source readline lua zlib boost mariadb
 
 popd;
