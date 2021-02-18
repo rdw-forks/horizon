@@ -61,18 +61,14 @@ else()
 			"$ENV{SystemDrive}/Program Files/mariadb-connector-c/include/mariadb"
 			"$ENV{SystemDrive}/Program Files (x86)/mariadb-connector-c/include/mariadb"
 			C:/vcpkg/installed/x${PLATFORM}-windows/include
-			/usr/include
-			/usr
 		)
 
 	find_library(MYSQL_LIBRARY
 		NAMES libmariadb
 		PATHS 
-  		C:/vcpkg/installed/x${PLATFORM}-windows/lib
-  		"$ENV{SystemDrive}/Program Files/mariadb-connector-c/lib/mariadb"
+  			C:/vcpkg/installed/x${PLATFORM}-windows/lib
+  			"$ENV{SystemDrive}/Program Files/mariadb-connector-c/lib/mariadb"
 			"$ENV{SystemDrive}/Program Files (x86)/mariadb-connector-c/lib/mariadb"
-			/usr
-			/usr/lib
 		)
 endif()
 
