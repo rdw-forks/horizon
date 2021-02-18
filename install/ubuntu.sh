@@ -47,11 +47,17 @@ fi
 
 sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
 
+echo "/usr"
 ls -al /usr
+echo "/usr/local"
 ls -al /usr/local/
+echo "/usr/local/include"
 ls -al /usr/local/include
+echo "/usr/local/lib"
 ls -al /usr/local/lib
+echo "/usr/lib"
 ls -al /usr/lib
+echo "/usr/include"
 ls -al /usr/include
 
 popd;
