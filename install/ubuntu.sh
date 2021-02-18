@@ -59,5 +59,7 @@ echo "/usr/lib"
 ls -al /usr/lib
 echo "/usr/include"
 ls -al /usr/include
+echo "/usr/include/lua5.3"
+ls -al /usr/include/lua5.3
 
 popd;
