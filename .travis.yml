@@ -5,8 +5,6 @@ service:
 
 cache:
   - /usr/local/opt/boost
-  - /usr/local/opt/spdlog
-  - /usr/local/opt/cryptopp
   - /usr/local/include/
   - /usr/local/lib
 
@@ -26,7 +24,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - lcov
             - g++-5
       env:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
@@ -40,7 +37,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - lcov
             - g++-6
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
@@ -54,7 +50,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - lcov
             - g++-7
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
@@ -68,7 +63,6 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - lcov
             - g++-8
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
@@ -80,20 +74,12 @@ matrix:
     #
     - os: osx
       osx_image: xcode9.4
-      addons:
-        apt:
-          packages:
-            - lcov
       env:
         - TOOLSET="clang"
         - BUILD_TYPE="Debug"
         - COMPILE_OPTIONS="-DWITH_TSAN=1 -DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
     - os: osx
       osx_image: xcode9.4
-      addons:
-        apt:
-          packages:
-            - lcov
       env:
         - TOOLSET="clang"
         - BUILD_TYPE="Debug"
@@ -164,19 +150,9 @@ script:
         sudo xcodebuild -target install -config $BUILD_TYPE install || exit 1;
     fi
   - pushd bin/${BUILD_TYPE};
-  - sudo mkdir logs;
   - sudo cp config/auth-server.lua.dist config/auth-server.lua;
   - sudo cp config/char-server.lua.dist config/char-server.lua;
   - sudo cp config/zone-server.lua.dist config/zone-server.lua;
-  - sudo ./auth --test-run || exit 1;
-  - sudo ./char --test-run || exit 1;
-  - sudo ./zone --test-run || exit 1;
-
-after_success:
-  # Create lcov report
-  - lcov --capture --directory . --output-file coverage.info
-  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter system-files
-  - lcov --list coverage.info # debug info
-  # Uploading report to CodeCov
-  - bash <(curl -s https://codecov.io/bash) -f coverage.info -t "5dd84ba6-408c-443e-895c-751187bb06dc" || echo "Codecov did not collect coverage reports"
-
+  - sudo ./auth --with-config="config/auth-server.lua" --test-run || exit 1;
+  - sudo ./char --with-config="config/char-server.lua"  --test-run || exit 1;
+  - sudo ./zone --with-config="config/zone-server.lua"  --test-run || exit 1;

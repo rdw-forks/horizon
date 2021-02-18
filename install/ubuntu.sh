@@ -68,39 +68,37 @@ else
 	echo "Sol2 already exists, skipping installation...";
 fi
 
-wget https://launchpad.net/ubuntu/+archive/primary/+files/libspdlog-dev_1.3.1-1_amd64.deb;
-sudo dpkg -i libspdlog-dev_1.3.1-1_amd64.deb;
-sudo apt-get -y install libreadline-dev libluajit-5.1-dev zlib1g-dev;
-
-if ! test -f "/usr/local/include/boost/version.hpp"; then
-	echo "Boost doesn't exist, installing from scratch!";
+if ! test -f "/usr/local/include/sqlpp11/sqlpp11.h"; then
 	pushd /tmp;
-	wget https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.gz;
-	tar -xvf boost_1_69_0.tar.gz >/dev/null;
-	pushd boost_1_69_0;
-	echo "Silently building and installing Boost Filesystem, System, Thread, Locale and Test libraries...";
-	./bootstrap.sh --with-toolset=${TOOLSET} >/dev/null;
-	sudo ./b2 install threading=multi toolset=${TOOLSET} --with-system  --with-filesystem --with-thread --with-locale --with-test -d0;
+	echo "Sqlpp11 doesn't exist, installing from scratch!";
+	git clone https://github.com/rbock/sqlpp11.git;
+	mkdir sqlpp11/build;
+	pushd sqlpp11/build;
+	cmake ../;
+	echo "Silently building and installing Sol2...";
+	sudo make install >/dev/null;
 	popd;
 	popd;
 else
-	echo "Boost already exists, skipping installation...";
+	echo "Sqlpp11 already exists, skipping installation...";
 fi
 
-if ! test -f "/usr/local/include/cryptopp/scrypt.h"; then
-	echo "Crypto++ with Scrypt wasn't found, installing v8.1 from scratch!";
+if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	pushd /tmp;
-	wget https://www.cryptopp.com/cryptopp810.zip;
-	echo "Silently building and installing Crypto++...";
-	sudo unzip cryptopp810.zip -d cryptopp >/dev/null;
-	pushd cryptopp;
-	sudo make >/dev/null;
-	sudo make install PREFIX=/usr/local;
+	echo "Sqlpp11-connector-mysql doesn't exist, installing from scratch!";
+	git clone https://github.com/rbock/sqlpp11-connector-mysql.git;
+	mkdir sqlpp11-connector-mysql/build;
+	pushd sqlpp11-connector-mysql/build;
+	cmake ../;
+	echo "Silently building and installing Sol2...";
+	sudo make install >/dev/null;
 	popd;
 	popd;
 else
-	echo "Crypto++ already exists, skipping installation..."
+	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
 fi
+
+sudo apt-get -y install libreadline-dev liblua5.3-dev zlib1g-dev;
 
 mysql_version="$(mysql --version | grep -o -E "([0-9]+).([0-9]+).([0-9]+)")"
 req_mysql_version="8.0.15"
