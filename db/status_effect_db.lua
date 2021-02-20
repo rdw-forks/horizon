@@ -241,12 +241,6 @@ SC_OVERTHRUST = {
 	},
 	Icon = "SI_OVERTHRUST"
 },
-SC_MAXIMIZEPOWER = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_MAXIMIZE"
-},
 SC_TRICKDEAD = {
 	Id = 29,
 	Behavior = {
@@ -586,20 +580,6 @@ SC_GOSPEL = {
 		StatusEffectBehavior.IsDebuff,
 	},
 },
-SC_SAFETYWALL = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-},
-SC_PNEUMA = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-},
 SC_ASSUMPTIO = {
 	Id = 110,
 	Behavior = {
@@ -614,30 +594,6 @@ SC_BASILICA = {
 		StatusEffectBehavior.CantClearance,
 		StatusEffectBehavior.IsBuff,
 	},
-},
-SC_VOLCANO = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_GROUNDMAGIC"
-},
-SC_DELUGE = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_GROUNDMAGIC"
-},
-SC_VIOLENTGALE = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_GROUNDMAGIC"
 },
 SC_MAGICPOWER = {
 	Id = 113,
@@ -2138,14 +2094,6 @@ SC_SPL_DEF = {
 	},
 	Icon = "SI_SPL_DEF"
 },
-SC__REPRODUCE = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_REPRODUCE"
-},
 SC_MANU_MATK = {
 	Id = 386,
 	Behavior = {
@@ -2205,22 +2153,6 @@ SC_BUCHEDENOEL = {
 	},
 	Icon = "SI_BUCHEDENOEL"
 },
-SC__AUTOSHADOWSPELL = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_AUTOSHADOWSPELL"
-},
-SC__SHADOWFORM = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_SHADOWFORM"
-},
 SC_RAID = {
 	Id = 395,
 	Behavior = {
@@ -2250,13 +2182,6 @@ SC_SHIELDSPELL_REF = {
 	},
 	Icon = "SI_SHIELDSPELL_REF"
 },
-SC__BODYPAINT = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_BODYPAINT"
-},
 SC_EXEEDBREAK = {
 	Id = 400,
 	Behavior = {
@@ -2280,22 +2205,6 @@ SC_PRESTIGE = {
 		StatusEffectBehavior.IsBuff,
 	},
 	Icon = "SI_PRESTIGE"
-},
-SC__INVISIBILITY = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_INVISIBILITY"
-},
-SC__DEADLYINFECT = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_DEADLYINFECT"
 },
 SC_BANDING = {
 	Id = 405,
@@ -2333,20 +2242,6 @@ SC_INSPIRATION = {
 	},
 	Icon = "SI_INSPIRATION"
 },
-SC__ENERVATION = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_ENERVATION"
-},
-SC__GROOMY = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_GROOMY"
-},
 SC_RAISINGDRAGON = {
 	Id = 410,
 	Behavior = {
@@ -2356,20 +2251,6 @@ SC_RAISINGDRAGON = {
 		StatusEffectBehavior.IsBuff,
 	},
 	Icon = "SI_RAISINGDRAGON"
-},
-SC__IGNORANCE = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_IGNORANCE"
-},
-SC__LAZINESS = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_LAZINESS"
 },
 SC_LIGHTNINGWALK = {
 	Id = 413,
@@ -2387,13 +2268,6 @@ SC_ACARAJE = {
 		StatusEffectBehavior.IsBuff,
 	},
 	Icon = "SI_ACARAJE"
-},
-SC__UNLUCKY = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_UNLUCKY"
 },
 SC_CURSEDCIRCLE_ATKER = {
 	Id = 416,
@@ -2415,13 +2289,6 @@ SC_CURSEDCIRCLE_TARGET = {
 	},
 	Icon = "SI_CURSEDCIRCLE_TARGET"
 },
-SC__WEAKNESS = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_WEAKNESS"
-},
 SC_CRESCENTELBOW = {
 	Id = 419,
 	Behavior = {
@@ -2430,29 +2297,6 @@ SC_CRESCENTELBOW = {
 		StatusEffectBehavior.IsBuff,
 	},
 	Icon = "SI_CRESCENTELBOW"
-},
-SC__STRIPACCESSARY = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-	},
-	Icon = "SI_STRIPACCESSARY"
-},
-SC__MANHOLE = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.IsBuff,
-		StatusEffectBehavior.NoMadoReset,
-	},
-	Icon = "SI_MANHOLE"
-},
-SC__BLOODYLUST = {
-	Behavior = {
-		StatusEffectBehavior.IsDebuff,
-	},
 },
 SC_SWING = {
 	Id = 429,
@@ -2525,11 +2369,6 @@ SC_GLOOMYDAY = {
 		StatusEffectBehavior.IsBuff,
 	},
 	Icon = "SI_GLOOMYDAY"
-},
-SC_GLOOMYDAY_SK = {
-	Behavior = {
-		StatusEffectBehavior.IsBuff,
-	},
 },
 SC_SONG_OF_MANA = {
 	Id = 439,
@@ -2982,42 +2821,6 @@ SC_M_LIFEPOTION = {
 	},
 	Icon = "SI_M_LIFEPOTION"
 },
-SC_LEADERSHIP = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-},
-SC_GLORYWOUNDS = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-},
-SC_SOULCOLD = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-},
-SC_HAWKEYES = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-},
 SC_GDSKILL_REGENERATION = {
 	Id = 174,
 	Behavior = {
@@ -3025,11 +2828,6 @@ SC_GDSKILL_REGENERATION = {
 		StatusEffectBehavior.CantDispell,
 		StatusEffectBehavior.CantClearance,
 		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_ORCISH = {
-	Behavior = {
-		StatusEffectBehavior.NoSave,
 	},
 },
 SC_WEIGHTOVER50 = {
@@ -3055,47 +2853,6 @@ SC_WEIGHTOVER90 = {
 		StatusEffectBehavior.NoAllReset,
 	},
 	Icon = "SI_WEIGHTOVER90"
-},
-SC_WEDDING = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_XMAS = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_SUMMER = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_NOCHAT = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-},
-SC_FUSION = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
 },
 SC_EARTHSCROLL = {
 	Id = 205,
@@ -3127,15 +2884,6 @@ SC_DOWNKICK_READY = {
 	},
 	Icon = "SI_DOWNKICK_ON"
 },
-SC_COUNTERKICK_READY = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-	Icon = "SI_COUNTER_ON"
-},
 SC_TURNKICK_READY = {
 	Id = 140,
 	Behavior = {
@@ -3156,40 +2904,8 @@ SC_DODGE_READY = {
 	},
 	Icon = "SI_DODGE_ON"
 },
-SC_JAILED = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-},
-SC_AUTOTRADE = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_DANCING = {
-	Behavior = {
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-	},
-},
 SC_WHISTLE = {
 	Id = 70,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_ASSNCROS = {
 	Behavior = {
 		StatusEffectBehavior.NoDeathReset,
 		StatusEffectBehavior.NoSave,
@@ -3238,15 +2954,6 @@ SC_DONTFORGETME = {
 		StatusEffectBehavior.NoMadoReset,
 	},
 },
-SC_FORTUNE = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
 SC_SERVICEFORYOU = {
 	Id = 77,
 	Behavior = {
@@ -3256,25 +2963,6 @@ SC_SERVICEFORYOU = {
 		StatusEffectBehavior.CantClearance,
 		StatusEffectBehavior.NoMadoReset,
 	},
-},
-SC_INCHIT = {
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-	},
-},
-SC_PUSH_CART = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_ON_PUSH_CART"
 },
 SC_COLD = {
 	Id = 437,
@@ -3382,54 +3070,6 @@ SC_HAT_EFFECT = {
 	},
 	Icon = "SI_HAT_EFFECT"
 },
-SC_FLOWERSMOKE = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_FLOWERSMOKE"
-},
-SC_FSTONE = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_FSTONE"
-},
-SC_HAPPINESS_STAR = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_HAPPINESS_STAR"
-},
-SC_MAPLE_FALLS = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_MAPLE_FALLS"
-},
 SC_TIME_ACCESSORY = {
 	Id = 872,
 	Visible = true,
@@ -3442,30 +3082,6 @@ SC_TIME_ACCESSORY = {
 		StatusEffectBehavior.NoAllReset,
 	},
 	Icon = "SI_TIME_ACCESSORY"
-},
-SC_MAGICAL_FEATHER = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_MAGICAL_FEATHER"
-},
-SC_BLOSSOM_FLUTTERING = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.NoSave,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_BLOSSOM_FLUTTERING"
 },
 SC_SPRITEMABLE = {
 	Id = 937,
@@ -3509,17 +3125,6 @@ SC_ALL_RIDING = {
 		StatusEffectBehavior.NoAllReset,
 	},
 	Icon = "SI_ALL_RIDING"
-},
-SC_DAILYSENDMAILCNT = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoMadoReset,
-		StatusEffectBehavior.NoAllReset,
-	},
-	Icon = "SI_DAILYSENDMAILCNT"
 },
 SC_ATTHASTE_INFINITY = {
 	Id = 40,
@@ -3664,9 +3269,6 @@ SC_AUTOBERSERK = {
 SC_CRUCIS = {
 	Id = 11,
 	Icon = "SI_CRUCIS"
-},
-SC_SECRAMENT = {
-	Icon = "SI_SECRAMENT"
 },
 SC_CRUSHSTRIKE = {
 	Id = 620,
@@ -3831,9 +3433,6 @@ SC_POSTDELAY = {
 SC_BROKENARMOR = {
 	Id = 32,
 	Icon = "SI_BROKENARMOR"
-},
-SC_DRESS_UP = {
-	Icon = "SI_DRESS_UP"
 },
 SC_2011RWC = {
 	Id = 650,
@@ -4095,36 +3694,13 @@ SC_WILD_STORM_OPTION = {
 	Id = 556,
 	Icon = "SI_WILD_STORM_OPTION"
 },
-SC_BABY = {
-	Icon = "SI_PROTECTEXP"
-},
-SC_EXTREMITYFIST2 = {
-	Icon = "SI_EXTREMITYFIST"
-},
 SC_GN_CARTBOOST = {
 	Id = 461,
 	Icon = "SI_CARTSBOOST"
 },
-SC_MIRACLE = {
-	Icon = "SI_SOULLINK"
-},
-SC_POISON = {
-	Icon = "SI_CLOUDKILL"
-},
-SC_SILENCE = {
-	Icon = "SI_SILENT_BREEZE"
-},
 SC_THORNS_TRAP = {
 	Id = 463,
 	Icon = "SI_THORNTRAP"
-},
-SC_WARM = {
-	Icon = "SI_SG_SUN_WARM"
-},
-SC_COMA = {
-	Behavior = {
-		StatusEffectBehavior.NoBoss,
-	},
 },
 SC_RICHMANKIM = {
 	Id = 78,
@@ -4134,11 +3710,6 @@ SC_RICHMANKIM = {
 },
 SC_ROKISWEIL = {
 	Id = 82,
-	Behavior = {
-		StatusEffectBehavior.NoBoss,
-	},
-},
-SC_BURNING = {
 	Behavior = {
 		StatusEffectBehavior.NoBoss,
 	},
@@ -4160,17 +3731,6 @@ SC_SV_ROOTTWIST = {
 	Behavior = {
 		StatusEffectBehavior.NoBoss,
 	},
-},
-SC_MADOGEAR = {
-	Visible = true,
-	Behavior = {
-		StatusEffectBehavior.NoDeathReset,
-		StatusEffectBehavior.CantDispell,
-		StatusEffectBehavior.CantClearance,
-		StatusEffectBehavior.NoAllReset,
-		StatusEffectBehavior.NoBoss,
-	},
-	Icon = "SI_MADOGEAR"
 },
 SC_POPECOOKIE = {
 	Id = 423,
@@ -4236,5 +3796,506 @@ SC_ALMIGHTY = {
 SC_SKE = {
 	Id = 160,
 	Icon = "SI_SKE"
+},
+
+SC_FLOWERSMOKE = {
+	Id = 9000,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_FLOWERSMOKE"
+},
+SC_BABY = {
+	Id = 9001,
+	Icon = "SI_PROTECTEXP"
+},
+SC_EXTREMITYFIST2 = {
+	Id = 9002,
+	Icon = "SI_EXTREMITYFIST"
+},
+SC_MIRACLE = {
+	Id = 9003,
+	Icon = "SI_SOULLINK"
+},
+SC_POISON = {
+	Id = 9004,
+	Icon = "SI_CLOUDKILL"
+},
+SC_SILENCE = {
+	Id = 9005,
+	Icon = "SI_SILENT_BREEZE"
+},
+SC_WARM = {
+	Id = 9006,
+	Icon = "SI_SG_SUN_WARM"
+},
+SC_COMA = {
+	Id = 9007,
+	Behavior = {
+		StatusEffectBehavior.NoBoss,
+	},
+},
+SC_FSTONE = {
+	Id = 9008,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_FSTONE"
+},
+SC_HAPPINESS_STAR = {
+	Id = 9009,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_HAPPINESS_STAR"
+},
+SC_MAPLE_FALLS = {
+	Id = 9010,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_MAPLE_FALLS"
+},
+SC_MAGICAL_FEATHER = {
+	Id = 9011,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_MAGICAL_FEATHER"
+},
+SC_BLOSSOM_FLUTTERING = {
+	Id = 9012,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_BLOSSOM_FLUTTERING"
+},
+SC_DAILYSENDMAILCNT = {
+	Id = 9013,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_DAILYSENDMAILCNT"
+},
+
+SC_WEDDING = {
+	Id = 9014,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_XMAS = {
+	Id = 9015,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_SUMMER = {
+	Id = 9016,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_NOCHAT = {
+	Id = 9017,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+},
+SC_FUSION = {
+	Id = 9018,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_COUNTERKICK_READY = {
+	Id = 9019,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+	Icon = "SI_COUNTER_ON"
+},
+SC_JAILED = {
+	Id = 9020,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+},
+SC_AUTOTRADE = {
+	Id = 9021,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_DANCING = {
+	Id = 9022,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+	},
+},
+SC_ASSNCROS = {
+	Id = 9023,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_FORTUNE = {
+	Id = 9024,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_INCHIT = {
+	Id = 9025,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+	},
+},
+SC_MADOGEAR = {
+	Id = 9026,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoAllReset,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_MADOGEAR"
+},
+SC_LEADERSHIP = {
+	Id = 9027,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+},
+SC_GLORYWOUNDS = {
+	Id = 9028,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+},
+SC_SOULCOLD = {
+	Id = 9029,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+},
+SC_HAWKEYES = {
+	Id = 9030,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+},
+SC_BURNING = {
+	Id = 9031,
+	Behavior = {
+		StatusEffectBehavior.NoBoss,
+	},
+},
+
+SC__REPRODUCE = {
+	Id = 9032,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_REPRODUCE"
+},
+SC__AUTOSHADOWSPELL = {
+	Id = 9033,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_AUTOSHADOWSPELL"
+},
+SC__SHADOWFORM = {
+	Id = 9034,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_SHADOWFORM"
+},
+SC__BODYPAINT = {
+	Id = 9035,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_BODYPAINT"
+},
+SC__INVISIBILITY = {
+	Id = 9036,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_INVISIBILITY"
+},
+SC__DEADLYINFECT = {
+	Id = 9037,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_DEADLYINFECT"
+},
+SC__ENERVATION = {
+	Id = 9038,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_ENERVATION"
+},
+SC__GROOMY = {
+	Id = 9039,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_GROOMY"
+},
+SC__IGNORANCE = {
+	Id = 9040,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_IGNORANCE"
+},
+SC__LAZINESS = {
+	Id = 9041,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_LAZINESS"
+},
+SC__UNLUCKY = {
+	Id = 9042,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_UNLUCKY"
+},
+SC_GLOOMYDAY_SK = {
+	Id = 9043,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+	},
+},
+SC__WEAKNESS = {
+	Id = 9044,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoBoss,
+	},
+	Icon = "SI_WEAKNESS"
+},
+SC__STRIPACCESSARY = {
+	Id = 9045,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_STRIPACCESSARY"
+},
+SC__MANHOLE = {
+	Id = 9046,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+		StatusEffectBehavior.NoMadoReset,
+	},
+	Icon = "SI_MANHOLE"
+},
+SC__BLOODYLUST = {
+	Id = 9047,
+	Behavior = {
+		StatusEffectBehavior.IsDebuff,
+	},
+},
+SC_MAXIMIZEPOWER = {
+	Id = 9048,
+	Behavior = {
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_MAXIMIZE"
+},
+SC_SAFETYWALL = {
+	Id = 9049,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+},
+SC_PNEUMA = {
+	Id = 9050,
+	Behavior = {
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+},
+SC_VOLCANO = {
+	Id = 9051,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_GROUNDMAGIC"
+},
+SC_DELUGE = {
+	Id = 9052,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_GROUNDMAGIC"
+},
+SC_VIOLENTGALE = {
+	Id = 9053,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.IsBuff,
+	},
+	Icon = "SI_GROUNDMAGIC"
+},
+SC_SECRAMENT = {
+	Id = 9054,
+	Icon = "SI_SECRAMENT"
+},
+SC_DRESS_UP = {
+	Id = 9055,
+	Icon = "SI_DRESS_UP"
+},
+SC_ORCISH = {
+	Id = 9056,
+	Behavior = {
+		StatusEffectBehavior.NoSave,
+	},
+},
+SC_PUSH_CART = {
+	Id = 9057,
+	Visible = true,
+	Behavior = {
+		StatusEffectBehavior.NoDeathReset,
+		StatusEffectBehavior.CantDispell,
+		StatusEffectBehavior.CantClearance,
+		StatusEffectBehavior.NoMadoReset,
+		StatusEffectBehavior.NoAllReset,
+	},
+	Icon = "SI_ON_PUSH_CART"
 },
 }
