@@ -27,8 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_SKILLDB_HPP
-#define HORIZON_ZONE_GAME_SKILLDB_HPP
+#ifndef HORIZON_ZONE_STATICDB_SKILLDB_HPP
+#define HORIZON_ZONE_STATICDB_SKILLDB_HPP
 
 #include "Server/Common/Definitions/BattleDefinitions.hpp"
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
@@ -215,4 +215,4 @@ void Horizon::Zone::SkillDatabase::fill_lvl_range(T *setting, T value)
 
 #define SkillDB Horizon::Zone::SkillDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_SKILLDB_HPP */
+#endif /* HORIZON_ZONE_STATICDB_SKILLDB_HPP */

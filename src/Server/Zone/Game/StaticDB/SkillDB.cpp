@@ -67,7 +67,7 @@ bool SkillDatabase::load()
 		lua.script_file(file_path);
 		sol::table skill_tbl = lua.get<sol::table>("skill_db");
 		skill_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
-			total_entries += load_internal_skill_db(key, value);
+			total_entries += load_internal_skill_db(key, value) ? 1 : 0;
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
@@ -84,7 +84,7 @@ bool SkillDatabase::load()
 		lua.script_file(file_path);
 		sol::table skill_tree_tbl = lua.get<sol::table>("skill_tree_db");
 		skill_tree_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
-			total_entries += load_internal_skill_tree(key, value);
+			total_entries += load_internal_skill_tree(key, value) ? 1 : 0;
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {

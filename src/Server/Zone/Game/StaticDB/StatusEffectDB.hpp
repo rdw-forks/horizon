@@ -1,4 +1,4 @@
-/***************************************************
+	/***************************************************
  *       _   _            _                        *
  *      | | | |          (_)                       *
  *      | |_| | ___  _ __ _ _______  _ __          *
@@ -27,71 +27,49 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_STATICDB_EXPDB_HPP
-#define HORIZON_ZONE_STATICDB_EXPDB_HPP
+#ifndef HORIZON_ZONE_STATICDB_STATUSEFFECTDB_HPP
+#define HORIZON_ZONE_STATICDB_STATUSEFFECTDB_HPP
 
-#include "Server/Common/Configuration/Horizon.hpp"
-
-#include <string>
-#include <vector>
-#include <cassert>
 #include <sol.hpp>
 
 namespace Horizon
 {
 namespace Zone
 {
-
-struct exp_group_data
+struct status_effect_config_data
 {
-	uint32_t max_level;
-	std::vector<uint64_t> exp;
+	int32_t status_id{0};
+	std::string name{""};
+	int32_t behavior{0};
+	std::string icon{""};
+	bool visible{true};
 };
-
-enum exp_group_type
-{
-	EXP_GROUP_TYPE_BASE,
-	EXP_GROUP_TYPE_JOB
-};
-
-class ExpDatabase
+class StatusEffectDatabase
 {
 public:
-	ExpDatabase() { }
-	~ExpDatabase() { }
-
-	static ExpDatabase *get_instance()
+	StatusEffectDatabase();
+	~StatusEffectDatabase();
+	
+	static StatusEffectDatabase *get_instance()
 	{
-		static ExpDatabase instance;
+		static StatusEffectDatabase instance;
 		return &instance;
 	}
 
 	bool load();
 
-	std::shared_ptr<const exp_group_data> get_exp_group(std::string const &name, exp_group_type type)
-	{
-		return type == EXP_GROUP_TYPE_BASE ? _base_exp_group_db.at(name) : _job_exp_group_db.at(name);
-	}
-
-	uint32_t get_status_point(uint32_t level)
-	{
-		if (level <= 0 || level > _stat_point_db.size() || level > MAX_LEVEL)
-			return 0;
-		return _stat_point_db.at(level);
-	}
-
-	bool load_status_point_table();
-
 protected:
-	int load_group(sol::table &tbl, exp_group_type type);
-	LockedLookupTable<std::string, std::shared_ptr<const exp_group_data>> _base_exp_group_db;
-	LockedLookupTable<std::string, std::shared_ptr<const exp_group_data>> _job_exp_group_db;
-	LockedLookupTable<uint32_t, uint32_t> _stat_point_db;
+	bool load_internal(sol::object const &key, sol::object const &value);
+
+public:
+	std::shared_ptr<const status_effect_config_data> get_status_effect_by_id(int32_t id) { return _status_effect_db.at(id); }
+
+private:
+	LockedLookupTable<uint32_t, std::shared_ptr<const status_effect_config_data>> _status_effect_db;
 };
-
 }
 }
 
-#define ExpDB Horizon::Zone::ExpDatabase::get_instance()
+#define StatusEffectDB Horizon::Zone::StatusEffectDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_STATICDB_EXPDB_HPP */
+#endif /* HORIZON_ZONE_STATICDB_STATUSEFFECTDB_HPP */

@@ -38,4 +38,5 @@ set(COMMON_DEFINITION_HEADERS
 	${DIR}/NPCDefinitions.hpp
 	${DIR}/MonsterDefinitions.hpp
 	${DIR}/SkillDefinitions.hpp
+	${DIR}/StatusEffectDefinitions.hpp
 	PARENT_SCOPE)

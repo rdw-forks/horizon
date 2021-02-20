@@ -26,21 +26,20 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP
-#define HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP
+#ifndef HORIZON_ZONE_COMMON_STATUS_DEFINITIONS
+#define HORIZON_ZONE_COMMON_STATUS_DEFINITIONS
 
-#include <sol.hpp>
+enum status_effect_behavior_type {
+	SEBHVR_NO_REM_DEATH  = 0x001,
+	SEBHVR_NO_SAVE       = 0x002,
+	SEBHVR_NO_DISPELL    = 0x004,
+	SEBHVR_NO_CLEARANCE  = 0x008,
+	SEBHVR_BUFF          = 0x010,
+	SEBHVR_DEBUFF        = 0x020,
+	SEBHVR_MADO_NO_RESET = 0x040,
+	SEBHVR_NO_CLEAR      = 0x080,
+	SEBHVR_VISIBLE       = 0x100,
+	SEBHVR_NO_BOSS       = 0x200
+};
 
-void sync_battle_definitions(sol::state &state);
-
-void sync_entity_definitions(sol::state &state);
-
-void sync_item_definitions(sol::state &state);
-
-void sync_monster_definitions(sol::state &state);
-
-void sync_skill_definitions(sol::state &state);
-
-void sync_status_effect_definitions(sol::state &state);
-
-#endif /* HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP */
+#endif /* HORIZON_ZONE_COMMON_STATUS_DEFINITIONS */

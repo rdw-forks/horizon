@@ -27,9 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
-#ifndef HORIZON_ZONE_GAME_ITEMDB
-#define HORIZON_ZONE_GAME_ITEMDB
+#ifndef HORIZON_ZONE_STATICDB_ITEMDB_HPP
+#define HORIZON_ZONE_STATICDB_ITEMDB_HPP
 
 #include "Common/Definitions/EntityDefinitions.hpp"
 #include "Common/Definitions/ItemDefinitions.hpp"
@@ -110,4 +109,4 @@ private:
 
 #define ItemDB Horizon::Zone::ItemDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_ITEMDB */
+#endif /* HORIZON_ZONE_STATICDB_ITEMDB_HPP */

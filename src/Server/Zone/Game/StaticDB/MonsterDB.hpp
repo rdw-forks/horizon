@@ -27,8 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_MONSTERDB_HPP
-#define HORIZON_ZONE_GAME_MONSTERDB_HPP
+#ifndef HORIZON_ZONE_STATICDB_MONSTERDB_HPP
+#define HORIZON_ZONE_STATICDB_MONSTERDB_HPP
 
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/Definitions/MonsterDefinitions.hpp"
@@ -190,4 +190,4 @@ private:
 
 #define MonsterDB Horizon::Zone::MonsterDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_MONSTERDB_HPP */
+#endif /* HORIZON_ZONE_STATICDB_MONSTERDB_HPP */

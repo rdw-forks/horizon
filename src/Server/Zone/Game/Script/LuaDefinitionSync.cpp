@@ -29,12 +29,14 @@
  #include "LuaDefinitionSync.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
+
 #include "BattleDefinitions.hpp"
 #include "EntityDefinitions.hpp"
 #include "ItemDefinitions.hpp"
 #include "MonsterDefinitions.hpp"
 #include "NPCDefinitions.hpp"
 #include "SkillDefinitions.hpp"
+#include "StatusEffectDefinitions.hpp"
 
 void sync_battle_definitions(sol::state &state)
 {
@@ -834,5 +836,20 @@ void sync_skill_definitions(sol::state &state)
 		"AllowReproduce", SK_SUBTYPE_ALLOW_REPRODUCE,
 		"HiddenTrap", SK_SUBTYPE_HIDDEN_TRAP,
 		"IsCombo", SK_SUBTYPE_IS_COMBO_SKILL   
+	);
+}
+
+void sync_status_effect_definitions(sol::state &state)
+{	
+	state.create_named_table("StatusEffectBehavior",
+		"NoDeathReset", SEBHVR_NO_REM_DEATH,
+		"NoSave", SEBHVR_NO_SAVE,
+		"CantDispell", SEBHVR_NO_DISPELL,
+		"CantClearance", SEBHVR_NO_CLEARANCE,
+		"IsBuff", SEBHVR_BUFF,
+		"IsDebuff", SEBHVR_DEBUFF,
+		"MadoNoReset", SEBHVR_MADO_NO_RESET,
+		"NoClear", SEBHVR_NO_CLEAR,
+		"NoBoss", SEBHVR_NO_BOSS
 	);
 }
