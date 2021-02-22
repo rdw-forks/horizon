@@ -46,6 +46,7 @@ public:
 	~Creature();
 
 private:
+	uint32_t _mob_id;
 };
 }
 }

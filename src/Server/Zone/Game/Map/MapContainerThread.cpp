@@ -29,6 +29,7 @@
 
 #include "MapContainerThread.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -172,7 +173,7 @@ void MapContainerThread::start_internal()
 	get_script_manager()->initialize();
 
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-		update(get_sys_time());
+		update(MAX_CORE_UPDATE_INTERVAL);
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	};
 
@@ -224,8 +225,16 @@ void MapContainerThread::update(uint64_t diff)
 	}
 
 	// Update NPCs
-	for (auto npci : _script_mgr->_npc_db) {
-		std::shared_ptr<Entities::NPC> npc = npci.second._npc;
+	std::map<uint32_t, std::shared_ptr<npc_db_data>> npmap = _script_mgr->_npc_db.get_map();
+	for (auto npci : npmap) {
+		std::shared_ptr<Entities::NPC> npc = npci.second->_npc;
 		npc->update(diff);
 	}
+
+	// Update Monsters
+	// std::map<uint32_t, std::shared_ptr<Entities::Monster>> mmap = _script_mgr->get_spawned_monster_db();
+	// for (auto moni : mmap) {
+	// 	std::shared_ptr<Entities::Monster> monster = moni.second;
+	// 	monster->update(diff);
+	// }
 }

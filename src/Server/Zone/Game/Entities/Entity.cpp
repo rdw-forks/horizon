@@ -78,7 +78,6 @@ bool Entity::schedule_movement(MapCoords coords)
 		return false;
 	}
 
-	HLog(debug) << "Moving From : (" << source_coords.x << ", " << source_coords.y << ") to (" << dest_coords.x << ", " << dest_coords.y << ")";
 	// This method returns vector of coordinates from target to source.
 	auto path = map()->get_pathfinder().findPath(source_coords, dest_coords);
 
@@ -123,8 +122,6 @@ void Entity::move()
 
 			notify_nearby_players_of_self(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
-
-			HLog(debug) << "step_coords: " << step_coords.x() << ", " << step_coords.y() << ".";
 			
 			notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
 
@@ -160,9 +157,9 @@ bool Entity::move_to_coordinates(uint16_t x, uint16_t y)
 	return true;
 }
 
-void Entity::update(uint64_t /*diff*/)
+void Entity::update(uint64_t diff)
 {
-	_scheduler.Update();
+	_scheduler.Update(Microseconds(diff));
 }
 
 bool Entity::is_in_range_of(std::shared_ptr<Entity> e, uint8_t range)

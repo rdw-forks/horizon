@@ -77,14 +77,13 @@ public:
 		std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
 		
 		for (auto it = container_map.begin(); it != container_map.end(); ++it) {
-			if (it->second == nullptr)
-				return std::shared_ptr<Map>();
-			std::shared_ptr<Map> map = it->second->get_map(map_name);
+			std::shared_ptr<MapContainerThread> mapc = it->second;
+			std::shared_ptr<Map> map = mapc->get_map(map_name);
 			if (map) 
 				return map;
 		}
 
-		return std::shared_ptr<Map>();
+		return nullptr;
 	}
 
 	TaskScheduler &getScheduler() { return _scheduler; }

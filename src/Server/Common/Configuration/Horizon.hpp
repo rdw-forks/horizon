@@ -65,7 +65,7 @@
 #define MAX_NETWORK_THREADS 1
 
 // Time in Microseconds (µs)
-#define MAX_CORE_UPDATE_INTERVAL 500
+#define MAX_CORE_UPDATE_INTERVAL 5000
 
 // Map Thread Containers
 #define MAX_MAP_CONTAINER_THREADS 2
@@ -90,7 +90,7 @@ static_assert(MIN_STORAGE_SIZE > 0 && MAX_STORAGE_SIZE >= MIN_STORAGE_SIZE,
 static_assert(MAX_NETWORK_THREADS > 0,
               "MAX_NETWORK_THREADS cannot be less than or equal to 0");
 
-static_assert(MAX_CORE_UPDATE_INTERVAL >= 500 && MAX_CORE_UPDATE_INTERVAL <= 4000,
+static_assert(MAX_CORE_UPDATE_INTERVAL >= 500 && MAX_CORE_UPDATE_INTERVAL <= 5000,
             "MAX_CORE_UPDATE_INTERVAL recommended setting is 4000µs.");
 
 static_assert(MAX_MAP_CONTAINER_THREADS > 0,

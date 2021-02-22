@@ -103,7 +103,6 @@ void ZoneSocket::read_handler()
 		int16_t packet_length = p.first;
 		
 		HLog(debug) << "Received packet 0x" << std::hex << packet_id << " of length " << std::dec << packet_length << " from client.";
-		HLog(debug) << "Data:" << get_read_buffer().to_string();
 		
 		if (packet_length == -1) {
 			memcpy(&packet_length, get_read_buffer().get_read_pointer() + 2, sizeof(int16_t));

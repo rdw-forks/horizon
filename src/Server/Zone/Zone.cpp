@@ -222,7 +222,9 @@ void ZoneServer::initialize_core()
 	 * Server shutdown routine begins here...
 	 */
 	_task_scheduler.CancelAll();
+
 	ClientSocktMgr->stop_network();
+	
 	Server::finalize_core();
 }
 

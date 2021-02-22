@@ -913,23 +913,3 @@ bool MonsterDatabase::load_skill_internal(const sol::object &key, const sol::obj
 
 	return true;
 }
-	// <Monster_Constant> = {
-	// 	<Skill_Constant> = {
-	// 		SkillLevel =    (int, defaults to 1)
-	// 		SkillState =    (string, defaults to "MSS_ANY")
-	// 		SkillTarget =   (string, defaults to "MST_TARGET")
-	// 		Rate =          (int, defaults to 1)
-	// 		CastTime =      (int, defaults to 0)
-	// 		Delay =         (int, defaults to 0)
-	// 		Cancelable =    (boolean, defaults to false)
-	// 		CastCondition = (string, defaults to "MSC_ALWAYS")
-	// 		ConditionData = (int, defaults to 0)
-	// 		val0 =          (int, defaults to 0)
-	// 		val1 =          (int, defaults to 0)
-	// 		val2 =          (int, defaults to 0)
-	// 		val3 =          (int, defaults to 0)
-	// 		val4 =          (int, defaults to 0)
-	// 		Emotion =       (int, defaults to -1)
-	// 		ChatMsgID =     (int, defaults to 0)
-	// 	},
-	// },

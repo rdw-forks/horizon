@@ -37,18 +37,25 @@
 template <class T>
 void GridViewPortUpdater::update(GridRefManager<T> &m)
 {
+	using namespace Horizon::Zone;
 	using namespace Horizon::Zone::Entities;
 
 	if (_entity.expired())
 		return;
 
+	std::shared_ptr<Player> pl = _entity.lock()->template downcast<Player>();
+	
 	for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
-		std::shared_ptr<Player> pl = _entity.lock()->template downcast<Player>();
-
 		if (iter->source() == nullptr || iter->source()->guid() == pl->guid())
 			continue;
 
-		pl->add_entity_to_viewport(iter->source()->shared_from_this());
+		std::shared_ptr<Entity> vp_e = iter->source()->shared_from_this();
+
+		if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
+			pl->add_entity_to_viewport(vp_e);
+
+		if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
+			pl->remove_entity_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
 	}
 }
 
@@ -118,8 +125,8 @@ void GridNPCTrigger::check_and_trigger(GridRefManager<T> &m)
 		if (npc == nullptr)
 			continue;
 
-		npc_db_data const &nd = npc->get_db_data();
-		if (nd.trigger_range && _predicate(npc, nd.trigger_range)) {
+		std::shared_ptr<npc_db_data> const &nd = npc->script_manager()->get_npc_from_db(npc->guid());
+		if (nd != nullptr && nd->trigger_range && _predicate(npc, nd->trigger_range)) {
 			std::shared_ptr<Player> player = _source.lock()->downcast<Player>();
 			_source.lock()->script_manager()->contact_npc_for_player(player, npc->guid());
 		}

@@ -31,6 +31,7 @@
 #define HORIZON_ZONE_GAME_MAP_SCRIPTMANAGER
 
 #include "Common/Definitions/NPCDefinitions.hpp"
+#include "Common/Definitions/MonsterDefinitions.hpp"
 
 #include <sol.hpp>
 
@@ -42,6 +43,7 @@ namespace Entities
 {
 	class NPC;
 	class Player;
+	class Monster;
 }
 class MapContainerThread;
 class ScriptManager
@@ -62,8 +64,19 @@ public:
 	void perform_command_from_player(std::shared_ptr<Entities::Player> player, std::string const &cmd);
 	void initialize_state(sol::state &st);
 
-	void add_npc_to_db(uint32_t guid, npc_db_data const &data) { _npc_db.emplace(guid, data); }
-	npc_db_data &get_npc_from_db(uint32_t guid) { return _npc_db.at(guid); }
+	void add_npc_to_db(uint32_t guid, std::shared_ptr<npc_db_data> const &data) { _npc_db.insert(guid, data); }
+	std::shared_ptr<npc_db_data> get_npc_from_db(uint32_t guid) { return _npc_db.at(guid); }
+
+	void add_monster_spawn_to_db(uint32_t guid, std::shared_ptr<monster_spawn_data> data) { _monster_spawn_db.insert(guid, data); }
+	std::shared_ptr<monster_spawn_data> get_monster_spawn_from_db(uint32_t guid) { return _monster_spawn_db.at(guid); }
+
+	void add_spawned_monster_to_db(uint32_t guid, std::shared_ptr<Entities::Monster> data) { _monster_spawned_db.insert(guid, data); }
+	std::shared_ptr<Entities::Monster> get_spawned_monster_from_db(uint32_t guid) 
+	{
+		return _monster_spawned_db.at(guid, std::shared_ptr<Entities::Monster>()); 
+	}
+	std::map<uint32_t, std::shared_ptr<Entities::Monster>> get_spawned_monster_db() { return _monster_spawned_db.get_map(); }
+
 protected:
 	void initialize();
 	void finalize();
@@ -75,9 +88,13 @@ private:
 	void load_scripts_internal();
 
 	std::vector<std::string> _script_files;
-	std::unordered_map<uint32_t, npc_db_data> _npc_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<npc_db_data>> _npc_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<monster_spawn_data>> _monster_spawn_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<Entities::Monster>> _monster_spawned_db;
 	sol::state _lua_state;
 	std::weak_ptr<MapContainerThread> _container;
+	int32_t _last_monster_spawn_id{0};
+	
 };
 }
 }

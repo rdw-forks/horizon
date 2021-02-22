@@ -98,6 +98,27 @@ public:
 
 	AStar::Generator &get_pathfinder() { return _pathfinder; }
 
+	MapCoords get_random_coordinates_in_area(uint16_t x, uint16_t y, uint16_t xs, uint16_t ys)
+	{
+		std::vector<MapCoords> available_cells;
+
+		std::srand(std::time(0));
+
+		for (int i = std::max(x - xs, 0); i < std::min(x + xs, (int) _width); i++) {
+			for (int j = std::max(y - ys, 0); j < std::min(y + ys,(int) _height); j++) {
+				if (!has_obstruction_at(i, j))
+					available_cells.push_back(MapCoords(i, j));
+			}
+		}
+
+		if (available_cells.size() == 0)
+			return MapCoords(0, 0);
+
+		int rnd = rand() % available_cells.size();
+
+		return available_cells.at(rnd);
+	}
+	
 private:
 	std::weak_ptr<MapContainerThread> _container;
 	std::string _name{""};

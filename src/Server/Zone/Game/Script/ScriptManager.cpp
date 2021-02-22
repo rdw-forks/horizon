@@ -34,6 +34,7 @@
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
@@ -104,8 +105,7 @@ void ScriptManager::initialize_state(sol::state &st)
 		{
 			std::shared_ptr<Map> map = MapMgr->get_map(name);
 
-			if (map == nullptr
-				|| ((void *) map->container().get() != ((_container.lock()).get())))
+			if (map == nullptr)
 				return std::shared_ptr<Map>();
 
 			return map;
@@ -118,12 +118,24 @@ void ScriptManager::initialize_state(sol::state &st)
 		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
 			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
 
-			if (map == nullptr
-				|| ((void *) map->container().get() != ((_container.lock()).get())))
+			if (map == nullptr)
 				return std::shared_ptr<NPC>();
 
-			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir, script_file);
+			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
+
+			npc_db_data nd;
+			nd.npc_name = name;
+			nd.map_name = map->get_name();
+			nd.coords = MapCoords(x, y);
+			nd.direction = dir;
+			nd.script = script_file;
+			nd.script_is_file = true;
+			nd._npc = npc;
+
+			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
+
+			add_npc_to_db(npc->guid(), p_nd);
 
 			return npc;
 		});
@@ -132,41 +144,130 @@ void ScriptManager::initialize_state(sol::state &st)
 		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::shared_ptr<NPC> duplicate) {
 			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
 
-			if (map == nullptr
-				|| ((void *) map->container().get() != ((_container.lock()).get())))
-				return std::shared_ptr<NPC>();
-
-			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir, duplicate);
-			npc->initialize();
-
-			return npc;
-		});
-	st.set_function("SilentNPC",
-		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
-			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
-
-			if (map == nullptr
-				|| ((void *) map->container().get() != ((_container.lock()).get())))
+			if (map == nullptr)
 				return std::shared_ptr<NPC>();
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
 
+			npc_db_data nd;
+			nd.npc_name = name;
+			nd.map_name = map->get_name();
+			nd.coords = MapCoords(x, y);
+			nd.direction = dir;
+			nd._npc = npc;
+
+			std::shared_ptr<npc_db_data> dup_nd = _npc_db.at(duplicate->guid());
+
+			nd.script = dup_nd->script;
+			nd.script_is_file = true;
+
+			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
+
+			add_npc_to_db(npc->guid(), p_nd);
+
+			return npc;
+		});
+
+	st.set_function("SilentNPC",
+		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
+			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
+
+			if (map == nullptr)
+				return std::shared_ptr<NPC>();
+
+			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
+			npc->initialize();
+
+			npc_db_data nd;
+			nd.npc_name = name;
+			nd.map_name = map->get_name();
+			nd.coords = MapCoords(x, y);
+			nd.direction = dir;
+			nd._npc = npc;
+
+			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
+
+			add_npc_to_db(npc->guid(), p_nd);
+
 			return npc;
 		});
 
 	st.set_function("Warp",
-		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, std::string const &script, uint16_t trigger_range) {
+		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, std::string const &script, uint16_t trigger_range) 
+		{
+			std::shared_ptr<MapContainerThread> container = _container.lock();
+
+			if (container == nullptr)
+				return;
+			
 			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
 
-			if (map == nullptr
-				|| ((void *) map->container().get() != ((_container.lock()).get())))
-				return std::shared_ptr<NPC>();
+			if (map == nullptr)
+				return;
 
-			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, script, trigger_range);
+			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, script);
 			npc->initialize();
 
-			return npc;
+			npc_db_data nd;
+			nd.npc_name = name;
+			nd.map_name = map->get_name();
+			nd.coords = MapCoords(x, y);
+			nd.script = script;
+			nd.script_is_file = false;
+			nd.trigger_range = trigger_range;
+			nd._npc = npc;
+			
+			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
+
+			add_npc_to_db(npc->guid(), p_nd);
+		});
+
+
+	st.set_function("Monster",
+		[this] (std::string const &map_name, uint16_t x, uint16_t y, uint16_t x_area, uint16_t y_area, std::string const &name, uint16_t monster_id, uint16_t amount, uint16_t spawn_delay_base, uint16_t spawn_delay_variance) 
+		{
+			std::shared_ptr<MapContainerThread> container = _container.lock();
+
+			if (container == nullptr)
+				return;
+			
+			std::shared_ptr<Map> map = container->get_map(map_name);
+
+			if (map == nullptr)
+				return;
+
+			for (int i = 0; i < amount; i++) {
+				MapCoords mcoords = MapCoords(x, y);
+
+				if (mcoords == MapCoords(0, 0))
+					mcoords = map->get_random_coords();
+
+				if (x_area && y_area) {
+					if ((mcoords = map->get_random_coordinates_in_area(x, y, x_area, y_area)) == MapCoords(0, 0))
+						mcoords = map->get_random_coords();
+				}
+
+				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, name, monster_id);
+				monster->initialize();
+				
+				add_spawned_monster_to_db(monster->guid(), std::move(monster));
+			}
+
+			monster_spawn_data spwd;
+
+			spwd.map_name = map_name;
+			spwd.x = x;
+			spwd.y = y;
+			spwd.x_area = x_area;
+			spwd.y_area = y_area;
+			spwd.mob_name = name;
+			spwd.monster_id = monster_id;
+			spwd.amount = amount;
+			spwd.spawn_delay_base = spawn_delay_base;
+			spwd.spawn_delay_variance = spawn_delay_variance;
+
+			add_monster_spawn_to_db(_last_monster_spawn_id++, std::make_shared<monster_spawn_data>(spwd));
 		});
 
 	/**
@@ -495,12 +596,12 @@ void ScriptManager::finalize()
 
 void ScriptManager::load_scripts()
 {
-	std::string file_path = "scripts/npcs/include.lua";
+	std::string file_path = "scripts/include.lua";
 
 	try {
 		_lua_state.script_file(file_path);
 
-		sol::table scripts = _lua_state["definitions"];
+		sol::table scripts = _lua_state["scripts"];
 
 		int count = 0;
 		scripts.for_each([this, &count, &file_path](sol::object const &/*key*/, sol::object const& value) {
@@ -534,15 +635,15 @@ void ScriptManager::load_constants()
 
 void ScriptManager::contact_npc_for_player(std::shared_ptr<Player> player, uint32_t npc_guid)
 {
-	npc_db_data const &nd = _npc_db.at(npc_guid);
+	std::shared_ptr<npc_db_data> const &nd = _npc_db.at(npc_guid);
 
-	if (nd.script_is_file)
+	if (nd->script_is_file)
 		player->set_npc_contact_guid(npc_guid);
 
 	try {
 		sol::state &pl_lua = player->get_lua_state();
 		sol::protected_function fx = pl_lua.load_file("scripts/internal/script_command_main.lua");
-		sol::protected_function_result result = fx(player, nd._npc, nd.script, nd.script_is_file);
+		sol::protected_function_result result = fx(player, nd->_npc, nd->script, nd->script_is_file);
 		if (!result.valid()) {
 			sol::error err = result;
 			HLog(error) << "ScriptManager::contact_npc_for_player: " << err.what();

@@ -58,10 +58,8 @@ void Logger::colored_formatter(boost::log::record_view const& rec, boost::log::f
 
     switch (*severity) {
         case boost::log::trivial::trace:
-            strm << color(90);
-            break;
         case boost::log::trivial::debug:
-            strm << color(91);
+            strm << color(90);
         break;
         case boost::log::trivial::info:
             strm << color(36);

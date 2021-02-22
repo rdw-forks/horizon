@@ -29,16 +29,61 @@
 
 #include "Monster.hpp"
 #include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Map/Map.hpp"
 
 using namespace Horizon::Zone::Entities;
 
-Monster::Monster(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_MONSTER, map, mcoords)
+Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords, std::string const &name, uint16_t mob_id)
+: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords)
 {
-	//
+	set_name(name);
+	set_job_id(mob_id);
+	set_direction(DIR_SOUTH);
 }
 
 Monster::~Monster()
 {
-	//
+	if (has_valid_grid_reference())
+		remove_grid_reference();
+}
+
+void Monster::initialize()
+{
+	Entity::initialize();
+
+	status()->initialize();
+	map()->ensure_grid_for_entity(this, map_coords());
+
+	getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME), [this] (TaskContext context) {
+		std::srand(std::time(nullptr));
+		context.DelayAll(Milliseconds(rand() % MOB_LAZY_MOVE_RATE));
+		MapCoords mc = map()->get_random_coordinates_in_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
+		move_to_coordinates(mc.x(), mc.y());
+		context.Repeat();
+	});
+}
+
+void Monster::stop_movement()
+{
+
+}
+
+void Monster::on_movement_begin()
+{
+
+}
+
+void Monster::on_movement_step()
+{
+}
+
+void Monster::on_movement_end()
+{
+
+}
+
+void Monster::sync_with_models()
+{
+
 }

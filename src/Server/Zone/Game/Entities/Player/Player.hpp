@@ -80,10 +80,11 @@ public:
 	 */
 	void update_viewport();
 
-	void add_entity_to_viewport(std::weak_ptr<Entity> entity);
-	void realize_entity_movement(std::weak_ptr<Entity> entity);
+	void add_entity_to_viewport(std::shared_ptr<Entity> entity);
+	void realize_entity_movement(std::shared_ptr<Entity> entity);
 	void remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_viewport_notification_type type);
-	void spawn_entity_in_viewport(std::weak_ptr<Entity> entity);
+	void spawn_entity_in_viewport(std::shared_ptr<Entity> entity);
+	bool entity_is_in_viewport(std::shared_ptr<Entity> entity);
 
 	void notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range = MAX_VIEW_RANGE);
 	bool move_to_map(std::shared_ptr<Map> map, MapCoords coords = { 0, 0 });
@@ -134,6 +135,8 @@ public:
 	int32_t npc_contact_guid() { return _npc_contact_guid; }
 	void set_npc_contact_guid(int32_t guid) { _npc_contact_guid = guid; }
 
+	std::vector<std::weak_ptr<Entity>> &get_viewport_entities() { return _viewport_entities; }
+
 private:
 	std::shared_ptr<ZoneSession> _session;
 	sol::state _lua_state;
@@ -141,6 +144,8 @@ private:
 	std::atomic<bool> _is_logged_in{false};
 	int32_t _npc_contact_guid{0};
 	int32_t _group_id{0};
+
+	std::vector<std::weak_ptr<Entity>> _viewport_entities;
 	
 	s_char_data _char;
 };

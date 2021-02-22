@@ -57,6 +57,9 @@ namespace Zone
 		}
 	}
 class Map;
+
+static int32_t _last_np_entity_guid = NPC_START_GUID;
+
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:

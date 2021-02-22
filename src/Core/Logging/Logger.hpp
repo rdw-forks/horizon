@@ -42,13 +42,6 @@
 
 class Logger
 {
-public:
-    enum status_message_type {
-        LOG_ERROR  = 31,
-        LOG_INFO   = 36,
-        LOG_DEBUG  = 91
-    };
-
 private:
     typedef boost::log::sources::severity_logger<boost::log::trivial::severity_level> logtype;
 

@@ -35,6 +35,8 @@
 
 #include <memory>
 
+#define MIN_RANDOM_TRAVEL_TIME 4000
+#define MOB_LAZY_MOVE_RATE 1000
 namespace Horizon
 {
 namespace Zone
@@ -45,10 +47,22 @@ namespace Entities
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
-	Monster(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	Monster(std::shared_ptr<Map> map, MapCoords mcoords, std::string const &name, uint16_t mob_id);
 	~Monster();
 
+	void initialize() override;
+
+	virtual void stop_movement() override;
+	virtual void on_movement_begin() override;
+	virtual void on_movement_step() override;
+	virtual void on_movement_end() override;
+	virtual void sync_with_models() override;
+
+	void set_spotted(bool spotted) { _spotted = spotted; }
+	bool is_spotted() { return _spotted; }
+
 private:
+	bool _spotted{false};
 };
 }
 }
