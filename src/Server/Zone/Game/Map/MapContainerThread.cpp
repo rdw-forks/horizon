@@ -231,10 +231,5 @@ void MapContainerThread::update(uint64_t diff)
 		npc->update(diff);
 	}
 
-	// Update Monsters
-	// std::map<uint32_t, std::shared_ptr<Entities::Monster>> mmap = _script_mgr->get_spawned_monster_db();
-	// for (auto moni : mmap) {
-	// 	std::shared_ptr<Entities::Monster> monster = moni.second;
-	// 	monster->update(diff);
-	// }
+	getScheduler().Update();
 }

@@ -88,13 +88,13 @@ static_assert(MIN_STORAGE_SIZE > 0 && MAX_STORAGE_SIZE >= MIN_STORAGE_SIZE,
               "Max storage should be greater than minimum storage size of 1.");
 
 static_assert(MAX_NETWORK_THREADS > 0,
-              "MAX_NETWORK_THREADS cannot be less than or equal to 0");
+              "MAX_NETWORK_THREADS cannot be less than or equal to 0.");
 
-static_assert(MAX_CORE_UPDATE_INTERVAL >= 500 && MAX_CORE_UPDATE_INTERVAL <= 5000,
-            "MAX_CORE_UPDATE_INTERVAL recommended setting is 4000µs.");
+static_assert(MAX_CORE_UPDATE_INTERVAL >= 500,
+            "MAX_CORE_UPDATE_INTERVAL should be greater than 500 microseconds (µs).");
 
 static_assert(MAX_MAP_CONTAINER_THREADS > 0,
-            "MAX_MAP_CONTAINER_THREADS cannot be less than or equal to 0");
+            "MAX_MAP_CONTAINER_THREADS cannot be less than or equal to 0.");
 
 #include "Client.hpp"
 

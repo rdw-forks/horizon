@@ -157,9 +157,16 @@ void Server::initialize_command_line()
 	initialize_cli_commands();
 }
 
+bool Server::clicmd_shutdown(std::string /*cmd*/)
+{
+	set_shutdown_stage(SHUTDOWN_INITIATED);
+	set_shutdown_signal(SIGTERM);
+	return true;
+}
+
 void Server::initialize_cli_commands()
 {
-	add_cli_command_func("shutdown", std::bind(&Server::clicmd_shutdown, this));
+	add_cli_command_func("shutdown", std::bind(&Server::clicmd_shutdown, this, std::placeholders::_1));
 }
 
 void Server::process_cli_commands()
@@ -168,10 +175,13 @@ void Server::process_cli_commands()
 
 	while ((command = _cli_cmd_queue.try_pop())) {
 		bool ret = false;
-		std::function<bool(void)> cmd_func = get_cli_command_func(command->m_command);
+		std::vector<std::string> separated_args;
+		boost::algorithm::split(separated_args, command->m_command, boost::algorithm::is_any_of(" "));
+
+		std::function<bool(std::string)> cmd_func = get_cli_command_func(separated_args[0]);
 
 		if (cmd_func) {
-			ret = cmd_func();
+			ret = cmd_func(command->m_command);
 		} else {
 			HLog(info) << "Command '" << command->m_command << "' not found!";
 		}

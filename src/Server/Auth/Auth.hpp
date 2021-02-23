@@ -30,8 +30,8 @@
 #ifndef HORIZON_AUTH_HPP
 #define HORIZON_AUTH_HPP
 
-#include "Core/Multithreading/TaskScheduler/TaskScheduler.hpp"
 #include "Common/Server.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 #include <string>
 #include <mutex>
@@ -77,10 +77,11 @@ public:
 	void initialize_core();
 	/* CLI */
 	void initialize_cli_commands();
-	bool clicmd_reload_config();
+	bool clicmd_reload_config(std::string /*cmd*/);
+	bool clicmd_create_new_account(std::string /*cmd*/);
 
 	/* Task Scheduler */
-	TaskScheduler &get_task_scheduler() { return _task_scheduler; }
+	TaskScheduler &getScheduler() { return _task_scheduler; }
     
 	auth_config_type &get_auth_config()
 	{
@@ -88,7 +89,7 @@ public:
 		return _auth_config;
 	}
 	
-	void update(uint64_t diff);
+	void update(uint64_t time);
 	
 protected:
 	TaskScheduler _task_scheduler;

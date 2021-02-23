@@ -31,9 +31,9 @@
 #define HORIZON_ZONE_ZONEMAIN_HPP
 
 #include "Core/Logging/Logger.hpp"
-#include "Core/Multithreading/TaskScheduler/TaskScheduler.hpp"
 #include "Server/Common/Server.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 #include <string>
 #include <boost/asio/deadline_timer.hpp>
@@ -92,7 +92,7 @@ public:
 
 	s_zone_server_configuration &config() { return _zone_server_config; }
 
-	TaskScheduler &get_task_scheduler() { return _task_scheduler; }
+	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 private:
 	s_zone_server_configuration _zone_server_config;

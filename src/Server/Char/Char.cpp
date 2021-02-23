@@ -208,17 +208,17 @@ void CharServer::verify_connected_sessions()
 	HLog(info) << count << " connected session(s).";
 }
 
-void CharServer::update(uint64_t diff)
+void CharServer::update(uint64_t time)
 {
 	process_cli_commands();
 	
-	_task_scheduler.Update(diff);
+	getScheduler().Update();
 
-	ClientSocktMgr->update_socket_sessions(MAX_CORE_UPDATE_INTERVAL);
+	ClientSocktMgr->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&CharServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
 	} else {
 		get_io_service().stop();
 	}
@@ -238,13 +238,13 @@ void CharServer::initialize_core()
 
 	Server::initialize_core();
 
-	_task_scheduler.Schedule(Seconds(60), [this] (TaskContext context) {
+	getScheduler().Schedule(Seconds(60), [this] (TaskContext context) {
 		verify_connected_sessions();
 		context.Repeat();
 	});
 
-	_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
-	_update_timer.async_wait(std::bind(&CharServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
 	
 	get_io_service().run();
 
@@ -253,7 +253,7 @@ void CharServer::initialize_core()
 	/**
 	 * Cancel all pending tasks.
 	 */
-	_task_scheduler.CancelAll();
+	getScheduler().CancelAll();
 
 	/**
 	 * Server shutdown routine begins here...

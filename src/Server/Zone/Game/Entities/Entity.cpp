@@ -159,7 +159,7 @@ bool Entity::move_to_coordinates(uint16_t x, uint16_t y)
 
 void Entity::update(uint64_t diff)
 {
-	_scheduler.Update(Microseconds(diff));
+	_scheduler.Update();
 }
 
 bool Entity::is_in_range_of(std::shared_ptr<Entity> e, uint8_t range)

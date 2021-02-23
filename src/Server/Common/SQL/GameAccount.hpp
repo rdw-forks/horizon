@@ -177,7 +177,7 @@ struct salt
 			}
 		};
 	};
-	using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+	using _traits = sqlpp::make_traits<sqlpp::varchar>;
 };
 
 struct gender
@@ -407,7 +407,7 @@ struct birth_date
 			}
 		};
 	};
-	using _traits = sqlpp::make_traits<sqlpp::day_point>;
+	using _traits = sqlpp::make_traits<sqlpp::varchar>;
 };
 
 struct character_slots

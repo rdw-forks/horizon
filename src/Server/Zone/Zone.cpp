@@ -130,23 +130,23 @@ void ZoneServer::verify_connected_sessions()
 	HLog(info) << count << " connected session(s).";
 }
 
-void ZoneServer::update(uint64_t diff)
+void ZoneServer::update(uint64_t time)
 {
 	process_cli_commands();
 
 	/**
 	 * Task Scheduler Update.
 	 */
-	_task_scheduler.Update(Microseconds(diff));
+	getScheduler().Update();
 
 	/**
 	 * Process Packets.
 	 */
-	ClientSocktMgr->update_socket_sessions(diff);
+	ClientSocktMgr->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(std::bind(&ZoneServer::update, this, std::time(nullptr)));
 	} else {
 		get_io_service().stop();
 	}
@@ -209,7 +209,7 @@ void ZoneServer::initialize_core()
 		context.Repeat();
 	});
 	
-	_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 	
 	get_io_service().run();

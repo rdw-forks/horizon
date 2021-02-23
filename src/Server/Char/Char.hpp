@@ -30,8 +30,8 @@
 #ifndef HORIZON_CHAR_CHARMAIN_HPP
 #define HORIZON_CHAR_CHARMAIN_HPP
 
-#include "Core/Multithreading/TaskScheduler/TaskScheduler.hpp"
 #include "Server/Common/Server.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 #include <string>
 #include <boost/asio/deadline_timer.hpp>
@@ -124,9 +124,9 @@ public:
 
 	character_server_configuration &config() { return _char_server_config; }
 
-	TaskScheduler &get_task_scheduler() { return _task_scheduler; }
+	TaskScheduler &getScheduler() { return _task_scheduler; }
 
-	void update(uint64_t diff);
+	void update(uint64_t time);
 
 	void verify_connected_sessions();
 	

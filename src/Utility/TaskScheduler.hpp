@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef HORIZON_CORE_MULTITHREADING_TASKSCHEDULER_HPP
-#define HORIZON_CORE_MULTITHREADING_TASKSCHEDULER_HPP
+#ifndef HORIZON_CORE_UTILITY_TASKSCHEDULER_HPP
+#define HORIZON_CORE_UTILITY_TASKSCHEDULER_HPP
 
 #include <algorithm>
 #include <chrono>
@@ -265,7 +265,7 @@ public:
 
 	/// Update the scheduler with a difftime in ms.
 	/// Calls the optional callback on successfully finish.
-	TaskScheduler& Update(size_t const milliseconds, success_t const& callback = EmptyCallback);
+	TaskScheduler& Update(size_t const microseconds, success_t const& callback = EmptyCallback);
 
 	/// Update the scheduler with a difftime.
 	/// Calls the optional callback on successfully finish.
@@ -744,4 +744,4 @@ private:
 	void Invoke();
 };
 
-#endif /* HORIZON_CORE_MULTITHREADING_TASKSCHEDULER_HPP */
+#endif /* HORIZON_CORE_UTILITY_TASKSCHEDULER_HPP */

@@ -30,19 +30,21 @@
 #ifndef HORIZON_ZONE_GAME_ENTITY_HPP
 #define HORIZON_ZONE_GAME_ENTITY_HPP
 
-#include "Server/Common/Configuration/Horizon.hpp"
-#include "Core/Multithreading/TaskScheduler/TaskScheduler.hpp"
 #include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/Game/Script/ScriptManager.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 enum entity_task_schedule_group
 {
-	ENTITY_SCHEDULE_WALK = 1,
-	ENTITY_SCHEDULE_SAVE = 2,
+	ENTITY_SCHEDULE_WALK       = 1,
+	ENTITY_SCHEDULE_SAVE       = 2,
+	ENTITY_SCHEDULE_AI_THINK   = 3,
+	ENTITY_SCHEDULE_AI_WALK    = 4
 };
 
 namespace Horizon

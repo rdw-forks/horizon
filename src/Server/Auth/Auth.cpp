@@ -27,17 +27,26 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 #include "Auth.hpp"
+
 #include "Server/Auth/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Common/Server.hpp"
+#include "Server/Common/SQL/SessionData.hpp"
+#include "Server/Common/SQL/GameAccount.hpp"
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/asio.hpp>
-#include <iostream>
+#include <boost/filesystem.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/filesystem.hpp>
+
+#include <iostream>
 
 #include <sol.hpp>
+
+#include <sqlpp11/sqlpp11.h>
+#include <sqlpp11/insert.h>
 
 using boost::asio::ip::udp;
 using namespace std::chrono_literals;
@@ -129,11 +138,52 @@ bool AuthServer::read_config()
  * CLI Command: Reload Configuration
  * @return boolean value from AuthServer->ReadConfig()
  */
-bool AuthServer::clicmd_reload_config()
+bool AuthServer::clicmd_reload_config(std::string /*cmd*/)
 {
 	HLog(info) << "Reloading configuration from '" << general_conf().get_config_file_path() << "'";
 
 	return sAuth->read_config();
+}
+
+bool AuthServer::clicmd_create_new_account(std::string cmd)
+{
+	SQL::TableGameAccounts tga;
+	std::vector<std::string> separated_args;
+	std::string help_str = "Usage: create-account <username> <password> <email> <birthdate: YYYY-MM-DD> <pincode> {<group_id>, {<character_slots>}}";
+	
+	boost::algorithm::split(separated_args, cmd, boost::algorithm::is_any_of(" "));
+
+	if (separated_args.size() < 3) {
+		HLog(error) << "create-account command requires at least 5 arguments.";
+		HLog(error) << help_str;
+		return false;
+	}
+
+	std::string username = separated_args[1];
+	std::string password = separated_args[2];
+	std::string email = separated_args[3];
+	std::string birthdate = separated_args[4];
+	std::string pincode = separated_args[5];
+
+	int group_id = separated_args.size() >= 7 ? std::stoi(separated_args[6]) : 0;
+	int character_slots = separated_args.size() >= 8 ? std::stoi(separated_args[7]) : 3;
+
+	std::shared_ptr<sqlpp::mysql::connection> conn = sAuth->get_db_connection();
+
+	auto res = (*conn)(select(count(tga.id)).from(tga).where(tga.username == username));
+
+	if (res.front().count) {
+		HLog(error) << "Account with username '" << username << "' already exists.";
+		return false;
+	}
+	
+	(*conn)(insert_into(tga).set(tga.username = username, tga.hash = password, tga.gender = "U", tga.email = email,
+		tga.birth_date = birthdate, tga.character_slots = character_slots, tga.pincode = pincode, 
+		tga.group_id = group_id, tga.state = (int) ACCOUNT_STATE_NONE, tga.last_ip = "", tga.login_count = 0, tga.last_login = std::chrono::system_clock::now()));
+
+	HLog(info) << "Account '" << username << "' has been created successfully.";
+
+	return true;
 }
 
 /**
@@ -141,8 +191,8 @@ bool AuthServer::clicmd_reload_config()
  */
 void AuthServer::initialize_cli_commands()
 {
-	add_cli_command_func("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this));
-
+	add_cli_command_func("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
+	add_cli_command_func("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
 	Server::initialize_cli_commands();
 }
 
@@ -159,17 +209,17 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 	}
 }
 
-void AuthServer::update(uint64_t diff)
+void AuthServer::update(uint64_t time)
 {
 	process_cli_commands();
 
-	_task_scheduler.Update();
+	getScheduler().Update();
 	
-	ClientSocktMgr->update_socket_sessions(diff);
+	ClientSocktMgr->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(std::bind(&AuthServer::update, this, std::time(nullptr)));
 	} else {
 		get_io_service().stop();
 	}
@@ -195,7 +245,7 @@ void AuthServer::initialize_core()
 	// Initialize core.
 	Server::initialize_core();
 	
-	_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 
 	get_io_service().run();
@@ -205,7 +255,7 @@ void AuthServer::initialize_core()
 	/**
 	 * Cancel all pending tasks.
 	 */
-	_task_scheduler.CancelAll();
+	getScheduler().CancelAll();
 
 	/**
 	 * Server shutdown routine begins here...

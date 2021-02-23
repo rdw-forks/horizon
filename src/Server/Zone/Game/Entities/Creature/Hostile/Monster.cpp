@@ -55,12 +55,11 @@ void Monster::initialize()
 	status()->initialize();
 	map()->ensure_grid_for_entity(this, map_coords());
 
-	getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME), [this] (TaskContext context) {
+	getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME), ENTITY_SCHEDULE_AI_WALK, [this] (TaskContext context) {
 		std::srand(std::time(nullptr));
-		context.DelayAll(Milliseconds(rand() % MOB_LAZY_MOVE_RATE));
 		MapCoords mc = map()->get_random_coordinates_in_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
 		move_to_coordinates(mc.x(), mc.y());
-		context.Repeat();
+		context.Repeat(Milliseconds(MIN_RANDOM_TRAVEL_TIME + (rand() % MOB_LAZY_MOVE_RATE)));
 	});
 }
 
