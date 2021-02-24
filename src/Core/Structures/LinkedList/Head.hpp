@@ -30,7 +30,7 @@ public:
 		_last._prev = &_first;
 	}
 
-	bool is_empty() const { return(!_first._next->is_in_list()); }
+	bool is_empty() const { return(_first._next == nullptr || !(_first._next->is_in_list())); }
 
 	Element *first()      { return (is_empty() ? nullptr : _first._next); }
 	Element const *first() const { return (is_empty() ? nullptr : _first._next); }

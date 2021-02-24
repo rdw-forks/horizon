@@ -62,12 +62,12 @@ Player::~Player()
 
 uint64_t Player::new_unique_id()
 {
-	int32_t char_id = character()._character_id;
+	int64_t char_id = (int64_t) character()._character_id;
 	
 	if (character()._last_unique_id > 0)
 		return ++character()._last_unique_id;
 
-	return (character()._last_unique_id = uint64_t (char_id << 32));
+	return (character()._last_unique_id = (char_id << 32));
 }
 
 void Player::initialize()

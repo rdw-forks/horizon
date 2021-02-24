@@ -35,7 +35,6 @@
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 #include "Utility/TaskScheduler.hpp"
 
-#include <string>
 #include <boost/asio/deadline_timer.hpp>
 
 namespace Horizon
