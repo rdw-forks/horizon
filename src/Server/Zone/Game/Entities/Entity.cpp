@@ -92,7 +92,9 @@ bool Entity::schedule_movement(MapCoords coords)
 
 	if (_walk_path.size() > 14) {
 		if (this->type() == ENTITY_PLAYER)
-			static_cast<Entities::Player *>(this)->stop_movement();
+			(std::static_pointer_cast<Entities::Player>(shared_from_this()))->stop_movement();
+		else if (this->type() == ENTITY_MONSTER)
+			(std::static_pointer_cast<Entities::Monster>(shared_from_this()))->stop_movement();
 	} else if (_walk_path.size() > 0) {
 		on_movement_begin();
 		move();

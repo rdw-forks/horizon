@@ -172,8 +172,19 @@ void MapContainerThread::start_internal()
 {
 	get_script_manager()->initialize();
 
+	getScheduler().Schedule(Milliseconds(100), [this] (TaskContext context) {
+		//Update Monsters
+		std::map<uint32_t, std::shared_ptr<Entities::Monster>> mmap = _script_mgr->get_spawned_monster_db();
+		for (auto moni : mmap) {
+			std::shared_ptr<Entities::Monster> monster = moni.second;
+			monster->update(std::time(nullptr));
+		}
+		HLog(debug) << "Updated " << mmap.size() << " monsters in thread " << (void *) this;
+		context.Repeat();
+	});
+
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-		update(MAX_CORE_UPDATE_INTERVAL);
+		update(std::time(nullptr));
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	};
 

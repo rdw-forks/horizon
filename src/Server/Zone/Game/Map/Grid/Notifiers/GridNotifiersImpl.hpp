@@ -65,6 +65,9 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
 {
 	using namespace Horizon::Zone::Entities;
 
+	if (!m.get_size())
+		return;
+
 	std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
 
 	for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {

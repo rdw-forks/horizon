@@ -96,7 +96,7 @@ public:
 	template<class T, class CONTAINER>
 	void visit_in_range(MapCoords const &map_coords, GridReferenceContainerVisitor<T, CONTAINER> &visitor, uint16_t range = MAX_VIEW_RANGE);
 
-	AStar::Generator &get_pathfinder() { return _pathfinder; }
+	AStar::Generator &get_pathfinder() { std::lock_guard lock(_pathfinder_mtx); return _pathfinder; }
 
 	MapCoords get_random_coordinates_in_area(uint16_t x, uint16_t y, uint16_t xs, uint16_t ys)
 	{
@@ -126,6 +126,7 @@ private:
 	GridCoords _max_grids;
 	Cell _cells[MAX_CELLS_PER_MAP][MAX_CELLS_PER_MAP]{{0}};
 	GridHolderType _gridholder;
+	std::mutex _pathfinder_mtx;
 	AStar::Generator _pathfinder;
 };
 }

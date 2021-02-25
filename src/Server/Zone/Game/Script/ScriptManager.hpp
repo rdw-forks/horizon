@@ -70,12 +70,16 @@ public:
 	void add_monster_spawn_to_db(uint32_t guid, std::shared_ptr<monster_spawn_data> data) { _monster_spawn_db.insert(guid, data); }
 	std::shared_ptr<monster_spawn_data> get_monster_spawn_from_db(uint32_t guid) { return _monster_spawn_db.at(guid); }
 
-	void add_spawned_monster_to_db(uint32_t guid, std::shared_ptr<Entities::Monster> data) { _monster_spawned_db.insert(guid, data); }
+	void add_spawned_monster_to_db(uint32_t guid, std::shared_ptr<Entities::Monster> data) { _monster_spawned_map.insert(std::pair<uint32_t, std::shared_ptr<Entities::Monster>>(guid, data)); }
 	std::shared_ptr<Entities::Monster> get_spawned_monster_from_db(uint32_t guid) 
 	{
-		return _monster_spawned_db.at(guid, std::shared_ptr<Entities::Monster>()); 
+		auto it = _monster_spawned_map.find(guid);
+		if (it != _monster_spawned_map.end())
+			return it->second;
+
+		return nullptr;
 	}
-	std::map<uint32_t, std::shared_ptr<Entities::Monster>> get_spawned_monster_db() { return _monster_spawned_db.get_map(); }
+	std::map<uint32_t, std::shared_ptr<Entities::Monster>> get_spawned_monster_db() { return _monster_spawned_map; }
 
 protected:
 	void initialize();
@@ -90,7 +94,7 @@ private:
 	std::vector<std::string> _script_files;
 	LockedLookupTable<uint32_t, std::shared_ptr<npc_db_data>> _npc_db;
 	LockedLookupTable<uint32_t, std::shared_ptr<monster_spawn_data>> _monster_spawn_db;
-	LockedLookupTable<uint32_t, std::shared_ptr<Entities::Monster>> _monster_spawned_db;
+	std::map<uint32_t, std::shared_ptr<Entities::Monster>> _monster_spawned_map;
 	sol::state _lua_state;
 	std::weak_ptr<MapContainerThread> _container;
 	int32_t _last_monster_spawn_id{0};

@@ -119,7 +119,7 @@ private:
 	ThreadSafeQueue<std::pair<bool, std::shared_ptr<Entities::Player>>> _player_buffer;     ///< Thread-safe queue of players to add to/remove from the container.
 	LockedLookupTable<int32_t, std::shared_ptr<Entities::Player>> _managed_players;         ///< Thread-safe hash table of managed players.
 	std::shared_ptr<ScriptManager> _script_mgr;                                            ///< Non-thread-safe shared pointer and owner of a script manager.
-	TaskScheduler _scheduler;
+	TaskScheduler _task_scheduler;
 };
 }
 }

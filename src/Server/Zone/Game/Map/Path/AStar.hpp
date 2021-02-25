@@ -52,8 +52,8 @@ struct Vec2i
 	Vec2i(int x, int y) : x(x), y(y) { }
 	int x{0}, y{0}, move_cost{0};
 
-	bool operator == (const Vec2i& coordinates_) { return (x == coordinates_.x && y == coordinates_.y); }
-	Vec2i operator + (const Vec2i& right_) { return Vec2i(x + right_.x, y + right_.y); }
+	bool operator == (const Vec2i coordinates_) { return (x == coordinates_.x && y == coordinates_.y); }
+	Vec2i operator + (const Vec2i right_) { return Vec2i(x + right_.x, y + right_.y); }
 };
 
 class Heuristic
@@ -100,11 +100,11 @@ struct Node
 	uint32_t getScore() { return G + H; }
 };
 
-using NodeSet = std::vector<Node*>;
+using NodeSet = std::vector<Node *>;
 
 class Generator
 {
-	Node *findNodeOnList(NodeSet& nodes_, Vec2i coordinates_)
+	Node *findNodeOnList(NodeSet nodes_, Vec2i coordinates_)
 	{
 		for (auto node : nodes_) {
 			if (node->coordinates == coordinates_) {
@@ -113,7 +113,7 @@ class Generator
 		}
 		return nullptr;
 	}
-	void releaseNodes(NodeSet& nodes_)
+	void releaseNodes(NodeSet nodes_)
 	{
 		for (auto it = nodes_.begin(); it != nodes_.end();) {
 			delete *it;
@@ -124,7 +124,7 @@ class Generator
 public:
 	Generator()
 	{
-		setDiagonalMovement(false);
+		setDiagonalMovement(true);
 		setHeuristic(&Heuristic::manhattan);
 	}
 
@@ -157,9 +157,12 @@ public:
 		if (check_collision(target_.x, target_.y))
 			return path;
 
-		while (!openSet.empty()) {
+		while (!openSet.empty()) 
+		{
 			auto current_it = openSet.begin();
+			
 			current = *current_it;
+
 			for (auto it = openSet.begin(); it != openSet.end(); it++) {
 				auto node = *it;
 				if (node->getScore() <= current->getScore()) {
@@ -168,17 +171,18 @@ public:
 				}
 			}
 
-			if (current->coordinates == target_) {
+			if (current->coordinates == target_)
 				break;
-			}
 
 			closedSet.push_back(current);
 			openSet.erase(current_it);
 
 			for (uint32_t i = 0; i < directions; ++i) {
+				
 				Vec2i newCoordinates(current->coordinates + direction[i]);
-				if (check_collision(newCoordinates.x, newCoordinates.y) ||
-					findNodeOnList(closedSet, newCoordinates)) {
+
+				if (check_collision(newCoordinates.x, newCoordinates.y) 
+					|| findNodeOnList(closedSet, newCoordinates)) {
 					continue;
 				}
 
@@ -191,8 +195,7 @@ public:
 					successor->G = totalCost;
 					successor->H = heuristic(successor->coordinates, target_);
 					openSet.push_back(successor);
-				}
-				else if (totalCost < successor->G) {
+				} else if (totalCost < successor->G) {
 					successor->parent = current;
 					successor->G = totalCost;
 				}

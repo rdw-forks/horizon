@@ -26,7 +26,6 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
 #ifndef HORIZON_HORIZON_HPP
 #define HORIZON_HORIZON_HPP
 
@@ -68,7 +67,7 @@
 #define MAX_CORE_UPDATE_INTERVAL 5000
 
 // Map Thread Containers
-#define MAX_MAP_CONTAINER_THREADS 2
+#define MAX_MAP_CONTAINER_THREADS 1
 
 static_assert(MAX_LEVEL > 0,
               "MAX_LEVEL should be greater than 0.");
