@@ -275,13 +275,13 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 
 		// Create a start state
 		MapSearchNode nodeStart;
-		nodeStart.x = 106;
-		nodeStart.y = 150; 
+		nodeStart.x = 149;
+		nodeStart.y = 98; 
 
 		// Define the goal state
 		MapSearchNode nodeEnd;
-		nodeEnd.x = 149;
-		nodeEnd.y = 100; 
+		nodeEnd.x = 106;
+		nodeEnd.y = 200; 
 		
 		// Set Start and goal states
 		
@@ -364,13 +364,13 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 				};
 
 				for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
-					for (int x = MAP_WIDTH - 1; x >= 0; --x) {
+					for (int x = 0; x <= MAP_WIDTH - 1; ++x) {
 						std::vector<MapSearchNode*>::iterator it = std::find_if(path.begin(), path.end(), [x, y](MapSearchNode* m) { return (m->x == x && m->y == y); });
 						
 						if (it != path.end()) {
-							std::cout << "^";
+							std::cout << "^ (" << (*it)->x << "," << (*it)->y << ")";
 						}
-						else if (izlude[(y * MAP_WIDTH) + x])
+						else if (izlude_real[(y * MAP_WIDTH) + x])
 							std::cout << ".";
 						else
 							std::cout << " ";
