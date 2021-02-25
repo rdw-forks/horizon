@@ -250,8 +250,13 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 
 	for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
 		for (int x = MAP_WIDTH - 1; x >= 0; --x) {
+			if (izlude[(y * MAP_WIDTH) + x])
+				std::cout << ".";
+			else
+				std::cout << " ";
 			cell[x][y] = Horizon::Zone::Cell(izlude_real[idx++] = izlude[(y * MAP_WIDTH) + x]);
 		}
+		std::cout << std::endl;
 	}
 
 	// Our sample problem defines the world as a 2d array representing a terrain
@@ -363,7 +368,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 					path.push_back(node);
 				};
 
-				for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
+				for (int y = 0; y <= MAP_HEIGHT - 1; ++y) {
 					for (int x = 0; x <= MAP_WIDTH - 1; ++x) {
 						std::vector<MapSearchNode*>::iterator it = std::find_if(path.begin(), path.end(), [x, y](MapSearchNode* m) { return (m->x == x && m->y == y); });
 						
