@@ -46,27 +46,30 @@ using namespace Horizon::Zone;
 
 Cell cell[MAP_WIDTH][MAP_HEIGHT];
 
-bool check_collision(uint16_t x, uint16_t y)
+bool check_collision(int16_t x, int16_t y)
 {
-	if (cell[x][y].isWalkable())
-		return false;
+	if (x < 0 || y < 0 ||
+		x >= MAP_WIDTH || y >= MAP_HEIGHT)
+		return true;
 
-	return true;
+	std::cout << x << ", " << y << std::endl;
+	return izlude[(y * (MAP_WIDTH - 1)) + x] ? true : false;
 }
 
 BOOST_AUTO_TEST_CASE(AStarTest)
 {
+	std::srand(std::time(nullptr));
 
-	Horizon::Zone::AStar::Generator astar({MAP_WIDTH, MAP_HEIGHT}, &check_collision, true, &Horizon::Zone::AStar::Heuristic::manhattan);
-	Horizon::Zone::AStar::Vec2i start = { 204, 158 };
-	Horizon::Zone::AStar::Vec2i end = { 200, 159 };
-	int idx = 0;
+	for (int i = 0; i < 500; i++) {
+		Horizon::Zone::AStar::Vec2i start = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
+		Horizon::Zone::AStar::Vec2i end = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
+		int idx = 0;
 
-	for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
-		for (int x = 0; x < MAP_WIDTH; ++x) {
-			cell[x][y] = Cell(izlude[idx++]);
+		for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
+			for (int x = 0; x < MAP_WIDTH; ++x) {
+				cell[x][y] = Cell(izlude[(y * MAP_WIDTH) + x]);
+			}
 		}
-	}
 
 //	auto start_time = std::chrono::high_resolution_clock::now();
 //	astar.navigate(start, end);
@@ -74,12 +77,14 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 //	std::chrono::duration<double> elapsed = finish_time - start_time;
 //	printf("Euclidean: %.2fs\n", elapsed.count());
 
-	auto start_time = std::chrono::high_resolution_clock::now();
-	astar.setHeuristic(&AStar::Heuristic::manhattan);
-	auto path = astar.findPath(start, end);
-	auto finish_time = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = finish_time - start_time;
-	printf("Manhattan: %.2fs\n", elapsed.count());
+		Horizon::Zone::AStar::Generator astar({ MAP_WIDTH, MAP_HEIGHT }, &check_collision, true, &Horizon::Zone::AStar::Heuristic::manhattan);
+		auto start_time = std::chrono::high_resolution_clock::now();
+		astar.setHeuristic(&AStar::Heuristic::manhattan);
+		auto path = astar.findPath(start, end);
+		auto finish_time = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsed = finish_time - start_time;
+		printf("Manhattan: %.2fs\n", elapsed.count());
+	}
 
 //	start_time = std::chrono::high_resolution_clock::now();
 //	astar.setHeuristic(&AStar::Heuristic::octagonal);
@@ -90,35 +95,35 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 
 	//BOOST_ASSERT(path->size() > 1);
 
-	std::ofstream mapfile;
-	mapfile.open("izlude.txt");
-	for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
-		for (int x = 0; x < MAP_WIDTH; ++x) {
-			Horizon::Zone::AStar::Vec2i coords{x, y};
-			bool found = false;
+	// std::ofstream mapfile;
+	// mapfile.open("izlude.txt");
+	// for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
+	// 	for (int x = 0; x < MAP_WIDTH; ++x) {
+	// 		Horizon::Zone::AStar::Vec2i coords{x, y};
+	// 		bool found = false;
 
-			for (auto c : path) {
-				if (coords == c) {
-					if (c == start)
-						mapfile << "@";
-					else if (c == end)
-						mapfile << "T";
-					else
-						mapfile << "^";
-					found = true;
-				}
-			}
+	// 		for (auto c : path) {
+	// 			if (coords == c) {
+	// 				if (c == start)
+	// 					mapfile << "@";
+	// 				else if (c == end)
+	// 					mapfile << "T";
+	// 				else
+	// 					mapfile << "^";
+	// 				found = true;
+	// 			}
+	// 		}
 
-			if (!found) {
-				if (cell[x][y].isWalkable())
-					mapfile << " ";
-				else
-					mapfile << "|";
-			}
-		}
+	// 		if (!found) {
+	// 			if (cell[x][y].isWalkable())
+	// 				mapfile << " ";
+	// 			else
+	// 				mapfile << "|";
+	// 		}
+	// 	}
 
-		mapfile << "\n";
-	}
+	// 	mapfile << "\n";
+	// }
 
-	mapfile.close();
+	// mapfile.close();
 }

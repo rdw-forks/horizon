@@ -41,13 +41,11 @@ struct Cell
 {
 public:
     Cell(uint8_t type)
-	: _walkable(0), _shootable(0), _is_water(0)
     {
 		validateType(type);
     }
 
 	Cell()
-	: _walkable(0), _shootable(0), _is_water(0)
 	{
 
 	}
@@ -83,19 +81,22 @@ public:
 		}
 	}
 
-	bool isWalkable() { return _walkable ? true : false; }
-	void setWalkable() { _walkable = 1; }
+	bool isWalkable() { return settings._walkable ? true : false; }
+	void setWalkable() { settings._walkable = 1; }
 
-	bool isShootable() { return _shootable ? true : false; }
-	void setShootable() { _shootable = 1; }
+	bool isShootable() { return settings._shootable ? true : false; }
+	void setShootable() { settings._shootable = 1; }
 
-	bool isWater() { return _is_water ? true : false; }
-	void setWater() { _is_water = 1; }
+	bool isWater() { return settings._is_water ? true : false; }
+	void setWater() { settings._is_water = 1; }
 
 private:
-	unsigned _walkable : 1;
-	unsigned _shootable : 1;
-	unsigned _is_water : 1;
+	struct {
+		unsigned _walkable : 1;
+		unsigned _shootable : 1;
+		unsigned _is_water : 1;
+		unsigned not_used[29];
+	} settings;
 };
 #pragma pack(pop)
 }
