@@ -52,7 +52,7 @@ bool check_collision(int16_t x, int16_t y)
 		x >= MAP_WIDTH || y >= MAP_HEIGHT)
 		return true;
 
-	return izlude[(y * MAP_WIDTH) + x];
+	return cell[x][y].isWalkable() ? false : true;
 }
 
 BOOST_AUTO_TEST_CASE(AStarTest)
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 				for (int x = 0; x < MAP_WIDTH; ++x) {
 					Horizon::Zone::AStar::Vec2i coords{ x, y };
 					bool found = false;
-
+		
 					for (auto c : path) {
 						if (coords == c) {
 							if (c == start)
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 							found = true;
 						}
 					}
-
+		
 					if (!found) {
 						if (cell[x][y].isWalkable())
 							mapfile << " ";
@@ -116,10 +116,10 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 							mapfile << "|";
 					}
 				}
-
+		
 				mapfile << "\n";
 			}
-
+		
 			mapfile.close();
 		}
 	}
