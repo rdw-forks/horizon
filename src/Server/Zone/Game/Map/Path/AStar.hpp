@@ -158,7 +158,6 @@ public:
 			return path;
 
 		while (!openSet.empty() && searchStep < 500) {
-			searchStep++;
 			auto current_it = openSet.begin();
 			current = *current_it;
 			for (auto it = openSet.begin(); it != openSet.end(); it++) {
@@ -198,6 +197,8 @@ public:
 					successor->G = totalCost;
 				}
 			}
+
+			searchStep++;
 		}
 
 		while (current != nullptr) {
