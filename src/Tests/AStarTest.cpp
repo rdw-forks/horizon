@@ -30,395 +30,100 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "AStarTest"
 
+#include "Server/Zone/Game/Map/Path/AStar.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
 
-#include "Server/Zone/Game/Map/Path/stlastar.hpp" // See header for copyright and usage information
-
 #include <boost/test/unit_test.hpp>
-#include <iostream>
-#include <stdio.h>
-#include <math.h>
+#include <cstring>
+#include <fstream>
 
-#define DEBUG_LISTS 0
-#define DEBUG_LIST_LENGTHS_ONLY 0
+using namespace Horizon::Zone;
 
-using namespace std;
-
-// Global data
-
-// The world map
-
-//izlude - 268 x 300
-//prontera - 312 x 392
 #define MAP_WIDTH 268
 #define MAP_HEIGHT 300
 
-Horizon::Zone::Cell cell[MAP_WIDTH][MAP_HEIGHT];
-
 #include "prontera.cpp"
 
-int izlude_real[80700];
+Cell cell[MAP_WIDTH][MAP_HEIGHT];
 
-// map helper functions
-int GetMap( int x, int y )
+bool check_collision(int16_t x, int16_t y)
 {
-	if( x < 0 ||
-	    x >= MAP_WIDTH ||
-		 y < 0 ||
-		 y >= MAP_HEIGHT
-		|| !cell[x][y].isWalkable()
-	  )
-	{
-		return 1;
-	}
-
-	return izlude_real[(y*MAP_WIDTH)+x] ? 1 : 0;
-}
-
-
-
-// Definitions
-
-class MapSearchNode
-{
-public:
-	int x;	 // the (x,y) positions of the node
-	int y;	
-	
-	MapSearchNode() { x = y = 0; }
-	MapSearchNode( int px, int py ) { x=px; y=py; }
-
-	float GoalDistanceEstimate( MapSearchNode &nodeGoal );
-	bool IsGoal( MapSearchNode &nodeGoal );
-	bool GetSuccessors( AStarSearch<MapSearchNode> *astarsearch, MapSearchNode *parent_node );
-	float GetCost( MapSearchNode &successor );
-	bool IsSameState( MapSearchNode &rhs );
-
-	void PrintNodeInfo(); 
-};
-
-bool MapSearchNode::IsSameState( MapSearchNode &rhs )
-{
-
-	// same state in a maze search is simply when (x,y) are the same
-	if( (x == rhs.x) &&
-		(y == rhs.y) )
-	{
+	if (x < 0 || y < 0 ||
+		x >= MAP_WIDTH || y >= MAP_HEIGHT)
 		return true;
-	}
-	else
-	{
-		return false;
-	}
 
-}
-
-void MapSearchNode::PrintNodeInfo()
-{
-	char str[100];
-	sprintf( str, "Node position : (%d,%d)\n", x,y );
-
-	cout << str;
-}
-
-// Here's the heuristic function that estimates the distance from a Node
-// to the Goal. 
-
-float MapSearchNode::GoalDistanceEstimate( MapSearchNode &nodeGoal )
-{
-	return abs(x - nodeGoal.x) + abs(y - nodeGoal.y);
-}
-
-bool MapSearchNode::IsGoal( MapSearchNode &nodeGoal )
-{
-
-	if( (x == nodeGoal.x) &&
-		(y == nodeGoal.y) )
-	{
-		return true;
-	}
-
-	return false;
-}
-
-// This generates the successors to the given Node. It uses a helper function called
-// AddSuccessor to give the successors to the AStar class. The A* specific initialisation
-// is done for each node internally, so here you just set the state information that
-// is specific to the application
-bool MapSearchNode::GetSuccessors( AStarSearch<MapSearchNode> *astarsearch, MapSearchNode *parent_node )
-{
-
-	int parent_x = -1; 
-	int parent_y = -1; 
-
-	if( parent_node )
-	{
-		parent_x = parent_node->x;
-		parent_y = parent_node->y;
-	}
-	
-
-	MapSearchNode NewNode;
-
-	// push each possible move except allowing the search to go backwards
-
-	if( (GetMap( x-1, y ) < 1) 
-		&& !((parent_x == x-1) && (parent_y == y))
-	  ) 
-	{
-		NewNode = MapSearchNode( x-1, y );
-		astarsearch->AddSuccessor( NewNode );
-	}	
-
-	if( (GetMap( x, y-1 ) < 1) 
-		&& !((parent_x == x) && (parent_y == y-1))
-	  ) 
-	{
-		NewNode = MapSearchNode( x, y-1 );
-		astarsearch->AddSuccessor( NewNode );
-	}	
-
-	if( (GetMap( x+1, y ) < 1)
-		&& !((parent_x == x+1) && (parent_y == y))
-	  ) 
-	{
-		NewNode = MapSearchNode( x+1, y );
-		astarsearch->AddSuccessor( NewNode );
-	}	
-
-		
-	if( (GetMap( x, y+1 ) < 1) 
-		&& !((parent_x == x) && (parent_y == y+1))
-		)
-	{
-		NewNode = MapSearchNode( x, y+1 );
-		astarsearch->AddSuccessor( NewNode );
-	}	
-
-
-	// Diagonal
-
-	if ((GetMap(x - 1, y - 1) < 1)
-		&& !((parent_x == x - 1) && (parent_y == y - 1))
-		)
-	{
-		NewNode = MapSearchNode(x - 1, y - 1);
-		astarsearch->AddSuccessor(NewNode);
-	}
-
-	if ((GetMap(x + 1, y - 1) < 1)
-		&& !((parent_x == x + 1) && (parent_y == y - 1))
-		)
-	{
-		NewNode = MapSearchNode(x + 1, y - 1);
-		astarsearch->AddSuccessor(NewNode);
-	}
-
-	if ((GetMap(x + 1, y + 1) < 1)
-		&& !((parent_x == x + 1) && (parent_y == y + 1))
-		)
-	{
-		NewNode = MapSearchNode(x + 1, y + 1);
-		astarsearch->AddSuccessor(NewNode);
-	}
-
-
-	if ((GetMap(x - 1, y + 1) < 1)
-		&& !((parent_x == x - 1) && (parent_y == y + 1))
-		)
-	{
-		NewNode = MapSearchNode(x - 1, y + 1);
-		astarsearch->AddSuccessor(NewNode);
-	}
-
-	return true;
-}
-
-// given this node, what does it cost to move to successor. In the case
-// of our map the answer is the map terrain value at this node since that is 
-// conceptually where we're moving
-
-float MapSearchNode::GetCost( MapSearchNode &successor )
-{
-	return (float) GetMap( x, y );
-
+	//std::cout << x << ", " << y << std::endl;
+	return cell[x][y].isWalkable() ? false : true;
 }
 
 BOOST_AUTO_TEST_CASE(AStarTest)
 {
-	cout << "STL A* Search implementation\n(C)2001 Justin Heyes-Jones\n";
-
-	int idx = 0;
-
-	for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
-		for (int x = MAP_WIDTH - 1; x >= 0; --x) {
-			if (izlude[(y * MAP_WIDTH) + x])
-				std::cout << ".";
-			else
-				std::cout << " ";
-			cell[x][y] = Horizon::Zone::Cell(izlude_real[idx++] = izlude[(y * MAP_WIDTH) + x]);
-		}
-		std::cout << std::endl;
-	}
-
-	// Our sample problem defines the world as a 2d array representing a terrain
-	// Each element contains an integer from 0 to 5 which indicates the cost 
-	// of travel across the terrain. Zero means the least possible difficulty 
-	// in travelling (think ice rink if you can skate) whilst 5 represents the 
-	// most difficult. 9 indicates that we cannot pass.
-
-	// Create an instance of the search class...
-
-	AStarSearch<MapSearchNode> astarsearch;
-
-	unsigned int SearchCount = 0;
-
-	const unsigned int NumSearches = 1;
-
 	std::srand(std::time(nullptr));
 
-	while(SearchCount < NumSearches)
-	{
+	for (int i = 0; i < 10000; i++) {
+		Horizon::Zone::AStar::Vec2i start = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
+		Horizon::Zone::AStar::Vec2i end = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
+		int idx = 0;
 
-		// Create a start state
-		MapSearchNode nodeStart;
-		nodeStart.x = 149;
-		nodeStart.y = 98; 
-
-		// Define the goal state
-		MapSearchNode nodeEnd;
-		nodeEnd.x = 106;
-		nodeEnd.y = 200; 
-		
-		// Set Start and goal states
-		
-		astarsearch.SetStartAndGoalStates( nodeStart, nodeEnd );
-
-		unsigned int SearchState;
-		unsigned int SearchSteps = 0;
-
-		std::vector<MapSearchNode *> path;
-		do
-		{
-			SearchState = astarsearch.SearchStep();
-
-			SearchSteps++;
-
-	#if DEBUG_LISTS
-
-			cout << "Steps:" << SearchSteps << "\n";
-
-			int len = 0;
-
-			cout << "Open:\n";
-			MapSearchNode *p = astarsearch.GetOpenListStart();
-			while( p )
-			{
-				len++;
-	#if !DEBUG_LIST_LENGTHS_ONLY			
-				((MapSearchNode *)p)->PrintNodeInfo();
-	#endif
-				p = astarsearch.GetOpenListNext();
-				
+		for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
+			for (int x = 0; x < MAP_WIDTH; ++x) {
+				cell[x][y] = Cell(izlude[(y * MAP_WIDTH) + x]);
 			}
-
-			cout << "Open list has " << len << " nodes\n";
-
-			len = 0;
-
-			cout << "Closed:\n";
-			p = astarsearch.GetClosedListStart();
-			while( p )
-			{
-				len++;
-	#if !DEBUG_LIST_LENGTHS_ONLY			
-				p->PrintNodeInfo();
-	#endif			
-				p = astarsearch.GetClosedListNext();
-			}
-
-			cout << "Closed list has " << len << " nodes\n";
-	#endif
-
-		}
-		while( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SEARCHING );
-
-		if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_SUCCEEDED )
-		{
-			cout << "Search found goal state\n";
-
-				MapSearchNode *node = astarsearch.GetSolutionStart();
-
-	#if DISPLAY_SOLUTION
-				cout << "Displaying solution\n";
-	#endif
-				int steps = 0;
-
-				node->PrintNodeInfo();
-				for( ;; )
-				{
-					node = astarsearch.GetSolutionNext();
-
-					if( !node )
-					{
-						break;
-					}
-
-					node->PrintNodeInfo();
-					steps ++;
-
-					path.push_back(node);
-				};
-
-				for (int y = 0; y <= MAP_HEIGHT - 1; ++y) {
-					for (int x = 0; x <= MAP_WIDTH - 1; ++x) {
-						std::vector<MapSearchNode*>::iterator it = std::find_if(path.begin(), path.end(), [x, y](MapSearchNode* m) { return (m->x == x && m->y == y); });
-						
-						if (it != path.end()) {
-							std::cout << "^ (" << (*it)->x << "," << (*it)->y << ")";
-						}
-						else if (izlude_real[(y * MAP_WIDTH) + x])
-							std::cout << ".";
-						else
-							std::cout << " ";
-					}
-					std::cout << std::endl;
-				}
-
-				cout << "Solution steps " << steps << endl;
-
-				// Once you're done with the solution you can free the nodes up
-				astarsearch.FreeSolutionNodes();
-
-	
-		}
-		else if( SearchState == AStarSearch<MapSearchNode>::SEARCH_STATE_FAILED ) 
-		{
-			cout << "Search terminated. Did not find goal state\n";
-		
 		}
 
-		// Display the number of loops the search went through
-		cout << "SearchSteps : " << SearchSteps << "\n";
+//	auto start_time = std::chrono::high_resolution_clock::now();
+//	astar.navigate(start, end);
+//	auto finish_time = std::chrono::high_resolution_clock::now();
+//	std::chrono::duration<double> elapsed = finish_time - start_time;
+//	printf("Euclidean: %.2fs\n", elapsed.count());
 
-		SearchCount ++;
-
-		astarsearch.EnsureMemoryFreed();
+		Horizon::Zone::AStar::Generator astar({ MAP_WIDTH, MAP_HEIGHT }, &check_collision, true, &Horizon::Zone::AStar::Heuristic::manhattan);
+		auto start_time = std::chrono::high_resolution_clock::now();
+		astar.setHeuristic(&AStar::Heuristic::manhattan);
+		auto path = astar.findPath(start, end);
+		auto finish_time = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsed = finish_time - start_time;
+		printf("Manhattan: %.2fs %d %s\n", elapsed.count(), i, (path.size() == 0 || (path.at(0).x != end.x && path.at(0).y != end.y)) ? "not found" : "found");
 	}
 
-	//Horizon::Zone::Cell cell[MAP_WIDTH][MAP_HEIGHT];
-	//
-	//for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
-	//	for (int x = 0; x < MAP_WIDTH; ++x) {
-	//		cell[x][y] = Horizon::Zone::Cell(izlude[idx++]);
-	//	}
-	//}
+//	start_time = std::chrono::high_resolution_clock::now();
+//	astar.setHeuristic(&AStar::Heuristic::octagonal);
+//	astar.navigate(start, end);
+//	finish_time = std::chrono::high_resolution_clock::now();
+//	elapsed = finish_time - start_time;
+//	printf("Octogonal: %.2fs\n", elapsed.count());
 
-	//int idx = 0;
-	//for (int y = 0; y < MAP_HEIGHT - 1; ++y) {
-	//	for (int x = 0; x < MAP_WIDTH - 1; ++x) {
-	//		std::cout << izlude[(y * MAP_WIDTH) + x];
-	//	}
-	//	std::cout << std::endl;
-	//}
+	//BOOST_ASSERT(path->size() > 1);
+
+	// std::ofstream mapfile;
+	// mapfile.open("izlude.txt");
+	// for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
+	// 	for (int x = 0; x < MAP_WIDTH; ++x) {
+	// 		Horizon::Zone::AStar::Vec2i coords{x, y};
+	// 		bool found = false;
+
+	// 		for (auto c : path) {
+	// 			if (coords == c) {
+	// 				if (c == start)
+	// 					mapfile << "@";
+	// 				else if (c == end)
+	// 					mapfile << "T";
+	// 				else
+	// 					mapfile << "^";
+	// 				found = true;
+	// 			}
+	// 		}
+
+	// 		if (!found) {
+	// 			if (cell[x][y].isWalkable())
+	// 				mapfile << " ";
+	// 			else
+	// 				mapfile << "|";
+	// 		}
+	// 	}
+
+	// 	mapfile << "\n";
+	// }
+
+	// mapfile.close();
 }
