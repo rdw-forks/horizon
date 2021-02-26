@@ -88,9 +88,9 @@ struct Node
 {
 	uint32_t G, H;
 	Vec2i coordinates;
-	Node *parent;
+	std::shared_ptr<Node> parent;
 
-	Node(Vec2i coord_, Node *parent_ = nullptr)
+	Node(Vec2i coord_, std::shared_ptr<Node> parent_ = nullptr)
 	{
 		parent = parent_;
 		coordinates = coord_;
@@ -100,11 +100,11 @@ struct Node
 	uint32_t getScore() { return G + H; }
 };
 
-using NodeSet = std::vector<Node *>;
+using NodeSet = std::vector<std::shared_ptr<Node>>;
 
 class Generator
 {
-	Node *findNodeOnList(NodeSet nodes_, Vec2i coordinates_)
+	std::shared_ptr<Node> findNodeOnList(NodeSet& nodes_, Vec2i coordinates_)
 	{
 		for (auto node : nodes_) {
 			if (node->coordinates == coordinates_) {
@@ -116,7 +116,6 @@ class Generator
 	void releaseNodes(NodeSet nodes_)
 	{
 		for (auto it = nodes_.begin(); it != nodes_.end();) {
-			delete *it;
 			it = nodes_.erase(it);
 		}
 	}
@@ -147,18 +146,18 @@ public:
 	CoordinateList findPath(Vec2i source_, Vec2i target_)
 	{
 		CoordinateList path;
-		Node *current = nullptr;
+		std::shared_ptr<Node> current = nullptr;
 		NodeSet openSet, closedSet;
+		int searchStep = 0;
 
 		openSet.reserve(100);
 		closedSet.reserve(100);
-		openSet.push_back(new Node(source_));
+		openSet.push_back(std::make_shared<Node>(source_));
 
 		if (check_collision(target_.x, target_.y))
 			return path;
 
-		while (!openSet.empty()) 
-		{
+		while (!openSet.empty() && searchStep < 500) {
 			auto current_it = openSet.begin();
 			
 			current = *current_it;
@@ -189,9 +188,9 @@ public:
 				newCoordinates.move_cost = ((i < 4) ? 10 : 14);
 				uint32_t totalCost = current->G + newCoordinates.move_cost;
 
-				Node *successor = findNodeOnList(openSet, newCoordinates);
+				std::shared_ptr<Node> successor = findNodeOnList(openSet, newCoordinates);
 				if (successor == nullptr) {
-					successor = new Node(newCoordinates, current);
+					successor = std::make_shared<Node>(newCoordinates, current);
 					successor->G = totalCost;
 					successor->H = heuristic(successor->coordinates, target_);
 					openSet.push_back(successor);
@@ -200,6 +199,8 @@ public:
 					successor->G = totalCost;
 				}
 			}
+
+			searchStep++;
 		}
 
 		while (current != nullptr) {
