@@ -48,6 +48,8 @@ using namespace std;
 
 // The world map
 
+//izlude - 268 x 300
+//prontera - 312 x 392
 #define MAP_WIDTH 268
 #define MAP_HEIGHT 300
 
