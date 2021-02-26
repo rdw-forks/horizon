@@ -52,7 +52,7 @@ bool check_collision(int16_t x, int16_t y)
 		x >= MAP_WIDTH || y >= MAP_HEIGHT)
 		return true;
 
-	std::cout << x << ", " << y << std::endl;
+	//std::cout << x << ", " << y << std::endl;
 	return izlude[(y * (MAP_WIDTH - 1)) + x] ? true : false;
 }
 
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 {
 	std::srand(std::time(nullptr));
 
-	for (int i = 0; i < 500; i++) {
+	for (int i = 0; i < 10000; i++) {
 		Horizon::Zone::AStar::Vec2i start = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
 		Horizon::Zone::AStar::Vec2i end = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
 		int idx = 0;
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 		auto path = astar.findPath(start, end);
 		auto finish_time = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> elapsed = finish_time - start_time;
-		printf("Manhattan: %.2fs\n", elapsed.count());
+		printf("Manhattan: %.2fs %d %s\n", elapsed.count(), i, (path.size() == 0 || (path.at(0).x != end.x && path.at(0).y != end.y)) ? "not found" : "found");
 	}
 
 //	start_time = std::chrono::high_resolution_clock::now();
