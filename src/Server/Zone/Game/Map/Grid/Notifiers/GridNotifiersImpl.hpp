@@ -59,7 +59,6 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
 	}
 }
 
-
 template <class T>
 void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
 {
@@ -71,6 +70,9 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
 	std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
 
 	for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+		if (iter->source() == nullptr)
+			continue;
+
 		std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
 
 		if (src_entity == nullptr || src_entity->guid() == tpl->guid())
@@ -80,20 +82,67 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
 
 		HLog(debug) << "Source entity " << src_entity->name() << " within range check: " << is_in_range;
 
-		if (_notif_type <= EVP_NOTIFY_IN_SIGHT && is_in_range) {
-			if (src_entity->is_walking()) {
-				tpl->realize_entity_movement(src_entity);
-			} else if (tpl->is_walking()) {
-				tpl->add_entity_to_viewport(src_entity);
-			} else {
-				tpl->spawn_entity_in_viewport(src_entity);
-			}
+		if (_notif_type == EVP_NOTIFY_IN_SIGHT && is_in_range) {
+			// Target player realizes new entity in viewport.
+			// Source entity doesn't need to realize target as update_viewport() is called when needed/
+			tpl->add_entity_to_viewport(src_entity);
 		} else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT || (_notif_type == EVP_NOTIFY_OUT_OF_SIGHT && !is_in_range)) {
-			if (src_entity->type() == ENTITY_PLAYER) {
+			if (src_entity->type() == ENTITY_PLAYER)
 				src_entity->template downcast<Player>()->remove_entity_from_viewport(tpl, _notif_type);
-			}
 
 			tpl->remove_entity_from_viewport(src_entity, _notif_type);
+		}
+	}
+}
+
+template <class T>
+void GridEntitySpawnNotifier::notify(GridRefManager<T> &m)
+{
+	using namespace Horizon::Zone::Entities;
+
+	if (!m.get_size())
+		return;
+
+	std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
+
+	for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+		if (iter->source() == nullptr)
+			continue;
+
+		std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+		if (src_entity == nullptr || src_entity->guid() == tpl->guid())
+			continue;
+ 
+		tpl->spawn_entity_in_viewport(src_entity);
+	}
+}
+
+template <class T>
+void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
+{
+	using namespace Horizon::Zone::Entities;
+
+	if (!m.get_size())
+		return;
+
+	std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
+
+	for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+		if (iter->source() == nullptr)
+			continue;
+		
+		std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+		if (src_entity == nullptr || src_entity->guid() == tpl->guid())
+			continue;
+
+		bool is_in_range = tpl->is_in_range_of(src_entity);
+
+		HLog(debug) << "Source entity " << src_entity->name() << " within range check: " << is_in_range;
+
+		if (is_in_range) {
+			tpl->realize_entity_movement(src_entity);
 		}
 	}
 }

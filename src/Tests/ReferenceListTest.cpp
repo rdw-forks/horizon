@@ -123,7 +123,7 @@ private:
 	int _id;
 };
 
-#define MAX_LIMIT 10
+#define MAX_LIMIT 100000
 
 BOOST_AUTO_TEST_CASE(ReferenceListTest)
 {

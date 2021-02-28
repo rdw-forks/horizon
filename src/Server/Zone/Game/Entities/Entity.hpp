@@ -47,6 +47,12 @@ enum entity_task_schedule_group
 	ENTITY_SCHEDULE_AI_WALK    = 4
 };
 
+enum entity_walk_state
+{
+	ENTITY_WALK_STOPPED = 0,
+	ENTITY_WALK_MOVING = 1
+};
+
 namespace Horizon
 {
 namespace Zone
@@ -83,6 +89,7 @@ protected:
 	bool schedule_movement(MapCoords mcoords);
 	void move();
 	virtual void stop_movement() = 0;
+	virtual void on_pathfinding_failure() = 0;
 	virtual void on_movement_begin() = 0;
 	virtual void on_movement_step() = 0;
 	virtual void on_movement_end() = 0;
@@ -149,7 +156,9 @@ public:
 	void set_grid_coords(GridCoords const &coords) { _grid_coords = coords; }
 
 	bool is_in_range_of(std::shared_ptr<Entity> entity, uint8_t range = MAX_VIEW_RANGE);
-	virtual void notify_nearby_players_of_self(entity_viewport_notification_type notif_type);
+	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
+	void notify_nearby_players_of_spawn();
+	void notify_nearby_players_of_movement();
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 
 private:

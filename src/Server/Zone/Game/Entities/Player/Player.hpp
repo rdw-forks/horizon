@@ -30,22 +30,22 @@
 #ifndef HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 #define HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 
-#include "Core/Networking/Buffer/ByteBuffer.hpp"
-#include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Common/Configuration/Horizon.hpp" // MAX_INVENTORY_SIZE
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Common/Definitions/EntityDefinitions.hpp" // entity_gender_types
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
-#include "Server/Common/SQL/Character/Character.hpp"
 
 #include <sol.hpp>
+
+class ByteBuffer;
 
 namespace Horizon
 {
 namespace Zone
 {
 class ZoneSession;
-class ZoneSocket;
 namespace Assets
 {
 	class Inventory;
@@ -59,7 +59,7 @@ class Player : public Entity, public GridObject<Player>
 		uint32_t _account_id{0};
 		uint16_t _slot{0};
 		bool _online{false};
-		character_gender_type _gender{CHARACTER_GENDER_MALE};
+		entity_gender_types _gender{ENTITY_GENDER_FEMALE};
 		uint32_t _max_inventory_size{MAX_INVENTORY_SIZE};
 		uint64_t _last_unique_id{0};
 	};
@@ -91,6 +91,7 @@ public:
 	void on_map_enter();
 
 	void stop_movement() override;
+	void on_pathfinding_failure() override;
 	void on_movement_begin() override;
 	void on_movement_step() override;
 	void on_movement_end() override;

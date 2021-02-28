@@ -30,6 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP
 #define HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP
 
+#include "Core/Networking/Buffer/ByteBuffer.hpp"
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Skill/Skill.hpp"
@@ -72,6 +73,40 @@ struct GridEntityExistenceNotifier
 
 	GridEntityExistenceNotifier(std::weak_ptr<Horizon::Zone::Entity> entity, entity_viewport_notification_type notif_type)
 	: _entity(entity), _notif_type(notif_type)
+	{ }
+
+	template <class T>
+	void notify(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m) { notify(m); }
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+struct GridEntitySpawnNotifier
+{
+	std::weak_ptr<Horizon::Zone::Entity> _entity;
+
+	GridEntitySpawnNotifier(std::weak_ptr<Horizon::Zone::Entity> entity)
+	: _entity(entity)
+	{ }
+
+	template <class T>
+	void notify(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m) { notify(m); }
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+struct GridEntityMovementNotifier
+{
+	std::weak_ptr<Horizon::Zone::Entity> _entity;
+
+	GridEntityMovementNotifier(std::weak_ptr<Horizon::Zone::Entity> entity)
+	: _entity(entity)
 	{ }
 
 	template <class T>

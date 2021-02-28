@@ -54,6 +54,7 @@ public:
 	void initialize() override;
 
 	virtual void stop_movement() override;
+	virtual void on_pathfinding_failure() override;
 	virtual void on_movement_begin() override;
 	virtual void on_movement_step() override;
 	virtual void on_movement_end() override;

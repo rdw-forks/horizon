@@ -176,11 +176,6 @@ void ZoneServer::initialize_core()
 	signal(SIGQUIT, SignalHandler);
 #endif
 	signal(SIGTERM, SignalHandler);
-	
-	/**
-	 * Map Manager.
-	 */
-	MapMgr->initialize();
 
 	/**
 	 * Static Databases
@@ -196,6 +191,11 @@ void ZoneServer::initialize_core()
 	SkillDB->load();
 	MonsterDB->load();
 
+	/**
+	 * Map Manager.
+	 */
+	MapMgr->initialize();
+	
 	// Start Network
 	ClientSocktMgr->start(get_io_service(),
 						  general_conf().get_listen_ip(),

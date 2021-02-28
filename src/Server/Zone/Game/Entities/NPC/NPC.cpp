@@ -70,6 +70,11 @@ void NPC::stop_movement()
 
 }
 
+void NPC::on_pathfinding_failure()
+{
+
+}
+
 void NPC::on_movement_begin()
 {
 

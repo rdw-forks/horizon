@@ -32,11 +32,15 @@
 
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
 #include <memory>
 
 #define MIN_RANDOM_TRAVEL_TIME 4000
 #define MOB_LAZY_MOVE_RATE 1000
+#define MOB_MIN_THINK_TIME_HARD 100
+#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME_HARD * 10)
+
 namespace Horizon
 {
 namespace Zone
@@ -53,6 +57,7 @@ public:
 	void initialize() override;
 
 	virtual void stop_movement() override;
+	virtual void on_pathfinding_failure() override;
 	virtual void on_movement_begin() override;
 	virtual void on_movement_step() override;
 	virtual void on_movement_end() override;
@@ -61,8 +66,16 @@ public:
 	void set_spotted(bool spotted) { _spotted = spotted; }
 	bool is_spotted() { return _spotted; }
 
+	void perform_ai_lazy();
+
+	std::shared_ptr<const monster_config_data> monster_config() { return _wmd_data.lock(); }
+	void set_monster_config(std::shared_ptr<const monster_config_data> md) { _wmd_data = md; }
+
 private:
 	bool _spotted{false};
+	std::weak_ptr<const monster_skill_config_data> _wms_data;
+	std::weak_ptr<const monster_config_data> _wmd_data;
+
 };
 }
 }

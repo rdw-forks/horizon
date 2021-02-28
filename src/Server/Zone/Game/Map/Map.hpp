@@ -98,7 +98,7 @@ public:
 
 	AStar::Generator &get_pathfinder() { std::lock_guard lock(_pathfinder_mtx); return _pathfinder; }
 
-	MapCoords get_random_coordinates_in_area(uint16_t x, uint16_t y, uint16_t xs, uint16_t ys)
+	MapCoords get_random_coordinates_in_walkable_area(uint16_t x, uint16_t y, uint16_t xs, uint16_t ys)
 	{
 		std::vector<MapCoords> available_cells;
 

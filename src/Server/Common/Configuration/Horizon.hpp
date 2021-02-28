@@ -64,10 +64,10 @@
 #define MAX_NETWORK_THREADS 1
 
 // Time in Microseconds (µs)
-#define MAX_CORE_UPDATE_INTERVAL 5000
+#define MAX_CORE_UPDATE_INTERVAL 500
 
 // Map Thread Containers
-#define MAX_MAP_CONTAINER_THREADS 1
+#define MAX_MAP_CONTAINER_THREADS 3
 
 static_assert(MAX_LEVEL > 0,
               "MAX_LEVEL should be greater than 0.");

@@ -167,6 +167,7 @@ protected:
 
 	bool load_skill_internal(sol::object const &key, sol::object const &value);
 
+public:
 	std::shared_ptr<const monster_config_data> get_monster_by_id(uint32_t id) { return _monster_db.at(id, nullptr); }
 	std::shared_ptr<const monster_config_data> get_monster_by_name(std::string name) 
 	{

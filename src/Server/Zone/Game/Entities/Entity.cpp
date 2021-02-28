@@ -81,8 +81,10 @@ bool Entity::schedule_movement(MapCoords coords)
 	// This method returns vector of coordinates from target to source.
 	auto path = map()->get_pathfinder().findPath(source_coords, dest_coords);
 
-	if (path.size() == 0)
+	if (path.size() == 0) {
+		on_pathfinding_failure();
 		return false;
+	}
 
 	_walk_path = path;
 	std::reverse(_walk_path.begin(), _walk_path.end());
@@ -96,6 +98,7 @@ bool Entity::schedule_movement(MapCoords coords)
 		else if (this->type() == ENTITY_MONSTER)
 			(std::static_pointer_cast<Entities::Monster>(shared_from_this()))->stop_movement();
 	} else if (_walk_path.size() > 0) {
+		notify_nearby_players_of_movement();
 		on_movement_begin();
 		move();
 	}
@@ -122,10 +125,9 @@ void Entity::move()
 
 			set_direction((directions) my_coords.direction_to(step_coords));
 
-			notify_nearby_players_of_self(EVP_NOTIFY_OUT_OF_SIGHT);
+			notify_nearby_players_of_existence(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
-			
-			notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
+			notify_nearby_players_of_existence(EVP_NOTIFY_IN_SIGHT);
 
 			_walk_path.erase(_walk_path.begin());
 
@@ -182,10 +184,26 @@ std::shared_ptr<Entity> Entity::get_nearby_entity(uint32_t guid)
 	return searcher.get_result().lock();
 }
 
-void Entity::notify_nearby_players_of_self(entity_viewport_notification_type notif_type)
+void Entity::notify_nearby_players_of_existence(entity_viewport_notification_type notif_type)
 {
 	GridEntityExistenceNotifier existence_notify(shared_from_this(), notif_type);
 	GridReferenceContainerVisitor<GridEntityExistenceNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(existence_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+void Entity::notify_nearby_players_of_spawn()
+{
+	GridEntitySpawnNotifier spawn_notify(shared_from_this());
+	GridReferenceContainerVisitor<GridEntitySpawnNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(spawn_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+void Entity::notify_nearby_players_of_movement()
+{
+	GridEntityMovementNotifier movement_notify(shared_from_this());
+	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);
 }

@@ -28,6 +28,8 @@
  **************************************************/
 
 #include "Monster.hpp"
+
+#include "Core/Logging/Logger.hpp"
 #include "Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
@@ -54,18 +56,41 @@ void Monster::initialize()
 
 	status()->initialize();
 	map()->ensure_grid_for_entity(this, map_coords());
+	
+	set_monster_config(MonsterDB->get_monster_by_id(job_id()));
+	if (monster_config() == nullptr) {
+		HLog(error) << "Error finding monster by id " << job_id() << " in database.";
+		return;
+	}
 
-	getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME), ENTITY_SCHEDULE_AI_WALK, [this] (TaskContext context) {
-		std::srand(std::time(nullptr));
-		MapCoords mc = map()->get_random_coordinates_in_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
-		move_to_coordinates(mc.x(), mc.y());
-		context.Repeat(Milliseconds(MIN_RANDOM_TRAVEL_TIME + (rand() % MOB_LAZY_MOVE_RATE)));
+	getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (TaskContext context) {
+		auto start = std::chrono::high_resolution_clock::now();
+		perform_ai_lazy();
+		auto stop = std::chrono::high_resolution_clock::now(); 
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 	});
+}
+
+void Monster::perform_ai_lazy()
+{
+	std::srand(std::time(nullptr));
+
+	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE) {
+		getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME + (rand() % MOB_LAZY_MOVE_RATE)), ENTITY_SCHEDULE_AI_WALK, [this] (TaskContext context) {
+			MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
+			move_to_coordinates(mc.x(), mc.y());
+			HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ").";
+		});
+	}
 }
 
 void Monster::stop_movement()
 {
+}
 
+void Monster::on_pathfinding_failure()
+{	
+	perform_ai_lazy();
 }
 
 void Monster::on_movement_begin()
@@ -78,8 +103,8 @@ void Monster::on_movement_step()
 }
 
 void Monster::on_movement_end()
-{
-
+{	
+	perform_ai_lazy();
 }
 
 void Monster::sync_with_models()

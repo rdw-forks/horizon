@@ -119,6 +119,11 @@ void Player::sync_with_models()
 
 }
 
+void Player::on_pathfinding_failure()
+{
+
+}
+
 void Player::on_movement_begin()
 {
 	get_session()->clif()->notify_player_movement(map_coords(), dest_coords());
@@ -233,7 +238,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 
 	std::shared_ptr<Player> myself = downcast<Player>();
 
-	notify_nearby_players_of_self(EVP_NOTIFY_TELEPORT);
+	notify_nearby_players_of_existence(EVP_NOTIFY_TELEPORT);
 
 	{
 		if (!dest_map->container()->get_map(map()->get_name())) {
@@ -310,7 +315,7 @@ void Player::on_map_enter()
 
 	update_viewport();
 
-	notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
+	notify_nearby_players_of_spawn();
 }
 
 void Player::notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range)
