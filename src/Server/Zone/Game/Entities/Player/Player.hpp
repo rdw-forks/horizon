@@ -65,7 +65,7 @@ class Player : public Entity, public GridObject<Player>
 	};
 	
 public:
-	Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, const MapCoords& mcoords);
 	~Player();
 
 	/**

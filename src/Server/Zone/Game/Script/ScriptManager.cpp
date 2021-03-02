@@ -29,6 +29,8 @@
 
 #include "ScriptManager.hpp"
 
+#include <utility>
+
 #include "Common/Definitions/ItemDefinitions.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
@@ -41,14 +43,13 @@
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
-#include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
-ScriptManager::ScriptManager(std::weak_ptr<MapContainerThread> container)
+ScriptManager::ScriptManager(std::shared_ptr<MapContainerThread> container)
 : _container(container)
 {
 
@@ -68,7 +69,7 @@ void ScriptManager::initialize()
 
 void ScriptManager::initialize_state(sol::state &st)
 {
-	sol::protected_function_result res;
+	sol::protected_function_result res{};
 
 	st.open_libraries(sol::lib::base);
 	st.open_libraries(sol::lib::string);

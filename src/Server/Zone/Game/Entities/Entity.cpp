@@ -52,7 +52,6 @@ Entity::~Entity()
 
 void Entity::initialize()
 {
-
 	_status = std::make_shared<Entities::Traits::Status>(shared_from_this());
 
 //	if (get_type() == ENTITY_PLAYER)
@@ -65,12 +64,12 @@ void Entity::initialize()
 }
 
 
-bool Entity::schedule_movement(MapCoords coords)
+bool Entity::schedule_movement(const MapCoords& coords)
 {
 	AStar::Vec2i source_coords = { map_coords().x(), map_coords().y() };
 	AStar::Vec2i dest_coords = { coords.x(), coords.y() };
 
-	if (_walk_path.size())
+	if (!_walk_path.empty())
 		_walk_path.clear();
 
 	if (!map()) {
@@ -81,7 +80,7 @@ bool Entity::schedule_movement(MapCoords coords)
 	// This method returns vector of coordinates from target to source.
 	auto path = map()->get_pathfinder().findPath(source_coords, dest_coords);
 
-	if (path.size() == 0) {
+	if (path.empty()) {
 		on_pathfinding_failure();
 		return false;
 	}
@@ -92,12 +91,7 @@ bool Entity::schedule_movement(MapCoords coords)
 
 	_changed_dest_pos = {0, 0};
 
-	if (_walk_path.size() > 14) {
-		if (this->type() == ENTITY_PLAYER)
-			(std::static_pointer_cast<Entities::Player>(shared_from_this()))->stop_movement();
-		else if (this->type() == ENTITY_MONSTER)
-			(std::static_pointer_cast<Entities::Monster>(shared_from_this()))->stop_movement();
-	} else if (_walk_path.size() > 0) {
+	if (!_walk_path.empty()) {
 		notify_nearby_players_of_movement();
 		on_movement_begin();
 		move();
@@ -112,13 +106,13 @@ void Entity::move()
 	AStar::Vec2i c = _walk_path.at(0);
 
 	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost)), ENTITY_SCHEDULE_WALK,
-		[this, c, my_coords] (TaskContext /*movement*/)
+		[this, c, my_coords] (const TaskContext& /*movement*/)
 		{
 			// Force stop as the current coordinates might asynchronously update after map has changed 
 			// and co-ordinates are reset to something in a previous walk path.
 			// This force stop will return before changing co-ordinates and 
 			// prevent further movement updates after map has changed.
-			if (_jump_walk_stop == true)
+			if (_jump_walk_stop)
 				return;
 
 			MapCoords step_coords(c.x, c.y);
@@ -142,7 +136,7 @@ void Entity::move()
 				on_movement_end();
 			}
 
-			if (_walk_path.size() > 0)
+			if (!_walk_path.empty())
 				move();
 		});
 }
@@ -181,7 +175,7 @@ std::shared_ptr<Entity> Entity::get_nearby_entity(uint32_t guid)
 
 	map()->visit_in_range(map_coords(), search_visitor);
 
-	return searcher.get_result().lock();
+	return searcher.get_result();
 }
 
 void Entity::notify_nearby_players_of_existence(entity_viewport_notification_type notif_type)

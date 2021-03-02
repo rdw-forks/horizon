@@ -76,17 +76,17 @@ public:
 
 	virtual void initialize();
 
-	bool is_initialized() { return _is_initialized; }
+	bool is_initialized() const { return _is_initialized; }
 
 	/**
 	 * Movement
 	 */
 	MapCoords const &dest_coords() const { return _dest_pos; }
 	virtual bool move_to_coordinates(uint16_t x, uint16_t y);
-	bool is_walking() { return (dest_coords() != MapCoords(0, 0)); }
+	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
 
 protected:
-	bool schedule_movement(MapCoords mcoords);
+	bool schedule_movement(const MapCoords& mcoords);
 	void move();
 	virtual void stop_movement() = 0;
 	virtual void on_pathfinding_failure() = 0;

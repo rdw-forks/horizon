@@ -38,18 +38,16 @@
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
-#include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
-#include "Server/Zone/Zone.hpp"
 
 #include "version.hpp"
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
-Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
+Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, const MapCoords& mcoords)
 : Entity(guid, ENTITY_PLAYER, map, mcoords), _session(session)
 {
 }

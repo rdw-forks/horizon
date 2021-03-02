@@ -82,6 +82,7 @@ void NPC::on_movement_begin()
 
 void NPC::on_movement_step()
 {
+	map()->ensure_grid_for_entity(this, map_coords());
 }
 
 void NPC::on_movement_end()

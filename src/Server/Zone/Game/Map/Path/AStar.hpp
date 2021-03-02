@@ -32,6 +32,7 @@
 #ifndef HORIZON_ZONE_GAME_MAP_PATH_ASTAR_HPP
 #define HORIZON_ZONE_GAME_MAP_PATH_ASTAR_HPP
 
+#include <utility>
 #include <vector>
 #include <functional>
 #include <set>
@@ -88,23 +89,23 @@ struct Node
 {
 	uint32_t G, H;
 	Vec2i coordinates;
-	std::shared_ptr<Node> parent;
+	Node * parent;
 
-	Node(Vec2i coord_, std::shared_ptr<Node> parent_ = nullptr)
+	explicit Node(Vec2i coord_, Node * parent_ = nullptr)
 	{
 		parent = parent_;
 		coordinates = coord_;
 		G = H = 0;
 	}
 
-	uint32_t getScore() { return G + H; }
+	uint32_t getScore() const { return G + H; }
 };
 
-using NodeSet = std::vector<std::shared_ptr<Node>>;
+using NodeSet = std::vector<Node *>;
 
 class Generator
 {
-	std::shared_ptr<Node> findNodeOnList(NodeSet& nodes_, Vec2i coordinates_)
+	static Node * findNodeOnList(NodeSet& nodes_, Vec2i coordinates_)
 	{
 		for (auto node : nodes_) {
 			if (node->coordinates == coordinates_) {
@@ -113,7 +114,7 @@ class Generator
 		}
 		return nullptr;
 	}
-	void releaseNodes(NodeSet nodes_)
+	static void releaseNodes(NodeSet nodes_)
 	{
 		for (auto it = nodes_.begin(); it != nodes_.end();) {
 			it = nodes_.erase(it);
@@ -130,7 +131,7 @@ public:
 	Generator(Vec2i worldSize_, CollisionDetectionFunction c, bool diagonal_movement = true, HeuristicFunction h = &Heuristic::manhattan)
 	{
 		setWorldSize(worldSize_);
-		setCollisionDetectionFunction(c);
+		setCollisionDetectionFunction(std::move(c));
 		setDiagonalMovement(diagonal_movement);
 		setHeuristic(h);
 	}
@@ -141,23 +142,23 @@ public:
 
 	void setDiagonalMovement(bool enable_) { directions = (enable_ ? 8 : 4); }
 
-	void setHeuristic(HeuristicFunction heuristic_) { heuristic = std::bind(heuristic_, std::placeholders::_1, std::placeholders::_2); }
+	void setHeuristic(const HeuristicFunction& heuristic_) { heuristic = [heuristic_](auto && PH1, auto && PH2) { return heuristic_(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); }; }
 
 	CoordinateList findPath(Vec2i source_, Vec2i target_)
 	{
 		CoordinateList path;
-		std::shared_ptr<Node> current = nullptr;
+		Node * current = nullptr;
 		NodeSet openSet, closedSet;
 		int searchStep = 0;
 
 		openSet.reserve(100);
 		closedSet.reserve(100);
-		openSet.push_back(std::make_shared<Node>(source_));
+		openSet.push_back(new Node(source_));
 
 		if (check_collision(target_.x, target_.y))
 			return path;
 
-		while (!openSet.empty() && searchStep < 200) {
+		while (!openSet.empty() && searchStep < 50) {
 			auto current_it = openSet.begin();
 			
 			current = *current_it;
@@ -188,9 +189,9 @@ public:
 				newCoordinates.move_cost = ((i < 4) ? 10 : 14);
 				uint32_t totalCost = current->G + newCoordinates.move_cost;
 
-				std::shared_ptr<Node> successor = findNodeOnList(openSet, newCoordinates);
+				Node * successor = findNodeOnList(openSet, newCoordinates);
 				if (successor == nullptr) {
-					successor = std::make_shared<Node>(newCoordinates, current);
+					successor = new Node(newCoordinates, current);
 					successor->G = totalCost;
 					successor->H = heuristic(successor->coordinates, target_);
 					openSet.push_back(successor);
@@ -222,7 +223,7 @@ private:
 		{ -1, -1 }, { 1, 1 }, { -1, 1 }, { 1, -1 }
 	};
 	Vec2i worldSize;
-	uint32_t directions;
+	uint32_t directions{};
 };
 }
 }

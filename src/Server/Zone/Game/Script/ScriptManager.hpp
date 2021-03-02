@@ -50,7 +50,7 @@ class ScriptManager
 {
 friend class MapContainerThread;
 public:
-	ScriptManager(std::weak_ptr<MapContainerThread> container);
+	explicit ScriptManager(std::shared_ptr<MapContainerThread> container);
 	~ScriptManager();
 
 	std::shared_ptr<MapContainerThread> get_map_container() { return _container.lock(); }
