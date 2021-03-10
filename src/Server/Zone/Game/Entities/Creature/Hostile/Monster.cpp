@@ -63,20 +63,29 @@ void Monster::initialize()
 		return;
 	}
 
-	getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (const TaskContext& context) {
-		perform_ai_lazy();
-	});
+    getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (TaskContext context) {
+        if (is_spotted())
+            perform_ai_lazy();
+        context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
+    });
 }
 
 void Monster::perform_ai_lazy()
 {
 	std::srand(std::time(nullptr));
 
-	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE) {
-		getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME + (rand() % MOB_LAZY_MOVE_RATE)), ENTITY_SCHEDULE_AI_WALK, [this] (const TaskContext& context) {
+	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE && is_spotted() && (_next_walktime - std::time(nullptr) < 0) && !is_walking()) {
+		getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME + (std::rand() % MOB_LAZY_MOVE_RATE)), ENTITY_SCHEDULE_AI_WALK, [this] (TaskContext context) {
 			MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
 			move_to_coordinates(mc.x(), mc.y());
-			HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ").";
+
+			int total_movement_cost = 0;
+			for (int i = 0; i < _walk_path.size(); i++) {
+				MapCoords m = _walk_path.at(i);
+				total_movement_cost += m.move_cost();
+			}
+			HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
+            _next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + total_movement_cost;
 		});
 	}
 }
@@ -86,10 +95,7 @@ void Monster::stop_movement()
 }
 
 void Monster::on_pathfinding_failure()
-{	
-	getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), ENTITY_SCHEDULE_AI_WALK, [this] (const TaskContext& context) {
-		perform_ai_lazy();
-	});
+{
 }
 
 void Monster::on_movement_begin()
@@ -104,9 +110,6 @@ void Monster::on_movement_step()
 
 void Monster::on_movement_end()
 {
-	getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), ENTITY_SCHEDULE_AI_WALK, [this] (const TaskContext& context) {
-		perform_ai_lazy();
-	});
 }
 
 void Monster::sync_with_models()

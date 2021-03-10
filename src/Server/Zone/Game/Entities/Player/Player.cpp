@@ -36,6 +36,7 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
@@ -164,6 +165,10 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 
 	_viewport_entities.push_back(entity);
 
+	if (entity->type() == ENTITY_MONSTER) {
+	    entity->downcast<Monster>()->set_spotted(true);
+	}
+
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)
 		HLog(debug) << "Entity:" << it->lock()->name() << " " << it->lock()->guid();
@@ -182,6 +187,10 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_
 	), _viewport_entities.end());
 
 	get_session()->clif()->notify_viewport_remove_entity(entity, type);
+
+    if (entity->type() == ENTITY_MONSTER) {
+        entity->downcast<Monster>()->set_spotted(false);
+    }
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)

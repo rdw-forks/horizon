@@ -73,8 +73,8 @@ public:
 
 	MapCoords get_random_coords()
 	{
-		uint16_t x = 0;
-		uint16_t y = 0;
+		int16_t x = 0;
+		int16_t y = 0;
 
 		do {
 			x = rand() % _width;

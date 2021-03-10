@@ -82,8 +82,9 @@ public:
 	 * Movement
 	 */
 	MapCoords const &dest_coords() const { return _dest_pos; }
-	virtual bool move_to_coordinates(uint16_t x, uint16_t y);
+	virtual bool move_to_coordinates(int16_t x, int16_t y);
 	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
+
 
 protected:
 	bool schedule_movement(const MapCoords& mcoords);
@@ -161,7 +162,7 @@ public:
 	void notify_nearby_players_of_movement();
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 
-private:
+protected:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	uint32_t _guid{0};
 	entity_type _type{ENTITY_UNKNOWN};
@@ -176,6 +177,7 @@ private:
 
 	MapCoords _changed_dest_pos{0, 0}, _dest_pos{0, 0};
 	AStar::CoordinateList _walk_path;
+    int16_t _walk_path_index{0};
 
 	std::shared_ptr<Entities::Traits::Status> _status;
 

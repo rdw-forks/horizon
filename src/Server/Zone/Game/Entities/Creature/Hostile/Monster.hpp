@@ -38,8 +38,8 @@
 
 #define MIN_RANDOM_TRAVEL_TIME 4000
 #define MOB_LAZY_MOVE_RATE 1000
-#define MOB_MIN_THINK_TIME_HARD 100
-#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME_HARD * 10)
+#define MOB_MIN_THINK_TIME 100
+#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME * 10)
 
 namespace Horizon
 {
@@ -73,6 +73,7 @@ public:
 
 private:
 	bool _spotted{false};
+	int _next_walktime{0}, _last_spotted_time{0};
 	std::weak_ptr<const monster_skill_config_data> _wms_data;
 	std::weak_ptr<const monster_config_data> _wmd_data;
 

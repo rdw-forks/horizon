@@ -67,6 +67,7 @@ namespace Traits
 	class NextJobExperience;
 	class MaxWeight;
 	class AttackSpeed;
+	class MovementSpeed;
 
 	class BaseLevel
 	: public Attribute<BaseLevel>,

@@ -66,8 +66,8 @@ void Entity::initialize()
 
 bool Entity::schedule_movement(const MapCoords& coords)
 {
-	AStar::Vec2i source_coords = { map_coords().x(), map_coords().y() };
-	AStar::Vec2i dest_coords = { coords.x(), coords.y() };
+	MapCoords source_coords = { map_coords().x(), map_coords().y() };
+	MapCoords dest_coords = { coords.x(), coords.y() };
 
 	if (!_walk_path.empty())
 		_walk_path.clear();
@@ -103,9 +103,9 @@ bool Entity::schedule_movement(const MapCoords& coords)
 void Entity::move()
 {
 	MapCoords my_coords = map_coords();
-	AStar::Vec2i c = _walk_path.at(0);
+	MapCoords c = _walk_path.at(0);
 
-	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost)), ENTITY_SCHEDULE_WALK,
+	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), ENTITY_SCHEDULE_WALK,
 		[this, c, my_coords] (const TaskContext& /*movement*/)
 		{
 			// Force stop as the current coordinates might asynchronously update after map has changed 
@@ -115,9 +115,9 @@ void Entity::move()
 			if (_jump_walk_stop)
 				return;
 
-			MapCoords step_coords(c.x, c.y);
+			MapCoords step_coords(c.x(), c.y());
 
-			set_direction((directions) my_coords.direction_to(step_coords));
+			// set_direction((directions) my_coords.direction_to(step_coords));
 
 			notify_nearby_players_of_existence(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
@@ -131,7 +131,7 @@ void Entity::move()
 				_dest_pos = _changed_dest_pos;
 				schedule_movement(_dest_pos);
 				return;
-			} else if (_dest_pos == MapCoords(c.x, c.y)) {
+			} else if (_dest_pos == MapCoords(c.x(), c.y())) {
 				_dest_pos = { 0, 0 };
 				on_movement_end();
 			}
@@ -141,7 +141,7 @@ void Entity::move()
 		});
 }
 
-bool Entity::move_to_coordinates(uint16_t x, uint16_t y)
+bool Entity::move_to_coordinates(int16_t x, int16_t y)
 {
 	if (getScheduler().Count(ENTITY_SCHEDULE_WALK)) {
 		_changed_dest_pos = { x, y };

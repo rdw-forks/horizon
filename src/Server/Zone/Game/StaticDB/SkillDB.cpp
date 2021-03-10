@@ -201,6 +201,7 @@ bool SkillDatabase::load_internal_skill_db(sol::object const &key, sol::object c
 		return false;
 
 	_skill_db.insert(data.skill_id, std::make_shared<skill_config_data>(data));
+	_skill_str_db.insert(data.name, std::make_shared<skill_config_data>(data));
 
 	return true;
 }
