@@ -51,7 +51,9 @@ namespace Entities
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
-	Monster(std::shared_ptr<Map> map, MapCoords mcoords, std::string const &name, uint16_t mob_id);
+	explicit Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+		std::shared_ptr<const monster_config_data> md,
+		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd);
 	~Monster();
 
 	void initialize() override;
@@ -74,8 +76,8 @@ public:
 private:
 	bool _spotted{false};
 	int _next_walktime{0}, _last_spotted_time{0};
-	std::weak_ptr<const monster_skill_config_data> _wms_data;
 	std::weak_ptr<const monster_config_data> _wmd_data;
+	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;
 
 };
 }

@@ -36,11 +36,13 @@
 
 using namespace Horizon::Zone::Entities;
 
-Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords, std::string const &name, uint16_t mob_id)
-: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords)
+Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+		std::shared_ptr<const monster_config_data> md,
+		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
+: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
-	set_name(name);
-	set_job_id(mob_id);
+	set_name(md->name);
+	set_job_id(md->monster_id);
 	set_direction(DIR_SOUTH);
 }
 
@@ -56,12 +58,6 @@ void Monster::initialize()
 
 	status()->initialize();
 	map()->ensure_grid_for_entity(this, map_coords());
-	
-	set_monster_config(MonsterDB->get_monster_by_id(job_id()));
-	if (monster_config() == nullptr) {
-		HLog(error) << "Error finding monster by id " << job_id() << " in database.";
-		return;
-	}
 
     getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (TaskContext context) {
         if (is_spotted())
@@ -74,19 +70,20 @@ void Monster::perform_ai_lazy()
 {
 	std::srand(std::time(nullptr));
 
-	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE && is_spotted() && (_next_walktime - std::time(nullptr) < 0) && !is_walking()) {
-		getScheduler().Schedule(Milliseconds(MIN_RANDOM_TRAVEL_TIME + (std::rand() % MOB_LAZY_MOVE_RATE)), ENTITY_SCHEDULE_AI_WALK, [this] (TaskContext context) {
-			MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
-			move_to_coordinates(mc.x(), mc.y());
+	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
+		&& is_spotted() 
+		&& (_next_walktime - std::time(nullptr) < 0) 
+		&& !is_walking()) {
+		MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
+		move_to_coordinates(mc.x(), mc.y());
 
-			int total_movement_cost = 0;
-			for (int i = 0; i < _walk_path.size(); i++) {
-				MapCoords m = _walk_path.at(i);
-				total_movement_cost += m.move_cost();
-			}
-			HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
-            _next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + total_movement_cost;
-		});
+		int total_movement_cost = 0;
+		for (int i = 0; i < _walk_path.size(); i++) {
+			MapCoords m = _walk_path.at(i);
+			total_movement_cost += m.move_cost();
+		}
+		HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
+		_next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + (total_movement_cost / 10);
 	}
 }
 

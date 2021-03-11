@@ -188,10 +188,6 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_
 
 	get_session()->clif()->notify_viewport_remove_entity(entity, type);
 
-    if (entity->type() == ENTITY_MONSTER) {
-        entity->downcast<Monster>()->set_spotted(false);
-    }
-
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)
 		HLog(debug) << "Entity:" << it->lock()->name() << " " << it->lock()->guid();

@@ -238,18 +238,28 @@ void ScriptManager::initialize_state(sol::state &st)
 			if (map == nullptr)
 				return;
 
+			std::shared_ptr<const monster_config_data> md = MonsterDB->get_monster_by_id(monster_id);
+
+			if (md == nullptr) {
+				HLog(warning) << "Monster " << monster_id << " set for spawn in " << map_name << " does not exist in the database.";
+				return;
+			}
+
+			std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(monster_id);
+
 			for (int i = 0; i < amount; i++) {
 				MapCoords mcoords = MapCoords(x, y);
 
 				if (mcoords == MapCoords(0, 0))
 					mcoords = map->get_random_coords();
-
-				if (x_area && y_area) {
-					if ((mcoords = map->get_random_coordinates_in_walkable_area(x, y, x_area, y_area)) == MapCoords(0, 0))
+				else if (x_area && y_area) {
+					if ((mcoords = map->get_random_coordinates_in_walkable_area(x, y, x_area, y_area)) == MapCoords(0, 0)) {
+						HLog(warning) << "Couldn't spawn monster " << md->name << " in area, spawning it on random co-ordinates.";
 						mcoords = map->get_random_coords();
+					}
 				}
 
-				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, name, monster_id);
+				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, md, mskd);
 				monster->initialize();
 				
 				add_spawned_monster_to_db(monster->guid(), std::move(monster));

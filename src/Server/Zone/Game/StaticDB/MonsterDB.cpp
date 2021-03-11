@@ -201,6 +201,8 @@ bool MonsterDatabase::load_internal(const sol::object &key, const sol::object &v
 
 	_monster_db.insert(data.monster_id, std::make_shared<monster_config_data>(data));
 
+	_monster_str_db.insert(data.sprite_name, std::make_shared<monster_config_data>(data));
+
 	return true;
 }
 
@@ -907,7 +909,7 @@ bool MonsterDatabase::load_skill_internal(const sol::object &key, const sol::obj
 			skills.push_back(std::make_shared<const monster_skill_config_data>(mskd));
 		}
 
-		_monster_skill_db.insert(monster->monster_id, skills);
+		_monster_skill_db.insert(monster->monster_id, std::make_shared<std::vector<std::shared_ptr<const monster_skill_config_data>>>(skills));
 		
 	}	catch (sol::error &e) { 
 		HLog(error) << "MonsterDatabase::load_skill_internal:" << e.what();
