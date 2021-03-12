@@ -6,7 +6,14 @@ mkdir cmake && wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C 
 CMAKE_DIR="/tmp/cmake/bin"
 echo "CMake Dir: ${CMAKE_DIR}"
 ls -al ${CMAKE_DIR}
-popdG
+
+BOOST_URL="https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz"
+mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C boost
+pushd boost;
+./bootstrap.sh --with-libraries=locale,filesystem,log,log_setup,unit_test_framework
+./b2 link=shared threading=multi variant=release
+popd
+
 
 if ! test -f "/usr/local/include/sol.hpp"; then
 	echo "Sol2 doesn't exist, installing from scratch!";
