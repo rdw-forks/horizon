@@ -111,7 +111,7 @@ endif()
 
 message(STATUS "Boost Components: ${BOOST_COMPONENTS}")
 
-find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS locale filesystem log log_setup unit_test_framework)
+find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 #################
 # Readline Library
