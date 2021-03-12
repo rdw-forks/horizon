@@ -106,7 +106,7 @@ set(BOOST_REQUIRED_VERSION 1.69.0)
 set(BOOST_COMPONENTS locale filesystem log log_setup)
 
 if (WITH_TESTS)
-		set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
+	set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
 endif()
 
 message(STATUS "Boost Components: ${BOOST_COMPONENTS}")
