@@ -33,6 +33,11 @@
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 
+// Includes for Linux
+#include <memory>
+#include <algorithm>
+#include <type_traits>
+
 namespace Horizon
 {
 namespace Zone

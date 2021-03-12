@@ -33,6 +33,8 @@
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 
+#include <memory> // Linux
+
 namespace Horizon
 {
 namespace Zone
