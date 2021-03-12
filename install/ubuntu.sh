@@ -1,5 +1,9 @@
 pushd .
 
+sudo apt-get remove cmake
+wget https://github.com/Kitware/CMake/releases/download/v3.20.0-rc4/cmake-3.20.0-rc4-linux-x86_64.sh
+./cmake-3.20.0-rc4-linux-x86_64.sh
+
 sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
 
 if ! test -f "/usr/local/include/sol.hpp"; then
@@ -39,7 +43,7 @@ if ! test -f "/usr/local/include/sqlpp11/sqlpp11.h"; then
 	mkdir sqlpp11/build;
 	pushd sqlpp11/build;
 	cmake ../;
-	echo "Silently building and installing Sol2...";
+	echo "Silently building and installing Sqlpp11...";
 	sudo make install >/dev/null;
 	popd;
 	popd;
@@ -54,7 +58,7 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	mkdir sqlpp11-connector-mysql/build;
 	pushd sqlpp11-connector-mysql/build;
 	cmake ../;
-	echo "Silently building and installing Sol2...";
+	echo "Silently building and installing Sqlpp11-connector-mysql...";
 	sudo make install >/dev/null;
 	popd;
 	popd;
