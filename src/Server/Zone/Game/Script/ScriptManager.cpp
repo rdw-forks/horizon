@@ -194,7 +194,7 @@ void ScriptManager::initialize_state(sol::state &st)
 		"hire_expire_date", sol::property(&item_entry_data::get_hire_expire_date, &item_entry_data::set_hire_expire_date),
 		"bind_type", sol::property(&item_entry_data::get_bind_type, &item_entry_data::set_bind_type),
 		"sprite_id", sol::readonly(&item_entry_data::sprite_id),
-		"element_type", sol::readonly(&item_entry_data::element_type),
+		"ele_type", sol::readonly(&item_entry_data::ele_type),
 		"option_count", sol::property(&item_entry_data::get_option_count, &item_entry_data::set_option_count),
 		"options_data", sol::property([] (item_entry_data &item) {
 			return std::ref(item.option_data);

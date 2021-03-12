@@ -34,12 +34,13 @@
 
 #include <type_traits>
 #include <stdlib.h>
-#include <string>
+#include <cstring>
 #include <vector>
 #include <cmath>
 #include <assert.h>
 #include <list>
 #include <map>
+#include <cstdio>
 
 // Root of ByteBuffer exception hierarchy
 class ByteBufferException : public std::exception
