@@ -1,5 +1,7 @@
 pushd .
 
+sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
+
 if ! test -f "/usr/local/include/sol.hpp"; then
 	echo "Sol2 doesn't exist, installing from scratch!";
 	pushd /tmp;
@@ -44,8 +46,6 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 else
 	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
 fi
-
-sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
 
 echo "/usr"
 ls -al /usr
