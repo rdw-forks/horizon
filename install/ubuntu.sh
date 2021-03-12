@@ -5,6 +5,8 @@ mkdir cmake && wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C 
 WORKING_DIR=`pwd`
 CMAKE_DIR="${WORKING_DIR}/cmake/bin"
 echo "CMake Dir: ${CMAKE_DIR}"
+ls -al ${WORKING_DIR}
+ls -al ${CMAKE_DIR}
 
 sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
 
