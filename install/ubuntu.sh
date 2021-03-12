@@ -6,9 +6,7 @@ mkdir cmake && wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C 
 CMAKE_DIR="/tmp/cmake/bin"
 echo "CMake Dir: ${CMAKE_DIR}"
 ls -al ${CMAKE_DIR}
-popd
-
-sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
+popdG
 
 if ! test -f "/usr/local/include/sol.hpp"; then
 	echo "Sol2 doesn't exist, installing from scratch!";
@@ -16,7 +14,8 @@ if ! test -f "/usr/local/include/sol.hpp"; then
 	git clone https://github.com/ThePhD/sol2.git;
 	mkdir sol2/build;
 	pushd sol2/build;
-	.${CMAKE_DIR}/cmake ../;
+	./../../cmake/bin/cmake ../;
+	ls -al ../../cmake/bin
 	echo "Silently building and installing Sol2...";
 	sudo make install >/dev/null;
 	popd;
@@ -69,6 +68,8 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 else
 	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
 fi
+
+sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
 
 echo "/usr"
 ls -al /usr
