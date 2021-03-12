@@ -36,7 +36,7 @@
 find_file(SQLPP11_INCLUDE_DIR
     NAMES sqlpp11.h
     PATH_SUFFIXES sqlpp11
-    PATHS 
+    HINTS 
         ${SQLPP11_ROOT_DIR}/include/
         /usr/local/include/
         /usr/include/

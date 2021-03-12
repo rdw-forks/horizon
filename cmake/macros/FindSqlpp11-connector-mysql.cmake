@@ -37,7 +37,7 @@
 find_file(SQLPP11_MYSQL_INCLUDE_DIR
     NAMES mysql.h
     PATH_SUFFIXES mysql
-    PATHS
+    HINTS
         /usr/local/include/sqlpp11/
         /usr/include/sqlpp11/
         ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include/sqlpp11/
@@ -46,7 +46,7 @@ mark_as_advanced(SQLPP11_MYSQL_INCLUDE_DIR)
 
 find_file(SQLPP11_MYSQL_LIBRARIES
     NAMES sqlpp-mysql libsqlpp-mysql.a sqlpp-mysql.lib
-    PATHS
+    HINTS
         /usr/local/lib/
         /usr/lib/
         ${SQLPP11_MYSQL_LIB_DIR}

@@ -10,7 +10,7 @@
 find_path(LUA_INCLUDE_DIR 
   NAMES lua.h
   PATH_SUFFIXES lua lua5.3
-  PATHS
+  HINTS
   ~/Library/Frameworks
   /Library/Frameworks
   /sw # Fink
@@ -26,7 +26,7 @@ find_path(LUA_INCLUDE_DIR
 find_library(LUA_LIBRARIES
   NAMES lua
   PATH_SUFFIXES lib
-  PATHS
+  HINTS
   ~/Library/Frameworks
   /Library/Frameworks
   /sw
