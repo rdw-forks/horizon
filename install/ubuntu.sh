@@ -45,7 +45,7 @@ if ! test -f "/usr/local/include/sqlpp11/sqlpp11.h"; then
 	git clone https://github.com/rbock/sqlpp11.git;
 	mkdir sqlpp11/build;
 	pushd sqlpp11/build;
-	cmake ../;
+	./../../cmake/bin/cmake ../;
 	echo "Silently building and installing Sqlpp11...";
 	sudo make install;
 	popd;
@@ -60,7 +60,7 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	git clone https://github.com/rbock/sqlpp11-connector-mysql.git;
 	mkdir sqlpp11-connector-mysql/build;
 	pushd sqlpp11-connector-mysql/build;
-	cmake ../;
+	./../../cmake/bin/cmake ../;
 	echo "Silently building and installing Sqlpp11-connector-mysql...";
 	sudo make install;
 	popd;
