@@ -24,7 +24,7 @@ find_path(LUA_INCLUDE_DIR
 )
 
 find_library(LUA_LIBRARIES
-  NAMES lua
+  NAMES lua lua5.3
   PATH_SUFFIXES lib
   HINTS
   ~/Library/Frameworks

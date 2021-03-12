@@ -15,7 +15,7 @@ if ! test -f "/usr/local/include/sol.hpp"; then
 	mkdir sol2/build;
 	pushd sol2/build;
 	./../../cmake/bin/cmake ../;
-	ls -al ../../cmake/bin
+	ls -al ../../cmake/bin;
 	echo "Silently building and installing Sol2...";
 	sudo make install >/dev/null;
 	popd;
@@ -69,7 +69,7 @@ else
 	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
 fi
 
-sudo apt-get -y install libreadline-dev liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
+sudo apt-get -y install libreadline-dev lua5.3 liblua5.3-dev libboost-all-dev zlib1g-dev mariadb-server mariadb-client;
 
 echo "/usr"
 ls -al /usr
