@@ -47,10 +47,13 @@ matrix:
       dist: xenial
       addons:
         apt:
+          update: true
           sources:
+            - sourceline: 'ppa:mhier/libboost-latest'
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
+            - boost1.75
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - TOOLSET="gcc"
@@ -60,10 +63,13 @@ matrix:
       dist: xenial
       addons:
         apt:
+          update: true
           sources:
+            - sourceline: 'ppa:mhier/libboost-latest'
             - ubuntu-toolchain-r-test
           packages:
             - g++-8
+            - boost1.75
       env:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
         - TOOLSET="gcc"

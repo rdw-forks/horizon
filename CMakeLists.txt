@@ -101,7 +101,7 @@ check_cxx_source_compiles("
 #################################
 # Boost Library
 #################################
-set(BOOST_REQUIRED_VERSION 1.58.0)
+set(BOOST_REQUIRED_VERSION 1.69.0)
 
 set(BOOST_COMPONENTS locale filesystem log log_setup)
 
