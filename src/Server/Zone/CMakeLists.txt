@@ -57,6 +57,7 @@ add_executable(zone
 	${GAME_SOURCES}
 )
 
+if (${CMAKE_VERSION} VERSION_GREATER "3.16.0")
 target_precompile_headers(zone
 	PRIVATE
 		<string>
@@ -70,6 +71,7 @@ target_precompile_headers(zone
 		"../../Core/Multithreading/LockedLookupTable.hpp"
 		"../../Core/Multithreading/ThreadSafeQueue.hpp"
 )
+endif()
 
 target_link_libraries(zone
 	PUBLIC
