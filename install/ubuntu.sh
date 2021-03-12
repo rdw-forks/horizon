@@ -31,8 +31,7 @@ if ! test -f "/usr/local/include/date/date.h"; then
 	mkdir date/build;
 	pushd date/build;
 	cmake ../;
-	echo "Silently building and installing Date...";
-	sudo make install >/dev/null;
+	sudo make install;
 	popd;
 	popd;
 else
@@ -46,7 +45,6 @@ if ! test -f "/usr/local/include/sqlpp11/sqlpp11.h"; then
 	mkdir sqlpp11/build;
 	pushd sqlpp11/build;
 	./../../cmake/bin/cmake ../;
-	echo "Silently building and installing Sqlpp11...";
 	sudo make install;
 	popd;
 	popd;
@@ -61,7 +59,6 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	mkdir sqlpp11-connector-mysql/build;
 	pushd sqlpp11-connector-mysql/build;
 	./../../cmake/bin/cmake ../;
-	echo "Silently building and installing Sqlpp11-connector-mysql...";
 	sudo make install;
 	popd;
 	popd;

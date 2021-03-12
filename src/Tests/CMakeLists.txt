@@ -57,6 +57,8 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			OR TEST_NAME STREQUAL "ThreadSafeQueueTest"
 			OR TEST_NAME STREQUAL "WorkerThreadPoolTest")
 		set (ADD_LIBS -lpthread)
+	elseif (TEST_NAME STREQUAL "LoggingTest")
+		set (ADD_LIBS -lpthread)
 	endif ()
 
 	# Add test executable.
