@@ -77,13 +77,7 @@ echo "/usr/local"
 ls -al /usr/local/
 echo "/usr/local/include"
 ls -al /usr/local/include
-echo "/usr/local/lib"
-ls -al /usr/local/lib
-echo "/usr/lib"
-ls -al /usr/lib
-echo "/usr/include"
-ls -al /usr/include
-echo "/usr/include/lua5.3"
-ls -al /usr/include/lua5.3
+echo "/usr/local/include/sqlpp11"
+ls -al /usr/local/include
 
 popd;
