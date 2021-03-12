@@ -78,6 +78,6 @@ ls -al /usr/local/
 echo "/usr/local/include"
 ls -al /usr/local/include
 echo "/usr/local/include/sqlpp11"
-ls -al /usr/local/include
+ls -al /usr/local/include/sqlpp11
 
 popd;
