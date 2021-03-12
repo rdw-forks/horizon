@@ -30,6 +30,7 @@
 #define HORIZON_ZONE_GAME_ENTITIES_DEFINITIONS
 
 #include "Server/Common/Configuration/Horizon.hpp"
+#include <cstring>
 
 enum entity_size_type
 {
