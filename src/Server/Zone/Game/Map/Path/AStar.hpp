@@ -32,6 +32,10 @@
 #ifndef HORIZON_ZONE_GAME_MAP_PATH_ASTAR_HPP
 #define HORIZON_ZONE_GAME_MAP_PATH_ASTAR_HPP
 
+#include "Server/Zone/Game/Map/Coordinates.hpp"
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
+
+#include <utility>
 #include <vector>
 #include <functional>
 #include <set>
@@ -46,65 +50,55 @@ namespace Zone
 {
 namespace AStar
 {
-struct Vec2i
-{
-	Vec2i() { }
-	Vec2i(int x, int y) : x(x), y(y) { }
-	int x{0}, y{0}, move_cost{0};
-
-	bool operator == (const Vec2i& coordinates_) { return (x == coordinates_.x && y == coordinates_.y); }
-	Vec2i operator + (const Vec2i& right_) { return Vec2i(x + right_.x, y + right_.y); }
-};
-
 class Heuristic
 {
-	static Vec2i getDelta(Vec2i source_, Vec2i target_) { return Vec2i(abs(target_.x - source_.x), abs(target_.y - source_.y)); }
+	static MapCoords getDelta(MapCoords source_, MapCoords target_) { return MapCoords(abs(target_.x() - source_.x()), abs(target_.y() - source_.y())); }
 
 public:
-	static uint32_t manhattan(Vec2i source_, Vec2i target_)
+	static uint32_t manhattan(MapCoords source_, MapCoords target_)
 	{
 		auto delta = getDelta(source_, target_);
-		return static_cast<uint32_t>(10 * (delta.x + delta.y));
+		return static_cast<uint32_t>(10 * (delta.x() + delta.y()));
 	}
 
-	static uint32_t euclidean(Vec2i source_, Vec2i target_)
+	static uint32_t euclidean(MapCoords source_, MapCoords target_)
 	{
 		auto delta = getDelta(source_, target_);
-		return static_cast<uint32_t>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
+		return static_cast<uint32_t>(10 * sqrt(pow(delta.x(), 2) + pow(delta.y(), 2)));
 	}
 
-	static uint32_t octagonal(Vec2i source_, Vec2i target_)
+	static uint32_t octagonal(MapCoords source_, MapCoords target_)
 	{
 		auto delta = getDelta(source_, target_);
-		return 10 * (delta.x + delta.y) + (-6) * std::min(delta.x, delta.y);
+		return 10 * (delta.x() + delta.y()) + (-6) * std::min(delta.x(), delta.y());
 	}
 };
 
-typedef std::function<uint32_t(Vec2i, Vec2i)> HeuristicFunction;
-typedef std::vector<Vec2i> CoordinateList;
+typedef std::function<uint32_t(MapCoords, MapCoords)> HeuristicFunction;
+typedef std::vector<MapCoords> CoordinateList;
 typedef std::function<bool(uint16_t x, uint16_t y)> CollisionDetectionFunction;
 
 struct Node
 {
 	uint32_t G, H;
-	Vec2i coordinates;
-	Node *parent;
+	MapCoords coordinates;
+	Node * parent;
 
-	Node(Vec2i coord_, Node *parent_ = nullptr)
+	explicit Node(MapCoords coord_, Node * parent_ = nullptr)
 	{
 		parent = parent_;
 		coordinates = coord_;
 		G = H = 0;
 	}
 
-	uint32_t getScore() { return G + H; }
+	uint32_t getScore() const { return G + H; }
 };
 
-using NodeSet = std::vector<Node*>;
+using NodeSet = std::vector<Node *>;
 
 class Generator
 {
-	Node *findNodeOnList(NodeSet& nodes_, Vec2i coordinates_)
+	static Node * findNodeOnList(NodeSet& nodes_, MapCoords coordinates_)
 	{
 		for (auto node : nodes_) {
 			if (node->coordinates == coordinates_) {
@@ -113,10 +107,9 @@ class Generator
 		}
 		return nullptr;
 	}
-	void releaseNodes(NodeSet& nodes_)
+	static void releaseNodes(NodeSet nodes_)
 	{
 		for (auto it = nodes_.begin(); it != nodes_.end();) {
-			delete *it;
 			it = nodes_.erase(it);
 		}
 	}
@@ -124,42 +117,45 @@ class Generator
 public:
 	Generator()
 	{
-		setDiagonalMovement(false);
+		setDiagonalMovement(true);
 		setHeuristic(&Heuristic::manhattan);
 	}
 
-	Generator(Vec2i worldSize_, CollisionDetectionFunction c, bool diagonal_movement = true, HeuristicFunction h = &Heuristic::manhattan)
+	Generator(MapCoords worldSize_, CollisionDetectionFunction c, bool diagonal_movement = true, HeuristicFunction h = &Heuristic::manhattan)
 	{
 		setWorldSize(worldSize_);
-		setCollisionDetectionFunction(c);
+		setCollisionDetectionFunction(std::move(c));
 		setDiagonalMovement(diagonal_movement);
 		setHeuristic(h);
 	}
 
-	void setWorldSize(Vec2i worldSize_) { worldSize = worldSize_; }
+	void setWorldSize(MapCoords worldSize_) { worldSize = worldSize_; }
 
 	void setCollisionDetectionFunction(CollisionDetectionFunction c) { check_collision = c; };
 
 	void setDiagonalMovement(bool enable_) { directions = (enable_ ? 8 : 4); }
 
-	void setHeuristic(HeuristicFunction heuristic_) { heuristic = std::bind(heuristic_, std::placeholders::_1, std::placeholders::_2); }
+	void setHeuristic(const HeuristicFunction& heuristic_) { heuristic = [heuristic_](auto && PH1, auto && PH2) { return heuristic_(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2)); }; }
 
-	CoordinateList findPath(Vec2i source_, Vec2i target_)
+	CoordinateList findPath(MapCoords source_, MapCoords target_)
 	{
 		CoordinateList path;
-		Node *current = nullptr;
+		Node * current = nullptr;
 		NodeSet openSet, closedSet;
+		int searchStep = 0;
 
 		openSet.reserve(100);
 		closedSet.reserve(100);
 		openSet.push_back(new Node(source_));
 
-		if (check_collision(target_.x, target_.y))
+		if (check_collision(target_.x(), target_.y()))
 			return path;
 
-		while (!openSet.empty()) {
+		while (!openSet.empty() && searchStep < 50) {
 			auto current_it = openSet.begin();
+			
 			current = *current_it;
+
 			for (auto it = openSet.begin(); it != openSet.end(); it++) {
 				auto node = *it;
 				if (node->getScore() <= current->getScore()) {
@@ -168,35 +164,37 @@ public:
 				}
 			}
 
-			if (current->coordinates == target_) {
+			if (current->coordinates == target_)
 				break;
-			}
 
 			closedSet.push_back(current);
 			openSet.erase(current_it);
 
 			for (uint32_t i = 0; i < directions; ++i) {
-				Vec2i newCoordinates(current->coordinates + direction[i]);
-				if (check_collision(newCoordinates.x, newCoordinates.y) ||
-					findNodeOnList(closedSet, newCoordinates)) {
+				
+				MapCoords newCoordinates(current->coordinates + direction[i]);
+
+				if (check_collision(newCoordinates.x(), newCoordinates.y()) 
+					|| findNodeOnList(closedSet, newCoordinates)) {
 					continue;
 				}
 
-				newCoordinates.move_cost = ((i < 4) ? 10 : 14);
-				uint32_t totalCost = current->G + newCoordinates.move_cost;
+				newCoordinates.set_move_cost((i < 4) ? 10 : 14);
+				uint32_t totalCost = current->G + newCoordinates.move_cost();
 
-				Node *successor = findNodeOnList(openSet, newCoordinates);
+				Node * successor = findNodeOnList(openSet, newCoordinates);
 				if (successor == nullptr) {
 					successor = new Node(newCoordinates, current);
 					successor->G = totalCost;
 					successor->H = heuristic(successor->coordinates, target_);
 					openSet.push_back(successor);
-				}
-				else if (totalCost < successor->G) {
+				} else if (totalCost < successor->G) {
 					successor->parent = current;
 					successor->G = totalCost;
 				}
 			}
+
+			searchStep++;
 		}
 
 		while (current != nullptr) {
@@ -217,8 +215,8 @@ private:
 		{ 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 },
 		{ -1, -1 }, { 1, 1 }, { -1, 1 }, { 1, -1 }
 	};
-	Vec2i worldSize;
-	uint32_t directions;
+	MapCoords worldSize;
+	uint32_t directions{0};
 };
 }
 }

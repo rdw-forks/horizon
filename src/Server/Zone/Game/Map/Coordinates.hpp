@@ -31,26 +31,21 @@
 #define HORIZON_ZONE_GAME_MAP_COORDINATES_HPP
 
 #include <cstdint>
-#include <stdlib.h>
+#include <cstdlib>
 #include <algorithm>
 
-static const int8_t _directions[8][2] = {
-	{ 0, 1 }, { -1, 1 }, { -1, 0 }, { -1,-1 },
-	{ 0,-1 }, { 1, -1 }, { 1, 0 }, { 1, 1 },
-};
-
-template <uint16_t MAX_COORDINATES>
+template <int16_t MAX_COORDINATES>
 class Coordinates
 {
 public:
-	Coordinates(uint16_t x = 0, uint16_t y = 0)
-	: _x(x), _y(y)
+	Coordinates(int16_t x = 0, int16_t y = 0)
+	: _x(x), _y(y), _move_cost(0)
 	{
 		//
 	}
 
 	Coordinates(const Coordinates<MAX_COORDINATES> &obj)
-	: _x(obj._x), _y(obj._y)
+	: _x(obj._x), _y(obj._y), _move_cost(obj._move_cost)
 	{
 		//
 	}
@@ -59,6 +54,7 @@ public:
 	{
 		_x = right._x;
 		_y = right._y;
+		_move_cost = right._move_cost;
 		return *this;
 	}
 
@@ -72,20 +68,17 @@ public:
 		return !(*this == right);
 	}
 
-	int8_t direction_to(Coordinates<MAX_COORDINATES> const &to) const
-	{
-		int8_t diff_x = (to.x() - _x);
-		int8_t diff_y = (to.y()- _y);
+    Coordinates<MAX_COORDINATES> operator + (Coordinates<MAX_COORDINATES> const &right) const
+    {
+        return Coordinates<MAX_COORDINATES>(_x + right._x, _y + right._y);
+    }
 
-		for (int i = 0; i < 8; i++) {
-			if (diff_x == _directions[i][0] && diff_y  == _directions[i][1])
-				return i;
-		}
+    Coordinates<MAX_COORDINATES> operator - (Coordinates<MAX_COORDINATES> const &right) const
+    {
+        return Coordinates<MAX_COORDINATES>(_x - right._x, _y - right._y);
+    }
 
-		return -1;
-	}
-
-	template <uint16_t BOUNDS>
+	template <int16_t BOUNDS>
 	bool is_within_range(Coordinates<BOUNDS> const &bounds, int range) const
 	{
 		int x_diff = _x - bounds.x();
@@ -94,7 +87,7 @@ public:
 		return abs(x_diff) <= range && abs(y_diff) <= range;
 	}
 
-	template<uint16_t BOUNDS>
+	template<int16_t BOUNDS>
 	Coordinates<BOUNDS> at_range(int range) const
 	{
 		int x = std::max(0, std::min((_x + range), (int) BOUNDS));
@@ -103,7 +96,7 @@ public:
 		return Coordinates<BOUNDS>(x, y);
 	}
 
-	template<uint16_t BLOCK_SIZE, uint16_t BLOCK_COUNT>
+	template<int16_t BLOCK_SIZE, int16_t BLOCK_COUNT>
 	Coordinates<BLOCK_COUNT> scale() const
 	{
 		int x = _x / BLOCK_SIZE;
@@ -112,10 +105,12 @@ public:
 		return Coordinates<BLOCK_COUNT>(x, y);
 	}
 
-	uint16_t x() const { return _x; }
-	uint16_t y() const { return _y; }
+	int16_t x() const { return _x; }
+	int16_t y() const { return _y; }
+	int16_t move_cost() const { return _move_cost; }
+	void set_move_cost(int16_t move_cost) { _move_cost = move_cost; }
 
-	void inc_x(uint16_t val)
+	void inc_x(int16_t val)
 	{
 		if (_x + val < MAX_COORDINATES)
 			_x += val;
@@ -123,7 +118,7 @@ public:
 			_x = MAX_COORDINATES - 1;
 	}
 
-	void dec_x(uint16_t val)
+	void dec_x(int16_t val)
 	{
 		if (_x > val)
 			_x -= val;
@@ -131,7 +126,7 @@ public:
 			_x = 0;
 	}
 
-	void inc_y(uint16_t val)
+	void inc_y(int16_t val)
 	{
 		if (_y + val < MAX_COORDINATES)
 			_y += val;
@@ -139,7 +134,7 @@ public:
 			_y = MAX_COORDINATES - 1;
 	}
 
-	void dec_y(uint16_t val)
+	void dec_y(int16_t val)
 	{
 		if (_y > val)
 			_y -= val;
@@ -153,8 +148,9 @@ public:
 	}
 
 private:
-	uint16_t _x;
-	uint16_t _y;
+	int16_t _x{0};
+	int16_t _y{0};
+	int16_t _move_cost{0};
 };
 
 #endif /* HORIZON_ZONE_GAME_MAP_COORDINATES_HPP */

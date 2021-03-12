@@ -44,8 +44,6 @@ class Creature : public Entity
 public:
 	Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Creature();
-
-private:
 };
 }
 }

@@ -28,17 +28,93 @@
  **************************************************/
 
 #include "Monster.hpp"
+
+#include "Core/Logging/Logger.hpp"
 #include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Map/Map.hpp"
 
 using namespace Horizon::Zone::Entities;
 
-Monster::Monster(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_MONSTER, map, mcoords)
+Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+		std::shared_ptr<const monster_config_data> md,
+		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
+: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
-	//
+	set_name(md->name);
+	set_job_id(md->monster_id);
+	set_direction(DIR_SOUTH);
 }
 
 Monster::~Monster()
 {
-	//
+	if (has_valid_grid_reference())
+		remove_grid_reference();
+}
+
+void Monster::initialize()
+{
+	std::shared_ptr<const monster_config_data> md = _wmd_data.lock();
+
+	Entity::initialize();
+
+	status()->initialize();
+
+	status()->movement_speed()->set_base(md->move_speed);
+
+	map()->ensure_grid_for_entity(this, map_coords());
+
+    getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (TaskContext context) {
+        if (is_spotted())
+            perform_ai_lazy();
+        context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
+    });
+}
+
+void Monster::perform_ai_lazy()
+{
+	std::srand(std::time(nullptr));
+
+	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
+		&& is_spotted() 
+		&& (_next_walktime - std::time(nullptr) < 0) 
+		&& !is_walking()) {
+		MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
+		move_to_coordinates(mc.x(), mc.y());
+
+		int total_movement_cost = 0;
+		for (int i = 0; i < _walk_path.size(); i++) {
+			MapCoords m = _walk_path.at(i);
+			total_movement_cost += m.move_cost();
+		}
+		HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
+		_next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + (total_movement_cost / 10);
+	}
+}
+
+void Monster::stop_movement()
+{
+}
+
+void Monster::on_pathfinding_failure()
+{
+}
+
+void Monster::on_movement_begin()
+{
+
+}
+
+void Monster::on_movement_step()
+{
+	map()->ensure_grid_for_entity(this, map_coords());
+}
+
+void Monster::on_movement_end()
+{
+}
+
+void Monster::sync_with_models()
+{
+
 }

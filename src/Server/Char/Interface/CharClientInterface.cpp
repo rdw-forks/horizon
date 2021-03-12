@@ -244,10 +244,12 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 	std::string bd = "000000";
 	
 	if (!res.front().birth_date.is_null()) {
-		std::chrono::system_clock::time_point tp = res.front().birth_date.value();
-		bd = date::format("%Y%m%d", tp).substr(2, 7);
+		std::string b = res.front().birth_date.value();
+		bd = b.substr(0, 4);
+		bd.append(b.substr(5, 2));
 	}
 	
+	HLog(debug) << birthdate << " - " << bd;
 	if (bd.compare(birthdate) != 0) {
 		dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_BIRTHDAY_ERR);
 		return false;

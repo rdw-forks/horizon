@@ -41,4 +41,6 @@ void sync_monster_definitions(sol::state &state);
 
 void sync_skill_definitions(sol::state &state);
 
+void sync_status_effect_definitions(sol::state &state);
+
 #endif /* HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP */

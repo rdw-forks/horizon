@@ -27,8 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_SKILLDB_HPP
-#define HORIZON_ZONE_GAME_SKILLDB_HPP
+#ifndef HORIZON_ZONE_STATICDB_SKILLDB_HPP
+#define HORIZON_ZONE_STATICDB_SKILLDB_HPP
 
 #include "Server/Common/Definitions/BattleDefinitions.hpp"
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
@@ -183,16 +183,7 @@ protected:
 
 public:
 	std::shared_ptr<const skill_config_data> get_skill_by_id(int32_t id) { return _skill_db.at(id); }
-	std::shared_ptr<const skill_config_data> get_skill_by_name(std::string name) 
-	{
-		std::map<uint32_t, std::shared_ptr<const skill_config_data>> s_db = _skill_db.get_map();
-		for (auto const &sk : s_db) {
-			if (sk.second->name.compare(name) == 0)
-				return sk.second;
-		}
-		
-		return nullptr;
-	}
+	std::shared_ptr<const skill_config_data> get_skill_by_name(std::string name) { return _skill_str_db.at(name); }
 
 	std::vector<std::shared_ptr<const skill_tree_config>> get_skill_tree_by_job_id(job_class_type job_id) 
 	{
@@ -201,6 +192,7 @@ public:
 
 private:
 	LockedLookupTable<uint32_t, std::shared_ptr<const skill_config_data>> _skill_db;
+	LockedLookupTable<std::string, std::shared_ptr<const skill_config_data>> _skill_str_db;
 	LockedLookupTable<job_class_type, std::vector<std::shared_ptr<const skill_tree_config>>> _skill_tree_db;
 };
 }
@@ -215,4 +207,4 @@ void Horizon::Zone::SkillDatabase::fill_lvl_range(T *setting, T value)
 
 #define SkillDB Horizon::Zone::SkillDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_SKILLDB_HPP */
+#endif /* HORIZON_ZONE_STATICDB_SKILLDB_HPP */

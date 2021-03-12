@@ -32,8 +32,14 @@
 
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
 #include <memory>
+
+#define MIN_RANDOM_TRAVEL_TIME 4000
+#define MOB_LAZY_MOVE_RATE 1000
+#define MOB_MIN_THINK_TIME 100
+#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME * 10)
 
 namespace Horizon
 {
@@ -45,10 +51,34 @@ namespace Entities
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
-	Monster(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	explicit Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+		std::shared_ptr<const monster_config_data> md,
+		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd);
 	~Monster();
 
+	void initialize() override;
+
+	virtual void stop_movement() override;
+	virtual void on_pathfinding_failure() override;
+	virtual void on_movement_begin() override;
+	virtual void on_movement_step() override;
+	virtual void on_movement_end() override;
+	virtual void sync_with_models() override;
+
+	void set_spotted(bool spotted) { _spotted = spotted; }
+	bool is_spotted() { return _spotted; }
+
+	void perform_ai_lazy();
+
+	std::shared_ptr<const monster_config_data> monster_config() { return _wmd_data.lock(); }
+	void set_monster_config(std::shared_ptr<const monster_config_data> md) { _wmd_data = md; }
+
 private:
+	bool _spotted{false};
+	int _next_walktime{0}, _last_spotted_time{0};
+	std::weak_ptr<const monster_config_data> _wmd_data;
+	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;
+
 };
 }
 }

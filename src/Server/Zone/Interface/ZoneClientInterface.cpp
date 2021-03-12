@@ -27,6 +27,7 @@
 
 #include "CharClientInterface.hpp"
 
+#include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/SQL/GameAccount.hpp"
 #include "Server/Common/SQL/SessionData.hpp"
@@ -117,8 +118,8 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	std::string acc_gender = res2.front().gender;
 	std::string char_gender = res3.front().gender;
 	pl->character()._gender = strcmp(char_gender.c_str(), "U") == 0
-		? (strcmp(acc_gender.c_str(), "M") == 0 ? CHARACTER_GENDER_MALE : CHARACTER_GENDER_FEMALE)
-		: strcmp(char_gender.c_str(), "M") == 0 ? CHARACTER_GENDER_MALE : CHARACTER_GENDER_FEMALE;
+		? (strcmp(acc_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE)
+		: strcmp(char_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE;
 	
 	pl->character()._online = true;
 	pl->set_last_unique_id((uint64_t) res3.front().last_unique_id);

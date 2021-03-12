@@ -65,15 +65,15 @@ namespace Horizon
 
 struct npc_db_data
 {
-	std::string npc_name{};
-	std::string map_name{};
+	std::string npc_name{""};
+	std::string map_name{""};
 	MapCoords coords;
 	directions direction{DIR_SOUTH};
 	uint16_t sprite_id{0};
 	std::string script{""};
+	bool script_is_file{true};
+	uint16_t trigger_range{1};
 	std::shared_ptr<Horizon::Zone::Entities::NPC> _npc;
-	bool script_is_file;
-	uint16_t trigger_range;
 };
 
 #endif /* HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP */

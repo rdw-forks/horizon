@@ -52,7 +52,6 @@ Entity::~Entity()
 
 void Entity::initialize()
 {
-
 	_status = std::make_shared<Entities::Traits::Status>(shared_from_this());
 
 //	if (get_type() == ENTITY_PLAYER)
@@ -65,12 +64,12 @@ void Entity::initialize()
 }
 
 
-bool Entity::schedule_movement(MapCoords coords)
+bool Entity::schedule_movement(const MapCoords& coords)
 {
-	AStar::Vec2i source_coords = { map_coords().x(), map_coords().y() };
-	AStar::Vec2i dest_coords = { coords.x(), coords.y() };
+	MapCoords source_coords = { map_coords().x(), map_coords().y() };
+	MapCoords dest_coords = { coords.x(), coords.y() };
 
-	if (_walk_path.size())
+	if (!_walk_path.empty())
 		_walk_path.clear();
 
 	if (!map()) {
@@ -78,55 +77,50 @@ bool Entity::schedule_movement(MapCoords coords)
 		return false;
 	}
 
-	HLog(debug) << "Moving From : (" << source_coords.x << ", " << source_coords.y << ") to (" << dest_coords.x << ", " << dest_coords.y << ")";
 	// This method returns vector of coordinates from target to source.
-	auto path = map()->get_pathfinder().findPath(source_coords, dest_coords);
+	_walk_path = map()->get_pathfinder().findPath(source_coords, dest_coords);
 
-	if (path.size() == 0)
+	if (_walk_path.empty()) {
+		on_pathfinding_failure();
 		return false;
+	}
 
-	_walk_path = path;
 	std::reverse(_walk_path.begin(), _walk_path.end());
 	_walk_path.erase(_walk_path.begin());
 
 	_changed_dest_pos = {0, 0};
 
-	if (_walk_path.size() > 14) {
-		if (this->type() == ENTITY_PLAYER)
-			static_cast<Entities::Player *>(this)->stop_movement();
-	} else if (_walk_path.size() > 0) {
+	if (!_walk_path.empty()) {
+		notify_nearby_players_of_movement();
 		on_movement_begin();
 		move();
 	}
-
+	
 	return true;
 }
 
 void Entity::move()
 {
 	MapCoords my_coords = map_coords();
-	AStar::Vec2i c = _walk_path.at(0);
+	MapCoords c = _walk_path.at(0);
 
-	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost)), ENTITY_SCHEDULE_WALK,
+	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), ENTITY_SCHEDULE_WALK,
 		[this, c, my_coords] (TaskContext /*movement*/)
 		{
 			// Force stop as the current coordinates might asynchronously update after map has changed 
 			// and co-ordinates are reset to something in a previous walk path.
 			// This force stop will return before changing co-ordinates and 
 			// prevent further movement updates after map has changed.
-			if (_jump_walk_stop == true)
+			if (_jump_walk_stop)
 				return;
 
-			MapCoords step_coords(c.x, c.y);
+			MapCoords step_coords(c.x(), c.y());
 
-			set_direction((directions) my_coords.direction_to(step_coords));
+			// set_direction((directions) my_coords.direction_to(step_coords));
 
-			notify_nearby_players_of_self(EVP_NOTIFY_OUT_OF_SIGHT);
+			notify_nearby_players_of_existence(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
-
-			HLog(debug) << "step_coords: " << step_coords.x() << ", " << step_coords.y() << ".";
-			
-			notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
+			notify_nearby_players_of_existence(EVP_NOTIFY_IN_SIGHT);
 
 			_walk_path.erase(_walk_path.begin());
 
@@ -136,17 +130,17 @@ void Entity::move()
 				_dest_pos = _changed_dest_pos;
 				schedule_movement(_dest_pos);
 				return;
-			} else if (_dest_pos == MapCoords(c.x, c.y)) {
+			} else if (_dest_pos == MapCoords(c.x(), c.y())) {
 				_dest_pos = { 0, 0 };
 				on_movement_end();
 			}
 
-			if (_walk_path.size() > 0)
+			if (!_walk_path.empty())
 				move();
 		});
 }
 
-bool Entity::move_to_coordinates(uint16_t x, uint16_t y)
+bool Entity::move_to_coordinates(int16_t x, int16_t y)
 {
 	if (getScheduler().Count(ENTITY_SCHEDULE_WALK)) {
 		_changed_dest_pos = { x, y };
@@ -160,7 +154,7 @@ bool Entity::move_to_coordinates(uint16_t x, uint16_t y)
 	return true;
 }
 
-void Entity::update(uint64_t /*diff*/)
+void Entity::update(uint64_t diff)
 {
 	_scheduler.Update();
 }
@@ -180,13 +174,29 @@ std::shared_ptr<Entity> Entity::get_nearby_entity(uint32_t guid)
 
 	map()->visit_in_range(map_coords(), search_visitor);
 
-	return searcher.get_result().lock();
+	return searcher.get_result();
 }
 
-void Entity::notify_nearby_players_of_self(entity_viewport_notification_type notif_type)
+void Entity::notify_nearby_players_of_existence(entity_viewport_notification_type notif_type)
 {
 	GridEntityExistenceNotifier existence_notify(shared_from_this(), notif_type);
 	GridReferenceContainerVisitor<GridEntityExistenceNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(existence_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+void Entity::notify_nearby_players_of_spawn()
+{
+	GridEntitySpawnNotifier spawn_notify(shared_from_this());
+	GridReferenceContainerVisitor<GridEntitySpawnNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(spawn_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+void Entity::notify_nearby_players_of_movement()
+{
+	GridEntityMovementNotifier movement_notify(shared_from_this());
+	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);
 }

@@ -36,20 +36,19 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
-#include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
-#include "Server/Zone/Zone.hpp"
 
 #include "version.hpp"
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
-Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
+Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, const MapCoords& mcoords)
 : Entity(guid, ENTITY_PLAYER, map, mcoords), _session(session)
 {
 }
@@ -62,12 +61,12 @@ Player::~Player()
 
 uint64_t Player::new_unique_id()
 {
-	int32_t char_id = character()._character_id;
+	int64_t char_id = (int64_t) character()._character_id;
 	
 	if (character()._last_unique_id > 0)
 		return ++character()._last_unique_id;
 
-	return (character()._last_unique_id = uint64_t (char_id << 32));
+	return (character()._last_unique_id = (char_id << 32));
 }
 
 void Player::initialize()
@@ -83,14 +82,9 @@ void Player::initialize()
 
 	// Ensure grid for entity.
 	map()->ensure_grid_for_entity(this, map_coords());
-
-	// Update current viewport.
-	update_viewport();
 	
 	// On map entry processing.
 	on_map_enter();
-	
-	notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
 
 	// Initialize Script States.
 	script_manager()->initialize_state(get_lua_state());
@@ -121,69 +115,12 @@ void Player::update(uint64_t diff)
 
 void Player::sync_with_models()
 {
-//	uint32_t char_save_mask = 0x0;
-//
-//	std::shared_ptr<Status::Status> status = get_status();
-//	std::shared_ptr<Models::Character::Status> csd = get_char_model()->get_status_model();
-//
-//	if (get_name() != get_char_model()->get_name()) {
-//		get_char_model()->set_name(get_name());
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (get_gender() != get_char_model()->get_gender()) {
-//		get_char_model()->set_gender((character_gender_type) get_gender());
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (_last_unique_id != get_char_model()->get_last_unique_id()) {
-//		get_char_model()->set_last_unique_id(_last_unique_id);
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (get_map()->get_name() != get_char_model()->get_current_map()) {
-//		get_char_model()->set_current_map(get_map()->get_name());
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (get_map_coords().x() != get_char_model()->get_current_x()) {
-//		get_char_model()->set_current_x(get_map_coords().x());
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (get_map_coords().y() != get_char_model()->get_current_y()) {
-//		get_char_model()->set_current_y(get_map_coords().y());
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (is_logged_in() != get_char_model()->is_online()) {
-//		if (is_logged_in())
-//			get_char_model()->set_online();
-//		else
-//			get_char_model()->set_offline();
-//		char_save_mask |= CHAR_SAVE_BASE_DATA;
-//	}
-//
-//	if (status->sync_to_model(csd) == false)
-//		char_save_mask |= CHAR_SAVE_STATUS_DATA;
-//
-//	if (get_inventory()->sync_to_model() > 0)
-//		char_save_mask |= CHAR_SAVE_INVENTORY_DATA;
-//
-//	if (get_char_model()->save(ZoneServer, char_save_mask) >= CHAR_SAVE_BASE_DATA) {
-//		std::string saved_str;
-//
-//		if (char_save_mask &  CHAR_SAVE_BASE_DATA)
-//			saved_str.append("basic");
-//
-//		if (char_save_mask & CHAR_SAVE_STATUS_DATA)
-//			saved_str.append(saved_str.empty() ? "status" : ", status");
-//
-//		if (char_save_mask & CHAR_SAVE_INVENTORY_DATA)
-//			saved_str.append(saved_str.empty() ? "inventory" : ", inventory");
-//
-//		HLog(info) <<"Saved {} data for character {} (AID: {}, CID: {}).", saved_str, get_char_model()->get_name(), get_guid(), get_char_model()->get_id());
-//	}
+
+}
+
+void Player::on_pathfinding_failure()
+{
+
 }
 
 void Player::on_movement_begin()
@@ -201,6 +138,7 @@ void Player::on_movement_step()
 	GridReferenceContainerVisitor<GridNPCTrigger, GridReferenceContainer<AllEntityTypes>> npc_trigger_performer(npc_trigger);
 
 	update_viewport();
+	
 	map()->ensure_grid_for_entity(this, map_coords());
 
 	map()->visit_in_range(map_coords(), npc_trigger_performer, MAX_NPC_TRIGGER_RANGE);
@@ -214,33 +152,82 @@ void Player::update_viewport()
 	map()->visit_in_range(map_coords(), update_caller);
 }
 
-void Player::add_entity_to_viewport(std::weak_ptr<Entity> entity)
+void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 {
-	if (!entity.expired()) {
-		entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity.lock());
-		get_session()->clif()->notify_viewport_add_entity(entry);
+	if (entity == nullptr)
+		return;
+
+	if (entity_is_in_viewport(entity))
+		return;
+
+	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
+	get_session()->clif()->notify_viewport_add_entity(entry);
+
+	_viewport_entities.push_back(entity);
+
+	if (entity->type() == ENTITY_MONSTER) {
+	    entity->downcast<Monster>()->set_spotted(true);
 	}
+
+	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
+	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)
+		HLog(debug) << "Entity:" << it->lock()->name() << " " << it->lock()->guid();
+	HLog(debug) << "--------------------";
 }
 
 void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_viewport_notification_type type)
 {
-	get_session()->clif()->notify_viewport_remove_entity(entity, type);
-}
-
-void Player::realize_entity_movement(std::weak_ptr<Entity> entity)
-{
-	if (!entity.expired()) {
-		entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity.lock());
-		get_session()->clif()->notify_viewport_moving_entity(entry);
-	}
-}
-
-void Player::spawn_entity_in_viewport(std::weak_ptr<Entity> entity)
-{
-	if (entity.expired())
+	if (!entity_is_in_viewport(entity))
 		return;
 
-	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity.lock());
+	_viewport_entities.erase(std::remove_if(_viewport_entities.begin(), _viewport_entities.end(),
+		[entity] (std::weak_ptr<Entity> wp_e) {
+			return wp_e.lock()->guid() == entity->guid();
+		}
+	), _viewport_entities.end());
+
+	get_session()->clif()->notify_viewport_remove_entity(entity, type);
+
+	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
+	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)
+		HLog(debug) << "Entity:" << it->lock()->name() << " " << it->lock()->guid();
+	HLog(debug) << "--------------------";
+}
+
+bool Player::entity_is_in_viewport(std::shared_ptr<Entity> entity)
+{
+	if (entity == nullptr)
+		return false;
+
+	std::vector<std::weak_ptr<Entity>>::iterator it = std::find_if (_viewport_entities.begin(), _viewport_entities.end(), 
+		[entity] (const std::weak_ptr<Entity> &vp_ew) { 
+			std::shared_ptr<Entity> vp_es = vp_ew.lock();
+
+			if (vp_es == nullptr || entity == nullptr)
+				return false;
+
+			return (vp_es->guid() == entity->guid());
+		}
+	);
+	
+	return (it != _viewport_entities.end());
+}
+
+void Player::realize_entity_movement(std::shared_ptr<Entity> entity)
+{
+	if (entity == nullptr)
+		return;
+
+	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
+	get_session()->clif()->notify_viewport_moving_entity(entry);
+}
+
+void Player::spawn_entity_in_viewport(std::shared_ptr<Entity> entity)
+{
+	if (entity == nullptr)
+		return;
+
+	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
 	get_session()->clif()->notify_viewport_spawn_entity(entry);
 }
 
@@ -254,7 +241,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 
 	std::shared_ptr<Player> myself = downcast<Player>();
 
-	notify_nearby_players_of_self(EVP_NOTIFY_TELEPORT);
+	notify_nearby_players_of_existence(EVP_NOTIFY_TELEPORT);
 
 	{
 		if (!dest_map->container()->get_map(map()->get_name())) {
@@ -326,9 +313,12 @@ void Player::on_map_enter()
 	inventory()->notify_all();
 	// Status Notifications.
 
+	// clear viewport
+	get_viewport_entities().clear();
+
 	update_viewport();
 
-	notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
+	notify_nearby_players_of_spawn();
 }
 
 void Player::notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range)

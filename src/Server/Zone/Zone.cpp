@@ -35,8 +35,9 @@
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
-#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
+#include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
 
 #include <iostream>
 #include <boost/make_shared.hpp>
@@ -129,23 +130,23 @@ void ZoneServer::verify_connected_sessions()
 	HLog(info) << count << " connected session(s).";
 }
 
-void ZoneServer::update(uint64_t diff)
+void ZoneServer::update(uint64_t time)
 {
 	process_cli_commands();
 
 	/**
 	 * Task Scheduler Update.
 	 */
-	_task_scheduler.Update(Microseconds(diff));
+	getScheduler().Update();
 
 	/**
 	 * Process Packets.
 	 */
-	ClientSocktMgr->update_socket_sessions(diff);
+	ClientSocktMgr->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(std::bind(&ZoneServer::update, this, std::time(nullptr)));
 	} else {
 		get_io_service().stop();
 	}
@@ -175,11 +176,6 @@ void ZoneServer::initialize_core()
 	signal(SIGQUIT, SignalHandler);
 #endif
 	signal(SIGTERM, SignalHandler);
-	
-	/**
-	 * Map Manager.
-	 */
-	MapMgr->initialize();
 
 	/**
 	 * Static Databases
@@ -191,9 +187,15 @@ void ZoneServer::initialize_core()
 	ItemDB->load_refine_db();
 	ItemDB->load_weapon_target_size_modifiers_db();
 	ItemDB->load_weapon_attribute_modifiers_db();
+	StatusEffectDB->load();
 	SkillDB->load();
 	MonsterDB->load();
 
+	/**
+	 * Map Manager.
+	 */
+	MapMgr->initialize();
+	
 	// Start Network
 	ClientSocktMgr->start(get_io_service(),
 						  general_conf().get_listen_ip(),
@@ -207,7 +209,7 @@ void ZoneServer::initialize_core()
 		context.Repeat();
 	});
 	
-	_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 	
 	get_io_service().run();
@@ -220,7 +222,9 @@ void ZoneServer::initialize_core()
 	 * Server shutdown routine begins here...
 	 */
 	_task_scheduler.CancelAll();
+
 	ClientSocktMgr->stop_network();
+	
 	Server::finalize_core();
 }
 

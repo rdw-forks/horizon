@@ -29,9 +29,9 @@ TaskScheduler& TaskScheduler::Update(success_t const& callback)
 	return *this;
 }
 
-TaskScheduler& TaskScheduler::Update(size_t const milliseconds, success_t const& callback)
+TaskScheduler& TaskScheduler::Update(size_t const microseconds, success_t const& callback)
 {
-	return Update(std::chrono::milliseconds(milliseconds), callback);
+	return Update(std::chrono::microseconds(microseconds), callback);
 }
 
 TaskScheduler& TaskScheduler::Async(std::function<void()> const& callable)

@@ -29,6 +29,7 @@
 #ifndef HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP
 #define HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP
 
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 
 #define MAX_MOB_DROP 10
@@ -160,6 +161,16 @@ enum monster_skill_cast_condition_type {
 	MONSTER_SKILL_CC_ALCHEMIST,
 	MONSTER_SKILL_CC_SPAWN,
 	MONSTER_SKILL_CC_MAGICATTACKED,
+};
+
+struct monster_spawn_data {
+	int monster_id{0};
+	std::string map_name{""};
+	MapCoords coords{0,0};
+	int16_t x{0}, y{0}, x_area{0}, y_area{0};
+	std::string mob_name{""};
+	int16_t amount{0};
+	int32_t spawn_delay_base{0}, spawn_delay_variance{0};
 };
 
 #endif /* HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP */

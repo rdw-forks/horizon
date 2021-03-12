@@ -35,7 +35,5 @@ set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(CORE_SOURCES
     ${DIR}/Logging/Logger.cpp
     ${DIR}/Logging/Logger.hpp
-    ${DIR}/Multithreading/TaskScheduler/TaskScheduler.cpp
-    ${DIR}/Multithreading/TaskScheduler/TaskScheduler.hpp
     ${STRUCTURE_SOURCES}
     PARENT_SCOPE)

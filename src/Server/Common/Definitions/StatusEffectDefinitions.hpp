@@ -7,7 +7,6 @@
  *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
- *
  * Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
  * Copyright (c) 2019 Horizon Dev Team.
  *
@@ -27,20 +26,20 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#include "Creature.hpp"
+#ifndef HORIZON_ZONE_COMMON_STATUS_DEFINITIONS
+#define HORIZON_ZONE_COMMON_STATUS_DEFINITIONS
 
-#include "Server/Zone/Game/Map/Map.hpp"
+enum status_effect_behavior_type {
+	SEBHVR_NO_REM_DEATH  = 0x001,
+	SEBHVR_NO_SAVE       = 0x002,
+	SEBHVR_NO_DISPELL    = 0x004,
+	SEBHVR_NO_CLEARANCE  = 0x008,
+	SEBHVR_BUFF          = 0x010,
+	SEBHVR_DEBUFF        = 0x020,
+	SEBHVR_MADO_NO_RESET = 0x040,
+	SEBHVR_NO_CLEAR      = 0x080,
+	SEBHVR_VISIBLE       = 0x100,
+	SEBHVR_NO_BOSS       = 0x200
+};
 
-using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
-
-Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords)
-: Entity(guid, type, map, mcoords)
-{
-	//
-}
-
-Creature::~Creature()
-{
-	//
-}
+#endif /* HORIZON_ZONE_COMMON_STATUS_DEFINITIONS */

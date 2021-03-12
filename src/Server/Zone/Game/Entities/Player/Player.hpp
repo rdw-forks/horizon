@@ -30,22 +30,22 @@
 #ifndef HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 #define HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 
-#include "Core/Networking/Buffer/ByteBuffer.hpp"
-#include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Common/Configuration/Horizon.hpp" // MAX_INVENTORY_SIZE
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Common/Definitions/EntityDefinitions.hpp" // entity_gender_types
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
-#include "Server/Common/SQL/Character/Character.hpp"
 
 #include <sol.hpp>
+
+class ByteBuffer;
 
 namespace Horizon
 {
 namespace Zone
 {
 class ZoneSession;
-class ZoneSocket;
 namespace Assets
 {
 	class Inventory;
@@ -59,13 +59,13 @@ class Player : public Entity, public GridObject<Player>
 		uint32_t _account_id{0};
 		uint16_t _slot{0};
 		bool _online{false};
-		character_gender_type _gender{CHARACTER_GENDER_MALE};
+		entity_gender_types _gender{ENTITY_GENDER_FEMALE};
 		uint32_t _max_inventory_size{MAX_INVENTORY_SIZE};
 		uint64_t _last_unique_id{0};
 	};
 	
 public:
-	Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, const MapCoords& mcoords);
 	~Player();
 
 	/**
@@ -80,16 +80,18 @@ public:
 	 */
 	void update_viewport();
 
-	void add_entity_to_viewport(std::weak_ptr<Entity> entity);
-	void realize_entity_movement(std::weak_ptr<Entity> entity);
+	void add_entity_to_viewport(std::shared_ptr<Entity> entity);
+	void realize_entity_movement(std::shared_ptr<Entity> entity);
 	void remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_viewport_notification_type type);
-	void spawn_entity_in_viewport(std::weak_ptr<Entity> entity);
+	void spawn_entity_in_viewport(std::shared_ptr<Entity> entity);
+	bool entity_is_in_viewport(std::shared_ptr<Entity> entity);
 
 	void notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range = MAX_VIEW_RANGE);
 	bool move_to_map(std::shared_ptr<Map> map, MapCoords coords = { 0, 0 });
 	void on_map_enter();
 
 	void stop_movement() override;
+	void on_pathfinding_failure() override;
 	void on_movement_begin() override;
 	void on_movement_step() override;
 	void on_movement_end() override;
@@ -134,6 +136,8 @@ public:
 	int32_t npc_contact_guid() { return _npc_contact_guid; }
 	void set_npc_contact_guid(int32_t guid) { _npc_contact_guid = guid; }
 
+	std::vector<std::weak_ptr<Entity>> &get_viewport_entities() { return _viewport_entities; }
+
 private:
 	std::shared_ptr<ZoneSession> _session;
 	sol::state _lua_state;
@@ -141,6 +145,8 @@ private:
 	std::atomic<bool> _is_logged_in{false};
 	int32_t _npc_contact_guid{0};
 	int32_t _group_id{0};
+
+	std::vector<std::weak_ptr<Entity>> _viewport_entities;
 	
 	s_char_data _char;
 };

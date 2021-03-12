@@ -1,11 +1,7 @@
 
 
 # The Horizon Project
-Horizon is a free software project (authored by [@sagunkho](https://gitlab.com/sagunkho) aka [@Smokexyz](https://gitlab.com/Smokexyz)) revolving around the
-creation of a robust Massively Multiplayer Online Role-Playing Game (MMORPG)
-server package. Written in C++ and Lua, the program is very versatile and provides NPCs, playable jobs and easily modifiable gameplay via its Lua extension. The project aims to provide a high quality and performant codebase that accurately emulates mechanics of the official servers.
-
-Some static database files and client packet information were converted from [HerculesWS](https://github.com/HerculesWS/Hercules) into a suitable format for our project.
+Horizon is a free software project (authored by [@sagunkho](https://gitlab.com/sagunkho) aka [@Smokexyz](https://gitlab.com/Smokexyz)), a Massively Multiplayer Online Role-Playing Game (MMORPG) server package. Certain static database files and client packet information were converted from [HerculesWS](https://github.com/HerculesWS/Hercules) into a suitable format for our project.
 
 Table of Contents
 ---------

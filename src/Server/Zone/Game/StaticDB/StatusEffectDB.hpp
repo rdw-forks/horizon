@@ -1,4 +1,4 @@
-/***************************************************
+	/***************************************************
  *       _   _            _                        *
  *      | | | |          (_)                       *
  *      | |_| | ___  _ __ _ _______  _ __          *
@@ -27,20 +27,49 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#include "Creature.hpp"
+#ifndef HORIZON_ZONE_STATICDB_STATUSEFFECTDB_HPP
+#define HORIZON_ZONE_STATICDB_STATUSEFFECTDB_HPP
 
-#include "Server/Zone/Game/Map/Map.hpp"
+#include <sol.hpp>
 
-using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
-
-Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords)
-: Entity(guid, type, map, mcoords)
+namespace Horizon
 {
-	//
+namespace Zone
+{
+struct status_effect_config_data
+{
+	int32_t status_id{0};
+	std::string name{""};
+	int32_t behavior{0};
+	std::string icon{""};
+	bool visible{true};
+};
+class StatusEffectDatabase
+{
+public:
+	StatusEffectDatabase();
+	~StatusEffectDatabase();
+	
+	static StatusEffectDatabase *get_instance()
+	{
+		static StatusEffectDatabase instance;
+		return &instance;
+	}
+
+	bool load();
+
+protected:
+	bool load_internal(sol::object const &key, sol::object const &value);
+
+public:
+	std::shared_ptr<const status_effect_config_data> get_status_effect_by_id(int32_t id) { return _status_effect_db.at(id); }
+
+private:
+	LockedLookupTable<uint32_t, std::shared_ptr<const status_effect_config_data>> _status_effect_db;
+};
+}
 }
 
-Creature::~Creature()
-{
-	//
-}
+#define StatusEffectDB Horizon::Zone::StatusEffectDatabase::get_instance()
+
+#endif /* HORIZON_ZONE_STATICDB_STATUSEFFECTDB_HPP */

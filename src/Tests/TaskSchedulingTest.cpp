@@ -30,7 +30,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "TaskSchedulingTest"
 
-#include "Core/Multithreading/TaskScheduler/TaskScheduler.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <cstring>
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(TaskSchedulingTest)
 
 	while (true && count < MAX_COUNT) {
 		uint32_t diff = 500;
-		task_scheduler.Update(diff);
+		task_scheduler.Update();
 		std::this_thread::sleep_for(std::chrono::milliseconds(diff));
 	}
 }

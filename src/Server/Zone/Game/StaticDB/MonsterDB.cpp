@@ -64,6 +64,7 @@ bool MonsterDatabase::load()
 		sol::table mob_tbl = lua.get<sol::table>("monster_db");
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value);
+            std::cout << "Loaded entry " << total_entries << " for monster_db...\r";
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
@@ -78,6 +79,7 @@ bool MonsterDatabase::load()
 		sol::table mob_tbl = lua.get<sol::table>("monster_skill_db");
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_skill_internal(key, value);
+            std::cout << "Loaded entry " << total_entries << " for monster_skill_db...\r";
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
@@ -198,6 +200,8 @@ bool MonsterDatabase::load_internal(const sol::object &key, const sol::object &v
 		return false;
 
 	_monster_db.insert(data.monster_id, std::make_shared<monster_config_data>(data));
+
+	_monster_str_db.insert(data.sprite_name, std::make_shared<monster_config_data>(data));
 
 	return true;
 }
@@ -905,7 +909,7 @@ bool MonsterDatabase::load_skill_internal(const sol::object &key, const sol::obj
 			skills.push_back(std::make_shared<const monster_skill_config_data>(mskd));
 		}
 
-		_monster_skill_db.insert(monster->monster_id, skills);
+		_monster_skill_db.insert(monster->monster_id, std::make_shared<std::vector<std::shared_ptr<const monster_skill_config_data>>>(skills));
 		
 	}	catch (sol::error &e) { 
 		HLog(error) << "MonsterDatabase::load_skill_internal:" << e.what();
@@ -913,23 +917,3 @@ bool MonsterDatabase::load_skill_internal(const sol::object &key, const sol::obj
 
 	return true;
 }
-	// <Monster_Constant> = {
-	// 	<Skill_Constant> = {
-	// 		SkillLevel =    (int, defaults to 1)
-	// 		SkillState =    (string, defaults to "MSS_ANY")
-	// 		SkillTarget =   (string, defaults to "MST_TARGET")
-	// 		Rate =          (int, defaults to 1)
-	// 		CastTime =      (int, defaults to 0)
-	// 		Delay =         (int, defaults to 0)
-	// 		Cancelable =    (boolean, defaults to false)
-	// 		CastCondition = (string, defaults to "MSC_ALWAYS")
-	// 		ConditionData = (int, defaults to 0)
-	// 		val0 =          (int, defaults to 0)
-	// 		val1 =          (int, defaults to 0)
-	// 		val2 =          (int, defaults to 0)
-	// 		val3 =          (int, defaults to 0)
-	// 		val4 =          (int, defaults to 0)
-	// 		Emotion =       (int, defaults to -1)
-	// 		ChatMsgID =     (int, defaults to 0)
-	// 	},
-	// },

@@ -27,8 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_MONSTERDB_HPP
-#define HORIZON_ZONE_GAME_MONSTERDB_HPP
+#ifndef HORIZON_ZONE_STATICDB_MONSTERDB_HPP
+#define HORIZON_ZONE_STATICDB_MONSTERDB_HPP
 
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/Definitions/MonsterDefinitions.hpp"
@@ -167,27 +167,19 @@ protected:
 
 	bool load_skill_internal(sol::object const &key, sol::object const &value);
 
+public:
 	std::shared_ptr<const monster_config_data> get_monster_by_id(uint32_t id) { return _monster_db.at(id, nullptr); }
-	std::shared_ptr<const monster_config_data> get_monster_by_name(std::string name) 
-	{
-		std::map<uint32_t, std::shared_ptr<const monster_config_data>> db = _monster_db.get_map();
-		
-		for (auto it = db.begin(); it != db.end(); it++) {
-			std::shared_ptr<const monster_config_data> m = it->second;
-			if (std::strncmp(m->sprite_name, name.c_str(), MAX_UNIT_NAME_LENGTH) == 0)
-				return m;
-		}
-		
-		return nullptr;
-	}
+	std::shared_ptr<const monster_config_data> get_monster_by_name(std::string name) { return _monster_str_db.at(name); }
 
+	std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> get_monster_skill_by_id(uint32_t monster_id) { return _monster_skill_db.at(monster_id); }
 private:
 	LockedLookupTable<uint32_t, std::shared_ptr<const monster_config_data>> _monster_db;
-	LockedLookupTable<uint32_t, std::vector<std::shared_ptr<const monster_skill_config_data>>> _monster_skill_db;
+	LockedLookupTable<std::string, std::shared_ptr<const monster_config_data>> _monster_str_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>>> _monster_skill_db;
 };
 }
 }
 
 #define MonsterDB Horizon::Zone::MonsterDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_MONSTERDB_HPP */
+#endif /* HORIZON_ZONE_STATICDB_MONSTERDB_HPP */

@@ -66,25 +66,25 @@ public:
 
 BOOST_AUTO_TEST_CASE(LinkedListTest)
 {
-	int var[100];
+	int var[10000];
 	TestListHead h;
 
-	std::shared_ptr<TestListElem> t[100];
+	std::shared_ptr<TestListElem> t[10000];
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 10000; i++) {
 		var[i] = i;
 		t[i] = std::make_shared<TestListElem>(var[i]);
 		h.push_front(t[i].get());
 		BOOST_CHECK_EQUAL(h.first()->get_var(), var[i]);
 	}
 
-	int idx = 99;
+	int idx = 9999;
 	for (TestListHead::iterator it = h.begin(); it != TestListHead::iterator(nullptr); ++it) {
 		printf("pre-increment: %d\n", it->get_var());
 		BOOST_CHECK_EQUAL(it->get_var(), var[idx--]);
 	}
 
-	idx = 99;
+	idx = 9999;
 	for (TestListHead::iterator it = h.begin(); it != TestListHead::iterator(nullptr); it++) {
 		printf("reverse post-increment: %d\n", it->get_var());
 		BOOST_CHECK_EQUAL(it->get_var(), var[idx--]);

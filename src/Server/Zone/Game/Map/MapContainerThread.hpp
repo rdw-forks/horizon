@@ -33,6 +33,7 @@
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
 #include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Server/Zone/Game/Script/ScriptManager.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 #include <stdio.h>
 #include <thread>
@@ -100,6 +101,8 @@ public:
 
 	std::shared_ptr<ScriptManager> get_script_manager() { return _script_mgr; }
 
+	TaskScheduler &getScheduler() { return _task_scheduler; }
+
 private:
 	//! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 	//! Is also responsible emulating the world update loop and performing everything in maps it manages.
@@ -115,7 +118,8 @@ private:
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
 	ThreadSafeQueue<std::pair<bool, std::shared_ptr<Entities::Player>>> _player_buffer;     ///< Thread-safe queue of players to add to/remove from the container.
 	LockedLookupTable<int32_t, std::shared_ptr<Entities::Player>> _managed_players;         ///< Thread-safe hash table of managed players.
-	std::shared_ptr<ScriptManager> _script_mgr;                                             ///< Non-thread-safe shared pointer and owner of a script manager.
+	std::shared_ptr<ScriptManager> _script_mgr;                                            ///< Non-thread-safe shared pointer and owner of a script manager.
+	TaskScheduler _task_scheduler;
 };
 }
 }

@@ -133,7 +133,7 @@ public:
 	 * - Called from the main thread only.
 	 * @param[in] diff
 	 */
-	void update_socket_sessions(uint32_t diff)
+	void update_socket_sessions(uint32_t time)
 	{
 		std::shared_ptr<std::pair<bool, std::shared_ptr<SocketType>>> sock_buf;
 
@@ -152,7 +152,7 @@ public:
 
 		for (auto sock : _socket_map) {
 			if (sock.second->get_session() != nullptr) {
-				sock.second->update_session(diff);
+				sock.second->update_session(time);
 			}
 		}
 	}

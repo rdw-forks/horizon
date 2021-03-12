@@ -27,9 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
-#ifndef HORIZON_ZONE_GAME_JOBDB
-#define HORIZON_ZONE_GAME_JOBDB
+#ifndef HORIZON_ZONE_STATICDB_JOBDB_HPP
+#define HORIZON_ZONE_STATICDB_JOBDB_HPP
 
 #include "Common/Definitions/ItemDefinitions.hpp"
 #include "Common/Definitions/EntityDefinitions.hpp"
@@ -86,4 +85,4 @@ private:
 
 #define JobDB Horizon::Zone::JobDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_JOBDB */
+#endif /* HORIZON_ZONE_STATICDB_JOBDB_HPP */
