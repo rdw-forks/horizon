@@ -122,18 +122,18 @@ script:
   #
   # Unit Testing
   #
-  # - pushd build/bin/${BUILD_TYPE}/test;
-  # - for TARGET in *;
-  #   do
-  #     if [ -f "$TARGET" ]; then
-  #       sudo ./${TARGET} || exit 1;
-  #     fi;
-  #   done;
-  # - popd;
-  # - sudo rm -rf build;
-  # - mkdir build;
-  # - pushd build;
-  # - echo "Initiating Horizon build...";
+  - pushd build/bin/${BUILD_TYPE}/test;
+  - for TARGET in *;
+    do
+      if [ -f "$TARGET" ]; then
+        sudo ./${TARGET} || exit 1;
+      fi;
+    done;
+  - popd;
+  - sudo rm -rf build;
+  - mkdir build;
+  - pushd build;
+  - echo "Initiating Horizon build...";
   #
   # Deploy Linux
   #
