@@ -37,7 +37,10 @@ GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(char
 	${PRIVATE_SOURCES}
 	${COMMON_SOURCES}
-	${CORE_SOURCES})
+	${COMMON_HEADERS}
+	${CORE_SOURCES}
+    ${UTILITY_SOURCES}
+)
 
 target_link_libraries(char
 	PUBLIC
@@ -69,6 +72,7 @@ endif()
 
 target_include_directories(char
 	PUBLIC
+		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
         ${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}

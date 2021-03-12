@@ -96,6 +96,7 @@ CollectIncludeDirectories(
 
 target_include_directories(zone
 	PUBLIC
+		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
 		${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
