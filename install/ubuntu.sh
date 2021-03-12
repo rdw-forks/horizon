@@ -10,7 +10,7 @@ ls -al ${CMAKE_DIR}
 BOOST_URL="https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz"
 mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C boost
 pushd boost;
-./bootstrap.sh --with-libraries=locale,filesystem,log,log_setup,unit_test_framework
+./bootstrap.sh --with-libraries=locale,filesystem,log,unit_test_framework
 ./b2 link=shared threading=multi variant=release
 popd
 
