@@ -54,9 +54,14 @@ Monster::~Monster()
 
 void Monster::initialize()
 {
+	std::shared_ptr<const monster_config_data> md = _wmd_data.lock();
+
 	Entity::initialize();
 
 	status()->initialize();
+
+	status()->movement_speed()->set_base(md->move_speed);
+
 	map()->ensure_grid_for_entity(this, map_coords());
 
     getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (TaskContext context) {

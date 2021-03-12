@@ -78,14 +78,13 @@ bool Entity::schedule_movement(const MapCoords& coords)
 	}
 
 	// This method returns vector of coordinates from target to source.
-	auto path = map()->get_pathfinder().findPath(source_coords, dest_coords);
+	_walk_path = map()->get_pathfinder().findPath(source_coords, dest_coords);
 
-	if (path.empty()) {
+	if (_walk_path.empty()) {
 		on_pathfinding_failure();
 		return false;
 	}
 
-	_walk_path = path;
 	std::reverse(_walk_path.begin(), _walk_path.end());
 	_walk_path.erase(_walk_path.begin());
 
@@ -96,7 +95,7 @@ bool Entity::schedule_movement(const MapCoords& coords)
 		on_movement_begin();
 		move();
 	}
-
+	
 	return true;
 }
 
@@ -106,7 +105,7 @@ void Entity::move()
 	MapCoords c = _walk_path.at(0);
 
 	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), ENTITY_SCHEDULE_WALK,
-		[this, c, my_coords] (const TaskContext& /*movement*/)
+		[this, c, my_coords] (TaskContext /*movement*/)
 		{
 			// Force stop as the current coordinates might asynchronously update after map has changed 
 			// and co-ordinates are reset to something in a previous walk path.
