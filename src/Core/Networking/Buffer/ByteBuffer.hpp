@@ -34,7 +34,7 @@
 
 #include <type_traits>
 #include <stdlib.h>
-#include <cstring>
+#include <string>
 #include <vector>
 #include <cmath>
 #include <assert.h>
