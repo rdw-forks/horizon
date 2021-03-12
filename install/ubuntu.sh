@@ -47,7 +47,7 @@ if ! test -f "/usr/local/include/sqlpp11/sqlpp11.h"; then
 	pushd sqlpp11/build;
 	cmake ../;
 	echo "Silently building and installing Sqlpp11...";
-	sudo make install >/dev/null;
+	sudo make install;
 	popd;
 	popd;
 else
@@ -62,7 +62,7 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	pushd sqlpp11-connector-mysql/build;
 	cmake ../;
 	echo "Silently building and installing Sqlpp11-connector-mysql...";
-	sudo make install >/dev/null;
+	sudo make install;
 	popd;
 	popd;
 else
