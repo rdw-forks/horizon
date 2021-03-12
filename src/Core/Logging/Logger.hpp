@@ -30,9 +30,11 @@
 #ifndef HORIZON_LOGGER_H
 #define HORIZON_LOGGER_H
 
-#define BOOST_LOG_DYN_LINK 1
-
 #include <cstring>
+#include <atomic>
+#include <mutex>
+
+#define BOOST_LOG_DYN_LINK 1
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -70,13 +72,14 @@ public:
 
     void initialize();
     
-    logtype &get_core_log() { return _core_log; }
+    logtype &get_core_log() { std::lock_guard<std::mutex> guard(_core_mtx); return _core_log; }
     
     void colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm);
     std::string color(uint16_t color);
 
 protected:
     logtype _core_log;
+    std::mutex _core_mtx;
     std::atomic<bool> _initialized;
 
 };
