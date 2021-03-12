@@ -30,6 +30,10 @@
 #define HORIZON_ZONE_GAME_ITEM_DEFINITIONS
 
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include <array>
+#include <utility>
+#include <memory>
+#include <string>
 
 #define ITEM_NAME_LENGTH 50
 #define UNKNOWN_ITEM_ID 512 // Apple
