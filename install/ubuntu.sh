@@ -14,6 +14,7 @@ pushd boost;
 ./b2 link=shared threading=multi variant=release
 popd
 
+popd
 
 if ! test -f "/usr/local/include/sol.hpp"; then
 	echo "Sol2 doesn't exist, installing from scratch!";
