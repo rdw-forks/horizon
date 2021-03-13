@@ -39,12 +39,7 @@
 #include <boost/crc.hpp>
 #include <zlib.h>
 
-#ifndef SOL_ALL_SAFETIES_ON
-#define SOL_ALL_SAFETIES_ON
-#endif
-#ifdef SOL_STD_VARIANT
 #define SOL_STD_VARIANT 0
-#endif
 #include <sol.hpp>
 
 #define NO_WATER 1000000

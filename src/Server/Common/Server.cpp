@@ -42,12 +42,6 @@
 
 #include <boost/asio/signal_set.hpp>
 
-#ifndef SOL_ALL_SAFETIES_ON
-#define SOL_ALL_SAFETIES_ON
-#endif
-#ifdef SOL_STD_VARIANT
-#define SOL_STD_VARIANT 0
-#endif
 #include <sol.hpp>
 
 /* Public */
