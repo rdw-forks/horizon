@@ -39,7 +39,6 @@
 #include <boost/crc.hpp>
 #include <zlib.h>
 
-#define SOL_STD_VARIANT 0
 #include <sol.hpp>
 
 #define NO_WATER 1000000

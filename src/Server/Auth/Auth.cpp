@@ -38,7 +38,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/bind/placeholders.hpp>
 
-#define SOL_STD_VARIANT 0
 #include <sol.hpp>
 
 using boost::asio::ip::udp;
