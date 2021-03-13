@@ -43,8 +43,12 @@
 #include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/mysql/mysql.h>
 
+#ifndef SOL_ALL_SAFETIES_ON
 #define SOL_ALL_SAFETIES_ON 1
-
+#endif
+#ifdef SOL_STD_VARIANT
+#define SOL_STD_VARIANT 0
+#endif
 #include <sol.hpp>
 
 using boost::asio::ip::tcp;

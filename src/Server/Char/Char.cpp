@@ -37,6 +37,12 @@
 #include <boost/make_shared.hpp>
 #include <iostream>
 
+#ifndef SOL_ALL_SAFETIES_ON
+#define SOL_ALL_SAFETIES_ON
+#endif
+#ifdef SOL_STD_VARIANT
+#define SOL_STD_VARIANT 0
+#endif
 #include <sol.hpp>
 #include <sqlpp11/sqlpp11.h>
 
