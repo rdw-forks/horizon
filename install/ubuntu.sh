@@ -13,6 +13,8 @@ pushd boost;
 ./bootstrap.sh --with-libraries=locale,filesystem,log,test
 ./b2 headers
 ./b2 link=shared threading=multi variant=release
+# Update linker paths with boost
+export LD_LIBRARY_PATH=/tmp/boost/stage/lib:$LD_LIBRARY_PATH
 popd
 
 popd
