@@ -1,6 +1,7 @@
 set -x
 pushd .
 brew install wget gnupg unzip
+brew install --build-from-source mariadb lua
 
 if ! test -f "/usr/local/include/sol.hpp"; then
 	pushd /tmp;
@@ -48,6 +49,5 @@ else
 fi
 
 brew install readline zlib boost
-brew install --build-from-source mariadb lua
 
 popd;
