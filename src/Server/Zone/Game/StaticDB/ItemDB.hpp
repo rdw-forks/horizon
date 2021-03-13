@@ -33,6 +33,7 @@
 
 #include "Common/Definitions/EntityDefinitions.hpp"
 #include "Common/Definitions/ItemDefinitions.hpp"
+#include "Core/Multithreading/LockedLookupTable.hpp" // Linux
 
 #include <memory>
 #include <cstdio>

@@ -30,6 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_MONSTERDB_HPP
 #define HORIZON_ZONE_GAME_MONSTERDB_HPP
 
+#include "Core/Multithreading/LockedLookupTable.hpp" // Linux
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/Definitions/MonsterDefinitions.hpp"
 
