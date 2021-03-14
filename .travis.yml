@@ -62,12 +62,12 @@ matrix:
     #
     # OSX Debug and Sanitization
     #
-    # - os: osx
-    #   osx_image: xcode12.2
-    #   env:
-    #     - TOOLSET="clang"
-    #     - BUILD_TYPE="Debug"
-    #     - COMPILE_OPTIONS="-DWITH_TSAN=1 -DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
+    - os: osx
+      osx_image: xcode12.2
+      env:
+        - TOOLSET="clang"
+        - BUILD_TYPE="Debug"
+        - COMPILE_OPTIONS="-DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
     # - os: osx
     #   osx_image: xcode12.2
     #   env:
