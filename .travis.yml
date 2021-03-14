@@ -46,7 +46,21 @@ matrix:
         - BUILD_TYPE="Debug"
         - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_STACK_CHECK=1"
     - os: linux
-      dist: trusty
+      dist: bionic
+      addons:
+        apt:
+          update: true
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-8
+      env:
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+        - TOOLSET="gcc"
+        - BUILD_TYPE="Debug"
+        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_STACK_CHECK=1"
+    - os: linux
+      dist: groovy
       addons:
         apt:
           update: true
