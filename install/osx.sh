@@ -1,7 +1,7 @@
 set -x
 pushd .
 brew install wget gnupg unzip
-brew install --build-from-source mariadb lua
+brew install mariadb lua
 
 if ! test -f "/usr/local/include/sol.hpp"; then
 	pushd /tmp;
