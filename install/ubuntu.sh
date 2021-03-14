@@ -15,7 +15,6 @@ pushd boost;
 ./b2 link=shared threading=multi variant=release
 # Update linker paths with boost
 export LD_LIBRARY_PATH=/tmp/boost/stage/lib:$LD_LIBRARY_PATH
-echo $LD_LIBRARY_PATH;
 popd
 
 popd
