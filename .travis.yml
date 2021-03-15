@@ -5,8 +5,11 @@ service:
 
 cache:
   - /usr/local/opt/boost
-  - /usr/local/include/
+  - /usr/local/include
   - /usr/local/lib
+  - /usr/local/Cellar
+  - /usr/lib
+  - /usr/include
 
 matrix:
   global:
@@ -21,7 +24,6 @@ matrix:
       dist: xenial
       addons:
         apt:
-          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -35,7 +37,6 @@ matrix:
       dist: xenial
       addons:
         apt:
-          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -49,7 +50,6 @@ matrix:
       dist: bionic
       addons:
         apt:
-          update: true
           sources:
             - ubuntu-toolchain-r-test
           packages:
@@ -76,7 +76,6 @@ matrix:
     #     - COMPILE_OPTIONS="-DWITH_ASAN=1 -DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
 
 before_install:
-  - df -h
   - eval "${MATRIX_EVAL}"
 
 install:
@@ -116,6 +115,7 @@ script:
   - for TARGET in *;
     do
       if [ -f "$TARGET" ]; then
+        echo "Running ${TARGET}...";
         sudo ./${TARGET} || exit 1;
       fi;
     done;
@@ -138,10 +138,10 @@ script:
         cmake ../ -G"Xcode" -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} || exit 1;
         sudo xcodebuild -target install -config $BUILD_TYPE install || exit 1;
     fi
-  - pushd bin/${BUILD_TYPE};
-  - sudo cp config/auth-server.lua.dist config/auth-server.lua;
-  - sudo cp config/char-server.lua.dist config/char-server.lua;
-  - sudo cp config/zone-server.lua.dist config/zone-server.lua;
-  - sudo ./auth --with-config="config/auth-server.lua" --test-run || exit 1;
-  - sudo ./char --with-config="config/char-server.lua"  --test-run || exit 1;
-  - sudo ./zone --with-config="config/zone-server.lua"  --test-run || exit 1;
+  # - pushd bin/${BUILD_TYPE};
+  # - sudo cp config/auth-server.lua.dist config/auth-server.lua;
+  # - sudo cp config/char-server.lua.dist config/char-server.lua;
+  # - sudo cp config/zone-server.lua.dist config/zone-server.lua;
+  # - sudo ./auth --with-config="config/auth-server.lua" --test-run || exit 1;
+  # - sudo ./char --with-config="config/char-server.lua"  --test-run || exit 1;
+  # - sudo ./zone --with-config="config/zone-server.lua"  --test-run || exit 1;
