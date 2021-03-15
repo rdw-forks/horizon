@@ -14,7 +14,12 @@ pushd boost;
 ./b2 headers
 ./b2 link=shared threading=multi variant=release
 # Update linker paths with boost
-export LD_LIBRARY_PATH=/tmp/boost/stage/lib:$LD_LIBRARY_PATH
+echo "ldd nw"
+ldd nw
+echo "sudo ldconfig -v"
+sudo ldconfig -v
+echo "export LD_LIBRARY_PATH:$LD_LIBRARY_PATH/tmp/boost/stage/lib"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/boost/stage/lib
 popd
 
 popd
