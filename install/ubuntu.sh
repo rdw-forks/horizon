@@ -9,6 +9,8 @@ ls -al ${CMAKE_DIR}
 
 sudo add-apt-repository -y ppa:mhier/libboost-latest
 sudo apt-get update
+sudo apt-get remove libboost
+sudo apt-get install libboost
 # BOOST_URL="https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz"
 # mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C boost
 # pushd boost;
