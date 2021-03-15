@@ -33,6 +33,20 @@ else
 	echo "Sqlpp11 already exists, skipping installation...";
 fi
 
+if ! test -f "/usr/local/include/date/date.h"; then
+	pushd /tmp;
+	echo "Date library doesn't exist, installing from scratch!";
+	git clone https://github.com/HowardHinnant/date.git;
+	mkdir date/build;
+	pushd date/build;
+	cmake ../;
+	sudo make install;
+	popd;
+	popd;
+else
+	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
+fi
+
 if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	pushd /tmp;
 	echo "Sqlpp11-connector-mysql doesn't exist, installing from scratch!";
