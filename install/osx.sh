@@ -25,7 +25,7 @@ if ! test -f "/usr/local/include/sqlpp11/sqlpp11.h"; then
 	mkdir sqlpp11/build;
 	pushd sqlpp11/build;
 	cmake ../;
-	echo "Silently building and installing Sol2...";
+	echo "Silently building and installing Sqlpp11...";
 	sudo make install >/dev/null;
 	popd;
 	popd;
@@ -35,7 +35,7 @@ fi
 
 if ! test -f "/usr/local/include/date/date.h"; then
 	pushd /tmp;
-	echo "Date library doesn't exist, installing from scratch!";
+	echo "HowardHinnant/Date library doesn't exist, installing from scratch!";
 	git clone https://github.com/HowardHinnant/date.git;
 	mkdir date/build;
 	pushd date/build;
@@ -44,7 +44,7 @@ if ! test -f "/usr/local/include/date/date.h"; then
 	popd;
 	popd;
 else
-	echo "Sqlpp11-connector-mysql already exists, skipping installation...";
+	echo "HowardHinnant/Date already exists, skipping installation...";
 fi
 
 if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
@@ -52,10 +52,10 @@ if ! test -f "/usr/local/include/sqlpp11/mysql/mysql.h"; then
 	echo "Sqlpp11-connector-mysql doesn't exist, installing from scratch!";
 	git clone https://github.com/rbock/sqlpp11-connector-mysql.git;
 	mkdir sqlpp11-connector-mysql/build;
-	pushd sqlpp11-connector-mysql/build;
-	cmake ../;
-	echo "Silently building and installing Sol2...";
-	sudo make install >/dev/null;
+	pushd sqlpp11-connector-mysql/build; 
+	cmake ../ -DDATE_INCLUDE_DIR=/usr/local/include;
+	echo "Silently building and installing Sqlpp11-connector-mysql...";
+	sudo make install;
 	popd;
 	popd;
 else

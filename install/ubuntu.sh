@@ -7,18 +7,20 @@ CMAKE_DIR="/tmp/cmake/bin"
 echo "CMake Dir: ${CMAKE_DIR}"
 ls -al ${CMAKE_DIR}
 
-BOOST_URL="https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz"
-mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C boost
-pushd boost;
-./bootstrap.sh --with-libraries=locale,filesystem,log,test
-./b2 headers
-./b2 link=shared threading=multi variant=release
-# Update linker paths with boost
-echo "export LD_LIBRARY_PATH:$LD_LIBRARY_PATH/tmp/boost/stage/lib"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/boost/stage/lib
-echo "sudo ldconfig -v"
-sudo ldconfig -v
-popd
+sudo add-apt-repository ppa:mhier/libboost-latest
+sudo apt-get update
+# BOOST_URL="https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.tar.gz"
+# mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C boost
+# pushd boost;
+# ./bootstrap.sh --with-libraries=locale,filesystem,log,test
+# ./b2 headers
+# ./b2 link=shared threading=multi variant=release
+# # Update linker paths with boost
+# echo "export LD_LIBRARY_PATH:$LD_LIBRARY_PATH/tmp/boost/stage/lib"
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/boost/stage/lib
+# echo "sudo ldconfig -v"
+# sudo ldconfig -v
+# popd
 
 popd
 
