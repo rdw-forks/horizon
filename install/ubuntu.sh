@@ -12,7 +12,7 @@ mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C 
 pushd boost;
 ./bootstrap.sh --with-libraries=locale,filesystem,log,test
 ./b2 headers
-./b2 link=static threading=multi variant=release
+./b2 link=shared threading=multi variant=release
 # Update linker paths with boost
 export LD_LIBRARY_PATH=/tmp/boost/stage/lib:$LD_LIBRARY_PATH
 popd
