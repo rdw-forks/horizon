@@ -8,6 +8,8 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "LoggingTest"
 
+#define BOOST_LOG_DYN_LINK 1
+
 #include <boost/test/unit_test.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
