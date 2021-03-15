@@ -11,8 +11,8 @@ BOOST_URL="https://dl.bintray.com/boostorg/release/1.75.0/source/boost_1_75_0.ta
 mkdir boost && wget --quiet -O - ${BOOST_URL} | tar --strip-components=1 -xz -C boost
 pushd boost;
 ./bootstrap.sh --with-libraries=locale,filesystem,log,test
-./b2 headers
-./b2 link=shared threading=multi variant=release
+./b2
+./b2 install
 popd
 
 popd
