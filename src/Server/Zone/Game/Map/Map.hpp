@@ -69,7 +69,7 @@ public:
 
 	GridHolderType &getGridHolder() { return _gridholder; }
 
-	bool has_obstruction_at(uint16_t x, uint16_t y);
+	bool has_obstruction_at(int16_t x, int16_t y);
 
 	MapCoords get_random_coords()
 	{

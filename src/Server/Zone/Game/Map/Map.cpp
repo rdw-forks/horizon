@@ -55,7 +55,7 @@ Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, u
 	}
 }
 
-bool Map::has_obstruction_at(uint16_t x, uint16_t y)
+bool Map::has_obstruction_at(int16_t x, int16_t y)
 {
 	if (x < 0 || y < 0 || x > _width || y > _height)
 		return true;
