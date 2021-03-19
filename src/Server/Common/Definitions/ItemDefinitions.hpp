@@ -31,6 +31,13 @@
 
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 
+// Includes [ Ubuntu / Xenial ]
+#include <array>
+#include <utility>
+#include <memory>
+#include <string>
+#include <vector>
+
 #define ITEM_NAME_LENGTH 50
 #define UNKNOWN_ITEM_ID 512 // Apple
 #define MAX_ITEM_OPTIONS 5
@@ -422,7 +429,7 @@ struct item_entry_data
 	uint32_t hire_expire_date{0};
 	uint16_t sprite_id{0};
 
-	element_type element_type{ELE_NEUTRAL};
+	element_type ele_type{ELE_NEUTRAL};
 	uint8_t option_count{0};
 	struct options {
 		int16_t get_index() { return index; }

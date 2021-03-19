@@ -37,23 +37,23 @@
 find_file(SQLPP11_MYSQL_INCLUDE_DIR
     NAMES mysql.h
     PATH_SUFFIXES mysql
-    PATHS
-        /usr/local/include/sqlpp11
-        /usr/include/sqlpp11
-        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include/sqlpp11
+    HINTS
+        /usr/local/include/sqlpp11/
+        /usr/include/sqlpp11/
+        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include/sqlpp11/
 )
 mark_as_advanced(SQLPP11_MYSQL_INCLUDE_DIR)
 
 find_file(SQLPP11_MYSQL_LIBRARIES
     NAMES sqlpp-mysql libsqlpp-mysql.a sqlpp-mysql.lib
-    PATHS
+    HINTS
         /usr/local/lib/
-        /usr/lib
+        /usr/lib/
         ${SQLPP11_MYSQL_LIB_DIR}
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/debug/lib
+        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/debug/lib/
     else()
-        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/lib
+        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/lib/
     endif()
 )
 mark_as_advanced(SQLPP11_MYSQL_LIBRARIES)

@@ -70,6 +70,7 @@ endif()
 
 target_include_directories(char
 	PUBLIC
+		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
         ${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}

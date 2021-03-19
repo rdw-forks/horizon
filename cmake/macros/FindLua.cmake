@@ -9,8 +9,8 @@
 
 find_path(LUA_INCLUDE_DIR 
   NAMES lua.h
-  PATH_SUFFIXES lua
-  PATHS
+  PATH_SUFFIXES lua lua5.3
+  HINTS
   ~/Library/Frameworks
   /Library/Frameworks
   /sw # Fink
@@ -19,14 +19,14 @@ find_path(LUA_INCLUDE_DIR
   /opt
   /usr
   /usr/local/include
-  /usr/include/lua5.3/include
+  /usr/include
   ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include
 )
 
 find_library(LUA_LIBRARIES
-  NAMES lua
+  NAMES lua lua5.3
   PATH_SUFFIXES lib
-  PATHS
+  HINTS
   ~/Library/Frameworks
   /Library/Frameworks
   /sw

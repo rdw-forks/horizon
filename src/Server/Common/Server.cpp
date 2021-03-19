@@ -41,6 +41,7 @@
 #include <readline/readline.h>
 
 #include <boost/asio/signal_set.hpp>
+
 #include <sol.hpp>
 
 /* Public */

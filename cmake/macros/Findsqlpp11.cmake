@@ -36,11 +36,11 @@
 find_file(SQLPP11_INCLUDE_DIR
     NAMES sqlpp11.h
     PATH_SUFFIXES sqlpp11
-    PATHS 
-        ${SQLPP11_ROOT_DIR}/include
-        /usr/local/include
-        /usr/include
-        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include
+    HINTS 
+        ${SQLPP11_ROOT_DIR}/include/
+        /usr/local/include/
+        /usr/include/
+        ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include/
 )
 mark_as_advanced(SQLPP11_INCLUDE_DIR)
 

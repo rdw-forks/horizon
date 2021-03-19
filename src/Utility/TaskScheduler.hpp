@@ -28,9 +28,6 @@
 #include <cassert>
 #include <functional>
 #include <set>
-#include <boost/optional.hpp>
-#include <boost/utility/in_place_factory.hpp>
-#include <boost/thread.hpp>
 
 /// Milliseconds shorthand typedef.
 typedef std::chrono::microseconds Microseconds;
@@ -44,10 +41,6 @@ typedef std::chrono::minutes Minutes;
 
 /// Hours shorthand typedef.
 typedef std::chrono::hours Hours;
-
-//! Optional helper class to wrap optional values within.
-template <typename T>
-using Optional = boost::optional<T>;
 
 class TaskContext;
 

@@ -35,6 +35,8 @@
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 
+#include <memory> // Linux
+
 namespace Horizon
 {
 namespace Zone

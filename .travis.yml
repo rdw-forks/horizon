@@ -5,8 +5,11 @@ service:
 
 cache:
   - /usr/local/opt/boost
-  - /usr/local/include/
+  - /usr/local/include
   - /usr/local/lib
+  - /usr/local/Cellar
+  - /usr/lib
+  - /usr/include
 
 matrix:
   global:
@@ -24,12 +27,12 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
+            - g++-8
       env:
-        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
         - TOOLSET="gcc"
         - BUILD_TYPE="Debug"
-        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_WARNINGS=1"
+        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_STACK_CHECK=1"
     - os: linux
       dist: xenial
       addons:
@@ -37,27 +40,14 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6
+            - g++-9
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
         - TOOLSET="gcc"
         - BUILD_TYPE="Debug"
-        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_WARNINGS=1"
+        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_STACK_CHECK=1"
     - os: linux
-      dist: xenial
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-      env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-        - TOOLSET="gcc"
-        - BUILD_TYPE="Debug"
-        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_WARNINGS=1"
-    - os: linux
-      dist: xenial
+      dist: bionic
       addons:
         apt:
           sources:
@@ -68,25 +58,24 @@ matrix:
         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
         - TOOLSET="gcc"
         - BUILD_TYPE="Debug"
-        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_WARNINGS=1 -DWITH_STACK_CHECK=1"
+        - COMPILE_OPTIONS="-DWITH_CORE_DEBUG=1 -DWITH_STACK_CHECK=1"
     #
     # OSX Debug and Sanitization
     #
     - os: osx
-      osx_image: xcode9.4
+      osx_image: xcode12.2
       env:
         - TOOLSET="clang"
         - BUILD_TYPE="Debug"
-        - COMPILE_OPTIONS="-DWITH_TSAN=1 -DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
-    - os: osx
-      osx_image: xcode9.4
-      env:
-        - TOOLSET="clang"
-        - BUILD_TYPE="Debug"
-        - COMPILE_OPTIONS="-DWITH_ASAN=1 -DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
+        - COMPILE_OPTIONS="-DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
+    # - os: osx
+    #   osx_image: xcode12.2
+    #   env:
+    #     - TOOLSET="clang"
+    #     - BUILD_TYPE="Debug"
+    #     - COMPILE_OPTIONS="-DWITH_ASAN=1 -DWITH_WARNINGS=1 -DWITH_CORE_DEBUG=1"
 
 before_install:
-  - df -h
   - eval "${MATRIX_EVAL}"
 
 install:
@@ -108,7 +97,7 @@ script:
   # Install Linux
   #
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      cmake ../ -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} -DWITH_COVERAGE=1 -DWITH_TESTS=1 -DWITHOUT_SERVERS=1 || exit 1;
+      cmake ../ -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} -DWITH_COVERAGE=1 -DWITH_TESTS=1 -DBOOST_INCLUDEDIR=/tmp/boost -DBOOST_LIBRARYDIR=/tmp/boost/stage/lib -DWITHOUT_SERVERS=1 || exit 1;
       sudo make || exit 1;
     fi
   #
@@ -126,6 +115,7 @@ script:
   - for TARGET in *;
     do
       if [ -f "$TARGET" ]; then
+        echo "Running ${TARGET}...";
         sudo ./${TARGET} || exit 1;
       fi;
     done;
@@ -138,21 +128,20 @@ script:
   # Deploy Linux
   #
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-      cmake ../ -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} -DWITH_COVERAGE=1 || exit 1;
-      sudo make || exit 1;
+      cmake ../ -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} || exit 1;
       sudo make install || exit 1;
     fi
   #
   # Deploy OSX
   #
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-        cmake ../ -G"Xcode" -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} -DWITH_COVERAGE=1 || exit 1;
+        cmake ../ -G"Xcode" -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_BUILD_TYPE=${BUILD_TYPE} ${COMPILE_OPTIONS} || exit 1;
         sudo xcodebuild -target install -config $BUILD_TYPE install || exit 1;
     fi
-  - pushd bin/${BUILD_TYPE};
-  - sudo cp config/auth-server.lua.dist config/auth-server.lua;
-  - sudo cp config/char-server.lua.dist config/char-server.lua;
-  - sudo cp config/zone-server.lua.dist config/zone-server.lua;
-  - sudo ./auth --with-config="config/auth-server.lua" --test-run || exit 1;
-  - sudo ./char --with-config="config/char-server.lua"  --test-run || exit 1;
-  - sudo ./zone --with-config="config/zone-server.lua"  --test-run || exit 1;
+  # - pushd bin/${BUILD_TYPE};
+  # - sudo cp config/auth-server.lua.dist config/auth-server.lua;
+  # - sudo cp config/char-server.lua.dist config/char-server.lua;
+  # - sudo cp config/zone-server.lua.dist config/zone-server.lua;
+  # - sudo ./auth --with-config="config/auth-server.lua" --test-run || exit 1;
+  # - sudo ./char --with-config="config/char-server.lua"  --test-run || exit 1;
+  # - sudo ./zone --with-config="config/zone-server.lua"  --test-run || exit 1;
