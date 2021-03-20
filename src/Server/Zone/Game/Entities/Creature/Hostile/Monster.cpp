@@ -80,8 +80,7 @@ void Monster::perform_ai_lazy()
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& is_spotted() 
 		&& (_next_walktime - std::time(nullptr) < 0)
-		&& !is_walking()
-		&& map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) == 0) {
+		&& !is_walking()) {
 		std::srand(std::time(nullptr));
 		MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
 		move_to_coordinates(mc.x(), mc.y());

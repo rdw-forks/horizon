@@ -160,9 +160,13 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	if (entity_is_in_viewport(entity))
 		return;
 
-	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
-	get_session()->clif()->notify_viewport_add_entity(entry);
-
+	if (entity->is_walking()) {
+		realize_entity_movement(entity);
+	} else {
+		entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
+		get_session()->clif()->notify_viewport_add_entity(entry);
+	}
+	
 	_viewport_entities.push_back(entity);
 
 	if (entity->type() == ENTITY_MONSTER) {
