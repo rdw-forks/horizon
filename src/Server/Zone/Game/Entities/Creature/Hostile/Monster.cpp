@@ -64,7 +64,11 @@ void Monster::initialize()
 
 	map()->ensure_grid_for_entity(this, map_coords());
 
-    map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME_LAZY), [this] (TaskContext context) {
+    map()->container()->getScheduler().Schedule(
+    	Milliseconds(MOB_MIN_THINK_TIME_LAZY),
+    	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
+    	[this] (TaskContext context) 
+    {
         if (is_spotted())
             perform_ai_lazy();
         context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
@@ -76,7 +80,8 @@ void Monster::perform_ai_lazy()
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& is_spotted() 
 		&& (_next_walktime - std::time(nullptr) < 0)
-		&& !is_walking()) {
+		&& !is_walking()
+		&& map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) == 0) {
 		std::srand(std::time(nullptr));
 		MapCoords mc = map()->get_random_coordinates_in_walkable_area(map_coords().x(), map_coords().y(), MAX_VIEW_RANGE, MAX_VIEW_RANGE);
 		move_to_coordinates(mc.x(), mc.y());
@@ -97,6 +102,7 @@ void Monster::stop_movement()
 
 void Monster::on_pathfinding_failure()
 {
+	HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
 void Monster::on_movement_begin()

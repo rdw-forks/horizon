@@ -88,7 +88,7 @@ class TaskScheduler
 	}
 
 	// Task group type
-	typedef unsigned int group_t;
+	typedef uint64_t group_t;
 	// Task repeated type
 	typedef unsigned int repeated_t;
 

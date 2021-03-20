@@ -151,7 +151,7 @@ public:
 		if (check_collision(target_.x(), target_.y()))
 			return path;
 
-		while (!openSet.empty() && searchStep < 50) {
+		while (!openSet.empty() && searchStep < 500) {
 			auto current_it = openSet.begin();
 			
 			current = *current_it;
