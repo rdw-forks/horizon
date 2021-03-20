@@ -48,7 +48,7 @@ void set_new_point_cost(std::shared_ptr<Horizon::Zone::Entity> entity, STATUS_CO
 	if (!entity || !sstat)
 		return;
 
-	uint32_t new_cost = entity->status()->get_required_statpoints(sstat->get_base(), sstat->get_base() + 1);
+	int32_t new_cost = entity->status()->get_required_statpoints(sstat->get_base(), sstat->get_base() + 1);
 
 	cost_t->set_base(new_cost);
 }
@@ -155,7 +155,7 @@ void SkillPoint::on_observable_changed(std::weak_ptr<JobLevel> wjlvl)
 	add_base(1);
 }
 
-uint32_t MaxWeight::compute(bool notify)
+int32_t MaxWeight::compute(bool notify)
 {
 	if (get_entity() == nullptr || _str.expired())
 		return 0;
@@ -171,9 +171,17 @@ uint32_t MaxWeight::compute(bool notify)
 	return total();
 }
 
-uint32_t StatusATK::compute(bool notify)
+void MovementSpeed::set_base(int32_t val)
 {
-	uint32_t blvl = 1, str = 1, dex = 1, luk = 1;
+	Attribute<MovementSpeed>::set_base(val);
+
+	if (get_entity()->type() == ENTITY_PLAYER)
+		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MOVEMENT_SPEED, total());
+}
+
+int32_t StatusATK::compute(bool notify)
+{
+	int32_t blvl = 1, str = 1, dex = 1, luk = 1;
 
 	std::shared_ptr<BaseLevel> sblvl = _blvl.lock();
 	std::shared_ptr<Strength> sstr = _str.lock();
@@ -205,9 +213,9 @@ uint32_t StatusATK::compute(bool notify)
 	return total();
 }
 
-uint32_t StatusMATK::compute(bool notify)
+int32_t StatusMATK::compute(bool notify)
 {
-	uint32_t blvl = 1, int_ = 1, dex = 1, luk = 1;
+	int32_t blvl = 1, int_ = 1, dex = 1, luk = 1;
 
 	std::shared_ptr<BaseLevel> sblvl = _blvl.lock();
 	std::shared_ptr<Intelligence> sint = _int.lock();
@@ -232,9 +240,9 @@ uint32_t StatusMATK::compute(bool notify)
 	return total();
 }
 
-uint32_t SoftDEF::compute(bool notify)
+int32_t SoftDEF::compute(bool notify)
 {
-	uint32_t vit = 1;
+	int32_t vit = 1;
 
 	std::shared_ptr<Vitality> svit = _vit.lock();
 
@@ -250,9 +258,9 @@ uint32_t SoftDEF::compute(bool notify)
 	return total();
 }
 
-uint32_t SoftMDEF::compute(bool notify)
+int32_t SoftMDEF::compute(bool notify)
 {
-	uint32_t blvl = 1, int_ = 1, dex = 1, vit = 1;
+	int32_t blvl = 1, int_ = 1, dex = 1, vit = 1;
 
 	std::shared_ptr<BaseLevel> sblvl = _blvl.lock();
 	std::shared_ptr<Intelligence> sint = _int.lock();
@@ -277,9 +285,9 @@ uint32_t SoftMDEF::compute(bool notify)
 	return total();
 }
 
-uint32_t HIT::compute(bool notify)
+int32_t HIT::compute(bool notify)
 {
-	uint32_t blvl = 1, dex = 1, luk = 1;
+	int32_t blvl = 1, dex = 1, luk = 1;
 
 	std::shared_ptr<BaseLevel> sblvl = _blvl.lock();
 	std::shared_ptr<Dexterity> sdex = _dex.lock();
@@ -301,9 +309,9 @@ uint32_t HIT::compute(bool notify)
 	return total();
 }
 
-uint32_t CRIT::compute(bool notify)
+int32_t CRIT::compute(bool notify)
 {
-	uint32_t luk = 1;
+	int32_t luk = 1;
 
 	std::shared_ptr<Luck> sluk = _luk.lock();
 
@@ -321,9 +329,9 @@ uint32_t CRIT::compute(bool notify)
 
 //! @brief Computes FLEE status based on agility, luck and Base Level.
 //! FLEE = 100 + BaseLv + AGI + Floor(LUK ÷ 5)
-uint32_t FLEE::compute(bool notify)
+int32_t FLEE::compute(bool notify)
 {
-	uint32_t blvl = 1, agi = 1, luk = 1;
+	int32_t blvl = 1, agi = 1, luk = 1;
 
 	std::shared_ptr<Agility> sagi = _agi.lock();
 	std::shared_ptr<BaseLevel> sblvl = _blvl.lock();
@@ -346,9 +354,9 @@ uint32_t FLEE::compute(bool notify)
 
 //! @brief Computes the EquipATK property of physical attacks.
 //! EquipATK = floor[((BaseWeaponDamage + Variance + StatBonus + RefinementBonus + OverUpgradeBonus) × SizePenaltyMultiplier]
-uint32_t EquipATK::compute(bool notify)
+int32_t EquipATK::compute(bool notify)
 {
-	uint32_t str = 1, dex = 1;
+	int32_t str = 1, dex = 1;
 
 	if (get_entity() == nullptr || get_entity()->type() != ENTITY_PLAYER)
 		return 0;
@@ -395,14 +403,14 @@ uint32_t EquipATK::compute(bool notify)
 	return total();
 }
 
-uint32_t EquipATK::compute_variance(uint8_t weapon_lvl, uint32_t base_weapon_dmg)
+int32_t EquipATK::compute_variance(int8_t weapon_lvl, int32_t base_weapon_dmg)
 {
 	srand(time(0));
 
 	return floor(((rand() % 1000 + (-500)) / 10000.f) * weapon_lvl * base_weapon_dmg);
 }
 
-uint32_t AttackSpeed::compute(bool notify)
+int32_t AttackSpeed::compute(bool notify)
 {
 	float temp_aspd = 0.00f;
 	int amotion = 0;

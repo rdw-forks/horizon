@@ -201,13 +201,7 @@ void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
         if (src_entity->guid() == tpl->guid())
             continue;
 
-        bool is_in_range = tpl->is_in_range_of(src_entity);
-
-        HLog(debug) << "Source entity " << src_entity->name() << " within range check: " << is_in_range;
-
-        if (is_in_range) {
-            tpl->realize_entity_movement(src_entity);
-        }
+        tpl->realize_entity_movement(src_entity);
     }
 }
 

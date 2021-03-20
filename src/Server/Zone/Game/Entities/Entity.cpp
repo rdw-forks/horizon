@@ -104,7 +104,9 @@ void Entity::move()
 	MapCoords my_coords = map_coords();
 	MapCoords c = _walk_path.at(0);
 
-	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), ENTITY_SCHEDULE_WALK,
+	map()->container()->getScheduler().Schedule(
+		Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), 
+		get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
 		[this, c, my_coords] (TaskContext /*movement*/)
 		{
 			// Force stop as the current coordinates might asynchronously update after map has changed 
@@ -142,7 +144,7 @@ void Entity::move()
 
 bool Entity::move_to_coordinates(int16_t x, int16_t y)
 {
-	if (getScheduler().Count(ENTITY_SCHEDULE_WALK)) {
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK))) {
 		_changed_dest_pos = { x, y };
 		return true;
 	}

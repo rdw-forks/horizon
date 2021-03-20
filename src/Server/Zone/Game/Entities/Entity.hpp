@@ -162,6 +162,8 @@ public:
 	void notify_nearby_players_of_movement();
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 
+	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
+
 protected:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	uint32_t _guid{0};
