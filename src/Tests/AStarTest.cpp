@@ -32,6 +32,7 @@
 
 #include "Server/Zone/Game/Map/Path/AStar.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <cstring>
@@ -60,8 +61,8 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 	std::srand(std::time(nullptr));
 
 	for (int i = 0; i < 10000; i++) {
-		Horizon::Zone::AStar::Vec2i start = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
-		Horizon::Zone::AStar::Vec2i end = { rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 };
+		MapCoords start = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
+		MapCoords end = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
 		int idx = 0;
 
 		// maps are stored from max-y,x down to 0,0
@@ -84,7 +85,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 		auto path = astar.findPath(start, end);
 		auto finish_time = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> elapsed = finish_time - start_time;
-		bool found = !(path.size() == 0 || (path.at(0).x != end.x && path.at(0).y != end.y));
+		bool found = !(path.size() == 0 || (path.at(0).x() != end.x() && path.at(0).y() != end.y()));
 		printf("Manhattan: %.2fs %d %s\n", elapsed.count(), i, found ? "found" : "not found");
 
 		if (found) {
@@ -94,7 +95,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 			mapfile.open(filename);
 			for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
 				for (int x = 0; x < MAP_WIDTH; ++x) {
-					Horizon::Zone::AStar::Vec2i coords{ x, y };
+					MapCoords coords = MapCoords(x, y);
 					bool found = false;
 		
 					for (auto c : path) {
