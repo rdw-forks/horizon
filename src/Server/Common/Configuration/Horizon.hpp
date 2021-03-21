@@ -29,7 +29,7 @@
 #ifndef HORIZON_HORIZON_HPP
 #define HORIZON_HORIZON_HPP
 
-#include "Definitions/Definitions.hpp"
+#include "Server/Common/Definitions/Definitions.hpp"
 
 #define RENEWAL
 

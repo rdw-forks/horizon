@@ -40,6 +40,8 @@
 
 using namespace Horizon::Zone;
 
+// #define PRINT_FILE
+
 #define MAP_WIDTH 268
 #define MAP_HEIGHT 300
 
@@ -61,8 +63,7 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 	std::srand(std::time(nullptr));
 
 	for (int i = 0; i < 10000; i++) {
-		MapCoords start = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
-		MapCoords end = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
+		MapCoords start, end;
 		int idx = 0;
 
 		// maps are stored from max-y,x down to 0,0
@@ -72,6 +73,16 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 				cell[x][y] = Cell(izlude[idx++]);
 			}
 		}
+
+		do {
+			do {
+				start = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
+			} while(check_collision(start.x(), start.y()));
+
+			do {
+				end = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
+			} while(check_collision(end.x(), end.y()));
+		} while (!start.is_within_range(end, MAX_VIEW_RANGE));
 
 //	auto start_time = std::chrono::high_resolution_clock::now();
 //	astar.navigate(start, end);
@@ -85,44 +96,48 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 		auto path = astar.findPath(start, end);
 		auto finish_time = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> elapsed = finish_time - start_time;
-		bool found = !(path.size() == 0 || (path.at(0).x() != end.x() && path.at(0).y() != end.y()));
-		printf("Manhattan: %.2fs %d %s\n", elapsed.count(), i, found ? "found" : "not found");
+		bool path_found = !(path.size() == 0 || (path.at(0).x() != end.x() && path.at(0).y() != end.y()));
+		printf("Manhattan: %.2fs %d %s (%d, %d) -> (%d, %d)\n", elapsed.count(), i, path_found ? "path found" : "path not found", start.x(), start.y(), end.x(), end.y());
 
-		if (found) {
-			std::ofstream mapfile;
-			char filename[100];
-			snprintf(filename, 100, "izlude-%d.txt", i);
-			mapfile.open(filename);
-			for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
-				for (int x = 0; x < MAP_WIDTH; ++x) {
-					MapCoords coords = MapCoords(x, y);
-					bool found = false;
-		
-					for (auto c : path) {
-						if (coords == c) {
-							if (c == start)
-								mapfile << "@ (" << x << ", " << y << ")";
-							else if (c == end)
-								mapfile << "T (" << x << ", " << y << ")";
-							else
-								mapfile << "^";
-							found = true;
-						}
-					}
-		
-					if (!found) {
-						if (cell[x][y].isWalkable())
-							mapfile << " ";
-						else
-							mapfile << "|";
+#ifdef PRINT_FILE
+		std::ofstream mapfile;
+		char filename[100];
+		snprintf(filename, 100, "izlude-%d.txt", i);
+		mapfile.open(filename);
+		for (int y = MAP_HEIGHT - 1; y >= 0; --y) {
+			for (int x = 0; x < MAP_WIDTH; ++x) {
+				MapCoords coords = MapCoords(x, y);
+				bool found = false;
+	
+				for (auto c : path) {
+					if (coords == c) {
+						if (start.x() == x && start.y() == y)
+							mapfile << "@ (" << x << ", " << y << ")";
+						else if (end.x() == x && end.y() == y)
+							mapfile << "T (" << x << ", " << y << ")";
+						else if (c.x() == x && c.y() == y)
+							mapfile << "^";
+						found = true;
 					}
 				}
-		
-				mapfile << "\n";
+	
+				if (!found) {
+					if (start.x() == x && start.y() == y)
+						mapfile << "@ (" << x << ", " << y << ")";
+					else if (end.x() == x && end.y() == y)
+						mapfile << "T (" << x << ", " << y << ")";
+					else if (cell[x][y].isWalkable())
+						mapfile << " ";
+					else
+						mapfile << "|";
+				}
 			}
-		
-			mapfile.close();
+	
+			mapfile << "\n";
 		}
+	
+		mapfile.close();
+#endif
 	}
 
 //	start_time = std::chrono::high_resolution_clock::now();

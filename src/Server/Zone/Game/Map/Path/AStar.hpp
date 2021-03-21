@@ -34,6 +34,7 @@
 
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
+#include "Server/Common/Configuration/Horizon.hpp"
 
 #include <utility>
 #include <vector>
@@ -151,7 +152,7 @@ public:
 		if (check_collision(target_.x(), target_.y()))
 			return path;
 
-		while (!openSet.empty() && searchStep < 500) {
+		while (!openSet.empty() && searchStep < MAX_VIEW_RANGE) {
 			auto current_it = openSet.begin();
 			
 			current = *current_it;
