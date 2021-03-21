@@ -130,9 +130,6 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
             // Source entity doesn't need to realize target as update_viewport() is called when needed/
             tpl->add_entity_to_viewport(src_entity);
         } else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT || (_notif_type == EVP_NOTIFY_OUT_OF_SIGHT && !is_in_range)) {
-            if (src_entity->type() == ENTITY_PLAYER)
-                src_entity->template downcast<Player>()->remove_entity_from_viewport(tpl, _notif_type);
-
             tpl->remove_entity_from_viewport(src_entity, _notif_type);
         }
     }

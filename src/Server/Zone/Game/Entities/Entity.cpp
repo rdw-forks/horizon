@@ -132,7 +132,7 @@ void Entity::move()
 				_dest_pos = _changed_dest_pos;
 				schedule_movement(_dest_pos);
 				return;
-			} else if (_dest_pos == MapCoords(c.x(), c.y())) {
+			} else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty()) {
 				_dest_pos = { 0, 0 };
 				on_movement_end();
 			}
