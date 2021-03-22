@@ -137,9 +137,9 @@ void Player::on_movement_step()
 	GridNPCTrigger npc_trigger(shared_from_this());
 	GridReferenceContainerVisitor<GridNPCTrigger, GridReferenceContainer<AllEntityTypes>> npc_trigger_performer(npc_trigger);
 
-	update_viewport();
-	
 	map()->ensure_grid_for_entity(this, map_coords());
+
+	update_viewport();
 
 	map()->visit_in_range(map_coords(), npc_trigger_performer, MAX_NPC_TRIGGER_RANGE);
 }
@@ -345,7 +345,6 @@ bool Player::job_change(int32_t job_id)
 
 	set_job_id(job_id);
 	status()->base_appearance()->set(job_id);
-	status()->base_appearance()->notify_update();
 
 	return true;
 }

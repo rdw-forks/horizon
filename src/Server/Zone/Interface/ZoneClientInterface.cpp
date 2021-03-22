@@ -666,5 +666,7 @@ bool ZoneClientInterface::notify_action_failure(int16_t message_type)
 	return true;
 }
 
-
-
+void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
+{
+	
+}

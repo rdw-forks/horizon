@@ -47,10 +47,10 @@ public:
 	int _a;
 };
 
-class A : public D, public ObservableStatus<std::weak_ptr<A>, std::weak_ptr<B>, std::weak_ptr<C>>
+class A : public D, public ObservableStatus<A*, B*, C*>
 {
 public:
-	A(int a = 100) : D(a), ObservableStatus(std::weak_ptr<B>(), std::weak_ptr<C>()) { }
+	A(int a = 100) : D(a), ObservableStatus(nullptr, nullptr) { }
 };
 
 class C : public D
@@ -58,9 +58,9 @@ class C : public D
 public:
 	C(int a = 10) : D(a) { }
 
-	void on_observable_changed(std::weak_ptr<A> a)
+	void on_observable_changed(A *a)
 	{
-		_a = a.lock()->_a;
+		_a = a->_a;
 	}
 };
 
@@ -69,9 +69,9 @@ class B : public D
 public:
 	B(int a = 20) : D(a) { }
 
-	void on_observable_changed(std::weak_ptr<A> a)
+	void on_observable_changed(A *a)
 	{
-		_a = a.lock()->_a;
+		_a = a->_a;
 	}
 };
 
@@ -83,9 +83,10 @@ public:
  */
 BOOST_AUTO_TEST_CASE(ObservableStatusTest)
 {
-	std::shared_ptr<A> a = std::make_shared<A>();
-	std::shared_ptr<B> b = std::make_shared<B>();
-	std::shared_ptr<C> c = std::make_shared<C>();
+	A *a = new A();
+	B *b = new B();
+	C *c = new C();
+
 	a->register_observable(a);
 	a->register_observers(b, c);
 
@@ -96,5 +97,9 @@ BOOST_AUTO_TEST_CASE(ObservableStatusTest)
 
 	BOOST_CHECK_EQUAL(a->_a, b->_a);
 	BOOST_CHECK_EQUAL(a->_a, c->_a);
+
+	delete a;
+	delete b;
+	delete c;
 }
 

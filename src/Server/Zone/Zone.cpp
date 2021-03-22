@@ -100,7 +100,7 @@ bool ZoneServer::read_config()
 	
 	HLog(info) << "Maps will be managed by '" << MAX_MAP_CONTAINER_THREADS << "' thread containers.";
 
-	config().set_session_max_timeout(tbl.get<int32_t>("session_max_timeout"));
+	config().set_session_max_timeout(tbl.get_or("session_max_timeout", 60));
 
 	HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "'.";
 

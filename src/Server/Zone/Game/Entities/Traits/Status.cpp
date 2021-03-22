@@ -182,81 +182,126 @@ void Status::initialize_compound_attributes(std::shared_ptr<const job_config_dat
 	std::shared_ptr<MaxWeight> max_weight;
 
 	set_max_weight(max_weight = std::make_shared<MaxWeight>(_entity, job->max_weight));
-	max_weight->set_strength(strength());
+	max_weight->set_strength(strength().get());
 
 	// Calculated when inventory is synced.
 	set_current_weight(std::make_shared<CurrentWeight>(_entity, 0));
 
 	set_status_atk(status_atk = std::make_shared<StatusATK>(_entity));
-	status_atk->set_base_level(base_level());
-	status_atk->set_strength(strength());
-	status_atk->set_dexterity(dexterity());
-	status_atk->set_luck(luck());
+	status_atk->set_base_level(base_level().get());
+	status_atk->set_strength(strength().get());
+	status_atk->set_dexterity(dexterity().get());
+	status_atk->set_luck(luck().get());
 
 	set_equip_atk(equip_atk = std::make_shared<EquipATK>(_entity));
-	equip_atk->set_strength(strength());
-	equip_atk->set_dexterity(dexterity());
+	equip_atk->set_strength(strength().get());
+	equip_atk->set_dexterity(dexterity().get());
 
 	set_status_matk(status_matk = std::make_shared<StatusMATK>(_entity));
-	status_matk->set_base_level(base_level());
-	status_matk->set_intelligence(intelligence());
-	status_matk->set_dexterity(dexterity());
-	status_matk->set_luck(luck());
+	status_matk->set_base_level(base_level().get());
+	status_matk->set_intelligence(intelligence().get());
+	status_matk->set_dexterity(dexterity().get());
+	status_matk->set_luck(luck().get());
 
 	set_soft_def(soft_def = std::make_shared<SoftDEF>(_entity));
-	soft_def->set_vitality(vitality());
+	soft_def->set_vitality(vitality().get());
 
 	set_soft_mdef(soft_mdef = std::make_shared<SoftMDEF>(_entity));
-	soft_mdef->set_base_level(base_level());
-	soft_mdef->set_intelligence(intelligence());
-	soft_mdef->set_dexterity(dexterity());
-	soft_mdef->set_vitality(vitality());
+	soft_mdef->set_base_level(base_level().get());
+	soft_mdef->set_intelligence(intelligence().get());
+	soft_mdef->set_dexterity(dexterity().get());
+	soft_mdef->set_vitality(vitality().get());
 
 	set_hit(hit = std::make_shared<HIT>(_entity));
-	hit->set_base_level(base_level());
-	hit->set_dexterity(dexterity());
-	hit->set_luck(luck());
+	hit->set_base_level(base_level().get());
+	hit->set_dexterity(dexterity().get());
+	hit->set_luck(luck().get());
 
 	set_crit(crit = std::make_shared<CRIT>(_entity));
-	crit->set_luck(luck());
+	crit->set_luck(luck().get());
 
 	set_flee(flee = std::make_shared<FLEE>(_entity));
-	flee->set_base_level(base_level());
-	flee->set_agility(agility());
-	flee->set_luck(luck());
+	flee->set_base_level(base_level().get());
+	flee->set_agility(agility().get());
+	flee->set_luck(luck().get());
 
 	set_aspd(aspd = std::make_shared<AttackSpeed>(_entity));
-	aspd->set_base_level(base_level());
-	aspd->set_agility(agility());
-	aspd->set_dexterity(dexterity());
+	aspd->set_base_level(base_level().get());
+	aspd->set_agility(agility().get());
+	aspd->set_dexterity(dexterity().get());
 }
 
 //! @brief Registers status observers for observable statuses.
 void Status::initialize_observable_statuses()
 {
 	// Register Status Observables
-	strength()->register_observable(strength());
-	agility()->register_observable(agility());
-	vitality()->register_observable(vitality());
-	intelligence()->register_observable(intelligence());
-	dexterity()->register_observable(dexterity());
-	luck()->register_observable(luck());
-	base_experience()->register_observable(base_experience());
-	job_experience()->register_observable(job_experience());
-	base_level()->register_observable(base_level());
-	job_level()->register_observable(job_level());
+	strength()->register_observable(strength().get());
+	agility()->register_observable(agility().get());
+	vitality()->register_observable(vitality().get());
+	intelligence()->register_observable(intelligence().get());
+	dexterity()->register_observable(dexterity().get());
+	luck()->register_observable(luck().get());
+	base_experience()->register_observable(base_experience().get());
+	job_experience()->register_observable(job_experience().get());
+	base_level()->register_observable(base_level().get());
+	job_level()->register_observable(job_level().get());
 
 	// Register Status Observers
-	strength()->register_observers(strength_cost(), max_weight(), status_atk(), equip_atk());
-	agility()->register_observers(agility_cost(), flee(), aspd());
-	vitality()->register_observers(vitality_cost(), soft_def(), soft_mdef());
-	intelligence()->register_observers(intelligence_cost(), status_matk(), soft_mdef());
-	dexterity()->register_observers(dexterity_cost(), status_atk(), equip_atk(), status_matk(), soft_mdef(), hit(), aspd());
-	luck()->register_observers(luck_cost(), status_atk(), status_matk(), hit(), crit(), flee());
-	base_level()->register_observers(status_point(), next_base_experience(), status_atk(), status_matk(), soft_mdef(), hit(), flee(), aspd());
-	job_level()->register_observers(skill_point(), next_job_experience());
-	base_experience()->register_observers(base_level());
-	job_experience()->register_observers(job_level());
+	strength()->register_observers(
+		strength_cost().get(),
+		max_weight().get(),
+		status_atk().get(),
+		equip_atk().get());
+
+	agility()->register_observers(
+		agility_cost().get(),
+		flee().get(),
+		aspd().get());
+
+	vitality()->register_observers(
+		vitality_cost().get(),
+		soft_def().get(),
+		soft_mdef().get());
+
+	intelligence()->register_observers(
+		intelligence_cost().get(),
+		status_matk().get(),
+		soft_mdef().get());
+
+	dexterity()->register_observers(
+		dexterity_cost().get(),
+		status_atk().get(),
+		equip_atk().get(),
+		status_matk().get(),
+		soft_mdef().get(),
+		hit().get(),
+		aspd().get());
+
+	luck()->register_observers(
+		luck_cost().get(),
+		status_atk().get(),
+		status_matk().get(),
+		hit().get(),
+		crit().get(),
+		flee().get());
+
+	base_level()->register_observers(
+		status_point().get(),
+		next_base_experience().get(),
+		status_atk().get(), 
+		status_matk().get(), 
+		soft_mdef().get(), 
+		hit().get(), 
+		flee().get(), 
+		aspd().get());
+
+	job_level()->register_observers(
+		skill_point().get(), 
+		next_job_experience().get());
+
+	base_experience()->register_observers(base_level().get());
+
+	job_experience()->register_observers(job_level().get());
 }
 
 void Status::compute_and_notify_compound_attributes()

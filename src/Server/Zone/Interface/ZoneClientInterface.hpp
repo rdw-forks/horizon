@@ -131,6 +131,10 @@ public:
 	bool notify_equip_arrow(std::shared_ptr<const item_entry_data> item);
 	bool notify_action_failure(int16_t message_type);
 
+	/**
+	 * Skills
+	 */
+	void upgrade_skill_level(int16_t skill_id);
 protected:
 	uint32_t _npc_contact_guid{0};
 };

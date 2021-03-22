@@ -52,7 +52,7 @@ public:
 	inline typename std::enable_if<I < sizeof...(Tp), void>::type
 	notify(std::tuple<Tp...>& t)
 	{
-		std::get<I>(_observers).lock()->on_observable_changed(_observable);
+		std::get<I>(_observers)->on_observable_changed(_observable);
 		notify<I + 1, Tp...>(t);
 	}
 

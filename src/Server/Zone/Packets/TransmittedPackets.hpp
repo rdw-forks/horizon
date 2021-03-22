@@ -32,6 +32,7 @@
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
+#include "Server/Common/Definitions/SkillDefinitions.hpp"
 
 namespace Horizon
 {
@@ -464,71 +465,6 @@ public:
 	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_PARTY_RECRUIT_VOLUNTEER_INFO, s)
 	{}
 	virtual ~ZC_PARTY_RECRUIT_VOLUNTEER_INFO() {}
-
-	void deliver();
-	ByteBuffer &serialize();
-
-/* Structure */
-};
-
-enum {
-#if PACKET_VERSION >= 20090406 || \
-	PACKET_VERSION >= 20090401 || \
-	PACKET_VERSION >= 20090325 || \
-	PACKET_VERSION >= 20090311 || \
-	PACKET_VERSION >= 20090225 || \
-	PACKET_VERSION >= 20090211 || \
-	PACKET_VERSION >= 20090204 || \
-	PACKET_VERSION >= 20090129 || \
-	PACKET_VERSION >= 20090107 || \
-	PACKET_VERSION >= 20081203 || \
-	PACKET_VERSION >= 20081126 || \
-	PACKET_VERSION >= 20081119 || \
-	PACKET_VERSION >= 20081112 || \
-	PACKET_VERSION >= 20081029 || \
-	PACKET_VERSION >= 20081022 || \
-	PACKET_VERSION >= 20081015 || \
-	PACKET_VERSION >= 20081008 || \
-	PACKET_VERSION >= 20080917 || \
-	PACKET_VERSION >= 20080910 || \
-	PACKET_VERSION >= 20080813 || \
-	PACKET_VERSION >= 20080806 || \
-	PACKET_VERSION >= 20080730 || \
-	PACKET_VERSION >= 20080715 || \
-	PACKET_VERSION >= 20080708 || \
-	PACKET_VERSION >= 20080701 || \
-	PACKET_VERSION >= 20080618 || \
-	PACKET_VERSION >= 20080617 || \
-	PACKET_VERSION >= 20080610 || \
-	PACKET_VERSION >= 20080603 || \
-	PACKET_VERSION >= 20080429 || \
-	PACKET_VERSION >= 20080422 || \
-	PACKET_VERSION >= 20080415 || \
-	PACKET_VERSION >= 20080408 || \
-	PACKET_VERSION >= 20080401 || \
-	PACKET_VERSION >= 20080325 || \
-	PACKET_VERSION >= 20080318 || \
-	PACKET_VERSION >= 20080311 || \
-	PACKET_VERSION >= 20080304 || \
-	PACKET_VERSION >= 20080226 || \
-	PACKET_VERSION >= 20080219 || \
-	PACKET_VERSION >= 20080124 || \
-	PACKET_VERSION >= 20080102 || \
-	PACKET_VERSION >= 0
-	ID_ZC_DISPEL = 0x01b9
-#endif
-};
-/**
- * @brief Main object for the aegis packet: ZC_DISPEL
- *
- */ 
-class ZC_DISPEL : public Base::NetworkPacketTransmitter<ZoneSession>
-{
-public:
-	ZC_DISPEL(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_DISPEL, s)
-	{}
-	virtual ~ZC_DISPEL() {}
 
 	void deliver();
 	ByteBuffer &serialize();
@@ -13774,30 +13710,6 @@ public:
 };
 
 enum {
-#if PACKET_VERSION >= 20090715 || \
-	PACKET_VERSION >= 0
-	ID_ZC_SKILLINFO_UPDATE2 = 0x07e1
-#endif
-};
-/**
- * @brief Main object for the aegis packet: ZC_SKILLINFO_UPDATE2
- *
- */ 
-class ZC_SKILLINFO_UPDATE2 : public Base::NetworkPacketTransmitter<ZoneSession>
-{
-public:
-	ZC_SKILLINFO_UPDATE2(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_SKILLINFO_UPDATE2, s)
-	{}
-	virtual ~ZC_SKILLINFO_UPDATE2() {}
-
-	void deliver();
-	ByteBuffer &serialize();
-
-/* Structure */
-};
-
-enum {
 #if PACKET_VERSION >= 20061204 || \
 	PACKET_VERSION >= 20061030 || \
 	PACKET_VERSION >= 0
@@ -14129,58 +14041,58 @@ public:
 	{}
 	virtual ~ZC_SKILLINFO_UPDATE() {}
 
-	void deliver();
+	void deliver(int16_t skill_id, int16_t skill_level, int16_t sp_cost, int16_t range, bool upgradeable);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _skill_id{0};
+	int16_t _skill_level{0};
+	int16_t _sp_cost{0};
+	int16_t _range{0};
+	int8_t _upgradeable{0};
 };
 
 enum {
-#if PACKET_VERSION >= 20090406 || \
-	PACKET_VERSION >= 20090325 || \
-	PACKET_VERSION >= 20090318 || \
-	PACKET_VERSION >= 20090218 || \
-	PACKET_VERSION >= 20090211 || \
-	PACKET_VERSION >= 20090107 || \
-	PACKET_VERSION >= 20081217 || \
-	PACKET_VERSION >= 20081203 || \
-	PACKET_VERSION >= 20081112 || \
-	PACKET_VERSION >= 20081105 || \
-	PACKET_VERSION >= 20081029 || \
-	PACKET_VERSION >= 20081015 || \
-	PACKET_VERSION >= 20081008 || \
-	PACKET_VERSION >= 20081001 || \
-	PACKET_VERSION >= 20080903 || \
-	PACKET_VERSION >= 20080827 || \
-	PACKET_VERSION >= 20080820 || \
-	PACKET_VERSION >= 20080813 || \
-	PACKET_VERSION >= 20080806 || \
-	PACKET_VERSION >= 20080730 || \
-	PACKET_VERSION >= 20080722 || \
-	PACKET_VERSION >= 20080715 || \
-	PACKET_VERSION >= 20080708 || \
-	PACKET_VERSION >= 20080701 || \
-	PACKET_VERSION >= 20080624 || \
-	PACKET_VERSION >= 20080618 || \
-	PACKET_VERSION >= 20080617 || \
-	PACKET_VERSION >= 20080610 || \
-	PACKET_VERSION >= 20080603 || \
-	PACKET_VERSION >= 20080528 || \
-	PACKET_VERSION >= 20080507 || \
-	PACKET_VERSION >= 20080429 || \
-	PACKET_VERSION >= 20080422 || \
-	PACKET_VERSION >= 20080415 || \
-	PACKET_VERSION >= 20080408 || \
-	PACKET_VERSION >= 20080401 || \
-	PACKET_VERSION >= 20080325 || \
-	PACKET_VERSION >= 20080318 || \
-	PACKET_VERSION >= 20080311 || \
-	PACKET_VERSION >= 20080304 || \
-	PACKET_VERSION >= 20080226 || \
-	PACKET_VERSION >= 20080219 || \
-	PACKET_VERSION >= 20080124 || \
-	PACKET_VERSION >= 20080102 || \
-	PACKET_VERSION >= 0
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	ID_ZC_SKILLINFO_UPDATE2 = 0x0b33 
+#else
+	ID_ZC_SKILLINFO_UPDATE2 = 0x07e1
+#endif
+};
+/**
+ * @brief Main object for the aegis packet: ZC_SKILLINFO_UPDATE2
+ *
+ */ 
+class ZC_SKILLINFO_UPDATE2 : public Base::NetworkPacketTransmitter<ZoneSession>
+{
+public:
+	ZC_SKILLINFO_UPDATE2(std::shared_ptr<ZoneSession> s)
+	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_SKILLINFO_UPDATE2, s)
+	{}
+	virtual ~ZC_SKILLINFO_UPDATE2() {}
+
+	void deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable);
+	ByteBuffer &serialize();
+
+/* Structure */
+	int16_t _skill_id{0};
+	int32_t _sub_type{0};
+	int16_t _level{0};
+	int16_t _sp_cost{0};
+	int16_t _range{0};
+	int8_t _up_flag{0};
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	int16_t _level2{0};
+#endif
+};
+
+enum {
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	ID_ZA_ADD_SKILL = 0x0b31
+#else
 	ID_ZC_ADD_SKILL = 0x0111
 #endif
 };
@@ -14196,10 +14108,108 @@ public:
 	{}
 	virtual ~ZC_ADD_SKILL() {}
 
-	void deliver();
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	void deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable, int16_t level2);
+#else
+	void deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, std::string skill_name, bool upgradeable);
+#endif
+
 	ByteBuffer &serialize();
 
 /* Structure */
+	skill_info_data _info{0};
+};
+
+enum {
+#if PACKET_VERSION >= 20081126 || \
+	PACKET_VERSION >= 0
+	ID_ZC_SKILLINFO_DELETE = 0x0441
+#endif
+};
+/**
+ * @brief Main object for the aegis packet: ZC_SKILLINFO_DELETE
+ *
+ */ 
+class ZC_SKILLINFO_DELETE : public Base::NetworkPacketTransmitter<ZoneSession>
+{
+public:
+	ZC_SKILLINFO_DELETE(std::shared_ptr<ZoneSession> s)
+	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_SKILLINFO_DELETE, s)
+	{}
+	virtual ~ZC_SKILLINFO_DELETE() {}
+
+	void deliver(int16_t skill_id);
+	ByteBuffer &serialize();
+
+/* Structure */
+	int16_t _skill_id{0};
+};
+
+enum {
+#if PACKET_VERSION >= 20090406 || \
+	PACKET_VERSION >= 20090401 || \
+	PACKET_VERSION >= 20090325 || \
+	PACKET_VERSION >= 20090311 || \
+	PACKET_VERSION >= 20090225 || \
+	PACKET_VERSION >= 20090211 || \
+	PACKET_VERSION >= 20090204 || \
+	PACKET_VERSION >= 20090129 || \
+	PACKET_VERSION >= 20090107 || \
+	PACKET_VERSION >= 20081203 || \
+	PACKET_VERSION >= 20081126 || \
+	PACKET_VERSION >= 20081119 || \
+	PACKET_VERSION >= 20081112 || \
+	PACKET_VERSION >= 20081029 || \
+	PACKET_VERSION >= 20081022 || \
+	PACKET_VERSION >= 20081015 || \
+	PACKET_VERSION >= 20081008 || \
+	PACKET_VERSION >= 20080917 || \
+	PACKET_VERSION >= 20080910 || \
+	PACKET_VERSION >= 20080813 || \
+	PACKET_VERSION >= 20080806 || \
+	PACKET_VERSION >= 20080730 || \
+	PACKET_VERSION >= 20080715 || \
+	PACKET_VERSION >= 20080708 || \
+	PACKET_VERSION >= 20080701 || \
+	PACKET_VERSION >= 20080618 || \
+	PACKET_VERSION >= 20080617 || \
+	PACKET_VERSION >= 20080610 || \
+	PACKET_VERSION >= 20080603 || \
+	PACKET_VERSION >= 20080429 || \
+	PACKET_VERSION >= 20080422 || \
+	PACKET_VERSION >= 20080415 || \
+	PACKET_VERSION >= 20080408 || \
+	PACKET_VERSION >= 20080401 || \
+	PACKET_VERSION >= 20080325 || \
+	PACKET_VERSION >= 20080318 || \
+	PACKET_VERSION >= 20080311 || \
+	PACKET_VERSION >= 20080304 || \
+	PACKET_VERSION >= 20080226 || \
+	PACKET_VERSION >= 20080219 || \
+	PACKET_VERSION >= 20080124 || \
+	PACKET_VERSION >= 20080102 || \
+	PACKET_VERSION >= 0
+	ID_ZC_DISPEL = 0x01b9
+#endif
+};
+/**
+ * @brief Main object for the aegis packet: ZC_DISPEL
+ *
+ */ 
+class ZC_DISPEL : public Base::NetworkPacketTransmitter<ZoneSession>
+{
+public:
+	ZC_DISPEL(std::shared_ptr<ZoneSession> s)
+	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_DISPEL, s)
+	{}
+	virtual ~ZC_DISPEL() {}
+
+	void deliver(int32_t guid);
+	ByteBuffer &serialize();
+
+/* Structure */
+	int32_t _guid;
 };
 
 enum {
@@ -14210,6 +14220,86 @@ enum {
 	ID_ZC_NOTIFY_EXP = 0x0acc
 #endif
 };
+
+
+enum {
+	ID_ZC_ACK_TOUSESKILL = 0x0110
+};
+/**
+ * @brief Main object for the aegis packet: ZC_ACK_TOUSESKILL
+ *
+ */ 
+class ZC_ACK_TOUSESKILL : public Base::NetworkPacketTransmitter<ZoneSession>
+{
+public:
+	ZC_ACK_TOUSESKILL(std::shared_ptr<ZoneSession> s)
+	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_ACK_TOUSESKILL, s)
+	{}
+	virtual ~ZC_ACK_TOUSESKILL() {}
+
+	void deliver(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause);
+	ByteBuffer &serialize();
+
+/* Structure */
+	int16_t _skill_id{0};
+
+/// message type:
+/// (only used when skill id = NV_BASIC and cause = 0):
+///     0 = "skill failed" MsgStringTable[159]
+///     1 = "no emotions" MsgStringTable[160]
+///     2 = "no sit" MsgStringTable[161]
+///     3 = "no chat" MsgStringTable[162]
+///     4 = "no party" MsgStringTable[163]
+///     5 = "no shout" MsgStringTable[164]
+///     6 = "no PKing" MsgStringTable[165]
+///     7 = "no aligning" MsgStringTable[383]
+///     ? = ignored
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	int32_t _message_type{0};
+	int32_t _item_id{0};
+#else
+	int16_t _message_type{0};
+	int16_t _item_id{0};
+#endif
+	int8_t _flag{0};
+/// cause:
+///     0 = "not enough skill level" MsgStringTable[214] (AL_WARP)
+///         "steal failed" MsgStringTable[205] (TF_STEAL)
+///         "envenom failed" MsgStringTable[207] (TF_POISON)
+///         "skill failed" MsgStringTable[204] (otherwise)
+///   ... = @see enum useskill_fail_cause
+///     ? = ignored
+	int8_t _cause{0};
+};
+
+enum {
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	ID_ZC_SKILLINFO_LIST = 0x0b32
+#else
+	ID_ZC_SKILLINFO_LIST = 0x010f
+#endif
+};
+/**
+ * @brief Main object for the aegis packet: ZC_SKILLINFO_LIST
+ *
+ */ 
+class ZC_SKILLINFO_LIST : public Base::NetworkPacketTransmitter<ZoneSession>
+{
+public:
+	ZC_SKILLINFO_LIST(std::shared_ptr<ZoneSession> s)
+	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_SKILLINFO_LIST, s)
+	{}
+	virtual ~ZC_SKILLINFO_LIST() {}
+
+	void deliver();
+	ByteBuffer &serialize();
+
+/* Structure */
+};
+
 /**
  * @brief Main object for the aegis packet: ZC_NOTIFY_EXP
  *
@@ -17940,73 +18030,6 @@ public:
 };
 
 enum {
-#if PACKET_VERSION >= 20181121 || \
-	PACKET_VERSION >= 20181114 || \
-	PACKET_VERSION >= 20180704 || \
-	PACKET_VERSION >= 20180103 || \
-	PACKET_VERSION >= 20090406 || \
-	PACKET_VERSION >= 20090318 || \
-	PACKET_VERSION >= 20090311 || \
-	PACKET_VERSION >= 20090225 || \
-	PACKET_VERSION >= 20090218 || \
-	PACKET_VERSION >= 20090129 || \
-	PACKET_VERSION >= 20090120 || \
-	PACKET_VERSION >= 20090107 || \
-	PACKET_VERSION >= 20081126 || \
-	PACKET_VERSION >= 20081119 || \
-	PACKET_VERSION >= 20081112 || \
-	PACKET_VERSION >= 20081022 || \
-	PACKET_VERSION >= 20081015 || \
-	PACKET_VERSION >= 20081001 || \
-	PACKET_VERSION >= 20080924 || \
-	PACKET_VERSION >= 20080910 || \
-	PACKET_VERSION >= 20080903 || \
-	PACKET_VERSION >= 20080827 || \
-	PACKET_VERSION >= 20080820 || \
-	PACKET_VERSION >= 20080813 || \
-	PACKET_VERSION >= 20080722 || \
-	PACKET_VERSION >= 20080715 || \
-	PACKET_VERSION >= 20080618 || \
-	PACKET_VERSION >= 20080617 || \
-	PACKET_VERSION >= 20080610 || \
-	PACKET_VERSION >= 20080603 || \
-	PACKET_VERSION >= 20080528 || \
-	PACKET_VERSION >= 20080520 || \
-	PACKET_VERSION >= 20080513 || \
-	PACKET_VERSION >= 20080507 || \
-	PACKET_VERSION >= 20080408 || \
-	PACKET_VERSION >= 20080401 || \
-	PACKET_VERSION >= 20080325 || \
-	PACKET_VERSION >= 20080318 || \
-	PACKET_VERSION >= 20080311 || \
-	PACKET_VERSION >= 20080304 || \
-	PACKET_VERSION >= 20080226 || \
-	PACKET_VERSION >= 20080219 || \
-	PACKET_VERSION >= 20080124 || \
-	PACKET_VERSION >= 20080102 || \
-	PACKET_VERSION >= 0
-	ID_ZC_ACK_TOUSESKILL = 0x0110
-#endif
-};
-/**
- * @brief Main object for the aegis packet: ZC_ACK_TOUSESKILL
- *
- */ 
-class ZC_ACK_TOUSESKILL : public Base::NetworkPacketTransmitter<ZoneSession>
-{
-public:
-	ZC_ACK_TOUSESKILL(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_ACK_TOUSESKILL, s)
-	{}
-	virtual ~ZC_ACK_TOUSESKILL() {}
-
-	void deliver();
-	ByteBuffer &serialize();
-
-/* Structure */
-};
-
-enum {
 #if PACKET_VERSION >= 20130103 || \
 	PACKET_VERSION >= 20111025 || \
 	PACKET_VERSION >= 0
@@ -20859,69 +20882,6 @@ public:
 	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_OPEN_BARGAIN_SALE_TOOL, s)
 	{}
 	virtual ~ZC_OPEN_BARGAIN_SALE_TOOL() {}
-
-	void deliver();
-	ByteBuffer &serialize();
-
-/* Structure */
-};
-
-enum {
-#if PACKET_VERSION >= 20090325 || \
-	PACKET_VERSION >= 20090318 || \
-	PACKET_VERSION >= 20090225 || \
-	PACKET_VERSION >= 20090218 || \
-	PACKET_VERSION >= 20090120 || \
-	PACKET_VERSION >= 20090114 || \
-	PACKET_VERSION >= 20090107 || \
-	PACKET_VERSION >= 20081217 || \
-	PACKET_VERSION >= 20081203 || \
-	PACKET_VERSION >= 20081015 || \
-	PACKET_VERSION >= 20081008 || \
-	PACKET_VERSION >= 20081001 || \
-	PACKET_VERSION >= 20080924 || \
-	PACKET_VERSION >= 20080827 || \
-	PACKET_VERSION >= 20080820 || \
-	PACKET_VERSION >= 20080806 || \
-	PACKET_VERSION >= 20080730 || \
-	PACKET_VERSION >= 20080715 || \
-	PACKET_VERSION >= 20080708 || \
-	PACKET_VERSION >= 20080701 || \
-	PACKET_VERSION >= 20080624 || \
-	PACKET_VERSION >= 20080617 || \
-	PACKET_VERSION >= 20080610 || \
-	PACKET_VERSION >= 20080603 || \
-	PACKET_VERSION >= 20080528 || \
-	PACKET_VERSION >= 20080520 || \
-	PACKET_VERSION >= 20080513 || \
-	PACKET_VERSION >= 20080507 || \
-	PACKET_VERSION >= 20080429 || \
-	PACKET_VERSION >= 20080422 || \
-	PACKET_VERSION >= 20080415 || \
-	PACKET_VERSION >= 20080408 || \
-	PACKET_VERSION >= 20080325 || \
-	PACKET_VERSION >= 20080318 || \
-	PACKET_VERSION >= 20080311 || \
-	PACKET_VERSION >= 20080304 || \
-	PACKET_VERSION >= 20080226 || \
-	PACKET_VERSION >= 20080219 || \
-	PACKET_VERSION >= 20080124 || \
-	PACKET_VERSION >= 20080102 || \
-	PACKET_VERSION >= 0
-	ID_ZC_SKILLINFO_LIST = 0x010f
-#endif
-};
-/**
- * @brief Main object for the aegis packet: ZC_SKILLINFO_LIST
- *
- */ 
-class ZC_SKILLINFO_LIST : public Base::NetworkPacketTransmitter<ZoneSession>
-{
-public:
-	ZC_SKILLINFO_LIST(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_SKILLINFO_LIST, s)
-	{}
-	virtual ~ZC_SKILLINFO_LIST() {}
 
 	void deliver();
 	ByteBuffer &serialize();
@@ -24382,30 +24342,6 @@ public:
 	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_PARTY_JOIN_REQ, s)
 	{}
 	virtual ~ZC_PARTY_JOIN_REQ() {}
-
-	void deliver();
-	ByteBuffer &serialize();
-
-/* Structure */
-};
-
-enum {
-#if PACKET_VERSION >= 20081126 || \
-	PACKET_VERSION >= 0
-	ID_ZC_SKILLINFO_DELETE = 0x0441
-#endif
-};
-/**
- * @brief Main object for the aegis packet: ZC_SKILLINFO_DELETE
- *
- */ 
-class ZC_SKILLINFO_DELETE : public Base::NetworkPacketTransmitter<ZoneSession>
-{
-public:
-	ZC_SKILLINFO_DELETE(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_ZC_SKILLINFO_DELETE, s)
-	{}
-	virtual ~ZC_SKILLINFO_DELETE() {}
 
 	void deliver();
 	ByteBuffer &serialize();

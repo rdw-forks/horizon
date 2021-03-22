@@ -36,6 +36,7 @@
 #include "Server/Common/Definitions/EntityDefinitions.hpp" // entity_gender_types
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
+#include "Server/Common/Definitions/SkillDefinitions.hpp"
 
 #include <sol.hpp>
 
@@ -138,6 +139,8 @@ public:
 
 	std::vector<std::weak_ptr<Entity>> &get_viewport_entities() { return _viewport_entities; }
 
+	std::map<uint16_t, player_skill_info> &get_skills() { return _skills; }
+	
 private:
 	std::shared_ptr<ZoneSession> _session;
 	sol::state _lua_state;
@@ -148,6 +151,8 @@ private:
 
 	std::vector<std::weak_ptr<Entity>> _viewport_entities;
 	
+	std::map<uint16_t, player_skill_info> _skills;
+
 	s_char_data _char;
 };
 }

@@ -91,8 +91,8 @@ bool Entity::schedule_movement(const MapCoords& coords)
 	_changed_dest_pos = {0, 0};
 
 	if (!_walk_path.empty()) {
-		notify_nearby_players_of_movement();
 		on_movement_begin();
+		notify_nearby_players_of_movement();
 		move();
 	}
 	
@@ -120,6 +120,8 @@ void Entity::move()
 
 			// set_direction((directions) my_coords.direction_to(step_coords));
 
+			printf("Move (%d, %d) -> (%d, %d) (cost: %d)\n", my_coords.x(), my_coords.y(), c.x(), c.y(), status()->movement_speed()->get_with_cost(c.move_cost()));
+			
 			notify_nearby_players_of_existence(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
 			notify_nearby_players_of_existence(EVP_NOTIFY_IN_SIGHT);

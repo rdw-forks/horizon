@@ -152,7 +152,7 @@ bool CharServer::read_config()
 	}
 
 	try {
-		int32_t session_max_timeout = tbl.get<int32_t>("session_max_timeout");
+		int32_t session_max_timeout = tbl.get_or("session_max_timeout", 60);
 		config().set_session_max_timeout(session_max_timeout);
 		HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "',"
 			<< " sessions surpassing this time limit will be disconnected.";

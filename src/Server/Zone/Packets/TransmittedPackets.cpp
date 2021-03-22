@@ -133,16 +133,6 @@ ByteBuffer &ZC_PARTY_RECRUIT_VOLUNTEER_INFO::serialize()
 }
 
 /**
- * ZC_DISPEL
- */
-void ZC_DISPEL::deliver() { }
-
-ByteBuffer &ZC_DISPEL::serialize()
-{
-	return buf();
-}
-
-/**
  * ZC_SEARCH_STORE_OPEN_INFO
  */
 void ZC_SEARCH_STORE_OPEN_INFO::deliver() { }
@@ -3945,16 +3935,6 @@ ByteBuffer &ZC_ADD_ITEM_TO_STORE2::serialize()
 }
 
 /**
- * ZC_SKILLINFO_UPDATE2
- */
-void ZC_SKILLINFO_UPDATE2::deliver() { }
-
-ByteBuffer &ZC_SKILLINFO_UPDATE2::serialize()
-{
-	return buf();
-}
-
-/**
  * ZC_BOSS_INFO
  */
 void ZC_BOSS_INFO::deliver() { }
@@ -4017,19 +3997,189 @@ ByteBuffer &ZC_ACK_REQ_HOSTILE_GUILD::serialize()
 /**
  * ZC_SKILLINFO_UPDATE
  */
-void ZC_SKILLINFO_UPDATE::deliver() { }
+void ZC_SKILLINFO_UPDATE::deliver(int16_t skill_id, int16_t skill_level, int16_t sp_cost, int16_t range, bool upgradeable)
+{
+	_skill_id = skill_id;
+	_skill_level = skill_level;
+	_sp_cost = sp_cost;
+	_range = range;
+	_upgradeable = upgradeable ? 1 : 0;
+
+	serialize();
+	transmit();
+}
 
 ByteBuffer &ZC_SKILLINFO_UPDATE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _skill_level;
+	buf() << _sp_cost;
+	buf() << _range;
+	buf() << _upgradeable;
+	return buf();
+}
+
+/**
+ * ZC_SKILLINFO_UPDATE2
+ */
+void ZC_SKILLINFO_UPDATE2::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable)
+{
+	_skill_id = skill_id;
+	_sub_type = (int32_t) sub_type;
+	_level = level;
+	_sp_cost = sp_cost;
+	_range = range;
+	_up_flag = upgradeable ? 1 : 0;
+
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	_level2 = level;
+#endif
+
+	serialize();
+	transmit();
+}
+
+ByteBuffer &ZC_SKILLINFO_UPDATE2::serialize()
+{
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _sub_type;
+	buf() << _level;
+	buf() << _sp_cost;
+	buf() << _range;
+	buf() <<_up_flag;
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	buf() << _level2;
+#endif
 	return buf();
 }
 
 /**
  * ZC_ADD_SKILL
  */
-void ZC_ADD_SKILL::deliver() { }
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable, int16_t level2)
+{
+	_info._skill_id = skill_id;
+	_info._sub_type = (int16_t) sub_type;
+	_info._level = level;
+	_info._sp_cost = sp_cost;
+	_info._range = range;
+	_info._upgradeable = upgradeable ? 1 : 0;
+	_info._level2 = level2;
+
+	serialize();
+	transmit();
+}
+#else
+void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, std::string skill_name, bool upgradeable)
+{
+	_info._skill_id = skill_id;
+	_info._sub_type = (int16_t) sub_type;
+	_info._level = level;
+	_info._sp_cost = sp_cost;
+	_info._range = range;
+	std::strncpy(_info._name, skill_name.c_str(), MAX_SKILL_NAME_LENGTH);
+	_info._upgradeable = upgradeable ? 1 : 0;
+	
+	serialize();
+	transmit();
+}
+#endif
 
 ByteBuffer &ZC_ADD_SKILL::serialize()
+{
+	buf() << _packet_id;
+	buf() << _info._skill_id;
+	buf() << _info._sub_type;
+	buf() << _info._level;
+	buf() << _info._sp_cost;
+	buf() << _info._range;
+
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+	buf() << _info._upgradeable;
+	buf() << _info._level2;
+#else
+	buf().append(_info._name, MAX_SKILL_NAME_LENGTH);
+	buf() << _info._upgradeable;
+#endif
+
+	return buf();
+}
+
+/**
+ * ZC_SKILLINFO_DELETE
+ */
+void ZC_SKILLINFO_DELETE::deliver(int16_t skill_id)
+{
+	_skill_id = skill_id;
+
+	serialize();
+	transmit();
+}
+
+ByteBuffer &ZC_SKILLINFO_DELETE::serialize()
+{
+	buf() << _packet_id;
+	buf() << _skill_id;
+	return buf();
+}
+
+/**
+ * ZC_DISPEL
+ */
+void ZC_DISPEL::deliver(int32_t guid) 
+{
+	_guid = guid;
+	serialize();
+	transmit();
+}
+
+ByteBuffer &ZC_DISPEL::serialize()
+{
+	buf() << _packet_id;
+	buf() << _guid;
+	
+	return buf();
+}
+
+/**
+ * ZC_ACK_TOUSESKILL
+ */
+void ZC_ACK_TOUSESKILL::deliver(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause)
+{
+	_skill_id = skill_id;
+	_message_type = message_type;
+	_item_id = item_id;
+	_flag = 0;
+	_cause = (int8_t) cause;
+
+	serialize();
+	transmit();
+}
+
+ByteBuffer &ZC_ACK_TOUSESKILL::serialize()
+{
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _message_type;
+	buf() << _item_id;
+	buf() << _flag;
+	buf() << _cause;
+	return buf();
+}
+
+/**
+ * ZC_SKILLINFO_LIST
+ */
+void ZC_SKILLINFO_LIST::deliver() { }
+
+ByteBuffer &ZC_SKILLINFO_LIST::serialize()
 {
 	return buf();
 }
@@ -5209,16 +5359,6 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY10::serialize()
 }
 
 /**
- * ZC_ACK_TOUSESKILL
- */
-void ZC_ACK_TOUSESKILL::deliver() { }
-
-ByteBuffer &ZC_ACK_TOUSESKILL::serialize()
-{
-	return buf();
-}
-
-/**
  * ZC_PARTY_RECRUIT_NOTIFY_INSERT
  */
 void ZC_PARTY_RECRUIT_NOTIFY_INSERT::deliver() { }
@@ -6055,16 +6195,6 @@ ByteBuffer &ZC_ADD_EXCHANGE_ITEM::serialize()
 void ZC_OPEN_BARGAIN_SALE_TOOL::deliver() { }
 
 ByteBuffer &ZC_OPEN_BARGAIN_SALE_TOOL::serialize()
-{
-	return buf();
-}
-
-/**
- * ZC_SKILLINFO_LIST
- */
-void ZC_SKILLINFO_LIST::deliver() { }
-
-ByteBuffer &ZC_SKILLINFO_LIST::serialize()
 {
 	return buf();
 }
@@ -6958,16 +7088,6 @@ ByteBuffer &ZC_MYGUILD_BASIC_INFO::serialize()
 void ZC_PARTY_JOIN_REQ::deliver() { }
 
 ByteBuffer &ZC_PARTY_JOIN_REQ::serialize()
-{
-	return buf();
-}
-
-/**
- * ZC_SKILLINFO_DELETE
- */
-void ZC_SKILLINFO_DELETE::deliver() { }
-
-ByteBuffer &ZC_SKILLINFO_DELETE::serialize()
 {
 	return buf();
 }

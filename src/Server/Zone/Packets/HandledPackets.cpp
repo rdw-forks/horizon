@@ -2571,9 +2571,17 @@ void CZ_EXIT_ROOM::deserialize(ByteBuffer &buf) { }
 /**
  * CZ_UPGRADE_SKILLLEVEL
  */
-void CZ_UPGRADE_SKILLLEVEL::handle(ByteBuffer &&buf) { }
+void CZ_UPGRADE_SKILLLEVEL::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	
+}
 
-void CZ_UPGRADE_SKILLLEVEL::deserialize(ByteBuffer &buf) { }
+void CZ_UPGRADE_SKILLLEVEL::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _skill_id;
+}
 
 /**
  * CZ_REQ_OPEN_ROULETTE

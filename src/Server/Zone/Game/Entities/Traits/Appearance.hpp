@@ -49,9 +49,9 @@ namespace Traits
 		Appearance(std::weak_ptr<Entity> entity, entity_appearance_type type, uint32_t id = 0)
 		: _entity(entity), _type(type), _id(id)
 		{ }
-		virtual ~Appearance() { }
+		~Appearance() { }
 
-		void set(uint32_t id) { _id = id; }
+		void set(uint32_t id) { _id = id; notify_update(); }
 		uint32_t get() { return _id; }
 
 		virtual void notify_update();

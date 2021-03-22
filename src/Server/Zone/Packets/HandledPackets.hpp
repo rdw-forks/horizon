@@ -34268,6 +34268,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_id{0};
 };
 
 enum {
