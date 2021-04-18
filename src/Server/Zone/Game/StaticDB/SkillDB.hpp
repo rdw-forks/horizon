@@ -50,7 +50,7 @@ struct skill_config_data
 	int use_range[MAX_SKILL_LEVEL]{0};
 	battle_damage_type damage_type[MAX_SKILL_LEVEL]{BDT_NORMAL}; // hittype
 	int primary_type{SK_TYPE_PASSIVE}; // skill_primary_type / inf
-	int sub_type{SK_SUBTYPE_NONE};   // skill_sub_type / inf2
+	int secondary_type{SK_SUBTYPE_NONE};   // skill_secondary_type / inf2
 	battle_attack_type attack_type[MAX_SKILL_LEVEL]{BAT_NONE}; // skill_type
 	element_type element[MAX_SKILL_LEVEL]{ELE_NEUTRAL};
 	int dmg_property{SK_DMG_PROP_NONE};  // skill_damage_property_type /< nk
@@ -189,6 +189,16 @@ public:
 	std::vector<std::shared_ptr<const skill_tree_config>> get_skill_tree_by_job_id(job_class_type job_id) 
 	{
 		return _skill_tree_db.at(job_id, std::vector<std::shared_ptr<const skill_tree_config>>()); 
+	}
+
+	std::shared_ptr<const skill_tree_config> get_skill_tree_skill_id_by_job_id(job_class_type job_id, int16_t skill_id)
+	{
+		for (auto stc : get_skill_tree_by_job_id(job_id)) {
+			if (stc->skill_id == skill_id)
+				return stc;
+		}
+
+		return nullptr;
 	}
 
 private:

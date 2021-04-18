@@ -29,7 +29,7 @@
 #ifndef HORIZON_ZONE_GAME_SKILL_DEFINITIONS_HPP
 #define HORIZON_ZONE_GAME_SKILL_DEFINITIONS_HPP
 
-#define MAX_SKILL_NAME_LENGTH     32
+#define MAX_SKILL_NAME_LENGTH     24
 
 #define MAX_SKILL_LEVEL           10
 #define MAX_SKILL_UNIT_LAYOUT     45
@@ -100,20 +100,7 @@ enum skill_primary_type {
 	SK_TYPE_TRAP           = 0x20,
 };
 
-enum skill_damage_property_type {
-	SK_DMG_PROP_NONE           = 0x00,
-	SK_DMG_PROP_NO_DAMAGE      = 0x01,
-	SK_DMG_PROP_SPLASH         = 0x02 | 0x04, // 0x4 = splash & split
-	SK_DMG_PROP_SPLASH_ONLY    = 0x02,
-	SK_DMG_PROP_SPLASHSPLIT    = 0x04,
-	SK_DMG_PROP_NO_CARDFIX_ATK = 0x08,
-	SK_DMG_PROP_NO_ELEFIX      = 0x10,
-	SK_DMG_PROP_IGNORE_DEF     = 0x20,
-	SK_DMG_PROP_IGNORE_FLEE    = 0x40,
-	SK_DMG_PROP_NO_CARDFIX_DEF = 0x80,
-};
-
-enum skill_sub_type {
+enum skill_secondary_type {
 	SK_SUBTYPE_NONE              = 0x00000,
 	SK_SUBTYPE_QUEST_SKILL       = 0x00001,
 	SK_SUBTYPE_NPC_SKILL         = 0x00002, // NPC skills are those that players can't have in their skill tree.
@@ -136,6 +123,19 @@ enum skill_sub_type {
 	SK_SUBTYPE_ALLOW_REPRODUCE   = 0x40000,
 	SK_SUBTYPE_HIDDEN_TRAP       = 0x80000, // Traps that are hidden (based on trap_visiblity battle conf)
 	SK_SUBTYPE_IS_COMBO_SKILL    = 0x100000, // Sets whether a skill can be used in combos or not
+};
+
+enum skill_damage_property_type {
+	SK_DMG_PROP_NONE           = 0x00,
+	SK_DMG_PROP_NO_DAMAGE      = 0x01,
+	SK_DMG_PROP_SPLASH         = 0x02 | 0x04, // 0x4 = splash & split
+	SK_DMG_PROP_SPLASH_ONLY    = 0x02,
+	SK_DMG_PROP_SPLASHSPLIT    = 0x04,
+	SK_DMG_PROP_NO_CARDFIX_ATK = 0x08,
+	SK_DMG_PROP_NO_ELEFIX      = 0x10,
+	SK_DMG_PROP_IGNORE_DEF     = 0x20,
+	SK_DMG_PROP_IGNORE_FLEE    = 0x40,
+	SK_DMG_PROP_NO_CARDFIX_DEF = 0x80,
 };
 
 enum skill_learn_type
@@ -239,21 +239,22 @@ enum skill_use_fail_cause_type { // clif_skill_fail
 	// max known value 96
 };
 
-struct player_skill_info {
-	int16_t _skill_id{0};
-	int16_t _level{0};
+struct skill_learnt_info {
+	int16_t skill_id{0};
+	int16_t level{0};
 	skill_learn_type learn_type{SKILL_LEARN_PERMANENT};
 };
 
-struct skill_info_data {
-	int16_t _skill_id{0};
-	int32_t _sub_type{0};
-	int16_t _level{0};
-	int16_t _sp_cost{0};
-	int16_t _range{0};
-	char _name[MAX_SKILL_NAME_LENGTH]{0};
-	int8_t _upgradeable;
-	int16_t _level2{0};
+struct zc_skill_info_data 
+{
+	int16_t skill_id{0};
+	int32_t skill_type{0};
+	int16_t level{0};
+	int16_t sp_cost{0};
+	int16_t range{0};
+	char name[MAX_SKILL_NAME_LENGTH]{0};
+	int8_t upgradeable;
+	int16_t level2{0};
 };
 
 #endif /* HORIZON_ZONE_GAME_SKILL_DEFINITIONS_HPP */

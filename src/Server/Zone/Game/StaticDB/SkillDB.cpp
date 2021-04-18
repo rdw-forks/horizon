@@ -365,10 +365,10 @@ bool SkillDatabase::parse_skill_info(sol::table const &table, skill_config_data 
 					continue;
 				}
 				
-				data.sub_type |= type;
+				data.secondary_type |= type;
 			}
 		} else {
-			data.sub_type = SK_SUBTYPE_NONE;
+			data.secondary_type = SK_SUBTYPE_NONE;
 		}
 	} catch (sol::error &error) {
 		HLog(error) << "Error parsing SkillInfo for skill '" << data.name << "' - " << error.what() << ".";

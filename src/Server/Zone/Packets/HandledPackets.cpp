@@ -2574,7 +2574,7 @@ void CZ_EXIT_ROOM::deserialize(ByteBuffer &buf) { }
 void CZ_UPGRADE_SKILLLEVEL::handle(ByteBuffer &&buf) 
 {
 	deserialize(buf);
-	
+	get_session()->clif()->upgrade_skill_level(_skill_id);
 }
 
 void CZ_UPGRADE_SKILLLEVEL::deserialize(ByteBuffer &buf) 

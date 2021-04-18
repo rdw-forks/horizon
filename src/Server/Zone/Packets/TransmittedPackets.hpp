@@ -14072,12 +14072,12 @@ public:
 	{}
 	virtual ~ZC_SKILLINFO_UPDATE2() {}
 
-	void deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable);
+	void deliver(int16_t skill_id, skill_primary_type type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable);
 	ByteBuffer &serialize();
 
 /* Structure */
 	int16_t _skill_id{0};
-	int32_t _sub_type{0};
+	int32_t _type{0};
 	int16_t _level{0};
 	int16_t _sp_cost{0};
 	int16_t _range{0};
@@ -14110,15 +14110,15 @@ public:
 
 #if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
 	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
-	void deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable, int16_t level2);
+	void deliver(int16_t skill_id, skill_primary_type type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable, int16_t level2);
 #else
-	void deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, std::string skill_name, bool upgradeable);
+	void deliver(int16_t skill_id, skill_primary_type type, int16_t level, int16_t sp_cost, int16_t range, std::string skill_name, bool upgradeable);
 #endif
 
 	ByteBuffer &serialize();
 
 /* Structure */
-	skill_info_data _info{0};
+	zc_skill_info_data _info;
 };
 
 enum {
@@ -14294,10 +14294,12 @@ public:
 	{}
 	virtual ~ZC_SKILLINFO_LIST() {}
 
-	void deliver();
+	void deliver(const std::vector<zc_skill_info_data> &_skills);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _packet_length;
+	std::vector<zc_skill_info_data> _skills;
 };
 
 /**
