@@ -219,16 +219,7 @@ void MapContainerThread::update(uint64_t diff)
 		}
 		// process packets
 		player->get_session()->update(diff);
-		// update entity.
-		player->update(diff);
 		pi++;
-	}
-
-	// Update NPCs
-	std::map<uint32_t, std::shared_ptr<npc_db_data>> npmap = _script_mgr->_npc_db.get_map();
-	for (auto npci : npmap) {
-		std::shared_ptr<Entities::NPC> npc = npci.second->_npc;
-		npc->update(diff);
 	}
 
 	// Update Monsters

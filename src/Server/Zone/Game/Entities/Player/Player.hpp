@@ -100,7 +100,6 @@ public:
 	/**
 	 * Player applications.
 	 */
-	void update(uint64_t diff) override;
 	void sync_with_models() override;
 
 	uint64_t new_unique_id();

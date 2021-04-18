@@ -251,11 +251,11 @@ void ScriptManager::initialize_state(sol::state &st)
 				MapCoords mcoords = MapCoords(x, y);
 
 				if (mcoords == MapCoords(0, 0))
-					mcoords = map->get_random_coords();
+					mcoords = map->get_random_accessible_coordinates();
 				else if (x_area && y_area) {
 					if ((mcoords = map->get_random_coordinates_in_walkable_area(x, y, x_area, y_area)) == MapCoords(0, 0)) {
 						HLog(warning) << "Couldn't spawn monster " << md->name << " in area, spawning it on random co-ordinates.";
-						mcoords = map->get_random_coords();
+						mcoords = map->get_random_accessible_coordinates();
 					}
 				}
 

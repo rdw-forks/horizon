@@ -136,9 +136,6 @@ public:
 	/**
 	 * Entity applications
 	 */
-	virtual void update(uint64_t diff);
-	TaskScheduler &getScheduler() { return _scheduler; }
-
 	entity_type type() const { return _type; }
 
 	template <class T>
@@ -171,7 +168,6 @@ protected:
 	std::weak_ptr<Map> _map;
 	MapCoords _map_coords{0, 0};
 	GridCoords _grid_coords{0, 0};
-	TaskScheduler _scheduler;
 
 	/* Simplified References */
 	std::weak_ptr<MapContainerThread> _map_container_thread;

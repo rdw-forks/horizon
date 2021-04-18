@@ -64,7 +64,7 @@
 #define MAX_NETWORK_THREADS 1
 
 // Time in Microseconds (µs)
-#define MAX_CORE_UPDATE_INTERVAL 2000
+#define MAX_CORE_UPDATE_INTERVAL 5000
 
 // Map Thread Containers
 #define MAX_MAP_CONTAINER_THREADS 1

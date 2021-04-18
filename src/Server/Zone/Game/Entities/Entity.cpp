@@ -80,21 +80,23 @@ bool Entity::schedule_movement(const MapCoords& coords)
 	// This method returns vector of coordinates from target to source.
 	_walk_path = map()->get_pathfinder().findPath(source_coords, dest_coords);
 
+	_changed_dest_pos = {0, 0};
+
+	// If destination was a collision, nothing is returned.
+	if (_walk_path.size() == 0)
+		return false;
+
+	std::reverse(_walk_path.begin(), _walk_path.end());
+	_walk_path.erase(_walk_path.begin());
+
 	if (_walk_path.empty()) {
 		on_pathfinding_failure();
 		return false;
 	}
 
-	std::reverse(_walk_path.begin(), _walk_path.end());
-	_walk_path.erase(_walk_path.begin());
-
-	_changed_dest_pos = {0, 0};
-
-	if (!_walk_path.empty()) {
-		on_movement_begin();
-		notify_nearby_players_of_movement();
-		move();
-	}
+	on_movement_begin();
+	notify_nearby_players_of_movement();
+	move();
 	
 	return true;
 }
@@ -156,11 +158,6 @@ bool Entity::move_to_coordinates(int16_t x, int16_t y)
 	schedule_movement(_dest_pos);
 
 	return true;
-}
-
-void Entity::update(uint64_t diff)
-{
-	_scheduler.Update();
 }
 
 bool Entity::is_in_range_of(std::shared_ptr<Entity> e, uint8_t range)

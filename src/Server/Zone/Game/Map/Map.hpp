@@ -71,7 +71,7 @@ public:
 
 	bool has_obstruction_at(int16_t x, int16_t y);
 
-	MapCoords get_random_coords()
+	MapCoords get_random_accessible_coordinates()
 	{
 		int16_t x = 0;
 		int16_t y = 0;
@@ -98,14 +98,46 @@ public:
 
 	AStar::Generator &get_pathfinder() { return _pathfinder; }
 
-	MapCoords get_random_coordinates_in_walkable_area(uint16_t x, uint16_t y, uint16_t xs, uint16_t ys)
+	MapCoords get_random_coordinates_in_walkable_range(uint16_t x, uint16_t y, int16_t min, int16_t max)
 	{
 		std::vector<MapCoords> available_cells;
+
+		assert(min <= max);
+
+		std::srand(std::time(nullptr));
+
+		for (int i = std::max(x - max, 0); i < std::min(x + max, (int) _width); i++) {
+			for (int j = std::max(y - max, 0); j < std::min(y + max,(int) _height); j++) {
+				if (i == x && j == y)
+					continue;
+				if (abs(i - x) < min || abs(j - y) < min)
+					continue;
+				if (!has_obstruction_at(i, j))
+					available_cells.push_back(MapCoords(i, j));
+			}
+		}
+
+		if (available_cells.size() == 0)
+			return MapCoords(0, 0);
+
+		int rnd = rand() % available_cells.size();
+
+		return available_cells.at(rnd);
+	}
+
+	MapCoords get_random_coordinates_in_walkable_area(uint16_t x, uint16_t y, int16_t xs, int16_t ys)
+	{
+		std::vector<MapCoords> available_cells;
+
+		assert(xs >= 0);
+		assert(ys >= 0);
 
 		std::srand(std::time(nullptr));
 
 		for (int i = std::max(x - xs, 0); i < std::min(x + xs, (int) _width); i++) {
 			for (int j = std::max(y - ys, 0); j < std::min(y + ys,(int) _height); j++) {
+				if (i == x && j == y)
+					continue;
 				if (!has_obstruction_at(i, j))
 					available_cells.push_back(MapCoords(i, j));
 			}
