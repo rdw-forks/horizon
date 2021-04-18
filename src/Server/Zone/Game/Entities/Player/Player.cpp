@@ -108,11 +108,6 @@ void Player::stop_movement()
 	get_session()->clif()->notify_movement_stop(guid(), coords.x(), coords.y());
 }
 
-void Player::update(uint64_t diff)
-{
-	Entity::update(diff);
-}
-
 void Player::sync_with_models()
 {
 
@@ -120,7 +115,7 @@ void Player::sync_with_models()
 
 void Player::on_pathfinding_failure()
 {
-
+	HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
 void Player::on_movement_begin()
@@ -241,7 +236,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		return false;
 
 	force_movement_stop_internal(true);
-	getScheduler().CancelGroup(ENTITY_SCHEDULE_WALK);
+	map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 
 	std::shared_ptr<Player> myself = downcast<Player>();
 
@@ -254,7 +249,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		}
 
 		if (coords == MapCoords(0, 0))
-			coords = dest_map->get_random_coords();
+			coords = dest_map->get_random_accessible_coordinates();
 
 		dest_map->ensure_grid_for_entity(this, coords);
 		set_map(dest_map);

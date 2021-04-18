@@ -140,7 +140,7 @@ protected:
 	{
 		HLog(trace) << "Network thread " << (void *) this << " is ready for managing connections.";
 
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(10));
+		_update_timer.expires_from_now(boost::posix_time::milliseconds(1));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
 		_io_service.run();
@@ -157,7 +157,7 @@ protected:
 	 */
 	void update()
 	{
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(10));
+		_update_timer.expires_from_now(boost::posix_time::milliseconds(1));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
 		add_new_sockets();
