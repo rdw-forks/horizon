@@ -139,7 +139,17 @@ public:
 
 	std::vector<std::weak_ptr<Entity>> &get_viewport_entities() { return _viewport_entities; }
 
-	std::map<uint16_t, player_skill_info> &get_skills() { return _skills; }
+	std::map<uint16_t, std::shared_ptr<skill_learnt_info>> &get_learnt_skills() { return _learnt_skills; }
+	std::shared_ptr<skill_learnt_info> get_learnt_skill(uint16_t skill_id) 
+	{ 
+		try { 
+			return _learnt_skills.at(skill_id); 
+		} catch (std::exception e) { 
+			return nullptr; 
+		} 
+	}
+
+	void add_learnt_skill(std::shared_ptr<skill_learnt_info> i) { _learnt_skills.insert({ i->skill_id, i }); }
 	
 private:
 	std::shared_ptr<ZoneSession> _session;
@@ -151,7 +161,7 @@ private:
 
 	std::vector<std::weak_ptr<Entity>> _viewport_entities;
 	
-	std::map<uint16_t, player_skill_info> _skills;
+	std::map<uint16_t, std::shared_ptr<skill_learnt_info>> _learnt_skills;
 
 	s_char_data _char;
 };

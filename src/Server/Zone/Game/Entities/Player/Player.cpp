@@ -36,6 +36,7 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
@@ -78,11 +79,22 @@ void Player::initialize()
 	_inventory->sync_from_model();
 
 	// Initialize Status.
-	status()->initialize_player(shared_from_this());
+	status()->initialize(shared_from_this());
 
 	// Ensure grid for entity.
 	map()->ensure_grid_for_entity(this, map_coords());
 	
+	// Populate skill tree.
+	std::vector<std::shared_ptr<const skill_tree_config>> sktree = SkillDB->get_skill_tree_by_job_id((job_class_type) job_id());
+
+	for (auto s : sktree) {
+		skill_learnt_info info;
+		info.skill_id = s->skill_id;
+		info.level = 0;
+		info.learn_type = SKILL_LEARN_PERMANENT;
+		add_learnt_skill(std::make_shared<skill_learnt_info>(info));
+	}
+
 	// On map entry processing.
 	on_map_enter();
 
@@ -323,6 +335,9 @@ void Player::on_map_enter()
 	update_viewport();
 
 	notify_nearby_players_of_spawn();
+
+	// Notify learnt skill list.
+	get_session()->clif()->notify_learnt_skill_list();
 }
 
 void Player::notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range)

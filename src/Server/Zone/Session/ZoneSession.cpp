@@ -78,7 +78,7 @@ void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 		}
 
 		if (packet_len != _buffer.active_length()) {
-			HLog(warning) << "Packet 0x" << std::hex << packet_id << " has length len " << std::dec << packet_len << " but buffer has " << _buffer.active_length() << " bytes... ignoring.";
+			HLog(warning) << "Packet 0x" << std::hex << packet_id << " has length " << std::dec << packet_len << " but buffer has " << _buffer.active_length() << " bytes... ignoring.";
 			return;
 		}
 

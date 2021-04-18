@@ -446,7 +446,9 @@ void ScriptManager::initialize_state(sol::state &st)
 		"head_mid_sprite", &Entities::Traits::Status::head_mid_sprite,
 		"head_bottom_sprite", &Entities::Traits::Status::head_bottom_sprite,
 		"hair_style", &Entities::Traits::Status::hair_style,
-		"body_style", &Entities::Traits::Status::body_style
+		"body_style", &Entities::Traits::Status::body_style,
+		"status_point", &Entities::Traits::Status::status_point,
+		"skill_point", &Entities::Traits::Status::skill_point
 		);
 
 	st.new_usertype<Entities::Traits::BaseLevel>("BaseLevel",
@@ -562,6 +564,18 @@ void ScriptManager::initialize_state(sol::state &st)
 		"sub", &Entities::Traits::NextJobExperience::sub_base,
 		"get", &Entities::Traits::NextJobExperience::get_base,
 		"set", &Entities::Traits::NextJobExperience::set_base
+		);
+	st.new_usertype<Entities::Traits::StatusPoint>("StatusPoint",
+		"add", &Entities::Traits::StatusPoint::add_base,
+		"sub", &Entities::Traits::StatusPoint::sub_base,
+		"get", &Entities::Traits::StatusPoint::get_base,
+		"set", &Entities::Traits::StatusPoint::set_base
+		);
+	st.new_usertype<Entities::Traits::SkillPoint>("SkillPoint",
+		"add", &Entities::Traits::SkillPoint::add_base,
+		"sub", &Entities::Traits::SkillPoint::sub_base,
+		"get", &Entities::Traits::SkillPoint::get_base,
+		"set", &Entities::Traits::SkillPoint::set_base
 		);
 
 	std::vector<std::string> _loadable_files = {

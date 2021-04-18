@@ -52,7 +52,8 @@ public:
 	~Status() { }
 
 	void initialize();
-	void initialize_player(std::shared_ptr<Entity> entity);
+	void initialize(std::shared_ptr<Entity> entity);
+	
 	void initialize_compound_attributes(std::shared_ptr<const job_config_data> job);
 	void initialize_observable_statuses();
 	void initialize_notifiable_statuses();

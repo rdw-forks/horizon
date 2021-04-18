@@ -30,6 +30,7 @@
 
 #include "Server/Common/Base/NetworkPacket.hpp"
 #include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Common/Definitions/SkillDefinitions.hpp"
 #include "Server/Common/Interfaces/ClientInterface.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
@@ -135,6 +136,7 @@ public:
 	 * Skills
 	 */
 	void upgrade_skill_level(int16_t skill_id);
+	bool notify_learnt_skill_list();
 protected:
 	uint32_t _npc_contact_guid{0};
 };

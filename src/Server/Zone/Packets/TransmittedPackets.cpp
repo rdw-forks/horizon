@@ -4023,10 +4023,10 @@ ByteBuffer &ZC_SKILLINFO_UPDATE::serialize()
 /**
  * ZC_SKILLINFO_UPDATE2
  */
-void ZC_SKILLINFO_UPDATE2::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable)
+void ZC_SKILLINFO_UPDATE2::deliver(int16_t skill_id, skill_primary_type type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable)
 {
 	_skill_id = skill_id;
-	_sub_type = (int32_t) sub_type;
+	_type = (int32_t) type;
 	_level = level;
 	_sp_cost = sp_cost;
 	_range = range;
@@ -4045,7 +4045,7 @@ ByteBuffer &ZC_SKILLINFO_UPDATE2::serialize()
 {
 	buf() << _packet_id;
 	buf() << _skill_id;
-	buf() << _sub_type;
+	buf() << _type;
 	buf() << _level;
 	buf() << _sp_cost;
 	buf() << _range;
@@ -4062,29 +4062,29 @@ ByteBuffer &ZC_SKILLINFO_UPDATE2::serialize()
  */
 #if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
 	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
-void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable, int16_t level2)
+void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_primary_type type, int16_t level, int16_t sp_cost, int16_t range, bool upgradeable, int16_t level2)
 {
-	_info._skill_id = skill_id;
-	_info._sub_type = (int16_t) sub_type;
-	_info._level = level;
-	_info._sp_cost = sp_cost;
-	_info._range = range;
-	_info._upgradeable = upgradeable ? 1 : 0;
-	_info._level2 = level2;
+	_info.skill_id = skill_id;
+	_info.skill_type = (int16_t) type;
+	_info.level = level;
+	_info.sp_cost = sp_cost;
+	_info.range = range;
+	_info.upgradeable = upgradeable ? 1 : 0;
+	_info.level2 = level2;
 
 	serialize();
 	transmit();
 }
 #else
-void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t level, int16_t sp_cost, int16_t range, std::string skill_name, bool upgradeable)
+void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_primary_type type, int16_t level, int16_t sp_cost, int16_t range, std::string skill_name, bool upgradeable)
 {
-	_info._skill_id = skill_id;
-	_info._sub_type = (int16_t) sub_type;
-	_info._level = level;
-	_info._sp_cost = sp_cost;
-	_info._range = range;
-	std::strncpy(_info._name, skill_name.c_str(), MAX_SKILL_NAME_LENGTH);
-	_info._upgradeable = upgradeable ? 1 : 0;
+	_info.skill_id = skill_id;
+	_info.skill_type = (int16_t) type;
+	_info.level = level;
+	_info.sp_cost = sp_cost;
+	_info.range = range;
+	std::strncpy(_info.name, skill_name.c_str(), MAX_SKILL_NAME_LENGTH);
+	_info.upgradeable = upgradeable ? 1 : 0;
 	
 	serialize();
 	transmit();
@@ -4094,19 +4094,19 @@ void ZC_ADD_SKILL::deliver(int16_t skill_id, skill_sub_type sub_type, int16_t le
 ByteBuffer &ZC_ADD_SKILL::serialize()
 {
 	buf() << _packet_id;
-	buf() << _info._skill_id;
-	buf() << _info._sub_type;
-	buf() << _info._level;
-	buf() << _info._sp_cost;
-	buf() << _info._range;
+	buf() << _info.skill_id;
+	buf() << _info.skill_type;
+	buf() << _info.level;
+	buf() << _info.sp_cost;
+	buf() << _info.range;
 
 #if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
 	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
-	buf() << _info._upgradeable;
-	buf() << _info._level2;
+	buf() << _info.upgradeable;
+	buf() << _info.level2;
 #else
-	buf().append(_info._name, MAX_SKILL_NAME_LENGTH);
-	buf() << _info._upgradeable;
+	buf().append(_info.name, MAX_SKILL_NAME_LENGTH);
+	buf() << _info.upgradeable;
 #endif
 
 	return buf();
@@ -4177,10 +4177,46 @@ ByteBuffer &ZC_ACK_TOUSESKILL::serialize()
 /**
  * ZC_SKILLINFO_LIST
  */
-void ZC_SKILLINFO_LIST::deliver() { }
+void ZC_SKILLINFO_LIST::deliver(const std::vector<zc_skill_info_data> &skills)
+{
+	_packet_length = 4;
+
+	for (auto s : skills) {
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+		_packet_length += 15;
+#else
+		_packet_length += 37;
+#endif
+	}
+
+	_skills = skills;
+
+	serialize();
+	transmit();
+}
 
 ByteBuffer &ZC_SKILLINFO_LIST::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+
+	for (auto s : _skills) {
+		buf() << s.skill_id;
+		buf() << s.skill_type;
+		buf() << s.level;
+		buf() << s.sp_cost;
+		buf() << s.range;
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+		buf() << s.upgradeable;
+		buf() << s.level2;
+#else
+		buf().append(s.name, MAX_SKILL_NAME_LENGTH);
+		buf() << s.upgradeable;
+#endif
+	}
+
 	return buf();
 }
 

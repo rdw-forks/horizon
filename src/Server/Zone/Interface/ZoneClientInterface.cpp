@@ -41,6 +41,7 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -668,5 +669,93 @@ bool ZoneClientInterface::notify_action_failure(int16_t message_type)
 
 void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
 {
+	ZC_SKILLINFO_UPDATE pkt(get_session());
 	
+	std::shared_ptr<skill_learnt_info> ls = get_session()->player()->get_learnt_skill(skill_id);
+
+	if (ls == nullptr) {
+		skill_learnt_info s;
+		s.skill_id = skill_id;
+		s.level = 1;
+		s.learn_type = SKILL_LEARN_PERMANENT;
+		ls = std::make_shared<skill_learnt_info>(s);
+		get_session()->player()->add_learnt_skill(ls);
+	} else {
+		ls->level += 1;
+	}
+
+	std::shared_ptr<const skill_config_data> skd = SkillDB->get_skill_by_id(ls->skill_id);
+
+	bool upgradeable = false;
+
+	job_class_type job_id = (job_class_type) get_session()->player()->job_id();
+	std::shared_ptr<const skill_tree_config> stc = SkillDB->get_skill_tree_skill_id_by_job_id(job_id, ls->skill_id);
+
+	if (stc == nullptr) {
+		HLog(error) << "Skill ID " << ls->skill_id << " not found for Job ID " << (int32_t) job_id << ".";
+		return;
+	}
+
+	upgradeable = (ls->level < stc->max_level) ? true : false;
+
+	get_session()->player()->status()->skill_point()->sub_base(1);
+
+	pkt.deliver(skill_id, ls->level, skd->sp_cost[ls->level], skd->use_range[ls->level], upgradeable);
+}
+
+bool ZoneClientInterface::notify_learnt_skill_list()
+{
+	const std::map<uint16_t, std::shared_ptr<skill_learnt_info>> &learnt_skills = get_session()->player()->get_learnt_skills();
+	std::vector<zc_skill_info_data> sidv;
+
+	for (auto sp : learnt_skills) {
+		const std::shared_ptr<skill_learnt_info> ls = sp.second;
+
+		if (ls == nullptr) {
+			HLog(error) << "Learnt skill was a nullptr.";
+			continue;
+		}
+
+		zc_skill_info_data si;
+
+		std::shared_ptr<const skill_config_data> skd = SkillDB->get_skill_by_id(ls->skill_id);
+		
+		if (skd == nullptr) {
+			HLog(error) << "Tried to send data for unknown skill with ID " << ls->skill_id;
+			continue;
+		}
+
+		si.skill_id = ls->skill_id;
+		si.skill_type = skd->primary_type;
+		si.level = ls->level;
+
+		si.sp_cost = ls->level ? skd->sp_cost[ls->level] : 0;
+		si.range = ls->level ? skd->use_range[ls->level] : 0;
+		
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+		si.level2 = ls->level;
+#else
+		strncpy(si.name, skd->name.c_str(), MAX_SKILL_NAME_LENGTH);
+#endif
+
+		if (ls->learn_type == SKILL_LEARN_PERMANENT) {
+			job_class_type job_id = (job_class_type) get_session()->player()->job_id();
+			std::shared_ptr<const skill_tree_config> stc = SkillDB->get_skill_tree_skill_id_by_job_id(job_id, ls->skill_id);
+
+			if (stc == nullptr) {
+				HLog(error) << "Skill ID " << ls->skill_id << " not found for Job ID " << (int32_t) job_id << ".";
+				continue;
+			}
+
+			si.upgradeable = (ls->level < stc->max_level) ? 1 : 0;
+		}
+
+		sidv.push_back(si);
+	}
+
+	ZC_SKILLINFO_LIST pkt(get_session());
+	pkt.deliver(sidv);
+
+	return true;
 }
