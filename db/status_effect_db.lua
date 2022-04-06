@@ -54,7 +54,10 @@ SC_TYPE = {
 			StatusEffectBehavior.IsDebuff,
 			StatusEffectBehavior.NoBoss,
 		},
-		Icon = "SI_PROVOKE"
+		Icon = "SI_PROVOKE",
+		OnStart = [[]],
+		OnEnd = [[]],
+		PerSecond = [[]]
 	},
 	SC_ENDURE = {
 		Id = 1,

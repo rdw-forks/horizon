@@ -122,15 +122,12 @@ void Entity::move()
 
 			// set_direction((directions) my_coords.direction_to(step_coords));
 
-			printf("Move (%d, %d) -> (%d, %d) (cost: %d)\n", my_coords.x(), my_coords.y(), c.x(), c.y(), status()->movement_speed()->get_with_cost(c.move_cost()));
-			
 			notify_nearby_players_of_existence(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
+			on_movement_step();
 			notify_nearby_players_of_existence(EVP_NOTIFY_IN_SIGHT);
 
 			_walk_path.erase(_walk_path.begin());
-
-			on_movement_step();
 
 			if (_changed_dest_pos != MapCoords(0, 0)) {
 				_dest_pos = _changed_dest_pos;

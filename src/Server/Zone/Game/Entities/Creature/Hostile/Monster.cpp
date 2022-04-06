@@ -79,7 +79,7 @@ void Monster::perform_ai_lazy()
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (_next_walktime - std::time(nullptr) < 0)
 		&& !is_walking()
-		&& is_spotted()) {
+		&& was_spotted_once()) {
 		std::srand(std::time(nullptr));
 		MapCoords mc = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
 		move_to_coordinates(mc.x(), mc.y());
@@ -90,7 +90,7 @@ void Monster::perform_ai_lazy()
 			total_movement_cost += m.move_cost();
 		}
 		HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
-		_next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + total_movement_cost;
+		_next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + (total_movement_cost / 100);
 	}
 }
 

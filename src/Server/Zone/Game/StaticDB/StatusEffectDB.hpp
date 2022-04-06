@@ -43,6 +43,7 @@ struct status_effect_config_data
 	int32_t behavior{0};
 	std::string icon{""};
 	bool visible{true};
+	std::string on_start_script{""}, on_end_script{""}, per_second_script{""};
 };
 class StatusEffectDatabase
 {

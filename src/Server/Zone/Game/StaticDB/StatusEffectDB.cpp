@@ -120,6 +120,12 @@ bool StatusEffectDatabase::load_internal(sol::object const &key, sol::object con
 
 		se_conf.icon = v_tbl.get_or("Icon", std::string(""));
 
+		se_conf.on_start_script = v_tbl.get_or("OnStart", std::string(""));
+
+		se_conf.on_end_script = v_tbl.get_or("OnEnd", std::string(""));
+
+		se_conf.per_second_script = v_tbl.get_or("PerSecond", std::string(""));
+
 		_status_effect_db.insert(se_conf.status_id, std::make_shared<status_effect_config_data>(se_conf));
 	} catch (sol::error &e) {
 		HLog(error) << "StatusEffectDatabase::load_internal: " << e.what();

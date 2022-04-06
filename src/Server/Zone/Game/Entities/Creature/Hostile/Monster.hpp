@@ -65,8 +65,8 @@ public:
 	virtual void on_movement_end() override;
 	virtual void sync_with_models() override;
 
-	void set_spotted(bool spotted) { _spotted = spotted; }
-	bool is_spotted() { return _spotted; }
+	void set_spotted(bool spotted) { _was_spotted_once = spotted; }
+	bool was_spotted_once() { return _was_spotted_once; }
 
 	void perform_ai_lazy();
 
@@ -74,7 +74,7 @@ public:
 	void set_monster_config(std::shared_ptr<const monster_config_data> md) { _wmd_data = md; }
 
 private:
-	bool _spotted{false};
+	bool _was_spotted_once{false};
 	int _next_walktime{0}, _last_spotted_time{0};
 	std::weak_ptr<const monster_config_data> _wmd_data;
 	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;

@@ -126,10 +126,20 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
         HLog(debug) << "Source entity " << src_entity->name() << " within range check: " << is_in_range;
 
         if (_notif_type == EVP_NOTIFY_IN_SIGHT && is_in_range) {
+            if (tpl->entity_is_in_viewport(src_entity))
+                continue;
             // Target player realizes new entity in viewport.
             // Source entity doesn't need to realize target as update_viewport() is called when needed/
             tpl->add_entity_to_viewport(src_entity);
-        } else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT || (_notif_type == EVP_NOTIFY_OUT_OF_SIGHT && !is_in_range)) {
+        } else if (_notif_type == EVP_NOTIFY_OUT_OF_SIGHT && !is_in_range) {
+            if (!tpl->entity_is_in_viewport(src_entity))
+                continue;
+            
+            tpl->remove_entity_from_viewport(src_entity, _notif_type);
+        } else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT) {
+            if (!tpl->entity_is_in_viewport(src_entity))
+                continue;
+            
             tpl->remove_entity_from_viewport(src_entity, _notif_type);
         }
     }
