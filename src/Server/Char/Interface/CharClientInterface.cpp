@@ -95,7 +95,10 @@ bool CharClientInterface::authorize_new_connection(uint32_t account_id, uint32_t
 	HC_BLOCK_CHARACTER hcbc(get_session());
 	
 	hcae2.deliver(gres.front().character_slots, MAX_CHARACTER_SLOTS - gres.front().character_slots);
-	hcae.prepare_and_deliver(account_id, MAX_CHARACTER_SLOTS, gres.front().character_slots, MAX_CHARACTER_SLOTS - gres.front().character_slots);
+
+	hcae.prepare(account_id, MAX_CHARACTER_SLOTS, gres.front().character_slots, MAX_CHARACTER_SLOTS - gres.front().character_slots);
+	hcae.deliver();
+	
 	hcbc.deliver();
 	
 	s_session_data sd;
@@ -137,7 +140,7 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.name == name || tch.deleted_at < std::chrono::system_clock::now()));
+	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.name == name));
 
 	if (!res.empty()) {
 		hcref.deliver(HC_CREATE_ERROR_ALREADY_EXISTS);
@@ -203,7 +206,7 @@ character_delete_result CharClientInterface::character_delete_soft(uint32_t char
 	std::chrono::system_clock::time_point t = std::chrono::system_clock::now();
 	std::chrono::system_clock::time_point dt = t + std::chrono::seconds(sChar->config().character_deletion_time());
 	
-	(*conn)(update(tch).set(tch.deleted_at = dt).where(tch.id == character_id));
+	(*conn)(update(tch).set(tch.delete_reserved_at = dt).where(tch.id == character_id));
 	
 	return CHAR_DEL_RESULT_SUCCESS;
 }
@@ -245,9 +248,13 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 	
 	if (!res.front().birth_date.is_null()) {
 		std::string b = res.front().birth_date.value();
-		bd = b.substr(0, 4);
+		bd = b.substr(2, 2);
 		bd.append(b.substr(5, 2));
+		bd.append(b.substr(8, 2));
 	}
+
+	if (birthdate.length() > 6)
+		birthdate = birthdate.substr(0, 6);
 	
 	HLog(debug) << birthdate << " - " << bd;
 	if (bd.compare(birthdate) != 0) {
@@ -259,12 +266,24 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 		(*conn)(remove_from(tcs).where(tcs.id == character_id));
 		(*conn)(remove_from(tci).where(tci.char_id == character_id));
 		(*conn)(remove_from(tch).where(tch.id == character_id));
+	} else {
+		(*conn)(update(tch).set(tch.deleted_at = std::chrono::system_clock::now()).where(tch.id == character_id));
 	}
 	
 	dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_SUCCESS);
 
-	HC_ACK_CHARINFO_PER_PAGE cpp(get_session());
-	cpp.prepare_and_deliver();
+	HC_ACK_CHARINFO_PER_PAGE chpp(get_session());
+	int count = chpp.prepare();
+	chpp.deliver();
+
+	// Hercules has this snippet to send an empty packet for the finishing of the previously sent one.
+	// Apparently it doesn't trigger the end code in the client if this isn't sent.
+	// And this only occurs if the characters sent previously are 3.
+	if (count == 3) {
+		HC_ACK_CHARINFO_PER_PAGE chpp2(get_session());
+		chpp2.prepare(true);
+		chpp2.deliver();
+	}
 	
 	return true;
 }
@@ -296,14 +315,14 @@ bool CharClientInterface::character_delete_cancel(uint32_t char_id)
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	auto res = (*conn)(select(tch.deleted_at).from(tch).where(tch.id == char_id));
+	auto res = (*conn)(select(tch.delete_reserved_at).from(tch).where(tch.id == char_id));
 	
 	if (res.empty()) {
 		dcc.deliver(char_id, CHAR3_DEL_CANCEL_FAILURE);
 		return false;
 	}
 	
-	(*conn)(update(tch).set(tch.deleted_at = sqlpp::null).where(tch.id == char_id));
+	(*conn)(update(tch).set(tch.delete_reserved_at = sqlpp::null).where(tch.id == char_id));
 	dcc.deliver(char_id, CHAR3_DEL_CANCEL_SUCCESS);
 	return true;
 }

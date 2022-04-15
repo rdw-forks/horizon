@@ -192,6 +192,29 @@ struct gender
 	using _traits = sqlpp::make_traits<sqlpp::char_>;
 };
 
+struct delete_reserved_at
+{
+	struct _alias_t
+	{
+		static constexpr const char _literal[] = "delete_reserved_at";
+		using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+		template <typename T>
+		struct _member_t
+		{
+			T delete_reserved_at;
+			T& operator()()
+			{
+				return delete_reserved_at;
+			}
+			const T& operator()() const
+			{
+				return delete_reserved_at;
+			}
+		};
+	};
+	using _traits = sqlpp::make_traits<sqlpp::time_point, sqlpp::tag::can_be_null>;
+};
+
 struct deleted_at
 {
 	struct _alias_t
@@ -746,7 +769,7 @@ struct saved_y
 }
 
 struct TableCharacters : sqlpp::table_t<TableCharacters,
-TableCharacters_::id, TableCharacters_::account_id, TableCharacters_::slot, TableCharacters_::name, TableCharacters_::online, TableCharacters_::gender, TableCharacters_::deleted_at,
+TableCharacters_::id, TableCharacters_::account_id, TableCharacters_::slot, TableCharacters_::name, TableCharacters_::online, TableCharacters_::gender, TableCharacters_::delete_reserved_at, TableCharacters_::deleted_at,
 TableCharacters_::unban_time, TableCharacters_::rename_count, TableCharacters_::last_unique_id, TableCharacters_::hotkey_row_index, TableCharacters_::change_slot_count, TableCharacters_::font,
 TableCharacters_::show_equip, TableCharacters_::allow_party, TableCharacters_::partner_aid, TableCharacters_::father_aid, TableCharacters_::mother_aid, TableCharacters_::child_aid, TableCharacters_::party_id,
 TableCharacters_::guild_id, TableCharacters_::pet_id, TableCharacters_::homun_id, TableCharacters_::elemental_id, TableCharacters_::current_map, TableCharacters_::current_x, TableCharacters_::current_y,

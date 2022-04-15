@@ -80,6 +80,7 @@ void CZ_REQ_ACCOUNTNAME::deserialize(ByteBuffer &buf) { }
 void CZ_REQUEST_ACT::handle(ByteBuffer &&buf)
 {
 	deserialize(buf);
+    get_session()->clif()->action_request(_target_guid, (client_action_type) _action);
 }
 
 void CZ_REQUEST_ACT::deserialize(ByteBuffer &buf) 
@@ -1696,9 +1697,18 @@ void CZ_CLOSE_SEARCH_STORE_INFO::deserialize(ByteBuffer &buf) { }
 /**
  * CZ_REQUEST_ACT2
  */
-void CZ_REQUEST_ACT2::handle(ByteBuffer &&buf) { }
+void CZ_REQUEST_ACT2::handle(ByteBuffer &&buf) 
+{
+    deserialize(buf);
+    get_session()->clif()->action_request(_target_guid, (client_action_type) _action);
+}
 
-void CZ_REQUEST_ACT2::deserialize(ByteBuffer &buf) { }
+void CZ_REQUEST_ACT2::deserialize(ByteBuffer &buf) 
+{
+    buf >> _packet_id;
+    buf >> _target_guid;
+    buf >> _action;
+}
 
 /**
  * CZ_INVENTORY_EXPAND

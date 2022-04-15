@@ -79,21 +79,17 @@ void Monster::perform_ai_lazy()
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (_next_walktime - std::time(nullptr) < 0)
 		&& !is_walking()
-		&& was_spotted_once()) 
-	{
-		// @TODO get_random_coordinates_in_walkable_range returns (0, 0) if not found, leaving monster standing for a prolonged period of time if not indefinitely.
+		&& was_spotted_once()) {
 		MapCoords mc = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
 		move_to_coordinates(mc.x(), mc.y());
 
-		// This piece of code here executes before the first movement step is made. 
-		// Walk path at the time of its execution will be freshly maintained.
 		int total_movement_cost = 0;
 		for (int i = 0; i < _walk_path.size(); i++) {
 			MapCoords m = _walk_path.at(i);
 			total_movement_cost += m.move_cost();
 		}
+		HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
 		_next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + (total_movement_cost / 10);
-		HLog(debug) << "Monster (" << guid() << ") " << name() << " travelled from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ") (" << (_next_walktime - std::time(nullptr)) << ").";
 	}
 }
 

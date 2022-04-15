@@ -738,3 +738,112 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 	return true;
 }
+
+void ZoneClientInterface::action_request(int32_t target_guid, client_action_type action)
+{
+	// Statuses that don't let the player sit / attack / talk with NPCs(targeted)
+	// (not all are included in pc_can_attack)
+	// if( sd->sc.count && (
+	// 		sd->sc.data[SC_TRICKDEAD] ||
+	// 		(sd->sc.data[SC_AUTOCOUNTER] && action_type != ACT_ATTACK_REPEAT) ||
+	// 		 sd->sc.data[SC_BLADESTOP] ||
+	// 		 sd->sc.data[SC_DEEP_SLEEP] ||
+	// 		 sd->sc.data[SC_SUHIDE] )
+	// 		 )
+	// 	return;
+
+	// if (action_type != ACT_ATTACK && action_type != ACT_ATTACK_REPEAT)
+	// 	pc_stop_walking(sd, STOPWALKING_FLAG_FIXPOS);
+	// pc_stop_attack(sd);
+
+	// if(target_id<0 && -target_id == sd->bl.id) // for disguises [Valaris]
+	// 	target_id = sd->bl.id;
+
+	// switch(action_type) {
+	// 	case ACT_ATTACK: // once attack
+	// 	case ACT_ATTACK_REPEAT: // continuous attack
+	// 	{
+	// 		struct npc_data *nd = map->id2nd(target_id);
+	// 		if (nd != NULL) {
+	// 			if (sd->block_action.npc == 0) { // *pcblock script command
+	// 				npc->click(sd, nd);
+	// 			}
+	// 			return;
+	// 		}
+
+	// 		if (pc_cant_act_except_npc(sd) || (sd->npc_id != 0 && sd->state.using_megaphone == 0)
+	// 		    || pc_issit(sd) || (sd->sc.option & OPTION_HIDE) != 0 || pc_isvending(sd)) {
+	// 			return;
+	// 		}
+
+	// 		if (sd->sc.option & OPTION_COSTUME)
+	// 			return;
+
+	// 		if (!battle_config.sdelay_attack_enable && pc->checkskill(sd, SA_FREECAST) <= 0 && (skill->get_inf2(sd->ud.skill_id) & (INF2_FREE_CAST_REDUCED | INF2_FREE_CAST_NORMAL)) == 0) {
+	// 			if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
+	// 				clif->skill_fail(sd, 1, USESKILL_FAIL_SKILLINTERVAL, 0, 0);
+	// 				return;
+	// 			}
+	// 		}
+
+	// 		pc->delinvincibletimer(sd);
+	// 		pc->update_idle_time(sd, BCIDLE_ATTACK);
+	// 		unit->attack(&sd->bl, target_id, action_type != ACT_ATTACK);
+	// 	}
+	// 	break;
+	// 	case ACT_SIT: // sitdown
+	// 		if (battle_config.basic_skill_check && !pc->check_basicskill(sd, 3)) {
+	// 			clif->skill_fail(sd, 1, USESKILL_FAIL_LEVEL, 2, 0);
+	// 			break;
+	// 		}
+
+	// 		if (sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN_POSTDELAY])
+	// 			return;
+
+	// 		if(pc_issit(sd)) {
+	// 			//Bugged client? Just refresh them.
+	// 			clif->sitting(&sd->bl);
+	// 			return;
+	// 		}
+
+	// 		if (sd->block_action.sitstand) // *pcblock script command
+	// 			break;
+
+	// 		if (sd->ud.skilltimer != INVALID_TIMER || (sd->sc.opt1 && sd->sc.opt1 != OPT1_BURNING ))
+	// 			break;
+
+	// 		if (sd->sc.count && (
+	// 			sd->sc.data[SC_DANCING] ||
+	// 			sd->sc.data[SC_ANKLESNARE] ||
+	// 			(sd->sc.data[SC_GRAVITATION] && sd->sc.data[SC_GRAVITATION]->val3 == BCT_SELF)
+	// 		)) //No sitting during these states either.
+	// 			break;
+
+	// 		pc->update_idle_time(sd, BCIDLE_SIT);
+
+	// 		pc_setsit(sd);
+	// 		skill->sit(sd,1);
+	// 		clif->sitting(&sd->bl);
+	// 	break;
+	// 	case ACT_STAND: // standup
+
+	// 		if (sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN_POSTDELAY])
+	// 			return;
+
+	// 		if (!pc_issit(sd)) {
+	// 			//Bugged client? Just refresh them.
+	// 			clif->standing(&sd->bl);
+	// 			return;
+	// 		}
+
+	// 		if (sd->block_action.sitstand) // *pcblock script command
+	// 			break;
+
+	// 		pc->update_idle_time(sd, BCIDLE_SIT);
+
+	// 		pc->setstand(sd);
+	// 		skill->sit(sd,0);
+	// 		clif->standing(&sd->bl);
+	// 	break;
+	// }
+}
