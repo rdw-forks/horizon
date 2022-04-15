@@ -72,6 +72,7 @@ class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
 	Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords);
+	Entity(uint32_t guid, entity_type type);
 	~Entity();
 
 	virtual void initialize();
@@ -89,12 +90,12 @@ public:
 protected:
 	bool schedule_movement(const MapCoords& mcoords);
 	void move();
+	
 	virtual void stop_movement() = 0;
 	virtual void on_pathfinding_failure() = 0;
 	virtual void on_movement_begin() = 0;
 	virtual void on_movement_step() = 0;
 	virtual void on_movement_end() = 0;
-	virtual void sync_with_models() = 0;
 
 	/**
 	 * Unit Data

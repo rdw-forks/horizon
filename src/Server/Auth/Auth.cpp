@@ -282,6 +282,8 @@ void AuthServer::initialize_core()
  */
 int main(int argc, const char * argv[])
 {
+	std::srand(std::time(nullptr));
+	
 	if (argc > 1)
 		sAuth->parse_exec_args(argv, argc);
 

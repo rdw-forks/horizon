@@ -244,6 +244,8 @@ void ZoneServer::initialize_cli_commands()
  */
 int main(int argc, const char * argv[])
 {
+	std::srand(std::time(nullptr));
+	
 	if (argc > 1)
 		sZone->parse_exec_args(argv, argc);
 

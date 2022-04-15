@@ -2163,35 +2163,36 @@ void ZC_INVENTORY_ITEMLIST_EQUIP_V6::deliver(std::vector<std::shared_ptr<const i
 ByteBuffer &ZC_INVENTORY_ITEMLIST_EQUIP_V6::serialize()
 {
 	buf() << _packet_id;
-	buf() << (int16_t) ((65 * _items.size()) + 4);
+	buf() << (int16_t) ((57 * _items.size()) + 4);
 
 	for (auto it = _items.begin(); it != _items.end(); it++) {
 		std::shared_ptr<const item_entry_data> id = *it;
 		uint8_t config = 0;
-		buf() << id->inventory_index;
-		buf() << ((uint16_t) id->item_id);
-		buf() << ((uint8_t) id->type);
-		buf() << id->actual_equip_location_mask;
-		buf() << id->current_equip_location_mask;
+		buf() << id->inventory_index; // 2
+		buf() << (int16_t) id->item_id; // 4
+		buf() << (int8_t) id->type; // 5
+		buf() << id->actual_equip_location_mask; // 9
+		buf() << id->current_equip_location_mask; // 13
 		buf() << id->refine_level; //14
-		for (int i = 0; i < MAX_ITEM_SLOTS; i++)
-			buf() << (uint16_t) id->slot_item_id[i]; // 30
-		buf() << id->hire_expire_date;
-		buf() << (uint16_t) id->bind_type; // 36
-		buf() << id->sprite_id; // 38
+		for (int i = 0; i < MAX_ITEM_SLOTS; i++) // 14 + 8 = 22
+			buf() << (int16_t) id->slot_item_id[i];
+		buf() << id->hire_expire_date; // 26
+		buf() << (int16_t) id->bind_type; // 28
+		buf() << id->sprite_id; // 30
 
-		buf() << id->option_count; // 39
+		buf() << id->option_count; // 31
 
 		for (int i = 0; i < MAX_ITEM_OPTIONS; i++) {
 			buf() << id->option_data[i].index;
 			buf() << id->option_data[i].value;
 			buf() << id->option_data[i].param;
-		} // 39 + 25 = 64
+		} // 31 + 25 = 56
 
 		config |= id->info.is_identified;
 		config |= id->info.is_broken << 1;
 		config |= id->info.is_favorite << 2;
-		buf() << config; // 65
+
+		buf() << config; // 57
 	}
 
 	return buf();
@@ -6027,7 +6028,7 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 {
 	char packed_pos[6]{0};
 	
-	_entry.move_start_time = (uint32_t) get_sys_time();
+	_entry.move_start_time = (int32_t) get_sys_time();
 	
 	buf() << _packet_id;
 	buf() << (int16_t) 110;
@@ -7136,7 +7137,9 @@ void ZC_NOTIFY_MOVE::deliver(int32_t guid, int16_t from_x, int16_t from_y, int16
 	_guid = guid;
 	_timestamp = (int32_t) get_sys_time();
 	PackPosition((int8_t *) _packed_pos, from_x, from_y, to_x, to_y, 8, 8);
-	
+
+	serialize();
+	transmit();
 }
 
 ByteBuffer &ZC_NOTIFY_MOVE::serialize()

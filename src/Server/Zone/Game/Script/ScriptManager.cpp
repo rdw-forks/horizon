@@ -356,8 +356,20 @@ void ScriptManager::initialize_state(sol::state &st)
 		"refineable", sol::readonly_property([] (item_config_data &item) {
 			return item.config.refineable ? 1 : 0;
 		}),
-		"trade_restriction", sol::readonly_property([] (item_config_data &item) {
-			return (uint16_t) item.config.trade_restriction;
+		"trade_restriction_mask", sol::readonly_property([] (item_config_data &item) {
+			return (int) item.trade_restriction_mask;
+		}),
+		"trade_restriction_group_override_id", sol::readonly_property([] (item_config_data &item) {
+			return (int) item.trade_restriction_group_override_id;
+		}),
+		"trade_restriction_partner_override", sol::readonly_property([] (item_config_data &item) {
+			return (bool) item.trade_restriction_partner_override;
+		}),
+		"usage_restriction_mask", sol::readonly_property([] (item_config_data &item) {
+			return (int) item.usage_restriction_mask;
+		}),
+		"usage_restriction_group_override_id", sol::readonly_property([] (item_config_data &item) {
+			return (int) item.usage_restriction_group_override_id;
 		}),
 		"allow_item_options", sol::readonly_property([] (item_config_data &item) {
 			return item.config.allow_item_options ? 1 : 0;
@@ -605,7 +617,11 @@ void ScriptManager::initialize_state(sol::state &st)
 	st["MAX_INVENTORY_SIZE"]   = MAX_INVENTORY_SIZE;
 	st["MIN_STORAGE_SIZE"]     = MIN_STORAGE_SIZE;
 	st["MAX_STORAGE_SIZE"]     = MAX_STORAGE_SIZE;
-	st["MAX_ITEM_STACK_SIZE"]  = MAX_ITEM_STACK_SIZE;
+	st["MAX_INVENTORY_STACK_LIMIT"]  = MAX_INVENTORY_STACK_LIMIT;
+	st["MAX_CART_STACK_LIMIT"]  = MAX_CART_STACK_LIMIT;
+	st["MAX_STORAGE_STACK_LIMIT"]  = MAX_STORAGE_STACK_LIMIT;
+	st["MAX_GSTORAGE_STACK_LIMIT"]  = MAX_GSTORAGE_STACK_LIMIT;
+
 #ifdef RENEWAL
 	st["RENEWAL"]              = true;
 #else

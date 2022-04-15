@@ -70,36 +70,34 @@ void Status::initialize()
 	set_body_style(std::make_shared<BodyStyle>(_entity, 0));
 }
 
-void Status::initialize(std::shared_ptr<Entity> entity)
+bool Status::load(std::shared_ptr<Player> pl)
 {
-	std::shared_ptr<Player> pl = entity->template downcast<Player>();
 	SQL::TableCharacterStatus tcs;
-	
+
 	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
 	
 	auto res = (*conn)(select(all_of(tcs)).from(tcs).where(tcs.id == pl->character()._character_id));
 	
 	if (res.empty()) {
-		ZC_REFUSE_ENTER zre(pl->get_session());
-		HLog(error) << "Error initializing status for character " << pl->character()._character_id << ".";
-		zre.deliver(ZONE_SERV_ERROR_REJECT);
-		return;
+		HLog(error) << "Error loading status, character with ID " << pl->character()._character_id << " does not exist.";
+		return false;
 	}
-	
-	uint32_t job_id = res.front().job_id;
-	
-	pl->set_job_id(job_id);
+
+	int32_t job_id = res.front().job_id;
 	
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(job_id);
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
-	uint32_t str = res.front().strength;
-	uint32_t agi = res.front().agility;
-	uint32_t vit = res.front().vitality;
-	uint32_t _int = res.front().intelligence;
-	uint32_t dex = res.front().dexterity;
-	uint32_t luk = res.front().luck;
+	pl->set_job_id(job_id);
+	pl->set_job(job);
+
+	int32_t str = res.front().strength;
+	int32_t agi = res.front().agility;
+	int32_t vit = res.front().vitality;
+	int32_t _int = res.front().intelligence;
+	int32_t dex = res.front().dexterity;
+	int32_t luk = res.front().luck;
 
 	/**
 	 * Main Attributes.
@@ -150,22 +148,54 @@ void Status::initialize(std::shared_ptr<Entity> entity)
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(res.front().robe_view_id)));
 	set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(res.front().body_id)));
 
-	initialize_compound_attributes(job);
+	/**
+	 * Misc
+	 */ 
+	set_zeny(std::make_shared<Zeny>(_entity, int32_t(res.front().zeny)));
+	set_virtue(std::make_shared<Virtue>(_entity, int32_t(res.front().virtue)));
+	set_honor(std::make_shared<Honor>(_entity, int32_t(res.front().honor)));
+	set_manner(std::make_shared<Manner>(_entity, int32_t(res.front().manner)));
+
+	HLog(info) << "Status loaded for character " << pl->name() << "(" << pl->character()._character_id << ").";
+
+	return true;
+}
+
+bool Status::save(std::shared_ptr<Player> pl)
+{
+	SQL::TableCharacterStatus tcs;
+
+	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
+
+	(*conn)(update(tcs).set(tcs.job_id = pl->job_id(), tcs.base_level = base_level()->total(), tcs.job_level = job_level()->total(), tcs.base_experience = base_experience()->total(),
+		tcs.job_experience = job_experience()->total(), tcs.zeny = zeny()->total(), tcs.strength = strength()->total(), tcs.agility = agility()->total(), tcs.vitality = vitality()->total(),
+		tcs.intelligence = intelligence()->total(), tcs.dexterity = dexterity()->total(),
+		tcs.luck = luck()->total(), tcs.maximum_hp = max_hp()->total(), tcs.hp = current_hp()->total(), tcs.maximum_sp = max_sp()->total(), tcs.sp = current_sp()->total(), tcs.status_points = status_point()->total(),
+		tcs.skill_points = skill_point()->total(), tcs.body_state = 0, tcs.virtue = virtue()->total(), tcs.honor = honor()->total(), tcs.manner = manner()->total(), tcs.hair_style_id = hair_style()->get(),
+		tcs.hair_color_id = hair_color()->get(), tcs.cloth_color_id = cloth_color()->get(), tcs.body_id = body_style()->get(), tcs.weapon_id = weapon_sprite()->get(), tcs.shield_id = shield_sprite()->get(),
+		tcs.head_top_view_id = head_top_sprite()->get(), tcs.head_mid_view_id = head_mid_sprite()->get(), tcs.head_bottom_view_id = head_bottom_sprite()->get(), tcs.robe_view_id = robe_sprite()->get()).where(tcs.id == pl->character()._character_id));
+
+	HLog(info) << "Status saved for character " << pl->name() << "(" << pl->character()._character_id << ").";
+
+	return true;
+}
+
+void Status::initialize(std::shared_ptr<Entity> entity)
+{
+	std::shared_ptr<Player> pl = entity->template downcast<Player>();
+	
+	load(pl);
+
+	initialize_compound_attributes(pl->job());
 
 	initialize_observable_statuses();
 
-	max_weight()->compute(false);
-	status_atk()->compute(false);
-	equip_atk()->compute(false);
-	status_matk()->compute(false);
-	soft_def()->compute(false);
-	soft_mdef()->compute(false);
-	hit()->compute(false);
-	crit()->compute(false);
-	flee()->compute(false);
-	aspd()->compute(false);
+	compute_compound_attributes(false);
 
 	pl->get_session()->clif()->notify_initial_status(shared_from_this());
+
+	// Notify remaining statuses not sent in initial status notification.
+	max_weight()->compute(true);
 }
 
 void Status::initialize_compound_attributes(std::shared_ptr<const job_config_data> job)
@@ -304,18 +334,18 @@ void Status::initialize_observable_statuses()
 	job_experience()->register_observers(job_level().get());
 }
 
-void Status::compute_and_notify_compound_attributes()
+void Status::compute_compound_attributes(bool notify)
 {	
-	max_weight()->compute(true);
-	status_atk()->compute(true);
-	equip_atk()->compute(true);
-	status_matk()->compute(true);
-	soft_def()->compute(true);
-	soft_mdef()->compute(true);
-	hit()->compute(true);
-	crit()->compute(true);
-	flee()->compute(true);
-	aspd()->compute(true);
+	max_weight()->compute(notify);
+	status_atk()->compute(notify);
+	equip_atk()->compute(notify);
+	status_matk()->compute(notify);
+	soft_def()->compute(notify);
+	soft_mdef()->compute(notify);
+	hit()->compute(notify);
+	crit()->compute(notify);
+	flee()->compute(notify);
+	aspd()->compute(notify);
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)

@@ -86,9 +86,9 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
 
         std::shared_ptr<Entity> vp_e = iter->source()->shared_from_this();
 
-        if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
+        if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
             pl->add_entity_to_viewport(vp_e);
-        else
+        else if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
             pl->remove_entity_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
     }
 }

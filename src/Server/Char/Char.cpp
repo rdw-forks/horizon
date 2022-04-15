@@ -279,6 +279,8 @@ void CharServer::initialize_core()
  */
 int main(int argc, const char * argv[])
 {
+	std::srand(std::time(nullptr));
+	
 	/* Parse Command Line Arguments */
 	if (argc > 1)
 		sChar->parse_exec_args(argv, argc);

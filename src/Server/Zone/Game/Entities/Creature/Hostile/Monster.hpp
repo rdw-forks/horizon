@@ -63,7 +63,6 @@ public:
 	virtual void on_movement_begin() override;
 	virtual void on_movement_step() override;
 	virtual void on_movement_end() override;
-	virtual void sync_with_models() override;
 
 	void set_spotted(bool spotted) { _was_spotted_once = spotted; }
 	bool was_spotted_once() { return _was_spotted_once; }

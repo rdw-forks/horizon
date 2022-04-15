@@ -33,6 +33,7 @@
 #include "Server/Common/Configuration/Horizon.hpp" // MAX_INVENTORY_SIZE
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Common/Definitions/EntityDefinitions.hpp" // entity_gender_types
 #include "Server/Common/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/Definitions/NPCDefinitions.hpp"
@@ -56,23 +57,43 @@ namespace Entities
 class Player : public Entity, public GridObject<Player>
 {
 	struct s_char_data {
-		uint32_t _character_id{0};
-		uint32_t _account_id{0};
-		uint16_t _slot{0};
-		bool _online{false};
+		int32_t _character_id{0};
+		int16_t _slot{0};
+		int8_t _online{0};
 		entity_gender_types _gender{ENTITY_GENDER_FEMALE};
-		uint32_t _max_inventory_size{MAX_INVENTORY_SIZE};
-		uint64_t _last_unique_id{0};
+		int32_t _max_inventory_size{MAX_INVENTORY_SIZE};
+		int64_t _last_unique_id{0};
+		int8_t _font{0};
+		int32_t _unban_time{0};
+		int32_t _rename_count{0};
+		int16_t _hotkey_row_index{0};
+		int32_t _change_slot_count{0};
+		int8_t _show_equip{0}; 
+		int8_t _allow_party{0};
+		int32_t _partner_aid{0};
+		int32_t _father_aid{0}, _mother_aid{0}, _child_aid{0};
+		int32_t _party_id{0}, _guild_id{0};
+		int32_t _homun_id{0}, _pet_id{0}, _elemental_id{0};
+		std::string _saved_map{""};
+		int32_t _saved_x{0}, _saved_y{0};
+	};
+
+	struct s_account_data {
+		int32_t _account_id{0};
+		std::string _account_gender{""};
+		int16_t _group_id{0};
 	};
 	
 public:
-	Player(std::shared_ptr<ZoneSession> session, uint32_t guid, std::shared_ptr<Map> map, const MapCoords& mcoords);
+	Player(std::shared_ptr<ZoneSession> session, uint32_t guid);
 	~Player();
 
 	/**
 	 * Relations
 	 */
 	std::shared_ptr<ZoneSession> get_session() { return _session; }
+
+	void create(int char_id, std::string account_gender, int group_id);
 
 	virtual void initialize() override;
 
@@ -81,8 +102,13 @@ public:
 	 */
 	void update_viewport();
 
-	void add_entity_to_viewport(std::shared_ptr<Entity> entity);
+	/**
+	 * Movement
+	 */
 	void realize_entity_movement(std::shared_ptr<Entity> entity);
+	void realize_entity_movement_entry(std::shared_ptr<Entity> entity);
+
+	void add_entity_to_viewport(std::shared_ptr<Entity> entity);
 	void remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_viewport_notification_type type);
 	void spawn_entity_in_viewport(std::shared_ptr<Entity> entity);
 	bool entity_is_in_viewport(std::shared_ptr<Entity> entity);
@@ -98,9 +124,10 @@ public:
 	void on_movement_end() override;
 
 	/**
-	 * Player applications.
+	 * DB Synchronizations.
 	 */
-	void sync_with_models() override;
+	bool save();
+	bool load();
 
 	uint64_t new_unique_id();
 
@@ -108,9 +135,7 @@ public:
 	bool set_logged_in(bool logged_in) { return _is_logged_in.exchange(logged_in); }
 
 	s_char_data &character() { return _char; }
-
-	int32_t group_id() { return _group_id; }
-	void set_group_id(int32_t group_id) { _group_id = group_id; }
+	s_account_data &account() { return _account; }
 
 	bool job_change(int32_t job_id);
 	
@@ -150,19 +175,24 @@ public:
 
 	void add_learnt_skill(std::shared_ptr<skill_learnt_info> i) { _learnt_skills.insert({ i->skill_id, i }); }
 	
+	std::shared_ptr<const job_config_data> job() { return _job; }
+	void set_job(std::shared_ptr<const job_config_data> j) { _job = j; }
+	
 private:
 	std::shared_ptr<ZoneSession> _session;
 	sol::state _lua_state;
 	std::shared_ptr<Assets::Inventory> _inventory;
 	std::atomic<bool> _is_logged_in{false};
 	int32_t _npc_contact_guid{0};
-	int32_t _group_id{0};
 
 	std::vector<std::weak_ptr<Entity>> _viewport_entities;
 	
 	std::map<uint16_t, std::shared_ptr<skill_learnt_info>> _learnt_skills;
 
 	s_char_data _char;
+	s_account_data _account;
+
+	std::shared_ptr<const job_config_data> _job;
 };
 }
 }

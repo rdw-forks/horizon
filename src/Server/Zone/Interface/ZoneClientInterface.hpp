@@ -67,6 +67,7 @@ public:
 	/* Movement & Viewport*/
 	bool notify_player_movement(MapCoords from, MapCoords to);
 	bool notify_stop_movement(int32_t guid, int16_t x, int16_t y);
+	bool notify_entity_move(int32_t guid, MapCoords from, MapCoords to);
 
 	entity_viewport_entry create_viewport_entry(std::shared_ptr<Entity> entity);
 	bool notify_viewport_add_entity(entity_viewport_entry entry);

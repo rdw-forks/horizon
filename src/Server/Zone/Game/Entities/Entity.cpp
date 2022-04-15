@@ -38,12 +38,21 @@
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Zone.hpp"
 
+#include <sqlpp11/sqlpp11.h>
+
 using namespace Horizon::Zone;
 
 Entity::Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords)
 : _guid(guid), _type(type), _map_coords(map_coords)
 {
 	set_map(map);
+}
+
+// For Player
+Entity::Entity(uint32_t guid, entity_type type)
+: _guid(guid), _type(type), _map_coords(MapCoords(0, 0))
+{
+	// Map is set in player::load()
 }
 
 Entity::~Entity()
@@ -95,6 +104,7 @@ bool Entity::schedule_movement(const MapCoords& coords)
 	}
 
 	on_movement_begin();
+	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
 	notify_nearby_players_of_movement();
 	move();
 	

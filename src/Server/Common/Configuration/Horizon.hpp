@@ -54,12 +54,6 @@
 #define MAX_VIEW_RANGE 14
 #define MAX_NPC_TRIGGER_RANGE 5
 
-#define MIN_INVENTORY_SIZE 100
-#define MAX_INVENTORY_SIZE 300
-#define MIN_STORAGE_SIZE 600
-#define MAX_STORAGE_SIZE 600
-#define MAX_ITEM_STACK_SIZE 30000
-
 // Network Threads
 #define MAX_NETWORK_THREADS 1
 
@@ -71,8 +65,6 @@
 
 static_assert(MAX_LEVEL > 0,
               "MAX_LEVEL should be greater than 0.");
-static_assert(MAX_ITEM_STACK_SIZE > 0,
-              "MAX_ITEM_STACK_SIZE should be greater than 0.");
 static_assert(MAX_CHARACTER_SLOTS % 3 == 0,
               "MAX_CHARACTER_SLOTS must be in multiples of 3!");
 static_assert(DEFAULT_MOVEMENT_SPEED > 0 && DEFAULT_MOVEMENT_SPEED < 1000,
@@ -81,10 +73,6 @@ static_assert(MAX_VIEW_RANGE > 0,
               "View range affects visibility range for players and should not be 0.");
 static_assert(MAX_NPC_TRIGGER_RANGE > 0 && MAX_NPC_TRIGGER_RANGE < MAX_VIEW_RANGE,
               "MAX_NPC_TRIGGER_RANGE must be less than MAX_VIEW_RANGE and greater than 0.");
-static_assert(MIN_INVENTORY_SIZE > 0 && MAX_INVENTORY_SIZE > MIN_INVENTORY_SIZE,
-              "Max Inventory should be greater than minimum storage size of 1.");
-static_assert(MIN_STORAGE_SIZE > 0 && MAX_STORAGE_SIZE >= MIN_STORAGE_SIZE,
-              "Max storage should be greater than minimum storage size of 1.");
 
 static_assert(MAX_NETWORK_THREADS > 0,
               "MAX_NETWORK_THREADS cannot be less than or equal to 0.");

@@ -63,6 +63,10 @@ namespace Traits
 	class LuckPointCost;
 	class BaseExperience;
 	class JobExperience;
+	class Zeny;
+	class Honor;
+	class Manner;
+	class Virtue;
 	class StatusPoint;
 	class SkillPoint;
 	class NextBaseExperience;
@@ -390,6 +394,66 @@ namespace Traits
 		{
 			Attribute::set_base(val);
 			this->notify_observers();
+		}
+	};
+
+	class Zeny
+	: public Attribute<Zeny>
+	{
+	public:
+		Zeny(std::weak_ptr<Entity> entity,  int32_t base = 0)
+		: Attribute(entity, base, 0, 0)
+		{ }
+		~Zeny() { };
+
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+		}
+	};
+
+	class Honor
+	: public Attribute<Honor>
+	{
+	public:
+		Honor(std::weak_ptr<Entity> entity,  int32_t base = 0)
+		: Attribute(entity, base, 0, 0)
+		{ }
+		~Honor() { };
+
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+		}
+	};
+
+	class Manner
+	: public Attribute<Manner>
+	{
+	public:
+		Manner(std::weak_ptr<Entity> entity,  int32_t base = 0)
+		: Attribute(entity, base, 0, 0)
+		{ }
+		~Manner() { };
+
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+		}
+	};
+
+	class Virtue
+	: public Attribute<Virtue>
+	{
+	public:
+		Virtue(std::weak_ptr<Entity> entity,  int32_t base = 0)
+		: Attribute(entity, base, 0, 0)
+		{ }
+		~Virtue() { };
+
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
 		}
 	};
 

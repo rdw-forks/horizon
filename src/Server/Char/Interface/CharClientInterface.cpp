@@ -159,13 +159,13 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 	
 	(*conn)(insert_into(tcs).set(tcs.id = c_last_insert_id, tcs.job_id = job_class, tcs.hair_color_id = hair_color, tcs.hair_style_id = hair_style));
 	
-	auto multi_insert = insert_into(tci).columns(tci.char_id, tci.inventory_index, tci.item_id, tci.amount, tci.is_identified);
+	auto multi_insert = insert_into(tci).columns(tci.char_id, tci.item_id, tci.amount, tci.is_identified);
 	int inv_index = 2;
 	
 	for (int j = 0; j < sChar->config().start_item_count(); j++) {
 		std::pair<uint32_t, uint32_t> p = sChar->config().start_item(j);
 		int item = p.first, c = p.second;
-		multi_insert.values.add(tci.char_id = c_last_insert_id, tci.inventory_index = inv_index, tci.item_id = item, tci.amount = c, tci.is_identified = 1);
+		multi_insert.values.add(tci.char_id = c_last_insert_id, tci.item_id = item, tci.amount = c, tci.is_identified = 1);
 		inv_index++;
 	}
 	

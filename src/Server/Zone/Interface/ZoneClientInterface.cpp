@@ -32,7 +32,6 @@
 #include "Server/Common/SQL/GameAccount.hpp"
 #include "Server/Common/SQL/SessionData.hpp"
 #include "Server/Common/SQL/Character/Character.hpp"
-#include "Server/Common/SQL/Character/Status.hpp"
 #include "Server/Common/SQL/GameAccount.hpp"
 
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
@@ -71,7 +70,6 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 {
 	SQL::TableGameAccounts tga;
 	SQL::TableSessionData tsd;
-	SQL::TableCharacters tch;
 	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
 	
 	auto res = (*conn)(select(all_of(tsd)).from(tsd).where(tsd.game_account_id == account_id and tsd.auth_code == auth_code));
@@ -96,44 +94,18 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	}
 	
 	(*conn)(update(tsd).set(tsd.current_server = "Z").where(tsd.game_account_id == account_id and tsd.auth_code == auth_code));
+
+	std::shared_ptr<Player> pl = std::make_shared<Player>(get_session(), account_id);
 	
-	auto res3 = (*conn)(select(all_of(tch)).from(tch).where(tch.id == char_id));
-	
-	if (res3.empty()) {
-		HLog(error) << "Login error! Character with ID " << char_id << " does not exist.";
-		return false;
-	}
-	
-	MapCoords mcoords(res3.front().current_x, res3.front().current_y);
-	std::shared_ptr<Map> map = MapMgr->get_map(res3.front().current_map);
-	std::shared_ptr<Player> pl = std::make_shared<Player>(get_session(), account_id, map, mcoords);
-	
-	/* Initialize Player Model */
-	pl->character()._character_id = res3.front().id;
-	pl->character()._account_id = res3.front().account_id;
-	pl->character()._slot = res3.front().slot;
-	pl->set_name(res3.front().name);
-	pl->set_posture(POSTURE_STANDING);
-	pl->set_group_id(res2.front().group_id);
-	
-	std::string acc_gender = res2.front().gender;
-	std::string char_gender = res3.front().gender;
-	pl->character()._gender = strcmp(char_gender.c_str(), "U") == 0
-		? (strcmp(acc_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE)
-		: strcmp(char_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE;
-	
-	pl->character()._online = true;
-	pl->set_last_unique_id((uint64_t) res3.front().last_unique_id);
-	
-	
+	pl->create(char_id, res2.front().gender, res2.front().group_id);
+
 	ZC_AID zc_aid(get_session());
 	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
 	
-	zc_aid.deliver(account_id);
-	zc_ae2.deliver(uint16_t(res3.front().current_x), uint16_t(res3.front().current_y), DIR_SOUTH, uint16_t(res3.front().font));
+	zc_aid.deliver(pl->guid());
+	zc_ae2.deliver(pl->map_coords().x(), pl->map_coords().y(), DIR_SOUTH, pl->character()._font); // edit third argument to saved font.
 	
 	get_session()->set_player(pl);
-	map->container()->add_player(std::move(pl));
 	
 	ClientSocktMgr->set_socket_for_removal(get_session()->get_socket());
 	
@@ -154,7 +126,7 @@ bool ZoneClientInterface::restart(uint8_t type)
 		default:
 			SQL::TableSessionData tsd;
 			std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-			(*conn)(update(tsd).where(tsd.game_account_id == get_session()->player()->character()._account_id).set(tsd.current_server = "C", tsd.last_update = std::time(nullptr)));
+			(*conn)(update(tsd).where(tsd.game_account_id == get_session()->player()->account()._account_id).set(tsd.current_server = "C", tsd.last_update = std::time(nullptr)));
 			rpkt.deliver(type);
 			HLog(info) << "Character has moved to the character server.";
 			break;
@@ -231,10 +203,10 @@ bool ZoneClientInterface::notify_entity_name(uint32_t guid)
 	|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20141126) \
 	|| (CLIENT_TYPE == 'Z')
 	ZC_ACK_REQNAMEALL2 req(get_session());
-	req.deliver(guid, entity->name(), "", "", "", 0);
+	req.deliver(guid, std::string(entity->name()).append("(" + std::to_string(guid) + ")") , "", "", "", 0);
 #else
 	ZC_ACK_REQNAMEALL req(get_session());
-	req.deliver(guid, entity->name(), "", "", "");
+	req.deliver(guid, std::string(entity->name()).append("(" + std::to_string(guid) + ")"), "", "", "");
 #endif
 	
 	return true;
@@ -261,8 +233,8 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	entry.robe_id = status->robe_sprite()->get();
 	entry.guild_id = 0;
 	entry.guild_emblem_version = 0;
-	entry.honor = 0;
-	entry.virtue = 0;
+	entry.honor = entity->type() == ENTITY_PLAYER ? status->honor()->total() : 0;
+	entry.virtue = entity->type() == ENTITY_PLAYER ? status->virtue()->total() : 0;
 	entry.in_pk_mode = 0;
 	entry.current_x = entity->map_coords().x();
 	entry.current_y = entity->map_coords().y();
@@ -337,6 +309,13 @@ bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry en
 	ZC_NOTIFY_MOVEENTRY11 pkt(get_session());
 	pkt.deliver(entry);
 #endif
+	return true;
+}
+
+bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCoords to)
+{
+	ZC_NOTIFY_MOVE pkt(get_session());
+	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
 
@@ -565,7 +544,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 		pkt.deliver(WRT_RECIPIENT_OFFLINE, 0);
 
 	ZC_WHISPER pkt2(player->get_session());
-	pkt2.deliver(get_session()->player()->name(), message, player->group_id() >= 99 ? true : false);
+	pkt2.deliver(get_session()->player()->name(), message, player->account()._group_id >= 99 ? true : false);
 }
 
 void ZoneClientInterface::use_item(int16_t inventory_index, int32_t guid)

@@ -40,6 +40,7 @@
 
 #define ITEM_NAME_LENGTH 50
 #define UNKNOWN_ITEM_ID 512 // Apple
+
 #define MAX_ITEM_OPTIONS 5
 #define MAX_ITEM_SLOTS 4
 #define MAX_REFINE_LEVEL 20
@@ -51,6 +52,32 @@ static_assert(MAX_ITEM_OPTIONS <= 5,
 static_assert(MAX_ITEM_SLOTS > 0 && MAX_ITEM_SLOTS <= 4,
 			  "MAX_ITEM_SLOTS is limited by the client and database layout "
 			  "and should not be changed unless supported by the client.");
+
+#define MIN_INVENTORY_SIZE 100
+#define MAX_INVENTORY_SIZE 300
+
+static_assert(MIN_INVENTORY_SIZE > 0 && MAX_INVENTORY_SIZE > MIN_INVENTORY_SIZE,
+              "Max Inventory should be greater than minimum storage size of 1.");
+
+#define MIN_STORAGE_SIZE 600
+#define MAX_STORAGE_SIZE 600
+
+static_assert(MIN_STORAGE_SIZE > 0 && MAX_STORAGE_SIZE >= MIN_STORAGE_SIZE,
+              "Max storage should be greater than minimum storage size of 1.");
+
+#define MAX_INVENTORY_STACK_LIMIT 30000
+#define MAX_CART_STACK_LIMIT 30000
+#define MAX_STORAGE_STACK_LIMIT 30000
+#define MAX_GSTORAGE_STACK_LIMIT 30000
+
+static_assert(MAX_INVENTORY_STACK_LIMIT > 0,
+              "MAX_INVENTORY_STACK_LIMIT should be greater than 0.");
+static_assert(MAX_CART_STACK_LIMIT > 0,
+              "MAX_CART_STACK_LIMIT should be greater than 0.");
+static_assert(MAX_STORAGE_STACK_LIMIT > 0,
+              "MAX_STORAGE_STACK_LIMIT should be greater than 0.");
+static_assert(MAX_GSTORAGE_STACK_LIMIT > 0,
+              "MAX_GSTORAGE_STACK_LIMIT should be greater than 0.");
 
 enum refine_type
 {
@@ -354,22 +381,26 @@ struct item_config_data
 		unsigned available : 1;
 		unsigned refineable : 1;
 		unsigned consumption_delay : 1;         ///< Signifies items that are not consumed immediately upon double-click
-		unsigned trade_restriction : 9;         ///< Item trade restrictions mask (@see enum item_trade_restrictions_mask)
 		unsigned bind_on_equip : 1;
+		unsigned force_serial : 1;
+		unsigned keep_after_use : 1;
 		unsigned allow_item_options: 1;            ///< disallows use of item options on the item. (non-equippable items are automatically flagged)
 		unsigned drop_announce : 1;             ///< Official Drop Announce
 		unsigned show_drop_effect : 1;          ///< Shows Drop Effect.
-		struct {
-			unsigned short max_amount{0};          ///< Max amount per stack.
-			unsigned int inventory    : 1;
-			unsigned int cart         : 1;
-			unsigned int storage      : 1;
-			unsigned int guildstorage : 1;
-		} stack;
-		struct {
-			unsigned int mask{0};                  ///< Item nouse restriction mask (@see enum ItemNouseRestrictions)
-		} usage_restriction;
+		unsigned trade_restriction_mask : 8;         ///< Item trade restrictions mask (@see enum item_trade_restriction_mask)
 	} config;
+	
+	struct {
+		unsigned int inventory{0};
+		unsigned int cart{0};
+		unsigned int storage{0};
+		unsigned int guild_storage{0};
+	} stack;
+
+	int usage_restriction_mask{0}, usage_restriction_group_override_id{0};
+
+	int trade_restriction_mask{0}, trade_restriction_group_override_id{0};
+	bool trade_restriction_partner_override{0};
 };
 
 /**
@@ -432,10 +463,10 @@ struct item_entry_data
 	element_type ele_type{ELE_NEUTRAL};
 	uint8_t option_count{0};
 	struct options {
-		int16_t get_index() { return index; }
+		int16_t get_index() const { return index; }
 		void set_index(int idx) { index = idx; }
 
-		int16_t get_value() { return value; }
+		int16_t get_value() const { return value; }
 		void set_value(int val) { value = val; }
 
 		int16_t index{0};

@@ -57,13 +57,15 @@ public:
 	void initialize_compound_attributes(std::shared_ptr<const job_config_data> job);
 	void initialize_observable_statuses();
 	void initialize_notifiable_statuses();
-	void compute_and_notify_compound_attributes();
+	void compute_compound_attributes(bool notify);
 	
 	uint32_t get_required_statpoints(uint16_t from, uint16_t to);
 	uint32_t get_status_base(status_point_type type);
 	bool increase_status_point(status_point_type type, uint16_t amount);
 	
-//	bool sync_to_model(std::shared_ptr<Models::Character::Status> status);
+	bool save(std::shared_ptr<Player> pl);
+	bool load(std::shared_ptr<Player> pl);
+
 	/**
 	 * Attributes
 	 */
@@ -214,6 +216,18 @@ public:
 	std::shared_ptr<BodyStyle> body_style() { return _body_style; }
 	void set_body_style(std::shared_ptr<BodyStyle> bs) { _body_style = bs; }
 
+	std::shared_ptr<Zeny> zeny() { return _zeny; }
+	void set_zeny(std::shared_ptr<Zeny> z) { _zeny = z; }
+
+	std::shared_ptr<Honor> honor() { return _honor; }
+	void set_honor(std::shared_ptr<Honor> h) { _honor = h; }
+
+	std::shared_ptr<Manner> manner() { return _manner; }
+	void set_manner(std::shared_ptr<Manner> m) { _manner = m; }
+
+	std::shared_ptr<Virtue> virtue() { return _virtue; }
+	void set_virtue(std::shared_ptr<Virtue> v) { _virtue = v; }
+
 protected:
 	std::shared_ptr<Entity> entity() { return _entity.lock(); }
 
@@ -269,6 +283,11 @@ private:
 	std::shared_ptr<HeadBottomSprite> _head_bottom_sprite;
 	std::shared_ptr<HairStyle> _hair_style;
 	std::shared_ptr<BodyStyle> _body_style;
+	/* Misc */
+	std::shared_ptr<Zeny> _zeny;
+	std::shared_ptr<Honor> _honor;
+	std::shared_ptr<Manner> _manner;
+	std::shared_ptr<Virtue> _virtue;
 };
 }
 }
