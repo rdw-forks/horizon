@@ -1,0 +1,143 @@
+ ----------------------------------------------------
+ --       _   _            _                       --
+ --      | | | |          (_)                      --
+ --      | |_| | ___  _ __ _ _______  _ __         --
+ --      |  _  |/ _ \| '__| |_  / _ \| '_  \       --
+ --      | | | | (_) | |  | |/ / (_) | | | |       --
+ --      \_| |_/\___/|_|  |_/___\___/|_| |_|       --
+ ----------------------------------------------------
+ -- This file is part of Horizon (c).
+ --
+ -- Copyright (c) 2021 Sagun K. (sagunxp@gmail.com).
+ -- Copyright (c) 2021 Horizon Dev Team.
+ --
+ -- Base Author - Sagun K. (sagunxp@gmail.com)
+ --
+ -- This library is free software; you can redistribute it and/or modify
+ -- it under the terms of the GNU General Public License as published by
+ -- the Free Software Foundation, either version 3 of the License, or
+ -- (at your option) any later version.
+ --
+ -- This library is distributed in the hope that it will be useful,
+ -- but WITHOUT ANY WARRANTY; without even the implied warranty of
+ -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ -- GNU General Public License for more details.
+ --
+ -- You should have received a copy of the GNU General Public License
+ -- along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ ----------------------------------------------------
+Monster("pay_dun00", 0, 0, 0, 0, "Zombie", 1015, 40, 5000, 0)
+Monster("pay_dun00", 0, 0, 0, 0, "Skeleton", 1076, 35, 5000, 0)
+Monster("pay_dun00", 0, 0, 0, 0, "Familiar", 1005, 15, 5000, 0)
+Monster("pay_dun00", 0, 0, 0, 0, "Poporing", 1031, 15, 5000, 0)
+Monster("pay_dun00", 0, 0, 0, 0, "Red Plant", 1078, 15, 180000, 90000)
+Monster("pay_dun00", 140, 140, 5, 5, "Black Mushroom", 1084, 3, 360000, 180000)
+Monster("pay_dun01", 0, 0, 0, 0, "Soldier Skeleton", 1028, 50, 5000, 0)
+Monster("pay_dun01", 0, 0, 0, 0, "Archer Skeleton", 1016, 30, 5000, 0)
+Monster("pay_dun01", 0, 0, 0, 0, "Eggyra", 1116, 15, 5000, 0)
+Monster("pay_dun01", 0, 0, 0, 0, "Drainliar", 1111, 5, 5000, 0)
+Monster("pay_dun01", 235, 54, 10, 10, "Black Mushroom", 1084, 7, 900000, 450000)
+Monster("pay_dun01", 0, 0, 0, 0, "Red Plant", 1078, 10, 180000, 90000)
+Monster("pay_dun02", 0, 0, 0, 0, "Soldier Skeleton", 1028, 45, 5000, 0)
+Monster("pay_dun02", 0, 0, 0, 0, "Munak", 1026, 40, 5000, 0)
+Monster("pay_dun02", 0, 0, 0, 0, "Bongun", 1188, 30, 5000, 0)
+Monster("pay_dun02", 0, 0, 0, 0, "Archer Skeleton", 1016, 20, 5000, 0)
+Monster("pay_dun02", 0, 0, 0, 0, "Poporing", 1031, 10, 5000, 0)
+Monster("pay_dun02", 0, 0, 0, 0, "Nine Tail", 1180, 1, 5000, 0)
+Monster("pay_dun02", 117, 200, 0, 0, "Hydra", 1068, 1, 275000, 100000)
+Monster("pay_dun02", 118, 192, 0, 0, "Hydra", 1068, 1, 285000, 100000)
+Monster("pay_dun02", 119, 199, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 120, 194, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 122, 200, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 110, 190, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 110, 194, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 117, 191, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 109, 193, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 118, 201, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 113, 193, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 116, 196, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 112, 192, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 111, 191, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 229, 183, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun02", 227, 184, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun02", 227, 185, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun02", 120, 203, 0, 0, "Hydra", 1068, 1, 300000, 100000)
+Monster("pay_dun02", 117, 206, 0, 0, "Hydra", 1068, 1, 302000, 100000)
+Monster("pay_dun02", 120, 200, 0, 0, "Hydra", 1068, 1, 303000, 100000)
+Monster("pay_dun02", 116, 199, 0, 0, "Hydra", 1068, 1, 306000, 100000)
+Monster("pay_dun02", 118, 198, 0, 0, "Hydra", 1068, 1, 312000, 100000)
+Monster("pay_dun02", 117, 197, 0, 0, "Hydra", 1068, 1, 314000, 100000)
+Monster("pay_dun02", 119, 196, 0, 0, "Hydra", 1068, 1, 315000, 100000)
+Monster("pay_dun02", 113, 194, 0, 0, "Hydra", 1068, 1, 319000, 100000)
+Monster("pay_dun02", 107, 190, 0, 0, "Hydra", 1068, 1, 320000, 100000)
+Monster("pay_dun02", 122, 197, 0, 0, "Hydra", 1068, 1, 321000, 100000)
+Monster("pay_dun02", 119, 205, 0, 0, "Hydra", 1068, 1, 324000, 100000)
+Monster("pay_dun02", 116, 190, 0, 0, "Hydra", 1068, 1, 326000, 100000)
+Monster("pay_dun02", 108, 191, 0, 0, "Hydra", 1068, 1, 332000, 100000)
+Monster("pay_dun02", 118, 207, 0, 0, "Hydra", 1068, 1, 332000, 100000)
+Monster("pay_dun02", 121, 200, 0, 0, "Hydra", 1068, 1, 333000, 100000)
+Monster("pay_dun02", 116, 205, 0, 0, "Hydra", 1068, 1, 345000, 100000)
+Monster("pay_dun02", 109, 192, 0, 0, "Hydra", 1068, 1, 374000, 100000)
+Monster("pay_dun02", 37, 243, 0, 0, "Black Mushroom", 1084, 1, 600000, 300000)
+Monster("pay_dun02", 111, 199, 10, 10, "Black Mushroom", 1084, 7, 900000, 450000)
+Monster("pay_dun02", 110, 216, 20, 10, "White Plant", 1082, 3, 180000, 90000)
+Monster("pay_dun02", 132, 84, 10, 10, "White Plant", 1082, 3, 180000, 90000)
+Monster("pay_dun02", 197, 113, 10, 10, "Red Plant", 1078, 4, 180000, 90000)
+Monster("pay_dun02", 55, 254, 10, 10, "Red Plant", 1078, 4, 180000, 90000)
+Monster("pay_dun03", 0, 0, 0, 0, "Sohee", 1170, 70, 5000, 0)
+Monster("pay_dun03", 0, 0, 0, 0, "Greatest General", 1277, 3, 5000, 0)
+Monster("pay_dun03", 0, 0, 0, 0, "Bongun", 1188, 3, 5000, 0)
+Monster("pay_dun03", 0, 0, 0, 0, "Munak", 1026, 3, 5000, 0)
+Monster("pay_dun03", 0, 0, 0, 0, "Nine Tail", 1180, 2, 5000, 0)
+Monster("pay_dun03", 126, 135, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 126, 134, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 126, 133, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 126, 132, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 126, 131, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 179, 133, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 179, 132, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 179, 134, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 179, 131, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 179, 130, 0, 0, "Mandragora", 1020, 1, 300000, 100000)
+Monster("pay_dun03", 71, 67, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 62, 67, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 57, 65, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 64, 66, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 66, 65, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 59, 64, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 68, 64, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 71, 64, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 66, 63, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 69, 68, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 60, 68, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 67, 69, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 67, 71, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 66, 73, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 68, 72, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 63, 70, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 58, 69, 0, 0, "Hydra", 1068, 1, 600000, 300000)
+Monster("pay_dun03", 154, 112, 0, 0, "Whisper", 1185, 1, 1800000, 0)
+Monster("pay_dun03", 84, 63, 0, 0, "Whisper", 1185, 1, 1800000, 0)
+Monster("pay_dun03", 81, 61, 0, 0, "Whisper", 1185, 1, 1800000, 0)
+Monster("pay_dun03", 161, 117, 0, 0, "Whisper", 1185, 1, 1800000, 0)
+Monster("pay_dun03", 89, 147, 0, 0, "Giant Whisper", 1186, 1, 14400000, 0)
+Monster("pay_dun03", 228, 61, 0, 0, "Red Plant", 1078, 1, 600000, 300000)
+Monster("pay_dun03", 138, 42, 0, 0, "Blue Plant", 1079, 1, 600000, 300000)
+Monster("pay_dun03", 120, 186, 0, 0, "Green Plant", 1080, 1, 600000, 300000)
+Monster("pay_dun03", 88, 35, 0, 0, "Yellow Plant", 1081, 1, 600000, 300000)
+Monster("pay_dun03", 0, 0, 0, 0, "Red Plant", 1078, 15, 180000, 90000)
+Monster("pay_dun03", 246, 56, 20, 20, "White Plant", 1082, 3, 180000, 90000)
+Monster("pay_dun03", 52, 262, 10, 4, "White Plant", 1082, 2, 180000, 90000)
+Monster("pay_dun04", 0, 0, 0, 0, "Dokebi", 1110, 40, 5000, 0)
+Monster("pay_dun04", 0, 0, 0, 0, "Nine Tail", 1180, 30, 5000, 0)
+Monster("pay_dun04", 0, 0, 0, 0, "Horong", 1129, 30, 5000, 0)
+Monster("pay_dun04", 0, 0, 0, 0, "Archer Skeleton", 1016, 15, 5000, 0)
+Monster("pay_dun04", 0, 0, 0, 0, "Greatest General", 1277, 15, 5000, 0)
+Monster("pay_dun04", 0, 0, 0, 0, "Am Mut", 1301, 1, 5000, 0)
+Monster("pay_dun04", 0, 0, 0, 0, "Skeleton General", 1290, 1, 5000, 0)
+Monster("pay_dun04", 120, 120, 10, 10, "Shining Plant", 1083, 1, 1800000, 900000)
+Monster("pay_dun04", 28, 110, 5, 5, "Shining Plant", 1083, 1, 1800000, 900000)
+Monster("pay_dun04", 0, 0, 0, 0, "Red Plant", 1078, 10, 180000, 90000)
+Monster("pay_dun04", 107, 206, 5, 5, "White Plant", 1082, 2, 180000, 90000)
+Monster("pay_dun04", 28, 110, 10, 10, "White Plant", 1082, 2, 180000, 90000)
+Monster("pay_dun04", 190, 207, 5, 5, "White Plant", 1082, 2, 180000, 90000)
