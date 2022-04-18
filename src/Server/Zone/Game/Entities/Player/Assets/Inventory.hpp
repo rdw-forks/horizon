@@ -30,7 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_ASSETS_INVENTORY_HPP
 #define HORIZON_ZONE_GAME_ASSETS_INVENTORY_HPP
 
-#include "Common/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
 #include <unordered_map>
 #include <array>

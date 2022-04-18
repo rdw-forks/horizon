@@ -33,7 +33,7 @@
 #include <utility>
 
 #include "Core/Networking/Buffer/ByteBuffer.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifierPredicates.hpp"
 
 #define entity_ns(class) Horizon::Zone::Entities::class

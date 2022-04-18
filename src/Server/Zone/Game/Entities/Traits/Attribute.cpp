@@ -33,7 +33,7 @@
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Core/Logging/Logger.hpp"

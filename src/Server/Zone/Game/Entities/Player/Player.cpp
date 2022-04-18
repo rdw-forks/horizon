@@ -29,7 +29,7 @@
 
 #include "Player.hpp"
 
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/SQL/Character/Character.hpp"
 #include "Server/Common/SQL/Character/Status.hpp"
 
@@ -55,7 +55,7 @@ using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
 Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid)
-: Entity(guid, ENTITY_PLAYER), _session(session)
+: Entity(guid, ENTITY_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
 {
 }
 
@@ -115,12 +115,10 @@ void Player::initialize()
 	// On map entry processing.
 	on_map_enter();
 
-	// Initialize Script States.
-	script_manager()->initialize_state(get_lua_state());
+	lua_manager()->initialize_player_state(_lua_state);
 
 	try {
-		sol::state &pl_lua = get_lua_state();
-		sol::load_result fx = pl_lua.load_file("scripts/internal/on_login_event.lua");
+		sol::load_result fx = _lua_state->load_file("scripts/internal/on_login_event.lua");
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
 		if (!result.valid()) {
 			sol::error err = result;
@@ -446,3 +444,44 @@ bool Player::job_change(int32_t job_id)
 	return true;
 }
 
+
+void Player::perform_skill(int8_t skill_id, int8_t skill_lv)
+{
+	std::shared_ptr<const skill_config_data> sk_d = SkillDB->get_skill_by_id(skill_id);
+
+	if (sk_d == nullptr) {
+		HLog(warning) << "Tried to perform skill for non-existent id " << skill_id << ", ignoring...";
+		return;
+	}
+
+	try {
+		sol::load_result fx = _lua_state->load_file("scripts/skills/" + sk_d->name + ".lua");
+		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), skill_id, skill_lv);
+		if (!result.valid()) {
+			sol::error err = result;
+			HLog(error) << "Player::perform_skill: " << err.what();
+		}
+	} catch (sol::error &e) {
+		HLog(error) << "Player::perform_skill: " << e.what();
+	}
+}
+
+bool Player::perform_action(player_action_type action)
+{
+	switch(action)
+	{
+		case PLAYER_ACT_SIT:
+			get_session()->clif()->notify_action(PLAYER_ACT_SIT);
+			break;
+		case PLAYER_ACT_STAND:
+			get_session()->clif()->notify_action(PLAYER_ACT_STAND);
+			break;
+		case PLAYER_ACT_ATTACK:
+		case PLAYER_ACT_ATTACK_REPEAT:
+			break;
+		default:
+			break;
+	};
+
+	return true;
+}

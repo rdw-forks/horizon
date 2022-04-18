@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_GAME_ENTITIES_NPC_HPP
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
-#include "Common/Definitions/NPCDefinitions.hpp"
+#include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 
 #include <sol.hpp>

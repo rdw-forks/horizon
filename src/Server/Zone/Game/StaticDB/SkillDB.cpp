@@ -29,7 +29,11 @@
 
 #include "SkillDB.hpp"
 
-#include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
+#include "Server/Zone/LUA/Components/CombatComponent.hpp"
+#include "Server/Zone/LUA/Components/ItemComponent.hpp"
+#include "Server/Zone/LUA/Components/SkillComponent.hpp"
+#include "Server/Zone/LUA/Components/EntityComponent.hpp"
+
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -48,15 +52,31 @@ SkillDatabase::~SkillDatabase()
 
 bool SkillDatabase::load()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	
-	lua.open_libraries(sol::lib::base);
-	lua.open_libraries(sol::lib::package);
+	lua->open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::package);
 
-	sync_battle_definitions(lua);
-	sync_item_definitions(lua);
-	sync_skill_definitions(lua);
-	sync_entity_definitions(lua);
+	std::shared_ptr<CombatComponent> combat_component = std::make_shared<CombatComponent>();
+	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+	std::shared_ptr<SkillComponent> skill_component = std::make_shared<SkillComponent>();
+
+	combat_component->sync_definitions(lua);
+	combat_component->sync_data_types(lua);
+	combat_component->sync_functions(lua);
+
+	entity_component->sync_definitions(lua);
+	entity_component->sync_data_types(lua);
+	entity_component->sync_functions(lua);
+
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
+
+	skill_component->sync_definitions(lua);
+	skill_component->sync_data_types(lua);
+	skill_component->sync_functions(lua);
 
 	/**
 	 * Skill DB
@@ -64,8 +84,8 @@ bool SkillDatabase::load()
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "skill_db.lua";
-		lua.script_file(file_path);
-		sol::table skill_tbl = lua.get<sol::table>("skill_db");
+		lua->script_file(file_path);
+		sol::table skill_tbl = lua->get<sol::table>("skill_db");
 		skill_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal_skill_db(key, value) ? 1 : 0;
             std::cout << "Loaded entry " << total_entries << " for skill_db...\r";
@@ -82,8 +102,8 @@ bool SkillDatabase::load()
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "skill_tree_db.lua";
-		lua.script_file(file_path);
-		sol::table skill_tree_tbl = lua.get<sol::table>("skill_tree_db");
+		lua->script_file(file_path);
+		sol::table skill_tree_tbl = lua->get<sol::table>("skill_tree_db");
 		skill_tree_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal_skill_tree(key, value) ? 1 : 0;
             std::cout << "Loaded entry " << total_entries << " for skill_tree_db...\r";
@@ -1680,7 +1700,7 @@ bool SkillDatabase::parse_req_items(sol::table const &table, skill_config_data &
 		sol::optional<sol::table> maybe_tbl = table.get<sol::optional<sol::table>>(equips ? "Equips" : "Items");
 		if (maybe_tbl) {
 			sol::table tbl = maybe_tbl.value();
-			skill_config_data::skill_required_item_data &rdata = equips ? data.req_equip : data.req_items;
+			skill_required_item_data &rdata = equips ? data.req_equip : data.req_items;
 
 			int i = 0;
 			for (const auto &tp : tbl) {

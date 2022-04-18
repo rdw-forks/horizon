@@ -29,10 +29,10 @@
 #define HORIZON_ZONECLIENTINTERFACE_HPP
 
 #include "Server/Common/Base/NetworkPacket.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Common/Definitions/SkillDefinitions.hpp"
-#include "Server/Common/Definitions/ClientDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Common/Interfaces/ClientInterface.hpp"
+#include "Server/Zone/Game/Entities/Player/Definitions/PlayerDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 
@@ -141,7 +141,8 @@ public:
 	bool notify_learnt_skill_list();
 
 	/* UI Requests */
-	void action_request(int32_t target_guid, client_action_type action);
+	void action_request(int32_t target_guid, player_action_type action);
+	bool notify_action(player_action_type action);
 
 protected:
 	uint32_t _npc_contact_guid{0};

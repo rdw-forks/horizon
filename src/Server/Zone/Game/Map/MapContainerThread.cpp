@@ -112,7 +112,7 @@ std::shared_ptr<Entities::Player> MapContainerThread::get_player(int guid)
 //! This is mainly for members that can't be initialized from the constructor method.
 void MapContainerThread::initialize()
 {
-	_script_mgr = std::make_shared<ScriptManager>(shared_from_this());
+	_lua_mgr = std::make_shared<LUAManager>(shared_from_this());
 }
 
 //! @brief Process container finalization by cleanly disconnecting players after saving their data.
@@ -170,14 +170,14 @@ void MapContainerThread::start()
 //! @thread MapContainerThread
 void MapContainerThread::start_internal()
 {
-	get_script_manager()->initialize();
+	get_lua_manager()->initialize();
 
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 		update(std::time(nullptr));
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	};
 
-	get_script_manager()->finalize();
+	get_lua_manager()->finalize();
 }
 
 //! @brief World update loop for a MapContainerThread.

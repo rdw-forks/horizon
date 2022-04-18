@@ -26,21 +26,26 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP
-#define HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP
+#ifndef HORIZON_ZONE_STATUSEFFECT_LUA_COMPONENT_HPP
+#define HORIZON_ZONE_STATUSEFFECT_LUA_COMPONENT_HPP
 
 #include <sol.hpp>
+#include "Server/Zone/LUA/Components/LUAComponent.hpp"
 
-void sync_battle_definitions(sol::state &state);
+namespace Horizon
+{
+namespace Zone
+{
+class StatusEffectComponent : public LUAComponent
+{
+public:
+    StatusEffectComponent() : LUAComponent() { }
+    ~StatusEffectComponent() { }
+    void sync_definitions(std::shared_ptr<sol::state> state);
+    void sync_data_types(std::shared_ptr<sol::state> state);
+    void sync_functions(std::shared_ptr<sol::state> state);
+};
+}
+}
 
-void sync_entity_definitions(sol::state &state);
-
-void sync_item_definitions(sol::state &state);
-
-void sync_monster_definitions(sol::state &state);
-
-void sync_skill_definitions(sol::state &state);
-
-void sync_status_effect_definitions(sol::state &state);
-
-#endif /* HORIZON_ZONE_GAME_LUA_DEFINITIONS_SYNC_HPP */
+#endif /* HORIZON_ZONE_STATUSEFFECT_LUA_COMPONENT_HPP */

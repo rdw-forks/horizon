@@ -30,8 +30,8 @@
 #ifndef HORIZON_ZONE_STATICDB_JOBDB_HPP
 #define HORIZON_ZONE_STATICDB_JOBDB_HPP
 
-#include "Common/Definitions/ItemDefinitions.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Core/Multithreading/LockedLookupTable.hpp"
 
 #include <memory>
@@ -76,6 +76,12 @@ public:
 	bool load_hp_sp_table(sol::table &job_tbl, job_config_data &data, std::string &job_name, std::string table_name);
 
 	std::shared_ptr<const job_config_data> get_job_by_id(uint16_t job_id) { return _job_db.at((job_class_type) job_id); }
+	std::string get_job_name_by_id(int32_t id) { 
+		for (auto j = _name2id_list.begin(); j != _name2id_list.end(); j++)
+			if (j->second == id)
+				return j->first;
+		return "";
+	}
 private:
 	LockedLookupTable<uint32_t, std::shared_ptr<const job_config_data>> _job_db;
 	std::map<std::string, int> _name2id_list;

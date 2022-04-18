@@ -31,9 +31,9 @@
 #define HORIZON_ZONE_STATICDB_SKILLDB_HPP
 
 #include "Core/Multithreading/LockedLookupTable.hpp" // Linux
-#include "Server/Common/Definitions/BattleDefinitions.hpp"
-#include "Server/Common/Definitions/ItemDefinitions.hpp"
-#include "Server/Common/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/BattleDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include <cstdlib>
 
 #include <sol.hpp>
@@ -42,79 +42,6 @@ namespace Horizon
 {
 namespace Zone
 {
-struct skill_config_data
-{
-	uint16_t skill_id{0};
-	std::string name, desc;
-	int max_level{1};
-	int use_range[MAX_SKILL_LEVEL]{0};
-	battle_damage_type damage_type[MAX_SKILL_LEVEL]{BDT_NORMAL}; // hittype
-	int primary_type{SK_TYPE_PASSIVE}; // skill_primary_type / inf
-	int secondary_type{SK_SUBTYPE_NONE};   // skill_secondary_type / inf2
-	battle_attack_type attack_type[MAX_SKILL_LEVEL]{BAT_NONE}; // skill_type
-	element_type element[MAX_SKILL_LEVEL]{ELE_NEUTRAL};
-	int dmg_property{SK_DMG_PROP_NONE};  // skill_damage_property_type /< nk
-	int splash_range[MAX_SKILL_LEVEL]{0};
-	int number_of_hits[MAX_SKILL_LEVEL]{0};           ///< num
-	bool interrupt_cast[MAX_SKILL_LEVEL]{0};
-	int cast_defense_rate[MAX_SKILL_LEVEL]{0};
-	int max_skill_instances[MAX_SKILL_LEVEL]{0};
-	int knock_back_tiles[MAX_SKILL_LEVEL]{0};                 // blewcount
-	int cast_time[MAX_SKILL_LEVEL]{0};                ///< cast
-	int after_cast_actor_delay[MAX_SKILL_LEVEL]{0};   ///< delay
-	int after_cast_walk_delay[MAX_SKILL_LEVEL]{0};
-	int upkeep_time[MAX_SKILL_LEVEL]{0};
-	int upkeep_time2[MAX_SKILL_LEVEL]{0};
-	int cooldown[MAX_SKILL_LEVEL]{0};
-	int fixed_cast_time[MAX_SKILL_LEVEL]{0};
-	int cast_time_options{0};
-	int skill_delay_options{0};
-	int hp_cost[MAX_SKILL_LEVEL]{0};                   // hp
-	int sp_cost[MAX_SKILL_LEVEL]{0};                   // sp
-	int hp_percent_cost[MAX_SKILL_LEVEL]{0};           // hp_rate_cost
-	int sp_percent_cost[MAX_SKILL_LEVEL]{0};           // sp_rate_cost
-	int max_hp_trigger[MAX_SKILL_LEVEL]{0};            // mhp
-	int max_sp_trigger[MAX_SKILL_LEVEL]{0};            // msp
-	int zeny_cost[MAX_SKILL_LEVEL]{0};
-	int weapon_type{IT_WT_FIST};                       // item_weapon_type  / weapon
-	int ammunition_type{IT_AT_NONE};                   // item_ammunition_type / ammo
-	int ammunition_cost[MAX_SKILL_LEVEL]{0};
-	int required_state[MAX_SKILL_LEVEL]{0};            // skill_required_state_types
-	int spirit_sphere_cost[MAX_SKILL_LEVEL]{0};
-
-	struct skill_required_item_data {
-		struct {
-			int id;
-			int amount[MAX_SKILL_LEVEL];
-		} item[MAX_SKILL_ITEM_REQUIRE];
-		bool any[MAX_SKILL_LEVEL];
-	};
-
-	struct skill_required_item_data req_items;
-	struct skill_required_item_data req_equip;
-
-	int placement_id[MAX_SKILL_LEVEL][2]{{0}};
-	int placement_layout_type[MAX_SKILL_LEVEL]{0};
-	int placement_range[MAX_SKILL_LEVEL]{0};
-	int placement_interval[MAX_SKILL_LEVEL]{0};
-	int placement_target[MAX_SKILL_LEVEL]{0};
-	int placement_flag{0};
-};
-
-struct skill_tree_config 
-{
-	struct requirement {
-		int skill_id{0};
-		unsigned char level{0};
-	};
-
-	int skill_id{0};
-	unsigned char max_level{0};
-	unsigned char job_level{0};
-	job_class_type inherited_from{JOB_INVALID};
-	std::vector<struct requirement> requirements;
-};
-
 class SkillDatabase
 {
 public:

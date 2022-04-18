@@ -26,10 +26,10 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_ITEM_DEFINITIONS
-#define HORIZON_ZONE_GAME_ITEM_DEFINITIONS
+#ifndef HORIZON_ZONE_ITEM_DEFINITIONS
+#define HORIZON_ZONE_ITEM_DEFINITIONS
 
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 // Includes [ Ubuntu / Xenial ]
 #include <array>
@@ -486,4 +486,4 @@ struct item_entry_data
 
 typedef std::array<std::pair<item_equip_location_mask, std::weak_ptr<item_entry_data>>, IT_EQPI_MAX> EquipmentListType;
 
-#endif /* HORIZON_ZONE_GAME_ITEM_DEFINITIONS */
+#endif /* HORIZON_ZONE_ITEM_DEFINITIONS */

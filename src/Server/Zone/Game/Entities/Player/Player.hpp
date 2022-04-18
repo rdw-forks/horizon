@@ -34,10 +34,11 @@
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp" // entity_gender_types
-#include "Server/Common/Definitions/ItemDefinitions.hpp"
-#include "Server/Common/Definitions/NPCDefinitions.hpp"
-#include "Server/Common/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp" // entity_gender_types
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/NPCDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Player/Definitions/PlayerDefinitions.hpp"
 
 #include <sol.hpp>
 
@@ -153,7 +154,7 @@ public:
 	/**
 	 * NPC / Script applications
 	 */
-	sol::state &get_lua_state() { return _lua_state; }
+	std::shared_ptr<sol::state> lua_state() { return _lua_state; }
 	void send_npc_dialog(uint32_t npc_guid, std::string dialog);
 	void send_npc_next_dialog(uint32_t npc_guid);
 	void send_npc_close_dialog(uint32_t npc_guid);
@@ -178,9 +179,15 @@ public:
 	std::shared_ptr<const job_config_data> job() { return _job; }
 	void set_job(std::shared_ptr<const job_config_data> j) { _job = j; }
 	
+	/**
+	 * Skills
+	 */
+	void perform_skill(int8_t skill_id, int8_t skill_lv);
+	bool perform_action(player_action_type action);
+
 private:
 	std::shared_ptr<ZoneSession> _session;
-	sol::state _lua_state;
+	std::shared_ptr<sol::state> _lua_state;
 	std::shared_ptr<Assets::Inventory> _inventory;
 	std::atomic<bool> _is_logged_in{false};
 	int32_t _npc_contact_guid{0};

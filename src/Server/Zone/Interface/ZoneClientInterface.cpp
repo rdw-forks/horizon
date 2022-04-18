@@ -27,8 +27,8 @@
 
 #include "CharClientInterface.hpp"
 
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Common/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/SQL/GameAccount.hpp"
 #include "Server/Common/SQL/SessionData.hpp"
 #include "Server/Common/SQL/Character/Character.hpp"
@@ -492,7 +492,7 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
 	if (message[msg_first_char] == '@') {
-		get_session()->player()->script_manager()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+		get_session()->player()->lua_manager()->npc()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
 		return;
 	}
 
@@ -739,8 +739,9 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 	return true;
 }
 
-void ZoneClientInterface::action_request(int32_t target_guid, client_action_type action)
+void ZoneClientInterface::action_request(int32_t target_guid, player_action_type action)
 {
+
 	// Statuses that don't let the player sit / attack / talk with NPCs(targeted)
 	// (not all are included in pc_can_attack)
 	// if( sd->sc.count && (
@@ -846,4 +847,26 @@ void ZoneClientInterface::action_request(int32_t target_guid, client_action_type
 	// 		clif->standing(&sd->bl);
 	// 	break;
 	// }
+
+	switch(action)
+	{
+		case PLAYER_ACT_SIT:
+		case PLAYER_ACT_STAND:
+			get_session()->player()->perform_skill(1, 3);
+			break;
+			break;
+		case PLAYER_ACT_ATTACK:
+		case PLAYER_ACT_ATTACK_REPEAT:
+			break;
+		default:
+			break;
+	};
+	
+}
+
+bool ZoneClientInterface::notify_action(player_action_type action)
+{
+	ZC_NOTIFY_ACT na(get_session());
+	na.deliver((int8_t) action);
+	return true;
 }

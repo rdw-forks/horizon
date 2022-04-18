@@ -28,8 +28,9 @@
  **************************************************/
 
 #include "ItemDB.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/LUA/Components/ItemComponent.hpp"
+#include "Server/Zone/LUA/Components/EntityComponent.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
 #include <chrono>
@@ -67,20 +68,28 @@ ItemDatabase::ItemDatabase()
 
 bool ItemDatabase::load()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	auto start = std::chrono::high_resolution_clock::now();
 
-	lua.open_libraries(sol::lib::base);
-	lua.open_libraries(sol::lib::package);
+	lua->open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::package);
 
-	sync_entity_definitions(lua);
-	sync_item_definitions(lua);
+	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+	
+	entity_component->sync_definitions(lua);
+	entity_component->sync_data_types(lua);
+	entity_component->sync_functions(lua);
 
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
+	
 	int total_entries = 0;
 
 	std::string file_path = sZone->config().get_static_db_path().string() + "item_db.lua";
 
-	sol::protected_function_result safe_res = lua.safe_script_file(file_path);
+	sol::protected_function_result safe_res = lua->safe_script_file(file_path);
 	
 	if (!safe_res.valid()) {
 		sol::error err = safe_res;
@@ -89,7 +98,7 @@ bool ItemDatabase::load()
 	}
 	
 	try {
-		sol::table item_tbl = lua.get<sol::table>("item_db");
+		sol::table item_tbl = lua->get<sol::table>("item_db");
 		total_entries = load_items(item_tbl, file_path);
 		auto stop = std::chrono::high_resolution_clock::now();
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "' (" << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "µs, Max Collisions: " << _item_db.max_collisions() << ").";
@@ -607,21 +616,25 @@ bool ItemDatabase::load_refine_table(refine_type type, sol::table const &refine_
 
 bool ItemDatabase::load_weapon_target_size_modifiers_db()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	auto start = std::chrono::high_resolution_clock::now();
 
-	lua.open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::base);
 
-	sync_item_definitions(lua);
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
 
 	int total_entries = 0;
 
 	std::string file_path = sZone->config().get_static_db_path().string() + "weapon_target_size_modifiers.lua";
 
 	try {
-		lua.script_file(file_path);
+		lua->script_file(file_path);
 
-		sol::table size_mod_tbl = lua["weapon_target_size_modifiers"];
+		sol::table size_mod_tbl = (*lua)["weapon_target_size_modifiers"];
 
 		for (int i = IT_WT_FIST; i < IT_WT_SINGLE_MAX; i++) {
 			std::shared_ptr<std::array<uint8_t, ESZ_MAX>> arr = std::make_shared<std::array<uint8_t, ESZ_MAX>>();
@@ -649,22 +662,30 @@ bool ItemDatabase::load_weapon_target_size_modifiers_db()
 
 bool ItemDatabase::load_weapon_attribute_modifiers_db()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	auto start = std::chrono::high_resolution_clock::now();
 
-	lua.open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::base);
 
-	sync_entity_definitions(lua);
-	sync_item_definitions(lua);
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
+
+	entity_component->sync_definitions(lua);
+	entity_component->sync_data_types(lua);
+	entity_component->sync_functions(lua);
 	
 	int total_entries = 0;
 
 	std::string file_path = sZone->config().get_static_db_path().string() + "weapon_attribute_modifiers.lua";
 
 	try {
-		lua.script_file(file_path);
+		lua->script_file(file_path);
 
-		sol::table attr_mod_tbl = lua["weapon_attribute_modifiers"];
+		sol::table attr_mod_tbl = (*lua)["weapon_attribute_modifiers"];
 
 		struct {
 			element_type type;

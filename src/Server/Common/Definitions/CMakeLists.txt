@@ -31,12 +31,5 @@ set(COMMON_DEFINITION_SOURCES
 	PARENT_SCOPE)
 	
 set(COMMON_DEFINITION_HEADERS
-	${DIR}/BattleDefinitions.hpp
 	${DIR}/Definitions.hpp
-	${DIR}/EntityDefinitions.hpp
-	${DIR}/ItemDefinitions.hpp
-	${DIR}/NPCDefinitions.hpp
-	${DIR}/MonsterDefinitions.hpp
-	${DIR}/SkillDefinitions.hpp
-	${DIR}/StatusEffectDefinitions.hpp
 	PARENT_SCOPE)

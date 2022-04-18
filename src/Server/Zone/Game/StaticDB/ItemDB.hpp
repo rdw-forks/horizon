@@ -30,8 +30,8 @@
 #ifndef HORIZON_ZONE_STATICDB_ITEMDB_HPP
 #define HORIZON_ZONE_STATICDB_ITEMDB_HPP
 
-#include "Common/Definitions/EntityDefinitions.hpp"
-#include "Common/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Core/Multithreading/LockedLookupTable.hpp" // Linux
 
 #include <memory>

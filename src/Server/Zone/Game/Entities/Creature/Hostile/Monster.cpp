@@ -30,7 +30,7 @@
 #include "Monster.hpp"
 
 #include "Core/Logging/Logger.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 

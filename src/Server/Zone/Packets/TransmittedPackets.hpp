@@ -30,9 +30,9 @@
 
 #include "Server/Common/Base/NetworkPacket.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Common/Definitions/ItemDefinitions.hpp"
-#include "Server/Common/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
 
 namespace Horizon
 {
@@ -23734,10 +23734,13 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_ACT() {}
 
-	void deliver();
+	void deliver(int8_t action);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int8_t _unused_bytes[20];
+	int8_t _action_type{2};
+
 };
 
 enum {

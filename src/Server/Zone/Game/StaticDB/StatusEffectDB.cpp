@@ -29,7 +29,7 @@
 
 #include "StatusEffectDB.hpp"
 
-#include "Server/Zone/Game/Script/LuaDefinitionSync.hpp"
+#include "Server/Zone/LUA/Components/StatusEffectComponent.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -46,12 +46,16 @@ StatusEffectDatabase::~StatusEffectDatabase()
 
 bool StatusEffectDatabase::load()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	
-	lua.open_libraries(sol::lib::base);
-	lua.open_libraries(sol::lib::package);
+	lua->open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::package);
 
-	sync_status_effect_definitions(lua);
+	std::shared_ptr<StatusEffectComponent> sec = std::make_shared<StatusEffectComponent>();
+
+	sec->sync_definitions(lua);
+	sec->sync_data_types(lua);
+	sec->sync_functions(lua);
 
 	/**
 	 * Skill DB
@@ -59,8 +63,8 @@ bool StatusEffectDatabase::load()
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "status_effect_db.lua";
-		lua.script_file(file_path);
-		sol::table status_tbl = lua.get<sol::table>("status_effect_db");
+		lua->script_file(file_path);
+		sol::table status_tbl = lua->get<sol::table>("status_effect_db");
 		status_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value) ? 1 : 0;
 		});

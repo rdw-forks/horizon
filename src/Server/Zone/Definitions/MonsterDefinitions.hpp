@@ -26,11 +26,11 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP
-#define HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP
+#ifndef HORIZON_ZONE_MONSTER_DEFINITIONS_HPP
+#define HORIZON_ZONE_MONSTER_DEFINITIONS_HPP
 
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 #define MAX_MOB_DROP 10
 #define MAX_MVP_DROP 10
@@ -173,4 +173,4 @@ struct monster_spawn_data {
 	int32_t spawn_delay_base{0}, spawn_delay_variance{0};
 };
 
-#endif /* HORIZON_ZONE_GAME_MONSTER_DEFINITIONS_HPP */
+#endif /* HORIZON_ZONE_MONSTER_DEFINITIONS_HPP */

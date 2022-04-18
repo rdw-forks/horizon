@@ -6981,11 +6981,21 @@ ByteBuffer &ZC_ACK_LEAVE_GUILD::serialize()
 
 /**
  * ZC_NOTIFY_ACT
+ * AKA: Sitting.
  */
-void ZC_NOTIFY_ACT::deliver() { }
+void ZC_NOTIFY_ACT::deliver(int8_t action) 
+{
+	_action_type = action;
+	transmit();
+}
 
 ByteBuffer &ZC_NOTIFY_ACT::serialize()
 {
+	buf() << _packet_id;
+	buf() << get_session()->player()->guid();
+	buf().append(_unused_bytes, 20);
+	buf() << _action_type;
+
 	return buf();
 }
 

@@ -31,8 +31,8 @@
 #define HORIZON_ZONE_GAME_TRAITS_ATTRIBUTESIMPL_HPP
 
 #include "Attribute.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Common/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 
 #include <memory> // Linux

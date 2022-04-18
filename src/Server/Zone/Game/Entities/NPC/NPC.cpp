@@ -28,7 +28,7 @@
  **************************************************/
 
 #include "NPC.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 

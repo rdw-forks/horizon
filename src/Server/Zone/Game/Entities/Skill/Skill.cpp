@@ -28,7 +28,7 @@
  **************************************************/
 
 #include "Skill.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 using namespace Horizon::Zone::Entities;
 

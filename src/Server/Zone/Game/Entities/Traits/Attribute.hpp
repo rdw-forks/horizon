@@ -30,7 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_ATTRIBUTES_HPP
 #define HORIZON_ZONE_GAME_TRAITS_ATTRIBUTES_HPP
 
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 
 // Includes for Linux

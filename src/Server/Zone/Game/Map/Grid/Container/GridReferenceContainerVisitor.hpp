@@ -35,12 +35,6 @@
 /*============================*
  * Visitor Helper Functions
  *============================*/
-template<class VISITOR, class TYPE_CONTAINER>
-void VisitorHelper(VISITOR &v, TYPE_CONTAINER &c)
-{
-	v.Visit(c);
-}
-
 template<class VISITOR>
 void VisitorHelper(VISITOR &/*v*/, GridTypeListContainer<TypeNull> &/*c*/)
 {

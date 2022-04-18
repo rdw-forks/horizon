@@ -7,7 +7,6 @@
  *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
- *
  * Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
  * Copyright (c) 2019 Horizon Dev Team.
  *
@@ -27,53 +26,27 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP
-#define HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP
+#ifndef HORIZON_ZONE_MAP_LUA_COMPONENT_HPP
+#define HORIZON_ZONE_MAP_LUA_COMPONENT_HPP
 
-#include "EntityDefinitions.hpp"
-#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
-
-#include <memory>
-#include <string>
-
-#define NPC_START_GUID 500000000
-
-enum npc_type
-{
-	FAKE_NPC               =    -1,
-	NPC_TYPE_PORTAL        =    45,
-	NPC_TYPE_PORTAL_HIDDEN =   139,
-	NPC_TYPE_MOB_TOMB      =   565,
-	NPC_TYPE_PORTAL_DBG    =   722,
-	NPC_TYPE_FLAG          =   722,
-	NPC_TYPE_INVISIBLE     = 32767
-};
+#include "Server/Zone/LUA/Components/LUAComponent.hpp"
+#include <sol.hpp>
 
 namespace Horizon
 {
-	namespace Zone
-	{
-		namespace Game
-		{
-			namespace Entities
-			{
-				class NPC;
-			}
-		}
-	}
+namespace Zone
+{
+class MapComponent : public LUAComponent
+{
+public:
+    MapComponent() : LUAComponent() { }
+    ~MapComponent() { }
+
+    void sync_definitions(std::shared_ptr<sol::state> state);
+    void sync_data_types(std::shared_ptr<sol::state> state);
+    void sync_functions(std::shared_ptr<sol::state> state);
+};
+}
 }
 
-struct npc_db_data
-{
-	std::string npc_name{""};
-	std::string map_name{""};
-	MapCoords coords;
-	directions direction{DIR_SOUTH};
-	uint16_t sprite_id{0};
-	std::string script{""};
-	bool script_is_file{true};
-	uint16_t trigger_range{1};
-	std::shared_ptr<Horizon::Zone::Entities::NPC> _npc;
-};
-
-#endif /* HORIZON_ZONE_GAME_NPC_DEFINITIONS_HPP */
+#endif /* HORIZON_ZONE_MAP_LUA_COMPONENT_HPP */

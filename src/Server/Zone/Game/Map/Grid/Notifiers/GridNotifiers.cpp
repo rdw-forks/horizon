@@ -29,7 +29,7 @@
 
 #include "GridNotifiers.hpp"
 
-#include "Server/Common/Definitions/NPCDefinitions.hpp"
+#include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Skill/Skill.hpp"
@@ -265,10 +265,10 @@ void GridNPCTrigger::check_and_trigger(GridRefManager<T> &m)
         if (npc == nullptr)
             continue;
 
-        std::shared_ptr<npc_db_data> const &nd = npc->script_manager()->get_npc_from_db(npc->guid());
+        std::shared_ptr<npc_db_data> const &nd = npc->lua_manager()->npc()->get_npc_from_db(npc->guid());
         if (nd != nullptr && nd->trigger_range && _predicate(npc, nd->trigger_range)) {
             std::shared_ptr<Player> player = _source.lock()->downcast<Player>();
-            _source.lock()->script_manager()->contact_npc_for_player(player, npc->guid());
+            _source.lock()->lua_manager()->npc()->contact_npc_for_player(player, npc->guid());
         }
     }
 }

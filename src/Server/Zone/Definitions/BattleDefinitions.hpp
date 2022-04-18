@@ -26,8 +26,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_BATTLE_DEFINITIONS_HPP
-#define HORIZON_ZONE_GAME_BATTLE_DEFINITIONS_HPP
+#ifndef HORIZON_ZONE_BATTLE_DEFINITIONS_HPP
+#define HORIZON_ZONE_BATTLE_DEFINITIONS_HPP
 
 enum battle_target_check_type
 {
@@ -90,4 +90,4 @@ enum battle_damage_type {
 	//BDT_TOUCH       = 12, // (touch skill?)
 };
 
-#endif /* HORIZON_ZONE_GAME_BATTLE_DEFINITIONS_HPP */
+#endif /* HORIZON_ZONE_BATTLE_DEFINITIONS_HPP */

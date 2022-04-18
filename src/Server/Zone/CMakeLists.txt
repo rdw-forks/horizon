@@ -29,6 +29,7 @@
 
 add_subdirectory(Game)
 add_subdirectory(Packets)
+add_subdirectory(LUA)
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PRIVATE_SOURCES
@@ -55,6 +56,7 @@ add_executable(zone
 	${PACKET_SOURCES}
 	${PACKET_HEADERS}
 	${GAME_SOURCES}
+	${LUA_SOURCES}
 )
 
 if (${CMAKE_VERSION} VERSION_GREATER "3.16.0")

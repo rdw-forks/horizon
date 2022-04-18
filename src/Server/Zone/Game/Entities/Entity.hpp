@@ -30,13 +30,13 @@
 #ifndef HORIZON_ZONE_GAME_ENTITY_HPP
 #define HORIZON_ZONE_GAME_ENTITY_HPP
 
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
-#include "Server/Zone/Game/Script/ScriptManager.hpp"
+#include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 
 enum entity_task_schedule_group
@@ -128,11 +128,11 @@ public:
 	{
 		_map = map;
 		_map_container_thread = map->container();
-		_script_manager = map->container()->get_script_manager();
+		_lua_mgr = map->container()->get_lua_manager();
 	}
 
 	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
-	std::shared_ptr<ScriptManager> script_manager() { return _script_manager.lock(); }
+	std::shared_ptr<LUAManager> lua_manager() { return _lua_mgr.lock(); }
 
 	/**
 	 * Entity applications
@@ -172,7 +172,7 @@ protected:
 
 	/* Simplified References */
 	std::weak_ptr<MapContainerThread> _map_container_thread;
-	std::weak_ptr<ScriptManager> _script_manager;
+	std::weak_ptr<LUAManager> _lua_mgr;
 
 	MapCoords _changed_dest_pos{0, 0}, _dest_pos{0, 0};
 	AStar::CoordinateList _walk_path;

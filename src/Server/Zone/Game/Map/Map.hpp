@@ -33,7 +33,7 @@
 #include "Path/AStar.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
