@@ -58,17 +58,13 @@ bool SkillDatabase::load()
 	lua->open_libraries(sol::lib::package);
 
 	std::shared_ptr<CombatComponent> combat_component = std::make_shared<CombatComponent>();
-	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
 	std::shared_ptr<SkillComponent> skill_component = std::make_shared<SkillComponent>();
+	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
 
 	combat_component->sync_definitions(lua);
 	combat_component->sync_data_types(lua);
 	combat_component->sync_functions(lua);
-
-	entity_component->sync_definitions(lua);
-	entity_component->sync_data_types(lua);
-	entity_component->sync_functions(lua);
 
 	item_component->sync_definitions(lua);
 	item_component->sync_data_types(lua);
@@ -77,6 +73,10 @@ bool SkillDatabase::load()
 	skill_component->sync_definitions(lua);
 	skill_component->sync_data_types(lua);
 	skill_component->sync_functions(lua);
+
+	entity_component->sync_definitions(lua);
+	entity_component->sync_data_types(lua);
+	entity_component->sync_functions(lua);
 
 	/**
 	 * Skill DB

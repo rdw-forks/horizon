@@ -195,17 +195,3 @@ void NPCComponent::continue_npc_script_for_player(std::shared_ptr<Entities::Play
 		HLog(error) << "LUAManager::continue_npc_script_for_player: " << err.what();
 	}
 }
-
-void NPCComponent::perform_command_from_player(std::shared_ptr<Entities::Player> player, std::string const &cmd)
-{
-	try {
-		sol::load_result fx = player->lua_state()->load_file("scripts/internal/at_command_main.lua");
-		sol::protected_function_result result = fx(player, cmd);
-		if (!result.valid()) {
-			sol::error err = result;
-			HLog(error) << "LUAManager::perform_command_from_player: " << err.what();
-		}
-	} catch (sol::error &e) {
-		HLog(error) << "LUAManager::perform_command_from_player: " << e.what();
-	}
-}

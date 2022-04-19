@@ -182,9 +182,9 @@ public:
 	/**
 	 * Skills
 	 */
-	void perform_skill(int8_t skill_id, int8_t skill_lv);
 	bool perform_action(player_action_type action);
 
+	bool perform_skill(int16_t skill_id, int16_t skill_lv);
 private:
 	std::shared_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;

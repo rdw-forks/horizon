@@ -56,16 +56,16 @@ bool MonsterDatabase::load()
 	lua->open_libraries(sol::lib::base);
 	lua->open_libraries(sol::lib::package);
 
-	std::shared_ptr<MonsterComponent> monster_component = std::make_shared<MonsterComponent>();
 	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<MonsterComponent> monster_component = std::make_shared<MonsterComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
-
-	monster_component->sync_definitions(lua);
-	monster_component->sync_data_types(lua);
 
 	entity_component->sync_definitions(lua);
 	entity_component->sync_data_types(lua);
 	entity_component->sync_functions(lua);
+
+	monster_component->sync_definitions(lua);
+	monster_component->sync_data_types(lua);
 
 	item_component->sync_definitions(lua);
 	item_component->sync_data_types(lua);

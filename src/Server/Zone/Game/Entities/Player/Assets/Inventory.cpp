@@ -473,6 +473,7 @@ int32_t Inventory::save()
 		tci.opt_idx2, tci.opt_val2, tci.opt_idx3, tci.opt_val3, tci.opt_idx4, tci.opt_val4,
 		tci.hire_expire_date, tci.is_favorite, tci.is_broken, tci.bind_type, tci.unique_id);
 
+	int count = 0;
 	for (auto mit_i = _saved_inventory_items.begin(); mit_i != _saved_inventory_items.end(); mit_i++) {
 		std::shared_ptr<const item_entry_data> mit = *mit_i;
 		mt_i.values.add(tci.char_id = (int) player()->character()._character_id, 
@@ -501,9 +502,11 @@ int32_t Inventory::save()
 			tci.is_broken = (int) mit->info.is_broken, 
 			tci.bind_type = (int) mit->bind_type, 
 			tci.unique_id = (int64_t) mit->unique_id);
+		count++;
 	}
 
-	(*conn)(mt_i); // Transact.
+	if (count)
+		(*conn)(mt_i); // Transact.
 
 	return changes;
 }

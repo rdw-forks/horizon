@@ -115,10 +115,10 @@ void Player::initialize()
 	// On map entry processing.
 	on_map_enter();
 
-	lua_manager()->initialize_player_state(_lua_state);
+	lua_manager()->initialize_player_state(lua_state());
 
 	try {
-		sol::load_result fx = _lua_state->load_file("scripts/internal/on_login_event.lua");
+		sol::load_result fx = lua_state()->load_file("scripts/internal/on_login_event.lua");
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
 		if (!result.valid()) {
 			sol::error err = result;
@@ -444,26 +444,28 @@ bool Player::job_change(int32_t job_id)
 	return true;
 }
 
-
-void Player::perform_skill(int8_t skill_id, int8_t skill_lv)
+bool Player::perform_skill(int16_t skill_id, int16_t skill_lv)
 {
 	std::shared_ptr<const skill_config_data> sk_d = SkillDB->get_skill_by_id(skill_id);
 
-	if (sk_d == nullptr) {
-		HLog(warning) << "Tried to perform skill for non-existent id " << skill_id << ", ignoring...";
-		return;
-	}
+    if (sk_d == nullptr) {
+        HLog(warning) << "Tried to perform skill for non-existent id " << skill_id << ", ignoring...";
+        return false;
+    }
 
-	try {
-		sol::load_result fx = _lua_state->load_file("scripts/skills/" + sk_d->name + ".lua");
-		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), skill_id, skill_lv);
-		if (!result.valid()) {
-			sol::error err = result;
-			HLog(error) << "Player::perform_skill: " << err.what();
-		}
-	} catch (sol::error &e) {
-		HLog(error) << "Player::perform_skill: " << e.what();
-	}
+    try {
+        sol::load_result fx = lua_state()->load_file("scripts/skills/" + sk_d->name + ".lua");
+        sol::protected_function_result result = fx(shared_from_this(), skill_id, skill_lv);
+        if (!result.valid()) {
+            sol::error err = result;
+            HLog(error) << "Entity::perform_skill: " << err.what();
+        }
+    } catch (sol::error &e) {
+        HLog(error) << "Entity::perform_skill: " << e.what();
+        return false;
+    }
+
+    return true;
 }
 
 bool Player::perform_action(player_action_type action)

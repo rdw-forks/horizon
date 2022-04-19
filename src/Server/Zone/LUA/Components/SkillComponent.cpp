@@ -112,87 +112,24 @@ void SkillComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"HiddenTrap", SK_SUBTYPE_HIDDEN_TRAP,
 		"IsCombo", SK_SUBTYPE_IS_COMBO_SKILL   
 	);
+
+	state->create_named_table("SkillLearnType",
+		"Permanent", SKILL_LEARN_PERMANENT,
+		"Temporary", SKILL_LEARN_TEMPORARY,
+		"Plagiarized", SKILL_LEARN_PLAGIARIZED,
+		"Unused", SKILL_LEARN_UNUSED,
+		"PermanentlyGranted", SKILL_LEARN_PERM_GRANTED,
+		"ReplacedLv0", SKILL_LEARN_REPLACED_LV_0
+	);
 }
 
 void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-	// state.create_new_user_type<skill_cast_data>("SkillCastData",
-	// 	"skill_id", skill_id;                                                              ///< Skill Id.
-	// int16_t skill_lv{0};                                                              ///< Skill level.
-	// std::shared_ptr<Entity> source_caster{nullptr};                                   ///< Source caster's block data.
-	// std::shared_ptr<Entity> owner_of_source_caster{nullptr}; 
-	// //struct status_change *sc;                                                       ///< Source caster's status change data.
-	// //struct status_change_entry *sce;                                                ///< Status change entry of the target.
-	// //int sc_type;                                                                    ///< Status change type of the skill.
-	// int cast_time{0};                                                                 ///< Cast Time of the skill.
-
-	// int hp_cost{0};                                                                   ///< hp
-	// int sp_cost{0};                                                                   ///< sp
-	// int hp_percent_cost{0};                                                           ///< hp_rate_cost
-	// int sp_percent_cost{0};                                                           ///< sp_rate_cost
-	// int max_hp_trigger{0};                                                            ///< mhp
-	// int max_sp_trigger{0};                                                            ///< msp
-	// int zeny_cost{0};
-	// int weapon_type{IT_WT_FIST};                                                      ///< item_weapon_type  / weapon
-	// int ammunition_type{IT_AT_NONE};                                                  ///< item_ammunition_type / ammo
-	// int ammunition_cost{0};                                                           ///<
-	// int required_state{0};                                                            ///< skill_required_state_types
-	// int spirit_sphere_cost{0};
-
-	// struct skill_required_item_data_for_cast {
-	// 	struct {
-	// 		int id{0};
-	// 		int amount{0};
-	// 	} item[MAX_SKILL_ITEM_REQUIRE]{0};
-	// 	bool any{false};
-	// } req_items, req_equip;
-
-	// unsigned int splash_target{0};                                                    ///< Mask of entity_types as splash targets (@see skill->splash_target).
-	// int splash_range{0};                                                              ///< Splash-range of the skill.
-	// int64_t cast_start_time{0};                                                       ///< Time of skill packet reception.
-	// int attack_type{0};                                                               ///< Attack Properties of the skill cast.
-	// // Enum bit masks.
-	// int display_flags{0};                                                             ///< Display flags from e_skill_display.
-	// int target_flags{0};                                                              ///< Mask of e_battle_check_target.
-	// // AoE specific data.
-	// int area_target_count{0};                                                         ///< Count of targets in the area of a splash range.
-	// int area_target_invoked{0};                                                       ///< Temporary count for the number of targets that
-	// 												                                  ///! have been recursively invoked by @see skill_cast_area_sub().
-	// // Knock back information.
-	// int knock_back_cells{0};                                                          ///< Distance to knock back if any.
-	// int knock_back_dir{0};                                                            ///< Direction to knock back (-1 for default).
-	// int knock_back_flag{0};                                                           ///< @see skill_blown() for flag types.
-
-	// // Target/AoE specific data.
-	// union {
-	// 	struct {
-	// 		uint16_t x{0}, y{0};                                                      ///< coordinates of the AOE skill
-	// 	} aoe;
-	// 	struct {
-	// 		std::shared_ptr<Entity> entity{nullptr};                                  ///< Entity data of the target
-	// 	} target;
-	// } u;                                                                              ///< Union
-
-	// // Skill Switches / Flags.
-	// struct {
-	// 	unsigned int is_aoe : 1;                                                      ///< AoE/Targeted skill toggle. (Type specifier for union u)
-	// 	unsigned int record_last_casted : 1;                                          ///< Records latest casted skill even on failure.
-	// 	unsigned int splash_ignore_caster : 1;                                        ///< Splash skills that ignore the caster.
-	// 	unsigned int foreach_retain_properties : 1;                                   ///< Retain original cast properties.
-	// 	unsigned int ignore_requirements : 1;                                         ///< Ignore requirements.
-	// 	unsigned int attract_cast_sensors : 1;                                        ///< Pulls cast-sensing mobs even if no casttime.
-	// 	unsigned int interrupt_cast : 1;                                              ///< Interrupts the target's current cast.
-	// 	unsigned int item_invoked : 1;                                                ///< Invoked via an item.
-	// 	unsigned int splash_ignore_primary_target : 1;                                ///< Ignore the primary target of a splash attack. (In cases where the primary target is handled separately.)
-	// } flags;
-
-	// // Client interface specific data.
-	// struct {
-	// 	std::shared_ptr<Entity> skill_animation_target{nullptr};                      ///< Target of the skill animation.
-	// 	int skill_id{0};                                                              ///< Skill Id sent to the client.
-	// 	int display_value{0};                                                         ///< Healed amount sent to the client.
-	// 	int damage_value{0};                                                          ///< Damage value to be displayed for @see clif_skill_damage
-	// } clif;
+	state->new_usertype<skill_learnt_info>("SkillLearntInfo",
+		"skill_id", &skill_learnt_info::skill_id,
+		"level", &skill_learnt_info::level,
+		"learn_type", &skill_learnt_info::learn_type
+	);
 }
 
 void SkillComponent::sync_functions(std::shared_ptr<sol::state> state)

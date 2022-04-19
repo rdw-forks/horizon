@@ -67,6 +67,8 @@ public:
 
 	void initialize_basic_state(std::shared_ptr<sol::state> state);
 	void initialize_player_state(std::shared_ptr<sol::state> state);
+	void initialize_npc_state(std::shared_ptr<sol::state> state);
+	void initialize_monster_state(std::shared_ptr<sol::state> state);
 
 	std::shared_ptr<PlayerComponent> player() { return _player_component; }
 	std::shared_ptr<NPCComponent> npc() { return _npc_component; }
@@ -79,7 +81,7 @@ public:
 	std::shared_ptr<CombatComponent> combat() { return _combat_component; }
 
 protected:
-	void initialize();
+	void initialize_for_container();
 	void finalize();
 	void prepare_lua_state(std::shared_ptr<sol::state> &lua);
 

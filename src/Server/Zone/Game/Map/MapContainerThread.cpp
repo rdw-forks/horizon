@@ -170,7 +170,7 @@ void MapContainerThread::start()
 //! @thread MapContainerThread
 void MapContainerThread::start_internal()
 {
-	get_lua_manager()->initialize();
+	get_lua_manager()->initialize_for_container();
 
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 		update(std::time(nullptr));

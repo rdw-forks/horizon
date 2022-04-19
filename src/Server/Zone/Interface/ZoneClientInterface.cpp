@@ -492,7 +492,7 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
 	if (message[msg_first_char] == '@') {
-		get_session()->player()->lua_manager()->npc()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+		get_session()->player()->lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
 		return;
 	}
 

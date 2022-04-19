@@ -36,6 +36,10 @@ namespace Horizon
 {
 namespace Zone
 {
+    namespace Entities
+    {
+        class Player;
+    }
 class PlayerComponent : public LUAComponent
 {
 public:
@@ -44,6 +48,8 @@ public:
     void sync_definitions(std::shared_ptr<sol::state> state);
     void sync_data_types(std::shared_ptr<sol::state> state);
     void sync_functions(std::shared_ptr<sol::state> state);
+
+    void perform_command_from_player(std::shared_ptr<Entities::Player> player, std::string const &cmd);
 };
 }
 }

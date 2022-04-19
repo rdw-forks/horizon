@@ -30,6 +30,7 @@
 
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
 
 #include "EntityDefinitions.hpp"
 
@@ -434,13 +435,192 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
 
+    state->new_usertype<Entities::Traits::Status>("Status",
+        "strength", &Entities::Traits::Status::strength,
+        "agility", &Entities::Traits::Status::agility,
+        "vitality", &Entities::Traits::Status::vitality,
+        "dexterity", &Entities::Traits::Status::dexterity,
+        "intelligence", &Entities::Traits::Status::intelligence,
+        "luck", &Entities::Traits::Status::luck,
+        "max_hp", &Entities::Traits::Status::max_hp,
+        "max_sp", &Entities::Traits::Status::max_sp,
+        "current_hp", &Entities::Traits::Status::current_hp,
+        "current_sp", &Entities::Traits::Status::current_sp,
+        "base_level", &Entities::Traits::Status::base_level,
+        "job_level", &Entities::Traits::Status::job_level,
+        "base_experience", &Entities::Traits::Status::base_experience,
+        "job_experience", &Entities::Traits::Status::job_experience,
+        "next_base_experience", &Entities::Traits::Status::next_base_experience,
+        "next_job_experience", &Entities::Traits::Status::next_job_experience,
+        "movement_speed", &Entities::Traits::Status::movement_speed,
+        "max_weight", &Entities::Traits::Status::max_weight,
+        "current_weight", &Entities::Traits::Status::current_weight,
+        "hair_color", &Entities::Traits::Status::hair_color,
+        "cloth_color", &Entities::Traits::Status::cloth_color,
+        "weapon_sprite", &Entities::Traits::Status::weapon_sprite,
+        "shield_sprite", &Entities::Traits::Status::shield_sprite,
+        "robe_sprite", &Entities::Traits::Status::robe_sprite,
+        "head_top_sprite", &Entities::Traits::Status::head_top_sprite,
+        "head_mid_sprite", &Entities::Traits::Status::head_mid_sprite,
+        "head_bottom_sprite", &Entities::Traits::Status::head_bottom_sprite,
+        "hair_style", &Entities::Traits::Status::hair_style,
+        "body_style", &Entities::Traits::Status::body_style,
+        "status_point", &Entities::Traits::Status::status_point,
+        "skill_point", &Entities::Traits::Status::skill_point
+    );
+
+    state->new_usertype<Entities::Traits::BaseLevel>("BaseLevel",
+        "add", &Entities::Traits::BaseLevel::add_base,
+        "sub", &Entities::Traits::BaseLevel::sub_base,
+        "get", &Entities::Traits::BaseLevel::get_base,
+        "set", &Entities::Traits::BaseLevel::set_base
+    );
+    state->new_usertype<Entities::Traits::JobLevel>("JobLevel",
+        "add", &Entities::Traits::JobLevel::add_base,
+        "sub", &Entities::Traits::JobLevel::sub_base,
+        "get", &Entities::Traits::JobLevel::get_base,
+        "set", &Entities::Traits::JobLevel::set_base
+    );
+    state->new_usertype<Entities::Traits::MaxHP>("MaxHP",
+        "add", &Entities::Traits::MaxHP::add_base,
+        "sub", &Entities::Traits::MaxHP::sub_base,
+        "get", &Entities::Traits::MaxHP::get_base,
+        "set", &Entities::Traits::MaxHP::set_base
+    );
+    state->new_usertype<Entities::Traits::MaxSP>("MaxSP",
+        "add", &Entities::Traits::MaxSP::add_base,
+        "sub", &Entities::Traits::MaxSP::sub_base,
+        "get", &Entities::Traits::MaxSP::get_base,
+        "set", &Entities::Traits::MaxSP::set_base
+    );
+    state->new_usertype<Entities::Traits::CurrentHP>("CurrentHP",
+        "add", &Entities::Traits::CurrentHP::add_base,
+        "sub", &Entities::Traits::CurrentHP::sub_base,
+        "get", &Entities::Traits::CurrentHP::get_base,
+        "set", &Entities::Traits::CurrentHP::set_base
+    );
+    state->new_usertype<Entities::Traits::CurrentSP>("CurrentSP",
+        "add", &Entities::Traits::CurrentSP::add_base,
+        "sub", &Entities::Traits::CurrentSP::sub_base,
+        "get", &Entities::Traits::CurrentSP::get_base,
+        "set", &Entities::Traits::CurrentSP::set_base
+    );
+    state->new_usertype<Entities::Traits::MovementSpeed>("MovementSpeed",
+        "add", &Entities::Traits::MovementSpeed::add_base,
+        "sub", &Entities::Traits::MovementSpeed::sub_base,
+        "get", &Entities::Traits::MovementSpeed::get_base,
+        "set", &Entities::Traits::MovementSpeed::set_base
+    );
+    state->new_usertype<Entities::Traits::MaxWeight>("MaxWeight",
+        "add", &Entities::Traits::MaxWeight::add_base,
+        "sub", &Entities::Traits::MaxWeight::sub_base,
+        "get", &Entities::Traits::MaxWeight::get_base,
+        "set", &Entities::Traits::MaxWeight::set_base
+    );
+    state->new_usertype<Entities::Traits::CurrentWeight>("CurrentWeight",
+        "add", &Entities::Traits::CurrentWeight::add_base,
+        "sub", &Entities::Traits::CurrentWeight::sub_base,
+        "get", &Entities::Traits::CurrentWeight::get_base,
+        "set", &Entities::Traits::CurrentWeight::set_base
+    );
+    state->new_usertype<Entities::Traits::Strength>("Strength",
+        "add", &Entities::Traits::Strength::add_base,
+        "sub", &Entities::Traits::Strength::sub_base,
+        "get", &Entities::Traits::Strength::get_base,
+        "set", &Entities::Traits::Strength::set_base
+    );
+    state->new_usertype<Entities::Traits::Agility>("Agility",
+        "add", &Entities::Traits::Agility::add_base,
+        "sub", &Entities::Traits::Agility::sub_base,
+        "get", &Entities::Traits::Agility::get_base,
+        "set", &Entities::Traits::Agility::set_base
+    );
+    state->new_usertype<Entities::Traits::Vitality>("Vitality",
+        "add", &Entities::Traits::Vitality::add_base,
+        "sub", &Entities::Traits::Vitality::sub_base,
+        "get", &Entities::Traits::Vitality::get_base,
+        "set", &Entities::Traits::Vitality::set_base
+    );
+    state->new_usertype<Entities::Traits::Intelligence>("Intelligence",
+        "add", &Entities::Traits::Intelligence::add_base,
+        "sub", &Entities::Traits::Intelligence::sub_base,
+        "get", &Entities::Traits::Intelligence::get_base,
+        "set", &Entities::Traits::Intelligence::set_base
+    );
+    state->new_usertype<Entities::Traits::Dexterity>("Dexterity",
+        "add", &Entities::Traits::Dexterity::add_base,
+        "sub", &Entities::Traits::Dexterity::sub_base,
+        "get", &Entities::Traits::Dexterity::get_base,
+        "set", &Entities::Traits::Dexterity::set_base
+    );
+    state->new_usertype<Entities::Traits::Luck>("Luck",
+        "add", &Entities::Traits::Luck::add_base,
+        "sub", &Entities::Traits::Luck::sub_base,
+        "get", &Entities::Traits::Luck::get_base,
+        "set", &Entities::Traits::Luck::set_base
+    );
+    state->new_usertype<Entities::Traits::BaseExperience>("BaseExperience",
+        "add", &Entities::Traits::BaseExperience::add_base,
+        "sub", &Entities::Traits::BaseExperience::sub_base,
+        "get", &Entities::Traits::BaseExperience::get_base,
+        "set", &Entities::Traits::BaseExperience::set_base
+    );
+    state->new_usertype<Entities::Traits::JobExperience>("JobExperience",
+        "add", &Entities::Traits::JobExperience::add_base,
+        "sub", &Entities::Traits::JobExperience::sub_base,
+        "get", &Entities::Traits::JobExperience::get_base,
+        "set", &Entities::Traits::JobExperience::set_base
+    );
+    state->new_usertype<Entities::Traits::NextBaseExperience>("NextBaseExperience",
+        "add", &Entities::Traits::NextBaseExperience::add_base,
+        "sub", &Entities::Traits::NextBaseExperience::sub_base,
+        "get", &Entities::Traits::NextBaseExperience::get_base,
+        "set", &Entities::Traits::NextBaseExperience::set_base
+    );
+    state->new_usertype<Entities::Traits::NextJobExperience>("NextJobExperience",
+        "add", &Entities::Traits::NextJobExperience::add_base,
+        "sub", &Entities::Traits::NextJobExperience::sub_base,
+        "get", &Entities::Traits::NextJobExperience::get_base,
+        "set", &Entities::Traits::NextJobExperience::set_base
+    );
+    state->new_usertype<Entities::Traits::StatusPoint>("StatusPoint",
+        "add", &Entities::Traits::StatusPoint::add_base,
+        "sub", &Entities::Traits::StatusPoint::sub_base,
+        "get", &Entities::Traits::StatusPoint::get_base,
+        "set", &Entities::Traits::StatusPoint::set_base
+    );
+    state->new_usertype<Entities::Traits::SkillPoint>("SkillPoint",
+        "add", &Entities::Traits::SkillPoint::add_base,
+        "sub", &Entities::Traits::SkillPoint::sub_base,
+        "get", &Entities::Traits::SkillPoint::get_base,
+        "set", &Entities::Traits::SkillPoint::set_base
+    );
+	state->new_usertype<Entity>("Entity",
+		"dest_coords", &Entity::dest_coords,
+		"move_to_coordinates", &Entity::move_to_coordinates,
+		"is_walking", &Entity::is_walking,
+		"stop_movement", &Entity::stop_movement,
+		"guid", &Entity::guid,
+		"job_id", &Entity::job_id,
+		"posture", &Entity::posture,
+		"set_posture", &Entity::set_posture,
+		"name", &Entity::name,
+		"direction", &Entity::direction,
+		"status", &Entity::status,
+		"force_movement_stop_internal", &Entity::force_movement_stop_internal,
+		"map", &Entity::map,
+		"type", &Entity::type,
+		"status", &Entity::status,
+		"map_coords", &Entity::map_coords,
+		"grid_coords", &Entity::grid_coords,
+		"is_in_range_of", &Entity::is_in_range_of,
+		"notify_nearby_players_of_existence", &Entity::notify_nearby_players_of_existence,
+		"notify_nearby_players_of_movement", &Entity::notify_nearby_players_of_movement,
+		"notify_nearby_players_of_spawn", &Entity::notify_nearby_players_of_spawn,
+		"get_nearby_entity", &Entity::get_nearby_entity
+	);
 }
 
 void EntityComponent::sync_functions(std::shared_ptr<sol::state> state)
 {
-	state->set_function("cast_entity_to_player",
-					[] (std::shared_ptr<Entity> e)
-					{
-						return e->template downcast<Player>();
-					});
 }

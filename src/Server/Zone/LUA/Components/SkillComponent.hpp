@@ -41,6 +41,7 @@ class SkillComponent : public LUAComponent
 public:
     SkillComponent() : LUAComponent() { }
     ~SkillComponent() { }
+    
     void sync_definitions(std::shared_ptr<sol::state> state);
     void sync_data_types(std::shared_ptr<sol::state> state);
     void sync_functions(std::shared_ptr<sol::state> state);

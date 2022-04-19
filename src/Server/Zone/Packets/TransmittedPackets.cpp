@@ -6986,6 +6986,8 @@ ByteBuffer &ZC_ACK_LEAVE_GUILD::serialize()
 void ZC_NOTIFY_ACT::deliver(int8_t action) 
 {
 	_action_type = action;
+
+	serialize();
 	transmit();
 }
 
@@ -6995,6 +6997,7 @@ ByteBuffer &ZC_NOTIFY_ACT::serialize()
 	buf() << get_session()->player()->guid();
 	buf().append(_unused_bytes, 20);
 	buf() << _action_type;
+	buf().append(_unused_bytes2, 2);
 
 	return buf();
 }

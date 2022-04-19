@@ -59,7 +59,6 @@ public:
     // void send_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid, std::string const &HLog);
     // void send_next_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
     // void send_close_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
-    void perform_command_from_player(std::shared_ptr<Entities::Player> player, std::string const &cmd);
 
 private:
     LockedLookupTable<uint32_t, std::shared_ptr<npc_db_data>> _npc_db;

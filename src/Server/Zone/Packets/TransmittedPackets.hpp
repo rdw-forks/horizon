@@ -23740,6 +23740,7 @@ public:
 /* Structure */
 	int8_t _unused_bytes[20];
 	int8_t _action_type{2};
+	int8_t _unused_bytes2[2];
 
 };
 

@@ -41,9 +41,18 @@ using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
 LUAManager::LUAManager(std::shared_ptr<MapContainerThread> container)
-: _container(container)
+: _container(container), 
+_lua_state(std::make_shared<sol::state>()),
+_player_component(std::make_shared<PlayerComponent>()),
+_npc_component(std::make_shared<NPCComponent>()),
+_monster_component(std::make_shared<MonsterComponent>()),
+_map_component(std::make_shared<MapComponent>()),
+_item_component(std::make_shared<ItemComponent>()),
+_entity_component(std::make_shared<EntityComponent>()),
+_skill_component(std::make_shared<SkillComponent>()),
+_status_effect_component(std::make_shared<StatusEffectComponent>()),
+_combat_component(std::make_shared<CombatComponent>())
 {
-
 }
 
 LUAManager::~LUAManager()
@@ -51,21 +60,12 @@ LUAManager::~LUAManager()
 
 }
 
-void LUAManager::initialize()
+void LUAManager::initialize_for_container()
 {
-	_lua_state = std::make_shared<sol::state>();
-
-	_player_component = std::make_shared<PlayerComponent>();
-	_npc_component = std::make_shared<NPCComponent>();
-	_monster_component = std::make_shared<MonsterComponent>();
-	_map_component = std::make_shared<MapComponent>();
-	_item_component = std::make_shared<ItemComponent>();
-	_entity_component = std::make_shared<EntityComponent>();
-	_skill_component = std::make_shared<SkillComponent>();
-	_status_effect_component = std::make_shared<StatusEffectComponent>();
-	_combat_component = std::make_shared<CombatComponent>();
-
 	initialize_basic_state(_lua_state);
+	initialize_monster_state(_lua_state);
+	initialize_npc_state(_lua_state);
+
 	load_constants();
 	load_scripts();
 }
@@ -82,14 +82,6 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	state->open_libraries(sol::lib::table);
 	state->open_libraries(sol::lib::package);
 
-	_npc_component->sync_definitions(state);
-	_npc_component->sync_data_types(state);
-	_npc_component->sync_functions(state, _container.lock());
-
-	_monster_component->sync_definitions(state);
-	_monster_component->sync_data_types(state);
-	_monster_component->sync_functions(state, _container.lock());
-
 	_map_component->sync_definitions(state);
 	_map_component->sync_data_types(state);
 	_map_component->sync_functions(state);
@@ -97,10 +89,6 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	_item_component->sync_definitions(state);
 	_item_component->sync_data_types(state);
 	_item_component->sync_functions(state);
-
-	_entity_component->sync_definitions(state);
-	_entity_component->sync_data_types(state);
-	_entity_component->sync_functions(state);
 
 	_skill_component->sync_definitions(state);
 	_skill_component->sync_data_types(state);
@@ -113,6 +101,10 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	_combat_component->sync_definitions(state);
 	_combat_component->sync_data_types(state);
 	_combat_component->sync_functions(state);
+
+	_entity_component->sync_definitions(state);
+	_entity_component->sync_data_types(state);
+	_entity_component->sync_functions(state);
 
 	std::vector<std::string> _loadable_files = {
 		"scripts/utils/strutils.lua",
@@ -133,34 +125,63 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	}
 
 	// Macro to constants
-	(*_lua_state)["MAX_LEVEL"]            = MAX_LEVEL;
-	(*_lua_state)["MAX_STATUS_POINTS"]    = MAX_STATUS_POINTS;
-	(*_lua_state)["MAX_CHARACTER_SLOTS"]  = MAX_CHARACTER_SLOTS;
-	(*_lua_state)["MAX_VIEW_RANGE"]       = MAX_VIEW_RANGE;
-	(*_lua_state)["MIN_INVENTORY_SIZE"]   = MIN_INVENTORY_SIZE;
-	(*_lua_state)["MAX_INVENTORY_SIZE"]   = MAX_INVENTORY_SIZE;
-	(*_lua_state)["MIN_STORAGE_SIZE"]     = MIN_STORAGE_SIZE;
-	(*_lua_state)["MAX_STORAGE_SIZE"]     = MAX_STORAGE_SIZE;
-	(*_lua_state)["MAX_INVENTORY_STACK_LIMIT"]  = MAX_INVENTORY_STACK_LIMIT;
-	(*_lua_state)["MAX_CART_STACK_LIMIT"]  = MAX_CART_STACK_LIMIT;
-	(*_lua_state)["MAX_STORAGE_STACK_LIMIT"]  = MAX_STORAGE_STACK_LIMIT;
-	(*_lua_state)["MAX_GSTORAGE_STACK_LIMIT"]  = MAX_GSTORAGE_STACK_LIMIT;
+	(*state)["MAX_LEVEL"]            = MAX_LEVEL;
+	(*state)["MAX_STATUS_POINTS"]    = MAX_STATUS_POINTS;
+	(*state)["MAX_CHARACTER_SLOTS"]  = MAX_CHARACTER_SLOTS;
+	(*state)["MAX_VIEW_RANGE"]       = MAX_VIEW_RANGE;
+	(*state)["MIN_INVENTORY_SIZE"]   = MIN_INVENTORY_SIZE;
+	(*state)["MAX_INVENTORY_SIZE"]   = MAX_INVENTORY_SIZE;
+	(*state)["MIN_STORAGE_SIZE"]     = MIN_STORAGE_SIZE;
+	(*state)["MAX_STORAGE_SIZE"]     = MAX_STORAGE_SIZE;
+	(*state)["MAX_INVENTORY_STACK_LIMIT"]  = MAX_INVENTORY_STACK_LIMIT;
+	(*state)["MAX_CART_STACK_LIMIT"]  = MAX_CART_STACK_LIMIT;
+	(*state)["MAX_STORAGE_STACK_LIMIT"]  = MAX_STORAGE_STACK_LIMIT;
+	(*state)["MAX_GSTORAGE_STACK_LIMIT"]  = MAX_GSTORAGE_STACK_LIMIT;
 
 #ifdef RENEWAL
-	(*_lua_state)["RENEWAL"]              = true;
+	(*state)["RENEWAL"]              = true;
 #else
-	(*_lua_state)["RENEWAL"]              = false;
+	(*state)["RENEWAL"]              = false;
 #endif
+
+	(*state)["basic_component"] = true;
 }
 
 void LUAManager::initialize_player_state(std::shared_ptr<sol::state> state)
 {
-	initialize_basic_state(state);
+	if ((*state)["basic_component"] == sol::lua_nil)
+		initialize_basic_state(state);
 
 	_player_component->sync_definitions(state);
 	_player_component->sync_data_types(state);
 	_player_component->sync_functions(state);
 
+	(*state)["player_component"] = true;
+}
+
+void LUAManager::initialize_npc_state(std::shared_ptr<sol::state> state)
+{
+	if ((*state)["basic_component"] == sol::lua_nil)
+		initialize_basic_state(state);
+
+	_npc_component->sync_definitions(state);
+	_npc_component->sync_data_types(state);
+	_npc_component->sync_functions(state, _container.lock());
+
+	(*state)["npc_component"] = true;
+}
+
+void LUAManager::initialize_monster_state(std::shared_ptr<sol::state> state)
+{
+	if ((*state)["basic_component"] == sol::lua_nil)
+		initialize_basic_state(state);
+
+	_monster_component->sync_definitions(state);
+	_monster_component->sync_data_types(state);
+	_monster_component->sync_functions(state, _container.lock());
+
+
+	(*state)["monster_component"] = true;
 }
 
 void LUAManager::finalize()

@@ -31,6 +31,7 @@
 #define HORIZON_ZONE_GAME_ENTITY_HPP
 
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
@@ -73,7 +74,7 @@ class Entity : public std::enable_shared_from_this<Entity>
 public:
 	Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords);
 	Entity(uint32_t guid, entity_type type);
-	~Entity();
+	virtual ~Entity();
 
 	virtual void initialize();
 
@@ -86,12 +87,11 @@ public:
 	virtual bool move_to_coordinates(int16_t x, int16_t y);
 	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
 
-
+	virtual void stop_movement() = 0;
 protected:
 	bool schedule_movement(const MapCoords& mcoords);
 	void move();
 	
-	virtual void stop_movement() = 0;
 	virtual void on_pathfinding_failure() = 0;
 	virtual void on_movement_begin() = 0;
 	virtual void on_movement_step() = 0;
@@ -161,7 +161,7 @@ public:
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 
 	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
-
+    
 protected:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	uint32_t _guid{0};
