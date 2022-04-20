@@ -56,6 +56,8 @@ enum entity_walk_state
 	ENTITY_WALK_MOVING = 1
 };
 
+#define ENTITY_STATUS_EFFECT_CHECK_TIME 1000
+
 namespace Horizon
 {
 namespace Zone

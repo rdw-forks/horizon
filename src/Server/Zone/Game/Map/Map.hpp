@@ -108,15 +108,15 @@ public:
 
 		do {
 			a = r % (d * 2 + 1) - d;
-			b = r % (d * 2 + 1) % (d * 2 + 1) - d;
+			b = r / (d * 2 + 1) % (d * 2 + 1) - d;
 
 			a += x;
 			b += y;
 			i++;
-		} while(has_obstruction_at(a, b) && i < 1000);
+		} while(has_obstruction_at(a, b) && i < 20);
 
-		if (i == 1000) return MapCoords(0, 0);
-		
+		if (i == 20) return MapCoords(0, 0);
+
 		return MapCoords(a, b);
 	}
 

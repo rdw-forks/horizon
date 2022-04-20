@@ -256,7 +256,7 @@ bool Entity::status_effect_start(int type, int total_time, int val1, int val2, i
 
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR)) == 0)
 		map()->container()->getScheduler().Schedule(
-			Milliseconds(1000), 
+			Milliseconds(ENTITY_STATUS_EFFECT_CHECK_TIME), 
 			get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR),
 			[this] (TaskContext context)
 			{
@@ -276,7 +276,7 @@ bool Entity::status_effect_start(int type, int total_time, int val1, int val2, i
 				}
 
 				if (get_status_effects().size() > infinite_statuses)
-					context.Repeat(Milliseconds(1000));
+					context.Repeat(Milliseconds(ENTITY_STATUS_EFFECT_CHECK_TIME));
 			});
 
 	return true;
