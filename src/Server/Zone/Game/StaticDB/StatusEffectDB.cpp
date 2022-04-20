@@ -60,19 +60,19 @@ bool StatusEffectDatabase::load()
 	/**
 	 * Skill DB
 	 */
-	try {
+    try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "status_effect_db.lua";
-		lua->script_file(file_path);
-		sol::table status_tbl = lua->get<sol::table>("status_effect_db");
+        sol::load_result fx = lua->load_file(file_path);
+		sol::table status_tbl = fx();
 		status_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value) ? 1 : 0;
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
-	} catch(const std::exception &e) {
-		HLog(error) << "StatusEffectDatabase::load: error loading status_db:  " << e.what();
-		return false;
-	}
+    } catch (sol::error &e) {
+        HLog(error) << "StatusEffectDatabase::load: " << e.what();
+        return false;
+    }
 
 	return true;
 }

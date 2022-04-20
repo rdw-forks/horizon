@@ -69,28 +69,46 @@ void Monster::initialize()
     	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
     	[this] (TaskContext context)
     {
-    	perform_ai_lazy();
+    	behavior_passive();
     	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
     });
 }
 
-void Monster::perform_ai_lazy()
+void Monster::behavior_passive()
 {
+
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
-		&& (_next_walktime - std::time(nullptr) < 0)
+		&& (_next_walktime - get_sys_time() < 0)
 		&& !is_walking()
 		&& was_spotted_once()) {
 		MapCoords mc = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
-		move_to_coordinates(mc.x(), mc.y());
+		_next_walktime = get_sys_time() + ((std::rand() % MOB_LAZY_MOVE_RATE)) + MIN_RANDOM_TRAVEL_TIME;
+
+		if (mc == MapCoords(0, 0)) {
+			HLog(warning) << "Monster (" << guid() << ") " << name() << " could not move, coordinates not found.";
+			return;
+		}
+
+		if (move_to_coordinates(mc.x(), mc.y()) == false) {
+			HLog(warning) << "Monster (" << guid() << ") " << name() << " could not move to coordinates.";
+			return;
+		}
 
 		int total_movement_cost = 0;
 		for (int i = 0; i < _walk_path.size(); i++) {
 			MapCoords m = _walk_path.at(i);
 			total_movement_cost += m.move_cost();
 		}
-		HLog(debug) << "Monster " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
-		_next_walktime = std::time(nullptr) + ((std::rand() % MIN_RANDOM_TRAVEL_TIME) / 1000) + (total_movement_cost / 10);
+
+		HLog(debug) << "Monster (" << guid() << ") " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
+		_next_walktime += total_movement_cost * 100;
 	}
+
+}
+
+void Monster::behavior_active()
+{
+
 }
 
 void Monster::stop_movement()
@@ -114,5 +132,20 @@ void Monster::on_movement_step()
 
 void Monster::on_movement_end()
 {
+}
+
+void Monster::on_status_effect_start(std::shared_ptr<status_change_entry> sce)
+{
+
+}
+
+void Monster::on_status_effect_end(std::shared_ptr<status_change_entry> sce)
+{
+
+}
+
+void Monster::on_status_effect_change(std::shared_ptr<status_change_entry> sce)
+{
+
 }
 

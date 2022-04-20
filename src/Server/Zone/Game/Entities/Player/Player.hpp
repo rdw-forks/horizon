@@ -183,8 +183,15 @@ public:
 	 * Skills
 	 */
 	bool perform_action(player_action_type action);
-
 	bool perform_skill(int16_t skill_id, int16_t skill_lv);
+	bool on_skill_failure(int16_t skill_id, int message_type, int item_id, skill_use_fail_cause_type cause);
+	/**
+	 * Status Effects
+	 */
+    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
+
 private:
 	std::shared_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;

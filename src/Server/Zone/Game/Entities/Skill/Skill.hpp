@@ -48,6 +48,15 @@ public:
 	Skill(uint32_t guid,std::shared_ptr<Map> map, MapCoords mcoords);
 	~Skill();
 
+    void stop_movement() override;
+    void on_pathfinding_failure() override;
+    void on_movement_begin() override;
+    void on_movement_step() override;
+    void on_movement_end() override;
+
+    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
 private:
 };
 }

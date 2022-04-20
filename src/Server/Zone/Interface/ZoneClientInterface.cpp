@@ -870,3 +870,40 @@ bool ZoneClientInterface::notify_action(player_action_type action)
 	na.deliver((int8_t) action);
 	return true;
 }
+
+bool ZoneClientInterface::notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3)
+{
+	ZC_MSG_STATE_CHANGE2 sc(get_session());
+
+	if (time_remaining < 0)
+		time_remaining = 9999;
+
+	sc.deliver(si_type, guid, state, time_remaining, val1, val2, val3);
+	return true;
+}
+
+bool ZoneClientInterface::notify_status_change_end(int16_t status_index, int32_t guid, int8_t state)
+{
+	ZC_MSG_STATE_CHANGE sce(get_session());
+	sce.deliver(status_index, guid, state);
+	return true;
+}
+
+bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause)
+{
+	ZC_ACK_TOUSESKILL pkt(get_session());
+	pkt.deliver(skill_id, message_type, item_id, cause);
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+

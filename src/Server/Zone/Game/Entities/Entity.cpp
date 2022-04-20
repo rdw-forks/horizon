@@ -73,33 +73,38 @@ void Entity::initialize()
 }
 
 
-bool Entity::schedule_movement(const MapCoords& coords)
+bool Entity::schedule_movement()
 {
-	MapCoords source_coords = { map_coords().x(), map_coords().y() };
-	MapCoords dest_coords = { coords.x(), coords.y() };
+	MapCoords source_pos = { map_coords().x(), map_coords().y() };
 
 	if (!_walk_path.empty())
 		_walk_path.clear();
 
 	if (!map()) {
 		HLog(error) << "Reference to map object has been lost for entity " << (void *) this << ".";
+		_dest_pos = { 0, 0 };
 		return false;
 	}
 
 	// This method returns vector of coordinates from target to source.
-	_walk_path = map()->get_pathfinder().findPath(source_coords, dest_coords);
+	_walk_path = map()->get_pathfinder().findPath(source_pos, _dest_pos);
 
 	_changed_dest_pos = {0, 0};
 
 	// If destination was a collision, nothing is returned.
-	if (_walk_path.size() == 0)
+	if (_walk_path.size() == 0) {
+		HLog(warning) << "Entity::schedule_movement: Destination was a collision, no walk path available.";
+		_dest_pos = { 0, 0 };
 		return false;
+	}
 
 	std::reverse(_walk_path.begin(), _walk_path.end());
 	_walk_path.erase(_walk_path.begin());
 
 	if (_walk_path.empty()) {
 		on_pathfinding_failure();
+		HLog(warning) << "Entity::schedule_movement: Path too short or empty, failed to schedule movement.";
+		_dest_pos = { 0, 0 };
 		return false;
 	}
 
@@ -113,20 +118,26 @@ bool Entity::schedule_movement(const MapCoords& coords)
 
 void Entity::move()
 {
-	MapCoords my_coords = map_coords();
-	MapCoords c = _walk_path.at(0);
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
+		_dest_pos = { 0, 0 };
+		return;
+	}
 
-	map()->container()->getScheduler().Schedule(
-		Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), 
-		get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
-		[this, c, my_coords] (TaskContext /*movement*/)
+	MapCoords c = _walk_path.at(0); // for the first step.
+
+	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
+		[this] (TaskContext context)
 		{
+			MapCoords c = _walk_path.at(0);
+
 			// Force stop as the current coordinates might asynchronously update after map has changed 
 			// and co-ordinates are reset to something in a previous walk path.
 			// This force stop will return before changing co-ordinates and 
 			// prevent further movement updates after map has changed.
-			if (_jump_walk_stop)
+			if (_jump_walk_stop) {
+				_dest_pos = { 0, 0 };
 				return;
+			}
 
 			MapCoords step_coords(c.x(), c.y());
 
@@ -141,7 +152,7 @@ void Entity::move()
 
 			if (_changed_dest_pos != MapCoords(0, 0)) {
 				_dest_pos = _changed_dest_pos;
-				schedule_movement(_dest_pos);
+				schedule_movement();
 				return;
 			} else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty()) {
 				_dest_pos = { 0, 0 };
@@ -149,7 +160,7 @@ void Entity::move()
 			}
 
 			if (!_walk_path.empty())
-				move();
+				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
 		});
 }
 
@@ -162,7 +173,10 @@ bool Entity::move_to_coordinates(int16_t x, int16_t y)
 
 	_dest_pos = { x, y };
 
-	schedule_movement(_dest_pos);
+	if (schedule_movement() == false) {
+		HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
+		return false;
+	}
 
 	return true;
 }
@@ -207,4 +221,79 @@ void Entity::notify_nearby_players_of_movement()
 	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+bool Entity::status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4)
+{
+	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
+
+	if (it == get_status_effects().end()) {
+		std::shared_ptr<status_change_entry> sce = std::make_shared<status_change_entry>();
+		sce->type = type;
+		sce->val1 = val1;
+		sce->val2 = val2;
+		sce->val3 = val3;
+		sce->val4 = val4;
+
+		if (total_time < 0) {
+			sce->infinite_duration = true;
+			sce->current_time = 0;
+			sce->total_time = 0;
+		} else {
+			sce->current_time = std::time(nullptr) + total_time;
+			sce->total_time = total_time;
+		}
+
+		get_status_effects().insert(std::pair(type, sce));
+		on_status_effect_start(sce);
+	} else {
+		std::shared_ptr<status_change_entry> sce = it->second;
+		sce->current_time = std::time(nullptr) + total_time;
+		sce->total_time = total_time;
+
+		on_status_effect_change(sce);
+	}
+
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR)) == 0)
+		map()->container()->getScheduler().Schedule(
+			Milliseconds(1000), 
+			get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR),
+			[this] (TaskContext context)
+			{
+				std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().begin();
+
+				int infinite_statuses = 0;
+				for (; it != get_status_effects().end(); it++) {
+					std::shared_ptr<status_change_entry> sce = it->second;
+					
+					if (sce->infinite_duration == false) {
+						infinite_statuses++;
+						continue;
+					}
+
+					if (sce->current_time - std::time(nullptr) <= 0)
+						status_effect_end(sce->type);
+				}
+
+				if (get_status_effects().size() > infinite_statuses)
+					context.Repeat(Milliseconds(1000));
+			});
+
+	return true;
+}
+
+bool Entity::status_effect_end(int type)
+{
+	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
+
+	if (it == get_status_effects().end()) {
+		HLog(warning) << "Trying to end status effect that doesn't exist. ID " << type << ", ignoring...";
+		return false;
+	}
+
+	get_status_effects().erase(it);
+
+	on_status_effect_end(it->second);
+
+	return true;
 }

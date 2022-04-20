@@ -70,6 +70,20 @@ public:
 
 	GridHolderType &getGridHolder() { return _gridholder; }
 
+	template <class T>
+	bool ensure_grid_for_entity(T *entity, MapCoords coords);
+
+	template<class T, class CONTAINER>
+	void visit(GridCoords const &grid, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
+
+	template<class T, class CONTAINER>
+	void visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
+
+	template<class T, class CONTAINER>
+	void visit_in_range(MapCoords const &map_coords, GridReferenceContainerVisitor<T, CONTAINER> &visitor, uint16_t range = MAX_VIEW_RANGE);
+
+	AStar::Generator &get_pathfinder() { return _pathfinder; }
+
 	bool has_obstruction_at(int16_t x, int16_t y);
 
 	MapCoords get_random_accessible_coordinates()
@@ -85,43 +99,25 @@ public:
 		return { x, y };
 	}
 
-	template <class T>
-	bool ensure_grid_for_entity(T *entity, MapCoords coords);
-
-	template<class T, class CONTAINER>
-	void visit(GridCoords const &grid, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
-
-	template<class T, class CONTAINER>
-	void visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
-
-	template<class T, class CONTAINER>
-	void visit_in_range(MapCoords const &map_coords, GridReferenceContainerVisitor<T, CONTAINER> &visitor, uint16_t range = MAX_VIEW_RANGE);
-
-	AStar::Generator &get_pathfinder() { return _pathfinder; }
-
 	MapCoords get_random_coordinates_in_walkable_range(uint16_t x, uint16_t y, int16_t min, int16_t max)
 	{
-		std::vector<MapCoords> available_cells;
+		int a = 0, b = 0;
+		int r = std::rand();
+		int d = r % (max - min + 1) + min;
+		int i = 0;
 
-		assert(min <= max);
+		do {
+			a = r % (d * 2 + 1) - d;
+			b = r % (d * 2 + 1) % (d * 2 + 1) - d;
 
-		for (int i = std::max(x - max, 0); i < std::min(x + max, (int) _width); i++) {
-			for (int j = std::max(y - max, 0); j < std::min(y + max,(int) _height); j++) {
-				if (i == x && j == y)
-					continue;
-				if (abs(i - x) < min || abs(j - y) < min)
-					continue;
-				if (!has_obstruction_at(i, j))
-					available_cells.push_back(MapCoords(i, j));
-			}
-		}
+			a += x;
+			b += y;
+			i++;
+		} while(has_obstruction_at(a, b) && i < 1000);
 
-		if (available_cells.size() == 0)
-			return MapCoords(0, 0);
-
-		int rnd = rand() % available_cells.size();
-
-		return available_cells.at(rnd);
+		if (i == 1000) return MapCoords(0, 0);
+		
+		return MapCoords(a, b);
 	}
 
 	MapCoords get_random_coordinates_in_walkable_area(uint16_t x, uint16_t y, int16_t xs, int16_t ys)

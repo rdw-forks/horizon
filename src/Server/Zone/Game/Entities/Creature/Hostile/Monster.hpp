@@ -67,14 +67,22 @@ public:
 	void set_spotted(bool spotted) { _was_spotted_once = spotted; }
 	bool was_spotted_once() { return _was_spotted_once; }
 
-	void perform_ai_lazy();
-
 	std::shared_ptr<const monster_config_data> monster_config() { return _wmd_data.lock(); }
 	void set_monster_config(std::shared_ptr<const monster_config_data> md) { _wmd_data = md; }
 
+    /**
+     * Status Effect
+     */
+    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
+
+    void behavior_passive();
+    void behavior_active();
+
 private:
 	bool _was_spotted_once{false};
-	int _next_walktime{0}, _last_spotted_time{0};
+	int _next_walktime{0}, _last_spotted_time{0}, _last_think_time{0};
 	std::weak_ptr<const monster_config_data> _wmd_data;
 	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;
 

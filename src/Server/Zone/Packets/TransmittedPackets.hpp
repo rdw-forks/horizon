@@ -3874,10 +3874,13 @@ public:
 	{}
 	virtual ~ZC_MSG_STATE_CHANGE() {}
 
-	void deliver();
+	void deliver(int16_t status_index, int32_t guid, int8_t state);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _status_index{0};
+	int32_t _guid{0};
+	int8_t _state{0};
 };
 
 enum {
@@ -27032,10 +27035,17 @@ public:
 	{}
 	virtual ~ZC_MSG_STATE_CHANGE2() {}
 
-	void deliver();
+	void deliver(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _index{0};
+	int32_t _guid{0};
+	int8_t _state{0};
+	int32_t _time_remaining{0};
+	int32_t _val1{0};
+	int32_t _val2{0};
+	int32_t _val3{0};
 };
 
 enum {

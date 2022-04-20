@@ -53,11 +53,15 @@ public:
 
 	void initialize() override;
 
-	virtual void stop_movement() override;
-	virtual void on_pathfinding_failure() override;
-	virtual void on_movement_begin() override;
-	virtual void on_movement_step() override;
-	virtual void on_movement_end() override;
+    void stop_movement() override;
+    void on_pathfinding_failure() override;
+    void on_movement_begin() override;
+    void on_movement_step() override;
+    void on_movement_end() override;
+
+    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
 
 private:
 	sol::protected_function _fn;

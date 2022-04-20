@@ -617,7 +617,9 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"notify_nearby_players_of_existence", &Entity::notify_nearby_players_of_existence,
 		"notify_nearby_players_of_movement", &Entity::notify_nearby_players_of_movement,
 		"notify_nearby_players_of_spawn", &Entity::notify_nearby_players_of_spawn,
-		"get_nearby_entity", &Entity::get_nearby_entity
+		"get_nearby_entity", &Entity::get_nearby_entity,
+		"status_effect_start", &Entity::status_effect_start,
+		"status_effect_end", &Entity::status_effect_end
 	);
 }
 

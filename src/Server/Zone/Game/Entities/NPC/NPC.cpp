@@ -89,3 +89,7 @@ void NPC::on_movement_end()
 {
 
 }
+
+void NPC::on_status_effect_start(std::shared_ptr<status_change_entry> sce) { }
+void NPC::on_status_effect_end(std::shared_ptr<status_change_entry> sce) { }
+void NPC::on_status_effect_change(std::shared_ptr<status_change_entry> sce) { }

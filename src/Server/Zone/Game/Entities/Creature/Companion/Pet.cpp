@@ -42,3 +42,13 @@ Pet::~Pet()
 {
 	//
 }
+
+void Pet::stop_movement() { }
+void Pet::on_pathfinding_failure() { }
+void Pet::on_movement_begin() { }
+void Pet::on_movement_step() { }
+void Pet::on_movement_end() { }
+
+void Pet::on_status_effect_start(std::shared_ptr<status_change_entry> sce) { }
+void Pet::on_status_effect_end(std::shared_ptr<status_change_entry> sce) { }
+void Pet::on_status_effect_change(std::shared_ptr<status_change_entry> sce) { }

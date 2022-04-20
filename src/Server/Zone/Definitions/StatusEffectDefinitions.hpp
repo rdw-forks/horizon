@@ -42,4 +42,12 @@ enum status_effect_behavior_type {
 	SEBHVR_NO_BOSS       = 0x200
 };
 
+struct status_change_entry {
+    int type{0};
+    int current_time{0};
+    int total_time{0};
+    int val1{0}, val2{0}, val3{0}, val4{0};
+    bool infinite_duration{false};
+};
+
 #endif /* HORIZON_ZONE_STATUS_DEFINITIONS */

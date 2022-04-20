@@ -32,6 +32,7 @@
 
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
@@ -45,7 +46,8 @@ enum entity_task_schedule_group
 	ENTITY_SCHEDULE_WALK       = 1,
 	ENTITY_SCHEDULE_SAVE       = 2,
 	ENTITY_SCHEDULE_AI_THINK   = 3,
-	ENTITY_SCHEDULE_AI_WALK    = 4
+	ENTITY_SCHEDULE_AI_WALK    = 4,
+	ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR = 5
 };
 
 enum entity_walk_state
@@ -89,7 +91,7 @@ public:
 
 	virtual void stop_movement() = 0;
 protected:
-	bool schedule_movement(const MapCoords& mcoords);
+	bool schedule_movement();
 	void move();
 	
 	virtual void on_pathfinding_failure() = 0;
@@ -162,6 +164,18 @@ public:
 
 	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
     
+    std::map<int16_t, std::shared_ptr<status_change_entry>> &get_status_effects() { return _status_effects; }
+    
+    /**
+     * Status Effects
+     */
+    bool status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4);
+    bool status_effect_end(int type);
+
+    virtual void on_status_effect_start(std::shared_ptr<status_change_entry> sce) = 0;
+    virtual void on_status_effect_end(std::shared_ptr<status_change_entry> sce) = 0;
+    virtual void on_status_effect_change(std::shared_ptr<status_change_entry> sce) = 0;
+
 protected:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	uint32_t _guid{0};
@@ -185,6 +199,8 @@ protected:
 	uint16_t _job_id{0};
 	entity_posture_type _posture{POSTURE_STANDING};
 	directions _facing_dir{DIR_SOUTH};
+
+	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;
 };
 }
 }

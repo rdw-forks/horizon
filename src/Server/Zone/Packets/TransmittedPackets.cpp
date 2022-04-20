@@ -1071,10 +1071,22 @@ ByteBuffer &ZC_BLADESTOP::serialize()
 /**
  * ZC_MSG_STATE_CHANGE
  */
-void ZC_MSG_STATE_CHANGE::deliver() { }
+void ZC_MSG_STATE_CHANGE::deliver(int16_t status_index, int32_t guid, int8_t state)
+{
+	_status_index = status_index;
+	_guid = guid;
+	_state = state;
+
+	serialize();
+	transmit();
+}
 
 ByteBuffer &ZC_MSG_STATE_CHANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _status_index;
+	buf() << _guid;
+	buf() << _state;
 	return buf();
 }
 
@@ -7848,10 +7860,31 @@ ByteBuffer &ZC_NOTIFY_CHAT_PARTY::serialize()
 /**
  * ZC_MSG_STATE_CHANGE2
  */
-void ZC_MSG_STATE_CHANGE2::deliver() { }
+void ZC_MSG_STATE_CHANGE2::deliver(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3) 
+{
+	_index = si_type;
+	_guid = guid;
+	_state = state;
+	_time_remaining = time_remaining;
+	_val1 = val1;
+	_val2 = val2;
+	_val3 = val3;
+
+	serialize();
+	transmit();
+}
 
 ByteBuffer &ZC_MSG_STATE_CHANGE2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
+	buf() << _guid;
+	buf() << _state;
+	buf() << _time_remaining;
+	buf() << _val1;
+	buf() << _val2;
+	buf() << _val3;
+
 	return buf();
 }
 

@@ -139,10 +139,17 @@ public:
 	 */
 	void upgrade_skill_level(int16_t skill_id);
 	bool notify_learnt_skill_list();
+	bool notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause);
 
 	/* UI Requests */
 	void action_request(int32_t target_guid, player_action_type action);
 	bool notify_action(player_action_type action);
+
+	/**
+	 * Status
+	 */
+	bool notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3);
+	bool notify_status_change_end(int16_t status_index, int32_t guid, int8_t state);
 
 protected:
 	uint32_t _npc_contact_guid{0};

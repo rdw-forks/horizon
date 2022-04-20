@@ -81,7 +81,9 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "status", &Player::status,
         "job_change", &Player::job_change,
         "perform_action", &Player::perform_action,
-        "get_learnt_skill", &Player::get_learnt_skill
+        "get_learnt_skill", &Player::get_learnt_skill,
+        "perform_skill", &Player::perform_skill,
+        "on_skill_failure", &Player::on_skill_failure
     );
 
 }

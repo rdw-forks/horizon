@@ -38,8 +38,17 @@ Elemental::Elemental(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
 	//
 }
 
-
 Elemental::~Elemental()
 {
 	//
 }
+
+void Elemental::stop_movement() { }
+void Elemental::on_pathfinding_failure() { }
+void Elemental::on_movement_begin() { }
+void Elemental::on_movement_step() { }
+void Elemental::on_movement_end() { }
+
+void Elemental::on_status_effect_start(std::shared_ptr<status_change_entry> sce) { }
+void Elemental::on_status_effect_end(std::shared_ptr<status_change_entry> sce) { }
+void Elemental::on_status_effect_change(std::shared_ptr<status_change_entry> sce) { }

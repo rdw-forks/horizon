@@ -81,20 +81,19 @@ bool SkillDatabase::load()
 	/**
 	 * Skill DB
 	 */
-	try {
+    try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "skill_db.lua";
-		lua->script_file(file_path);
-		sol::table skill_tbl = lua->get<sol::table>("skill_db");
-		skill_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
+        sol::load_result fx = lua->load_file(file_path);
+		sol::table status_tbl = fx();
+		status_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal_skill_db(key, value) ? 1 : 0;
-            std::cout << "Loaded entry " << total_entries << " for skill_db...\r";
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
-	} catch(const std::exception &e) {
-		HLog(error) << "SkillDB::load: error loading skill_db:  " << e.what();
-		return false;
-	}
+    } catch (sol::error &e) {
+        HLog(error) << "SkillDB::load: " << e.what();
+        return false;
+    }
 
 	/**
 	 * Skill Tree DB

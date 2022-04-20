@@ -420,6 +420,21 @@ void Player::on_map_enter()
 	get_session()->clif()->notify_learnt_skill_list();
 }
 
+void Player::on_status_effect_start(std::shared_ptr<status_change_entry> sce)
+{
+	get_session()->clif()->notify_status_change(sce->type, guid(), 1, sce->current_time, sce->val1, sce->val2, sce->val3);
+}
+
+void Player::on_status_effect_end(std::shared_ptr<status_change_entry> sce)
+{
+	get_session()->clif()->notify_status_change_end(sce->type, guid(), 0);
+}
+
+void Player::on_status_effect_change(std::shared_ptr<status_change_entry> sce)
+{
+
+}
+
 void Player::notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range)
 {
 	GridPlayerNotifier notifier(buf, static_cast<Entity *>(this)->shared_from_this(), type);
@@ -466,6 +481,12 @@ bool Player::perform_skill(int16_t skill_id, int16_t skill_lv)
     }
 
     return true;
+}
+
+bool Player::on_skill_failure(int16_t skill_id, int message_type, int item_id, skill_use_fail_cause_type cause)
+{
+	get_session()->clif()->notify_skill_fail(skill_id, message_type, item_id, cause);
+	return true;
 }
 
 bool Player::perform_action(player_action_type action)
