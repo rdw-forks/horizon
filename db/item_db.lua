@@ -114,7 +114,12 @@ item_db = {
 		override = GroupID             (int, defaults to 100),
 		ItemUsageMask.Sitting
 	},
-	Stack = { amount, type },         (int, defaults to 0)
+	Stack = {                      (int, defaults to 0)
+		Inventory = <amount>,
+		Cart = <amount>,
+		Storage = <amount>,
+		GuildStorage = <amount>
+	},
 	Sprite = SpriteID              (int, defaults to 0),
 	Script = --[[ (it can be multi-line) --]] --[[
 
@@ -85887,7 +85892,7 @@ item_db = {
 		ItemTradeMask.Mail,
 		ItemTradeMask.Auction,
 	},
-	Stack = { 3, 1 },
+	Stack = { Inventory = 3 },
 	Script = [[ percentheal 0,15; ]]
 },
 [ "Cherish_Box" ] = {
@@ -90162,7 +90167,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_REFRESH, 1; ]]
 },
 [ "Runstone_Rhydo" ] = {
@@ -90189,7 +90194,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_CRUSHSTRIKE, 1; ]]
 },
 [ "Runstone_Verkana" ] = {
@@ -90216,7 +90221,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_MILLENNIUMSHIELD, 1; ]]
 },
 [ "Runstone_Isia" ] = {
@@ -90242,7 +90247,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_VITALITYACTIVATION, 1; ]]
 },
 [ "Runstone_Asir" ] = {
@@ -90268,7 +90273,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_FIGHTINGSPIRIT, 1; ]]
 },
 [ "Runstone_Urj" ] = {
@@ -90294,7 +90299,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_ABUNDANCE, 1; ]]
 },
 [ "Runstone_Turisus" ] = {
@@ -90320,7 +90325,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_GIANTGROWTH, 1; ]]
 },
 [ "Runstone_Pertz" ] = {
@@ -90347,7 +90352,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_STORMBLAST, 1; ]]
 },
 [ "Runstone_Hagalas" ] = {
@@ -90373,7 +90378,7 @@ item_db = {
 	RestrictUsage = {
 		ItemUsageMask.Sitting,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_STONEHARDSKIN, 1; ]]
 },
 
@@ -140021,7 +140026,7 @@ item_db = {
 		ItemTradeMask.Mail,
 		ItemTradeMask.Auction,
 	},
-	Stack = { 20, 1 },
+	Stack = { Inventory = 20 },
 	Script = [[ itemskill RK_LUXANIMA, 1; ]]
 },
 [ "HALLOWEEN_G_BOX" ] = {

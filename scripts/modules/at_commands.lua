@@ -1,5 +1,27 @@
 -- At command functions!
 
+-- @skillpoint
+local function skillpoint(player, args)
+	player:status():skill_point():set(tonumber(args[2]))
+end
+
+-- @job
+local function job(player, args)
+	player:job_change(tonumber(args[2]))
+end
+
+local function speed(player, args)
+	if args[2] == nil or tonumber(args[2]) < 0 or tonumber(args[2]) > 2000 then
+		player:message("Please enter a speed between 0 and 2000.")
+		return false
+	end
+
+	player:message("Movement speed has been set to " .. args[2])
+	player:status():movement_speed():set(tonumber(args[2]))
+
+	return true
+end
+
 -- @warp/mapmove/rura/movemap <map> <x> <y>
 -- @jump
 local function mapmove(player, args)
@@ -22,7 +44,7 @@ local function mapmove(player, args)
 			coords = MapCoords.new(tonumber(args[3]), tonumber(args[4]))
 		end
 		player:move_to_map(map_obj, coords)
-		player:message("Moved to " .. map)
+		player:message("Moved to " .. map .. " (" .. player:map_coords():x() .. ", " .. player:map_coords():y() .. ")")
 	else
 		map_obj = player:map()
 		player:move_to_map(map_obj, coords)
@@ -74,8 +96,8 @@ local function iteminfo(player, args)
 		return true
 	end
 
-	player:message("Item '" .. item.name .. "'/'" .. item.aegis_name .. "[".. item.card_slot_count .. "] (".. item.item_id ..") Type: ".. item.type)
-	player:message("Value Buy: " .. item.value_buy .. " | Value Sell " .. item.value_sell)
+	player:message("Item '" .. item.name .. "'/'" .. item.name .. "[".. item.card_slot_count .. "] (".. item.item_id ..") Type: ".. item.type)
+	player:message("Value Buy: " .. item.value_buy .. " | Value Sell: " .. item.value_sell)
 	player:message("Weight: " .. tonumber(item.weight / 10))
 end
 
@@ -121,6 +143,7 @@ local at_commands = {
 
 	-- COMMAND FUNCTIONS --
 	cmd_tbl = {
+		["speed"] = speed,
 		["reloadstate"] = reinitialize_state,
 		["mapmove"] = mapmove,
 		["rura"] = mapmove,
@@ -128,7 +151,9 @@ local at_commands = {
 		["jump"] = mapmove,
 		["item"] = item,
 		["blvl"] = change_base_level_cmd,
-		["iteminfo"] = iteminfo
+		["iteminfo"] = iteminfo,
+		["job"] = job,
+		["skillpoint"] = skillpoint
 	}
 }
 

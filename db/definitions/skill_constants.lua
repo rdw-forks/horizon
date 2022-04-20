@@ -68,3 +68,4 @@ CastTimeOptions = {
 	IgnoreStatusEffect      = 0x2,
 	IgnoreItemBonus         = 0x4
 }
+

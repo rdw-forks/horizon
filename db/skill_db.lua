@@ -262,7 +262,7 @@
 },
 ******************************************************************************]]--
 
-skill_db = {
+local skill_db = {
 [ "NV_BASIC" ] = {
 	Id = 1,
 	Description = "Basic Skill",
@@ -37560,5 +37560,7 @@ skill_db = {
 		SkillSubType.Guild,
 	},
 	NumberOfHits = 0,
-},
 }
+}
+
+return skill_db

@@ -36,7 +36,7 @@ Job_Name = { -- Job names as in src/map/pc.c (they are hardcoded at the moment s
 	Inherit = "Other_Job_Name"   -- Base job from which this job will inherit its max weight, base ASPD set and HP/SP table.
 	InheritHP = "Other_Job_Name" -- Base job from which this job will inherit its HP table (if different).
 	InheritSP = "Other_Job_Name" -- Base job from which this job will inherit its SP table (if different).
-	Weight: Max Weight               (int, defaults to 20000, units in Weight/10)
+	Weight: Max Weight               (int, units in Weight/10)
 	{
 		Name = "BaseASPD",                   -- Base ASPD for specific weapon type (optional)
 		Fist: 0~200                     (int, defaults to 200)
@@ -82,6 +82,7 @@ job_db = {
 		Name = "Novice",
 		BaseExpGroup = "FirstClasses",
 		JobExpGroup = "Novice",
+		Weight = 20000,
 		BaseASPD = {
 			Fist = 40,
 			Dagger = 55,
@@ -1735,43 +1736,43 @@ job_db = {
 		InheritHP = "SoulLinker"
 	},
 	{
-		Name = "NoviceHigh",
+		Name = "HighNovice",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "HighNovice",
 		Inherit = "Novice",
 	},
 	{
-		Name = "SwordsmanHigh",
+		Name = "HighSwordsman",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "TranscendedFirstClasses",
 		Inherit = "Swordsman",
 	},
 	{
-		Name = "MagicianHigh",
+		Name = "HighMagician",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "TranscendedFirstClasses",
 		Inherit = "Magician",
 	},
 	{
-		Name = "ArcherHigh",
+		Name = "HighArcher",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "TranscendedFirstClasses",
 		Inherit = "Archer",
 	},
 	{
-		Name = "AcolyteHigh",
+		Name = "HighAcolyte",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "TranscendedFirstClasses",
 		Inherit = "Acolyte",
 	},
 	{
-		Name = "MerchantHigh",
+		Name = "HighMerchant",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "TranscendedFirstClasses",
 		Inherit = "Merchant",
 	},
 	{
-		Name = "ThiefHigh",
+		Name = "HighThief",
 		BaseExpGroup = "TranscendedClasses",
 		JobExpGroup = "TranscendedFirstClasses",
 		Inherit = "Thief",
