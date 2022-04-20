@@ -101,8 +101,8 @@ bool SkillDatabase::load()
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "skill_tree_db.lua";
-		lua->script_file(file_path);
-		sol::table skill_tree_tbl = lua->get<sol::table>("skill_tree_db");
+        sol::load_result fx = lua->load_file(file_path);
+		sol::table skill_tree_tbl = fx();
 		skill_tree_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal_skill_tree(key, value) ? 1 : 0;
             std::cout << "Loaded entry " << total_entries << " for skill_tree_db...\r";

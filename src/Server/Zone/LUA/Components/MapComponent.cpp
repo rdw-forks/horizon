@@ -40,17 +40,29 @@ void MapComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void MapComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-	state->new_usertype<Map>("Map",
-		"get_name", sol::readonly_property(&Map::get_name),
-		"get_width", sol::readonly_property(&Map::get_width),
-		"get_height", sol::readonly_property(&Map::get_height),
-		"has_obstruction_at", &Map::has_obstruction_at
-		);
+	state->new_usertype<GridCoords>("GridCoords",
+		sol::constructors<GridCoords(uint16_t, uint16_t)>(),
+		"x", &GridCoords::x,
+		"y", &GridCoords::y,
+		"move_cost", &GridCoords::move_cost,
+		"set_move_cost", &GridCoords::set_move_cost
+	);
 
 	state->new_usertype<MapCoords>("MapCoords",
 		sol::constructors<MapCoords(uint16_t, uint16_t)>(),
 		"x", &MapCoords::x,
-		"y", &MapCoords::y
+		"y", &MapCoords::y,
+		"move_cost", &MapCoords::move_cost,
+		"set_move_cost", &MapCoords::set_move_cost
+	);
+
+	state->new_usertype<Map>("Map",
+		"get_name", sol::readonly_property(&Map::get_name),
+		"get_width", sol::readonly_property(&Map::get_width),
+		"get_height", sol::readonly_property(&Map::get_height),
+		"has_obstruction_at", &Map::has_obstruction_at,
+		"get_random_coordinates_in_walkable_range", &Map::get_random_coordinates_in_walkable_range,
+		"get_random_coordinates_in_walkable_area", &Map::get_random_coordinates_in_walkable_area
 	);
 }
 

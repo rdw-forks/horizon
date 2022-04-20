@@ -138,6 +138,8 @@ public:
 	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
 	std::shared_ptr<LUAManager> lua_manager() { return _lua_mgr.lock(); }
 
+	AStar::CoordinateList get_walk_path() { return _walk_path; }
+
 	/**
 	 * Entity applications
 	 */

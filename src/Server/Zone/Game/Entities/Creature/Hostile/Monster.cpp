@@ -76,34 +76,21 @@ void Monster::initialize()
 
 void Monster::behavior_passive()
 {
-
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
-		&& (_next_walktime - get_sys_time() < 0)
+		&& (next_walk_time() - std::time(nullptr) < 0)
 		&& !is_walking()
 		&& was_spotted_once()) {
-		MapCoords mc = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
-		_next_walktime = get_sys_time() + ((std::rand() % MOB_LAZY_MOVE_RATE)) + MIN_RANDOM_TRAVEL_TIME;
-
-		if (mc == MapCoords(0, 0)) {
-			HLog(warning) << "Monster (" << guid() << ") " << name() << " could not move, coordinates not found.";
-			return;
-		}
-
-		if (move_to_coordinates(mc.x(), mc.y()) == false) {
-			HLog(warning) << "Monster (" << guid() << ") " << name() << " could not move to coordinates.";
-			return;
-		}
-
-		int total_movement_cost = 0;
-		for (int i = 0; i < _walk_path.size(); i++) {
-			MapCoords m = _walk_path.at(i);
-			total_movement_cost += m.move_cost();
-		}
-
-		HLog(debug) << "Monster (" << guid() << ") " << name() << " is set to travel from (" << map_coords().x() << "," << map_coords().y() << ") to (" << mc.x() << ", " << mc.y() << ") cost (" << total_movement_cost << ").";
-		_next_walktime += total_movement_cost * 100;
+	    try {
+	        sol::load_result fx = lua_manager()->lua_state()->load_file("scripts/monsters/functionalities/walking_passive.lua");
+	        sol::protected_function_result result = fx(shared_from_this());
+	        if (!result.valid()) {
+	            sol::error err = result;
+	            HLog(error) << "Monster::behavior_passive: " << err.what();
+	        }
+	    } catch (sol::error &e) {
+	        HLog(error) << "Monster::behavior_passive: " << e.what();
+	    }
 	}
-
 }
 
 void Monster::behavior_active()

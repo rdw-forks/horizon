@@ -74,8 +74,8 @@ bool MonsterDatabase::load()
 	try {
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "monster_db.lua";
-		lua->script_file(file_path);
-		sol::table mob_tbl = lua->get<sol::table>("monster_db");
+        sol::load_result fx = lua->load_file(file_path);
+		sol::table mob_tbl = fx();
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value);
             std::cout << "Loaded entry " << total_entries << " for monster_db...\r";
@@ -90,7 +90,8 @@ bool MonsterDatabase::load()
 		int total_entries = 0;
 		std::string file_path = sZone->config().get_static_db_path().string() + "monster_skill_db.lua";
 		lua->script_file(file_path);
-		sol::table mob_tbl = lua->get<sol::table>("monster_skill_db");
+        sol::load_result fx = lua->load_file(file_path);
+		sol::table mob_tbl = fx();
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_skill_internal(key, value);
             std::cout << "Loaded entry " << total_entries << " for monster_skill_db...\r";

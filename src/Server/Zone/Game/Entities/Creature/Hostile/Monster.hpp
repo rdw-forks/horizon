@@ -80,9 +80,12 @@ public:
     void behavior_passive();
     void behavior_active();
 
+    void set_next_walk_time(int walk_time) { _next_walk_time = walk_time; }
+    int next_walk_time() { return _next_walk_time; }
+
 private:
 	bool _was_spotted_once{false};
-	int _next_walktime{0}, _last_spotted_time{0}, _last_think_time{0};
+	int _next_walk_time{0}, _last_spotted_time{0}, _last_think_time{0};
 	std::weak_ptr<const monster_config_data> _wmd_data;
 	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;
 

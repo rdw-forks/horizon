@@ -135,7 +135,20 @@ void MonsterComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-
+	state->new_usertype<Monster>("Monster", 
+		"stop_movement", &Monster::stop_movement,
+		"on_pathfinding_failure", &Monster::on_pathfinding_failure,
+		"on_movement_begin", &Monster::on_movement_begin,
+		"on_movement_step", &Monster::on_movement_step,
+		"on_movement_end", &Monster::on_movement_end,
+		"set_spotted", &Monster::set_spotted,
+		"was_spotted_once", &Monster::was_spotted_once,
+		"on_status_effect_start", &Monster::on_status_effect_start,
+		"on_status_effect_end", &Monster::on_status_effect_end,
+		"on_status_effect_change", &Monster::on_status_effect_change,
+		"set_next_walk_time", &Monster::set_next_walk_time,
+		"next_walk_time", &Monster::next_walk_time
+	);
 }
 
 void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)

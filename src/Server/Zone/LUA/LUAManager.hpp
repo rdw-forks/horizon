@@ -80,6 +80,7 @@ public:
 	std::shared_ptr<StatusEffectComponent> status_effect() { return _status_effect_component; }
 	std::shared_ptr<CombatComponent> combat() { return _combat_component; }
 
+	std::shared_ptr<sol::state> lua_state() { return _lua_state; }
 protected:
 	void initialize_for_container();
 	void finalize();

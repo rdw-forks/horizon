@@ -81,6 +81,7 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	state->open_libraries(sol::lib::jit);
 	state->open_libraries(sol::lib::table);
 	state->open_libraries(sol::lib::package);
+	state->open_libraries(sol::lib::os);
 
 	_map_component->sync_definitions(state);
 	_map_component->sync_data_types(state);
