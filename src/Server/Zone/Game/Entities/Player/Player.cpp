@@ -230,6 +230,9 @@ void Player::on_movement_step()
 	map()->visit_in_range(map_coords(), npc_trigger_performer, MAX_NPC_TRIGGER_RANGE);
 }
 
+bool Player::is_overweight_50() { return status()->current_weight()->total() * 100 >= status()->max_weight()->total() * 50; }
+bool Player::is_overweight_90() { return status()->current_weight()->total() * 10 >= status()->max_weight()->total() * 9; }
+
 void Player::update_viewport()
 {
 	GridViewPortUpdater updater(shared_from_this());
@@ -252,7 +255,16 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	_viewport_entities.push_back(entity);
 
 	if (entity->type() == ENTITY_MONSTER) {
-	    entity->downcast<Monster>()->set_spotted(true);
+		if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
+			map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
+				[this] (TaskContext context)
+				{
+					GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
+					GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
+
+					map()->visit_in_range(map_coords(), ai_executor_caller);
+					context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
+				});
 	}
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
@@ -507,4 +519,13 @@ bool Player::perform_action(player_action_type action)
 	};
 
 	return true;
+}
+
+bool Player::attack(std::shared_ptr<Entity> e, bool continuous = false)
+{
+	//set_combat(std::make_shared<Entities::Combat>(shared_from_this(), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
+	map()->container()->getScheduler().Schedule(0, get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
+		[this] (TaskContext context) {
+
+		});
 }

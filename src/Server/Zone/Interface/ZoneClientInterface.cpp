@@ -896,6 +896,12 @@ bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_ty
 	return true;
 }
 
+bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, combat_damage_type_mask dmg_type, int left_damage)
+{
+	ZC_NOTIFY_ACT3 pkt(get_session());
+	pkt.deliver(guid, target_guid, start_time, delay_skill, delay_damage, damage, is_sp_damaged, number_of_hits, dmg_type, left_damage);
+	return true;
+}
 
 
 

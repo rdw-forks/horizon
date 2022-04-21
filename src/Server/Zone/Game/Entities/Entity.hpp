@@ -34,6 +34,7 @@
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
@@ -41,13 +42,20 @@
 #include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 
+#define MIN_RANDOM_TRAVEL_TIME 4000
+#define MOB_LAZY_MOVE_RATE 1000
+#define MOB_MIN_THINK_TIME 100
+#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME * 10)
+
 enum entity_task_schedule_group
 {
 	ENTITY_SCHEDULE_WALK       = 1,
 	ENTITY_SCHEDULE_SAVE       = 2,
 	ENTITY_SCHEDULE_AI_THINK   = 3,
 	ENTITY_SCHEDULE_AI_WALK    = 4,
-	ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR = 5
+	ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR = 5,
+	ENTITY_SCHEDULE_AI_ACTIVE  = 6,
+	ENTITY_SCHEDULE_ATTACK     = 7
 };
 
 enum entity_walk_state
@@ -180,7 +188,16 @@ public:
     virtual void on_status_effect_end(std::shared_ptr<status_change_entry> sce) = 0;
     virtual void on_status_effect_change(std::shared_ptr<status_change_entry> sce) = 0;
 
-protected:
+	std::shared_ptr<AStar::CoordinateList> path_to(std::shared_ptr<Entity> e);
+	int distance_from(std::shared_ptr<Entity> e) { return path_to(e)->size(); }
+
+	virtual bool attack(std::shared_ptr<Entity> e, bool continuous);
+	bool is_dead() { return status()->current_hp()->get_base() == 0; }
+
+	std::shared_ptr<Entities::Combat> combat() { return _combat; }
+	void set_combat(std::shared_ptr<Entities::Combat> combat) { _combat = combat; }
+
+private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	uint32_t _guid{0};
 	entity_type _type{ENTITY_UNKNOWN};
@@ -205,6 +222,11 @@ protected:
 	directions _facing_dir{DIR_SOUTH};
 
 	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;
+
+	// Combat
+	// Entities given the ability to be combatant, create new combat instances
+	// each time they engage in combat. Combat pointer remains nullptr when not in combat.
+	std::shared_ptr<Entities::Combat> _combat;
 };
 }
 }

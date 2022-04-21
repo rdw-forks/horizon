@@ -138,6 +138,65 @@ struct GridEntitySearcher
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
+struct GridMonsterActiveAIExecutor
+{
+	std::weak_ptr<Horizon::Zone::Entities::Player> _player;
+
+	explicit GridMonsterActiveAIExecutor(const std::shared_ptr<Horizon::Zone::Entities::Player> &player)
+	: _player(player)
+	{ }
+
+	template <class T>
+	void perform(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Monster)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+struct GridMonsterAIActiveSearchTarget
+{
+	std::weak_ptr<Horizon::Zone::Entities::Monster> _monster;
+
+	explicit GridMonsterAIActiveSearchTarget(const std::shared_ptr<Horizon::Zone::Entities::Monster> &monster)
+	: _monster(monster)
+	{ }
+
+	template <class T>
+	void search(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<entity_ns(Elemental)> &m);
+	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
+	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<entity_ns(Skill)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }	
+};
+
+struct GridMonsterAIChangeChaseTarget
+{
+	std::weak_ptr<Horizon::Zone::Entities::Monster> _monster;
+
+	explicit GridMonsterAIChangeChaseTarget(const std::shared_ptr<Horizon::Zone::Entities::Monster> &monster)
+	: _monster(monster)
+	{ }
+
+	template <class T>
+	void search(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<entity_ns(Elemental)> &m);
+	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
+	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<entity_ns(Skill)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }	
+};
+
 struct GridNPCTrigger
 {
 	std::weak_ptr<Horizon::Zone::Entity> _source;
@@ -173,6 +232,7 @@ struct GridPlayerNotifier
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
+
 #undef entity_ns
 
 #endif /* HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP */

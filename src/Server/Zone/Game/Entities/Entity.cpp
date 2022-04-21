@@ -43,7 +43,7 @@
 using namespace Horizon::Zone;
 
 Entity::Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords)
-: _guid(guid), _type(type), _map_coords(map_coords)
+: _guid(guid), _type(type), _map_coords(map_coords), _combat(nullptr)
 {
 	set_map(map);
 }
@@ -62,16 +62,18 @@ Entity::~Entity()
 void Entity::initialize()
 {
 	_status = std::make_shared<Entities::Traits::Status>(shared_from_this());
-
-//	if (get_type() == ENTITY_PLAYER)
-//		getScheduler().Schedule(Milliseconds(sZone->config().get_entity_save_interval()), ENTITY_SCHEDULE_SAVE,
-//			[this] (TaskContext context) {
-//				sync_with_models();
-//				context.Repeat();
-//			});
 	_is_initialized = true;
 }
 
+std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e)
+{
+	std::shared_ptr<AStar::CoordinateList> wp = std::make_shared<AStar::CoordinateList>(map()->get_pathfinder().findPath(map_coords(), e->map_coords()));
+
+	if (wp->size() == 0 || wp->empty()) 
+		return nullptr;
+
+	return std::move(wp);
+}
 
 bool Entity::schedule_movement()
 {
@@ -297,3 +299,10 @@ bool Entity::status_effect_end(int type)
 
 	return true;
 }
+
+bool Entity::attack(std::shared_ptr<Entity> t, bool continuous)
+{
+	if (t == nullptr || t->is_dead())
+		return false;
+}
+

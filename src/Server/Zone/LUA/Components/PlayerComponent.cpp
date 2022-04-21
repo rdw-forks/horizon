@@ -30,7 +30,7 @@
 
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Zone/Game/Entities/Player/Definitions/PlayerDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Definitions/PlayerDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"

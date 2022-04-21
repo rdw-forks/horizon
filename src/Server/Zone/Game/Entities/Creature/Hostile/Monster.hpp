@@ -36,11 +36,6 @@
 
 #include <memory>
 
-#define MIN_RANDOM_TRAVEL_TIME 4000
-#define MOB_LAZY_MOVE_RATE 1000
-#define MOB_MIN_THINK_TIME 100
-#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME * 10)
-
 namespace Horizon
 {
 namespace Zone
@@ -48,6 +43,7 @@ namespace Zone
 class Map;
 namespace Entities
 {
+class Player;
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
@@ -78,16 +74,22 @@ public:
     void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
 
     void behavior_passive();
-    void behavior_active();
+    void behavior_active(std::shared_ptr<Player> pl);
 
     void set_next_walk_time(int walk_time) { _next_walk_time = walk_time; }
     int next_walk_time() { return _next_walk_time; }
+
+    void set_target(std::shared_ptr<Entity> &target) { _target = target; }
+    std::shared_ptr<Entity> target() { return _target; }
+    void unlock_target() { _target = nullptr; }
 
 private:
 	bool _was_spotted_once{false};
 	int _next_walk_time{0}, _last_spotted_time{0}, _last_think_time{0};
 	std::weak_ptr<const monster_config_data> _wmd_data;
 	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;
+
+    std::shared_ptr<Entity> _target{nullptr};
 
 };
 }

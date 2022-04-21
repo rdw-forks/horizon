@@ -32,6 +32,10 @@
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
+#include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
+#include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 
 using namespace Horizon::Zone::Entities;
@@ -93,9 +97,35 @@ void Monster::behavior_passive()
 	}
 }
 
-void Monster::behavior_active()
+void Monster::behavior_active(std::shared_ptr<Player> pl)
 {
+	set_spotted(true);
 
+	int can_move = monster_config()->mode & MONSTER_MODE_MASK_CANMOVE;
+
+	if (_target != nullptr) {
+		// Check Validity of current target
+		HLog(debug) << "Monster (" << guid() << ") " << name() << " has begun aggressively engaging " << pl->name() << ".";
+	}
+
+	if (monster_config()->mode & MONSTER_MODE_MASK_AGGRESSIVE) {
+		GridMonsterAIActiveSearchTarget target_search(shared_from_this()->downcast<Monster>());
+		GridReferenceContainerVisitor<GridMonsterAIActiveSearchTarget, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(target_search);
+
+		map()->visit_in_range(map_coords(), ai_executor_caller);
+	} else if (monster_config()->mode & MONSTER_MODE_MASK_CHANGECHASE) {
+		GridMonsterAIChangeChaseTarget target_search(shared_from_this()->downcast<Monster>());
+		GridReferenceContainerVisitor<GridMonsterAIChangeChaseTarget, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(target_search);
+
+		map()->visit_in_range(map_coords(), ai_executor_caller);
+	}
+
+	// BL_ITEM
+
+	// Attempt to attack
+	if (_target != nullptr && distance_from(_target) < monster_config()->attack_range) {
+
+	}
 }
 
 void Monster::stop_movement()

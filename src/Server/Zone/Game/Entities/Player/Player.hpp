@@ -38,7 +38,7 @@
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
-#include "Server/Zone/Game/Entities/Player/Definitions/PlayerDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Definitions/PlayerDefinitions.hpp"
 
 #include <sol.hpp>
 
@@ -89,9 +89,6 @@ public:
 	Player(std::shared_ptr<ZoneSession> session, uint32_t guid);
 	~Player();
 
-	/**
-	 * Relations
-	 */
 	std::shared_ptr<ZoneSession> get_session() { return _session; }
 
 	void create(int char_id, std::string account_gender, int group_id);
@@ -124,6 +121,8 @@ public:
 	void on_movement_step() override;
 	void on_movement_end() override;
 
+	bool is_overweight_50();
+	bool is_overweight_90();
 	/**
 	 * DB Synchronizations.
 	 */
@@ -192,6 +191,7 @@ public:
     void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
     void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
 
+    bool attack(std::shared_ptr<Entity> e, bool continuous = false);
 private:
 	std::shared_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;

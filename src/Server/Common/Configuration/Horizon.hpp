@@ -63,6 +63,9 @@
 // Map Thread Containers
 #define MAX_MAP_CONTAINER_THREADS 1
 
+// Mob searches active path when selecting target.
+#define ACTIVE_PATH_SEARCH 1
+
 static_assert(MAX_LEVEL > 0,
               "MAX_LEVEL should be greater than 0.");
 static_assert(MAX_CHARACTER_SLOTS % 3 == 0,

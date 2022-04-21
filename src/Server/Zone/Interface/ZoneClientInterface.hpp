@@ -32,7 +32,7 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Common/Interfaces/ClientInterface.hpp"
-#include "Server/Zone/Game/Entities/Player/Definitions/PlayerDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Definitions/PlayerDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 
@@ -150,6 +150,11 @@ public:
 	 */
 	bool notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3);
 	bool notify_status_change_end(int16_t status_index, int32_t guid, int8_t state);
+
+	/**
+	 * Combat
+	 */
+	bool notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, combat_damage_type_mask dmg_type, int left_damage);
 
 protected:
 	uint32_t _npc_contact_guid{0};

@@ -22724,10 +22724,20 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_ACT3() {}
 
-	void deliver();
+	void deliver(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, combat_damage_type_mask dmg_type, int left_damage);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _guid{0};
+	int32_t _target_guid{0};
+	int32_t _start_time{0};
+	int32_t _delay_skill{0};
+	int32_t _delay_damage{0};
+	int32_t _damage{0};
+	int8_t _is_sp_damaged{0}; 
+	int16_t _number_of_hits{0};
+	uint8_t _dmg_type{0};
+	int32_t _left_damage{0};
 };
 
 enum {
