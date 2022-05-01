@@ -30,11 +30,8 @@
 #ifndef HORIZON_ZONE_GAME_MAPMANAGER_HPP
 #define HORIZON_ZONE_GAME_MAPMANAGER_HPP
 
-#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Utility/TaskScheduler.hpp"
 #include "MapContainerThread.hpp"
-
-#include <vector>
 
 enum mapmgr_task_schedule_group
 {

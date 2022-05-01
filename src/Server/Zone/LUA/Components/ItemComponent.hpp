@@ -30,7 +30,7 @@
 #define HORIZON_ZONE_ITEM_LUA_COMPONENT_HPP
 
 #include "Server/Zone/LUA/Components/LUAComponent.hpp"
-#include <sol.hpp>
+
 
 namespace Horizon
 {

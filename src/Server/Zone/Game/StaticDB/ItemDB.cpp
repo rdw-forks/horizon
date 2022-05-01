@@ -33,7 +33,6 @@
 #include "Server/Zone/LUA/Components/EntityComponent.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
-#include <chrono>
 
 using namespace Horizon::Zone;
 

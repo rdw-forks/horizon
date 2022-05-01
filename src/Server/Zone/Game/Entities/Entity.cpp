@@ -38,12 +38,11 @@
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <sqlpp11/sqlpp11.h>
 
 using namespace Horizon::Zone;
 
 Entity::Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords)
-: _guid(guid), _type(type), _map_coords(map_coords), _combat(nullptr)
+: _guid(guid), _type(type), _map_coords(map_coords)
 {
 	set_map(map);
 }
@@ -183,6 +182,20 @@ bool Entity::move_to_coordinates(int16_t x, int16_t y)
 	return true;
 }
 
+bool Entity::move_to_entity(std::shared_ptr<Entity> entity)
+{
+	if (entity == nullptr)
+		return false;
+
+	if (move_to_coordinates(entity->map_coords().x(), entity->map_coords().y())){
+		HLog(warning) << "Entity (" << guid() << ") could not walk to (" << entity->guid() << ").";
+		return false;
+	}
+
+	return true;
+}
+
+
 bool Entity::is_in_range_of(std::shared_ptr<Entity> e, uint8_t range)
 {
 	if (e->map()->get_name().compare(map()->get_name()))
@@ -300,9 +313,13 @@ bool Entity::status_effect_end(int type)
 	return true;
 }
 
+bool Entity::is_dead() { return status()->current_hp()->get_base() == 0; }
+
 bool Entity::attack(std::shared_ptr<Entity> t, bool continuous)
 {
 	if (t == nullptr || t->is_dead())
 		return false;
+
+	return true;
 }
 

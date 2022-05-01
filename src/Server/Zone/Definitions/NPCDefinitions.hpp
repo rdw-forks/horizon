@@ -33,9 +33,6 @@
 #include "EntityDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 
-#include <memory>
-#include <string>
-
 #define NPC_START_GUID 500000000
 
 enum npc_type

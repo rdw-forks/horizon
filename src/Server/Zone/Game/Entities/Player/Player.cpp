@@ -33,6 +33,7 @@
 #include "Server/Common/SQL/Character/Character.hpp"
 #include "Server/Common/SQL/Character/Status.hpp"
 
+#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
@@ -45,9 +46,9 @@
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
+
 #include "Server/Zone/Zone.hpp"
 
-#include <sqlpp11/sqlpp11.h>
 
 #include "version.hpp"
 
@@ -94,6 +95,7 @@ void Player::initialize()
 
 	// Initialize Status, after inventory is loaded to compute EquipAtk etc.
 	status()->initialize(shared_from_this());
+	status()->size()->set_base(ESZ_MEDIUM);
 
 	// Inventory is initialized for the player, notifying weight etc.
 	_inventory->initialize();
@@ -398,7 +400,9 @@ void Player::on_item_equip(std::shared_ptr<const item_entry_data> item)
 	if (item->type == IT_TYPE_WEAPON) {
 		s->status_atk()->set_weapon_type(itemd->sub_type.weapon_t);
 		s->equip_atk()->on_weapon_changed();
-		s->aspd()->on_weapon_changed();
+		s->attack_speed()->on_weapon_changed();
+		s->attack_range()->on_weapon_changed();
+		s->base_attack()->on_weapon_changed();
 	}
 }
 
@@ -410,7 +414,9 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 	if (item->type == IT_TYPE_WEAPON) {
 		s->status_atk()->set_weapon_type(IT_WT_FIST);
 		s->equip_atk()->on_weapon_changed();
-		s->aspd()->on_weapon_changed();
+		s->attack_speed()->on_weapon_changed();
+		s->attack_range()->on_weapon_changed();
+		s->base_attack()->on_weapon_changed();
 	}
 }
 
@@ -447,7 +453,7 @@ void Player::on_status_effect_change(std::shared_ptr<status_change_entry> sce)
 
 }
 
-void Player::notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range)
+void Player::notify_in_area(ByteBuffer &buf, grid_notifier_type type, uint16_t range)
 {
 	GridPlayerNotifier notifier(buf, static_cast<Entity *>(this)->shared_from_this(), type);
 	GridReferenceContainerVisitor<GridPlayerNotifier, GridReferenceContainer<AllEntityTypes>> container(notifier);
@@ -521,11 +527,53 @@ bool Player::perform_action(player_action_type action)
 	return true;
 }
 
-bool Player::attack(std::shared_ptr<Entity> e, bool continuous = false)
+bool Player::attack(std::shared_ptr<Entity> target, bool continuous)
 {
-	//set_combat(std::make_shared<Entities::Combat>(shared_from_this(), std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
-	map()->container()->getScheduler().Schedule(0, get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
-		[this] (TaskContext context) {
+	if (Entity::attack(target, continuous) == false)
+		return false;
 
+	if (target == nullptr)
+		return false;
+
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0)
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
+
+	std::shared_ptr<Combat> combat = std::make_shared<Combat>(shared_from_this(), target, 
+						std::chrono::duration_cast<std::chrono::milliseconds>(
+							std::chrono::system_clock::now().time_since_epoch()).count()
+						);
+
+	map()->container()->getScheduler().Schedule(Milliseconds(Milliseconds(status()->attack_delay()->total())), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
+		[this, continuous, combat] (TaskContext context) {
+			if (path_to(combat->target())->size() == 0)
+				return;
+
+			int range = combat->target()->status()->attack_range()->get_base();
+
+			if (combat->target()->is_walking() && (combat->target()->type() == ENTITY_PLAYER || !(map()->get_cell_type(combat->target()->map_coords()) == CELL_ICE_WALL)))
+				range++;
+
+			if (is_in_range_of(combat->target(), range) == false && is_walking() == false) {
+				move_to_entity(combat->target());
+				context.Repeat(Milliseconds(status()->attack_delay()->total()));
+				return;
+			} else if (is_walking() == true)
+				return;
+			
+			combat->weapon_attack();
+
+			HLog(debug) << "Attacking with delay " << status()->attack_delay()->total();
+			if (continuous)
+				context.Repeat(Milliseconds(status()->attack_delay()->total()));
 		});
+
+	return true;
+}
+
+bool Player::stop_attack()
+{
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0)
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
+
+	return true;
 }

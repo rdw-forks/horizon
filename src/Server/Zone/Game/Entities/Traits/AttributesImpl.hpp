@@ -34,8 +34,7 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
-
-#include <memory> // Linux
+ // Linux
 
 namespace Horizon
 {
@@ -74,6 +73,9 @@ namespace Traits
 	class MaxWeight;
 	class AttackSpeed;
 	class MovementSpeed;
+	class AttackMotion;
+	class AttackDelay;
+	class DamageMotion;
 
 	class BaseLevel
 	: public Attribute<BaseLevel>,
@@ -482,11 +484,13 @@ namespace Traits
 	};
 
 	class MaxWeight
-	: public Attribute<MaxWeight>
+	: public Attribute<MaxWeight>,
+	ObservableStatus<MaxWeight *, Strength *>
 	{
 	public:
 		MaxWeight(std::weak_ptr<Entity> entity, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(entity, base, equip, status)
+		: Attribute(entity, base, equip, status),
+		ObservableStatus(nullptr)
 		{ }
 		~MaxWeight() { };
 
@@ -497,7 +501,7 @@ namespace Traits
 		void set_strength(Strength *str) { _str = str; }
 
 	private:
-		Strength *_str;
+		Strength *_str{nullptr};
 	};
 
 	class MovementSpeed
@@ -525,11 +529,13 @@ namespace Traits
 	};
 
 	class StatusATK
-	: public Attribute<StatusATK>
+	: public Attribute<StatusATK>,
+	  public ObservableStatus<StatusATK *, Strength *, Dexterity *, Luck *, BaseLevel *>
 	{
 	public:
 		StatusATK(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~StatusATK() { }
 
@@ -547,19 +553,21 @@ namespace Traits
 		void set_weapon_type(item_weapon_type type) { _weapon_type = type; compute(true); }
 
 	private:
-		BaseLevel *_blvl;
-		Strength *_str;
-		Dexterity *_dex;
-		Luck *_luk;
+		BaseLevel *_blvl{nullptr};
+		Strength *_str{nullptr};
+		Dexterity *_dex{nullptr};
+		Luck *_luk{nullptr};
 		item_weapon_type _weapon_type;
 	};
 
 	class EquipATK
-	: public Attribute<EquipATK>
+	: public Attribute<EquipATK>,
+	  public ObservableStatus<EquipATK *, Strength *, Dexterity *>
 	{
 	public:
 		EquipATK(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr)
 		{ }
 		~EquipATK() { }
 
@@ -579,8 +587,8 @@ namespace Traits
 		int32_t get_rhw_overupgrade() { return _rhw_overupgrade; }
 
 	private:
-		Strength *_str;
-		Dexterity *_dex;
+		Strength *_str{nullptr};
+		Dexterity *_dex{nullptr};
 		int32_t _left_hand_val{0};
 		int32_t _right_hand_val{0};
 		int32_t _lhw_overupgrade{0};
@@ -588,11 +596,13 @@ namespace Traits
 	};
 
 	class StatusMATK
-	: public Attribute<StatusMATK>
+	: public Attribute<StatusMATK>,
+	  public ObservableStatus<StatusMATK *, Intelligence *, Dexterity *, Luck *, BaseLevel *>
 	{
 	public:
 		StatusMATK(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~StatusMATK() { }
 
@@ -609,18 +619,20 @@ namespace Traits
 		void set_luck(Luck *luk) { _luk = luk; }
 
 	private:
-		BaseLevel *_blvl;
-		Intelligence *_int;
-		Dexterity *_dex;
-		Luck *_luk;
+		BaseLevel *_blvl{nullptr};
+		Intelligence *_int{nullptr};
+		Dexterity *_dex{nullptr};
+		Luck *_luk{nullptr};
 	};
 
 	class SoftDEF
-	: public Attribute<SoftDEF>
+	: public Attribute<SoftDEF>,
+	  public ObservableStatus<SoftDEF *, Vitality *>
 	{
 	public:
 		SoftDEF(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr)
 		{ }
 		~SoftDEF() { }
 
@@ -631,15 +643,17 @@ namespace Traits
 		void set_vitality(Vitality *vit) { _vit = vit; }
 
 	private:
-		Vitality *_vit;
+		Vitality *_vit{nullptr};
 	};
 
 	class SoftMDEF
-	: public Attribute<SoftMDEF>
+	: public Attribute<SoftMDEF>,
+	  public ObservableStatus<SoftMDEF *, Intelligence *, Dexterity *, Vitality *, BaseLevel *>
 	{
 	public:
 		SoftMDEF(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~SoftMDEF() { }
 
@@ -656,18 +670,20 @@ namespace Traits
 		void set_vitality(Vitality *vit) { _vit = vit; }
 
 	private:
-		BaseLevel *_blvl;
-		Intelligence *_int;
-		Dexterity *_dex;
-		Vitality *_vit;
+		BaseLevel *_blvl{nullptr};
+		Intelligence *_int{nullptr};
+		Dexterity *_dex{nullptr};
+		Vitality *_vit{nullptr};
 	};
 
 	class HIT
-	: public Attribute<HIT>
+	: public Attribute<HIT>,
+	  public ObservableStatus<HIT *, Dexterity *, Luck *, BaseLevel *>
 	{
 	public:
 		HIT(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr)
 		{ }
 		~HIT() { }
 
@@ -682,17 +698,19 @@ namespace Traits
 		void set_luck(Luck *luk) { _luk = luk; }
 
 	private:
-		BaseLevel *_blvl;
-		Dexterity *_dex;
-		Luck *_luk;
+		BaseLevel *_blvl{nullptr};
+		Dexterity *_dex{nullptr};
+		Luck *_luk{nullptr};
 	};
 
 	class CRIT
-	: public Attribute<CRIT>
+	: public Attribute<CRIT>,
+	  public ObservableStatus<CRIT *, Luck *>
 	{
 	public:
 		CRIT(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr)
 		{ }
 		~CRIT() { }
 
@@ -703,15 +721,17 @@ namespace Traits
 		void set_luck(Luck *luk) { _luk = luk; }
 
 	private:
-		Luck *_luk;
+		Luck *_luk{nullptr};
 	};
 
 	class FLEE
-	: public Attribute<FLEE>
+	: public Attribute<FLEE>,
+	  public ObservableStatus<FLEE *, Agility *, BaseLevel *, Luck *>
 	{
 	public:
 		FLEE(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr)
 		{ }
 		~FLEE() { }
 
@@ -726,36 +746,159 @@ namespace Traits
 		void set_luck(Luck *luk) { _luk = luk; }
 
 	private:
-		Agility *_agi;
-		BaseLevel *_blvl;
-		Luck *_luk;
+		Agility *_agi{nullptr};
+		BaseLevel *_blvl{nullptr};
+		Luck *_luk{nullptr};
 	};
 
 	class AttackSpeed
-	: public Attribute<AttackSpeed>
+	: public Attribute<AttackSpeed>,
+	  public ObservableStatus<AttackSpeed *, Agility *, Dexterity *, BaseLevel *>
 	{
 	public:
 		AttackSpeed(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr)
 		{ }
 		~AttackSpeed() { }
 
 		void on_observable_changed(Agility *) { compute(true); }
-		void on_observable_changed(BaseLevel *) { compute(true); }
 		void on_observable_changed(Dexterity *) { compute(true); }
+		void on_observable_changed(BaseLevel *) { compute(true); }
 		void on_weapon_changed() { compute(true); }
 
 		int32_t compute(bool notify);
-		int32_t compute_amotion();
 
 		void set_agility(Agility *agi) { _agi = agi; }
-		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
 		void set_dexterity(Dexterity *dex) { _dex = dex; }
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
 
 	private:
-		Agility *_agi;
-		BaseLevel *_blvl;
-		Dexterity *_dex;
+		Agility *_agi{nullptr};
+		Dexterity *_dex{nullptr};
+		BaseLevel *_blvl{nullptr};
+	};
+
+	class AttackRange
+	: public Attribute<AttackRange>
+	{
+	public:
+		AttackRange(std::weak_ptr<Entity> entity)
+		: Attribute(entity)
+		{ }
+		~AttackRange() { }
+
+		void on_weapon_changed() { compute(true); }
+
+		int32_t compute(bool notify);
+	};
+
+	class AttackMotion
+	: public Attribute<AttackMotion>,
+	  public ObservableStatus<AttackMotion *, AttackSpeed *, Agility *>
+	{
+	public:
+		AttackMotion(std::weak_ptr<Entity> entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr)
+		{ }
+		~AttackMotion() { }
+
+		void on_observable_changed(AttackSpeed *) { compute(); }
+		void on_observable_changed(Agility *) { compute(); }
+
+		int32_t compute();
+
+		void set_attack_speed(AttackSpeed *aspd) { _attack_speed = aspd; }
+		void set_agility(Agility *agi) { _agi = agi; }
+
+	private:
+		Agility *_agi{nullptr};
+		AttackSpeed *_attack_speed{nullptr};
+	};
+
+	class AttackDelay
+	: public Attribute<AttackDelay>,
+	  public ObservableStatus<AttackDelay *, AttackMotion *>
+	{
+	public:
+		AttackDelay(std::weak_ptr<Entity> entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr)
+		{ }
+		~AttackDelay() { }
+
+		void on_observable_changed(AttackMotion *) { compute(); }
+
+		int32_t compute();
+
+		void set_attack_motion(AttackMotion *amotion) { _attack_motion = amotion; }
+
+	private:
+		AttackMotion *_attack_motion{nullptr};
+	};
+
+	class DamageMotion
+	: public Attribute<DamageMotion>,
+	  public ObservableStatus<DamageMotion *, Agility *>
+	{
+	public:
+		DamageMotion(std::weak_ptr<Entity> entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr)
+		{ }
+		~DamageMotion() { }
+
+		void on_observable_changed(Agility *) { compute(); }
+
+		int32_t compute();
+
+		void set_agility(Agility *agi) { _agi = agi; }
+
+	private:
+		Agility *_agi{nullptr};
+	};
+
+	class BaseAttack
+	: public Attribute<BaseAttack>,
+	  public ObservableStatus<BaseAttack *, Strength *, Dexterity *, Luck *, BaseLevel *>
+	{
+	public:
+		BaseAttack(std::weak_ptr<Entity> entity)
+		: Attribute(entity),
+		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		{ }
+		~BaseAttack() { }
+
+		void on_observable_changed(Strength *) { compute(); }
+		void on_observable_changed(Dexterity *) { compute(); }
+		void on_observable_changed(Luck *) { compute(); }
+		void on_observable_changed(BaseLevel *) { compute(); }
+
+		void on_weapon_changed() { compute(); }
+
+		int32_t compute();
+
+		void set_strength(Strength *str) { _str = str; }
+		void set_dexterity(Dexterity *dex) { _dex = dex; }
+		void set_luck(Luck *luk) { _luk = luk; }
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+
+	private:
+		Strength *_str{nullptr};
+		Dexterity *_dex{nullptr};
+		Luck *_luk{nullptr};
+		BaseLevel *_blvl{nullptr};
+	};
+
+	class EntitySize
+	: public Attribute<EntitySize>
+	{
+	public:
+		EntitySize(std::weak_ptr<Entity> entity)
+		: Attribute(entity)
+		{ }
+		~EntitySize() { }
 	};
 }
 }

@@ -33,8 +33,8 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
+#include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
@@ -97,6 +97,7 @@ public:
 	 */
 	MapCoords const &dest_coords() const { return _dest_pos; }
 	virtual bool move_to_coordinates(int16_t x, int16_t y);
+	virtual bool move_to_entity(std::shared_ptr<Entity> entity);
 	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
 
 	virtual void stop_movement() = 0;
@@ -191,11 +192,9 @@ public:
 	std::shared_ptr<AStar::CoordinateList> path_to(std::shared_ptr<Entity> e);
 	int distance_from(std::shared_ptr<Entity> e) { return path_to(e)->size(); }
 
-	virtual bool attack(std::shared_ptr<Entity> e, bool continuous);
-	bool is_dead() { return status()->current_hp()->get_base() == 0; }
+	virtual bool attack(std::shared_ptr<Entity> target, bool continuous = false);
 
-	std::shared_ptr<Entities::Combat> combat() { return _combat; }
-	void set_combat(std::shared_ptr<Entities::Combat> combat) { _combat = combat; }
+	bool is_dead();
 
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
@@ -222,11 +221,6 @@ private:
 	directions _facing_dir{DIR_SOUTH};
 
 	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;
-
-	// Combat
-	// Entities given the ability to be combatant, create new combat instances
-	// each time they engage in combat. Combat pointer remains nullptr when not in combat.
-	std::shared_ptr<Entities::Combat> _combat;
 };
 }
 }

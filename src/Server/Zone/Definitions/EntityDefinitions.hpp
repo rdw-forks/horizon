@@ -30,7 +30,6 @@
 #define HORIZON_ZONE_ENTITIES_DEFINITIONS
 
 #include "Server/Common/Configuration/Horizon.hpp"
-#include <cstring> // std::strncpy [ Ubuntu / Xenial ]
 
 enum entity_size_type
 {
@@ -38,30 +37,6 @@ enum entity_size_type
 	ESZ_MEDIUM  = 1,
 	ESZ_LARGE   = 2,
 	ESZ_MAX     = 3
-};
-
-enum player_notifier_type
-{
-	GRID_NOTIFY_AREA,               // area
-	GRID_NOTIFY_AREA_WOS,           // area, without self
-	GRID_NOTIFY_AREA_WOC,           // area, without chatrooms
-	GRID_NOTIFY_AREA_WOSC,          // area, without own chatrooms
-	GRID_NOTIFY_AREA_CHAT_WOC,      // hearable area, without chatrooms
-	GRID_NOTIFY_AREA_DEAD,          // area, for clear unit (monster death)
-	GRID_NOTIFY_CHAT,               // current chatroom
-	GRID_NOTIFY_CHAT_WOS,           // current chatroom, without self
-	GRID_NOTIFY_PARTY,
-	GRID_NOTIFY_PARTY_WOS,
-	GRID_NOTIFY_PARTY_AREA,
-	GRID_NOTIFY_PARTY_AREA_WOS,
-	GRID_NOTIFY_GUILD,
-	GRID_NOTIFY_GUILD_WOS,
-	GRID_NOTIFY_GUILD_AREA,
-	GRID_NOTIFY_GUILD_AREA_WOS,
-	GRID_NOTIFY_GUILD_NOBG,
-	GRID_NOTIFY_DUEL,
-	GRID_NOTIFY_DUEL_WOS,
-	GRID_NOTIFY_SELF
 };
 
 enum entity_type : char

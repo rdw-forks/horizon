@@ -33,16 +33,7 @@
 #include "Core/Networking/Buffer/ByteBuffer.hpp"
 #include "version.hpp"
 
-#include <iostream>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/bind.hpp>
 #include <readline/readline.h>
-
-#include <boost/asio/signal_set.hpp>
-
-#include <sol.hpp>
 
 /* Public */
 Server::Server()

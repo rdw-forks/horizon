@@ -36,15 +36,6 @@
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 
-#include <utility>
-#include <vector>
-#include <functional>
-#include <set>
-#include <cstdint>
-#include <algorithm>
-#include <math.h>
-#include <boost/optional.hpp>
-
 namespace Horizon
 {
 namespace Zone

@@ -30,26 +30,7 @@
 #ifndef HORIZON_SERVER_HPP
 #define HORIZON_SERVER_HPP
 
-#include "Logging/Logger.hpp"
 #include "CLI/CLICommand.hpp"
-#include "Core/Multithreading/ThreadSafeQueue.hpp"
-#include "Server/Common/Configuration/ServerConfiguration.hpp"
-#include "Server/Common/Configuration/Horizon.hpp"
-
-#include <cstdio>
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/mysql/mysql.h>
-
-#ifndef SOL_ALL_SAFETIES_ON
-#define SOL_ALL_SAFETIES_ON 1
-#endif
-#ifdef SOL_STD_VARIANT
-#define SOL_STD_VARIANT 0
-#endif
-#include <sol.hpp>
 
 using boost::asio::ip::tcp;
 

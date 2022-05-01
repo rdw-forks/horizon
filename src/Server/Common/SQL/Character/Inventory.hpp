@@ -29,10 +29,6 @@
 #ifndef HORIZON_SQL_CHARACTERS_INVENTORY_HPP
 #define HORIZON_SQL_CHARACTERS_INVENTORY_HPP
 
-#include <sqlpp11/table.h>
-#include <sqlpp11/data_types.h>
-#include <sqlpp11/char_sequence.h>
-
 class Server;
 
 namespace Horizon

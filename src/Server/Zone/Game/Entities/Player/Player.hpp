@@ -31,6 +31,8 @@
 #define HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
 
 #include "Server/Common/Configuration/Horizon.hpp" // MAX_INVENTORY_SIZE
+#include "Server/Zone/Definitions/PlayerDefinitions.hpp"
+#include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
@@ -38,9 +40,8 @@
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
-#include "Server/Zone/Game/Entities/Definitions/PlayerDefinitions.hpp"
 
-#include <sol.hpp>
+
 
 class ByteBuffer;
 
@@ -111,7 +112,7 @@ public:
 	void spawn_entity_in_viewport(std::shared_ptr<Entity> entity);
 	bool entity_is_in_viewport(std::shared_ptr<Entity> entity);
 
-	void notify_in_area(ByteBuffer &buf, player_notifier_type type, uint16_t range = MAX_VIEW_RANGE);
+	void notify_in_area(ByteBuffer &buf, grid_notifier_type type, uint16_t range = MAX_VIEW_RANGE);
 	bool move_to_map(std::shared_ptr<Map> map, MapCoords coords = { 0, 0 });
 	void on_map_enter();
 
@@ -191,7 +192,8 @@ public:
     void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
     void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
 
-    bool attack(std::shared_ptr<Entity> e, bool continuous = false);
+    bool attack(std::shared_ptr<Entity> e, bool continuous = false) override;
+    bool stop_attack();
 private:
 	std::shared_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;

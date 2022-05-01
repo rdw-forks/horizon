@@ -28,11 +28,10 @@
 #ifndef HORIZON_ZONE_CLIENT_PACKET_LENGTH_TABLE_20160713
 #define HORIZON_ZONE_CLIENT_PACKET_LENGTH_TABLE_20160713
 
-#include "Core/Multithreading/LockedLookupTable.hpp"
 
 #include "Default.hpp"
 
-#include <utility>
+
 
 namespace Horizon
 {

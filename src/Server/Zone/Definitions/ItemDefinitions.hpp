@@ -31,13 +31,6 @@
 
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
-// Includes [ Ubuntu / Xenial ]
-#include <array>
-#include <utility>
-#include <memory>
-#include <string>
-#include <vector>
-
 #define ITEM_NAME_LENGTH 50
 #define UNKNOWN_ITEM_ID 512 // Apple
 

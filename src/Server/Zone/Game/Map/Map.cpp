@@ -35,10 +35,6 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Grid/Grid.hpp"
 
-#include <type_traits>
-#include <functional>
-#include <fstream>
-
 using namespace Horizon::Zone;
 
 Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, uint16_t width, uint16_t height, std::vector<uint8_t> const &cells)
@@ -54,6 +50,10 @@ Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, u
 	}
 }
 
+Map::~Map()
+{
+}
+
 bool Map::has_obstruction_at(int16_t x, int16_t y)
 {
 	if (x < 0 || y < 0 || x > _width || y > _height)
@@ -67,7 +67,4 @@ bool Map::has_obstruction_at(int16_t x, int16_t y)
 	return false;
 }
 
-Map::~Map()
-{
-}
 

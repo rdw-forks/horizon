@@ -30,12 +30,11 @@
 #ifndef HORIZON_ZONE_ZONEMAIN_HPP
 #define HORIZON_ZONE_ZONEMAIN_HPP
 
+#include "Server/pch.hpp"
+
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Server.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
-#include "Utility/TaskScheduler.hpp"
-
-#include <boost/asio/deadline_timer.hpp>
 
 namespace Horizon
 {

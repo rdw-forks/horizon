@@ -32,8 +32,7 @@
 
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
-
-#include <memory> // Linux
+ // Linux
 
 namespace Horizon
 {
@@ -57,6 +56,8 @@ public:
 	void initialize_compound_attributes(std::shared_ptr<const job_config_data> job);
 	void initialize_observable_statuses();
 	void initialize_notifiable_statuses();
+	void initialize_combat_statuses();
+	void compute_combat_statuses(bool notify);
 	void compute_compound_attributes(bool notify);
 	
 	uint32_t get_required_statpoints(uint16_t from, uint16_t to);
@@ -150,6 +151,9 @@ public:
 	std::shared_ptr<CurrentWeight> current_weight() { return _current_weight; }
 	void set_current_weight(std::shared_ptr<CurrentWeight> cw) { _current_weight = cw; }
 
+	std::shared_ptr<AttackRange> attack_range() { return _attack_range; }
+	void set_attack_range(std::shared_ptr<AttackRange> m) { _attack_range = m; }
+
 	/**
 	 * SubAttributes
 	 */
@@ -177,8 +181,8 @@ public:
 	std::shared_ptr<FLEE> flee() { return _flee; }
 	void set_flee(std::shared_ptr<FLEE> flee) { _flee = flee; }
 
-	std::shared_ptr<AttackSpeed> aspd() { return _aspd; }
-	void set_aspd(std::shared_ptr<AttackSpeed> aspd) { _aspd = aspd; }
+	std::shared_ptr<AttackSpeed> attack_speed() { return _aspd; }
+	void set_attack_speed(std::shared_ptr<AttackSpeed> aspd) { _aspd = aspd; }
 
 	/**
 	 * Appearance
@@ -228,6 +232,23 @@ public:
 	std::shared_ptr<Virtue> virtue() { return _virtue; }
 	void set_virtue(std::shared_ptr<Virtue> v) { _virtue = v; }
 
+	/**
+	 * Combat Status
+	 */
+	std::shared_ptr<AttackMotion> attack_motion() { return _attack_motion; }
+	void set_attack_motion(std::shared_ptr<AttackMotion> m) { _attack_motion = m; }
+
+	std::shared_ptr<AttackDelay> attack_delay() { return _attack_delay; }
+	void set_attack_delay(std::shared_ptr<AttackDelay> a) { _attack_delay = a; }
+
+	std::shared_ptr<DamageMotion> damage_motion() { return _damage_motion; }
+	void set_damage_motion(std::shared_ptr<DamageMotion> m) { _damage_motion = m; } 
+
+	std::shared_ptr<BaseAttack> base_attack() { return _base_attack; }
+	void set_base_attack(std::shared_ptr<BaseAttack> b) { _base_attack = b; }
+
+	std::shared_ptr<EntitySize> size() { return _size; }
+	void set_size(std::shared_ptr<EntitySize> s) { _size = s; }
 protected:
 	std::shared_ptr<Entity> entity() { return _entity.lock(); }
 
@@ -261,6 +282,7 @@ private:
 	std::shared_ptr<MovementSpeed> _movement_speed;
 	std::shared_ptr<MaxWeight> _max_weight;
 	std::shared_ptr<CurrentWeight> _current_weight;
+	std::shared_ptr<AttackRange> _attack_range;
 	/* Sub Attributes */
 	std::shared_ptr<StatusATK> _status_atk;
 	std::shared_ptr<EquipATK> _equip_atk;
@@ -288,6 +310,12 @@ private:
 	std::shared_ptr<Honor> _honor;
 	std::shared_ptr<Manner> _manner;
 	std::shared_ptr<Virtue> _virtue;
+	/* Combat Status */
+	std::shared_ptr<AttackMotion> _attack_motion;
+	std::shared_ptr<AttackDelay> _attack_delay;
+	std::shared_ptr<DamageMotion> _damage_motion;
+	std::shared_ptr<BaseAttack> _base_attack;
+	std::shared_ptr<EntitySize> _size;
 };
 }
 }

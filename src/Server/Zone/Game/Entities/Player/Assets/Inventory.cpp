@@ -43,9 +43,6 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/mysql/mysql.h>
-
 using namespace Horizon::Zone::Entities;
 using namespace Horizon::Zone::Entities::Traits;
 using namespace Horizon::Zone::Assets;

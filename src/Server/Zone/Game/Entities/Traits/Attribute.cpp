@@ -27,6 +27,7 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
@@ -54,43 +55,43 @@ void set_new_point_cost(std::shared_ptr<Horizon::Zone::Entity> entity, STATUS_CO
 
 void StrengthPointCost::on_observable_changed(Strength *str)
 {
-	set_new_point_cost(get_entity(), this, str);
+	set_new_point_cost(entity(), this, str);
 }
 
 void AgilityPointCost::on_observable_changed(Agility *agi)
 {
-	set_new_point_cost(get_entity(), this, agi);
+	set_new_point_cost(entity(), this, agi);
 }
 
 void VitalityPointCost::on_observable_changed(Vitality *vit)
 {
-	set_new_point_cost(get_entity(), this, vit);
+	set_new_point_cost(entity(), this, vit);
 }
 
 void IntelligencePointCost::on_observable_changed(Intelligence *_int)
 {
-	set_new_point_cost(get_entity(), this, _int);
+	set_new_point_cost(entity(), this, _int);
 }
 
 void DexterityPointCost::on_observable_changed(Dexterity *dex)
 {
-	set_new_point_cost(get_entity(), this, dex);
+	set_new_point_cost(entity(), this, dex);
 }
 
 void LuckPointCost::on_observable_changed(Luck *luk)
 {
-	set_new_point_cost(get_entity(), this, luk);
+	set_new_point_cost(entity(), this, luk);
 }
 
 void BaseLevel::on_observable_changed(BaseExperience *bexp)
 {
-	if (get_entity() == nullptr || bexp == nullptr)
+	if (entity() == nullptr || bexp == nullptr)
 		return;
 
 	if (get_base() >= MAX_LEVEL)
 		return;
 
-	if (bexp->get_base() == get_entity()->status()->next_base_experience()->get_base()) {
+	if (bexp->get_base() == entity()->status()->next_base_experience()->get_base()) {
 		add_base(1);
 		bexp->set_base(0);
 	}
@@ -98,10 +99,10 @@ void BaseLevel::on_observable_changed(BaseExperience *bexp)
 
 void JobLevel::on_observable_changed(JobExperience *jexp)
 {
-	if (get_entity() == nullptr || jexp == nullptr)
+	if (entity() == nullptr || jexp == nullptr)
 		return;
 
-	if (jexp->get_base() == get_entity()->status()->next_job_experience()->get_base()) {
+	if (jexp->get_base() == entity()->status()->next_job_experience()->get_base()) {
 		add_base(1);
 		jexp->set_base(0);
 	}
@@ -109,10 +110,10 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 
 void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 {
-	if (get_entity() == nullptr || blvl == nullptr)
+	if (entity() == nullptr || blvl == nullptr)
 		return;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
 	set_base(bexpg->exp[blvl->get_base() - 1]);
@@ -120,10 +121,10 @@ void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 
 void NextJobExperience::on_observable_changed(JobLevel *jlvl)
 {
-	if (get_entity() == nullptr || jlvl == nullptr)
+	if (entity() == nullptr || jlvl == nullptr)
 		return;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
 	set_base(jexpg->exp[jlvl->get_base() - 1]);
@@ -131,7 +132,7 @@ void NextJobExperience::on_observable_changed(JobLevel *jlvl)
 
 void StatusPoint::on_observable_changed(BaseLevel *blvl)
 {
-	if (get_entity() == nullptr || blvl == nullptr)
+	if (entity() == nullptr || blvl == nullptr)
 		return;
 
 	add_base(ExpDB->get_status_point(blvl->get_base()) - ExpDB->get_status_point(blvl->get_base() - 1));
@@ -139,7 +140,7 @@ void StatusPoint::on_observable_changed(BaseLevel *blvl)
 
 void SkillPoint::on_observable_changed(JobLevel *jlvl)
 {
-	if (get_entity() == nullptr || jlvl == nullptr)
+	if (entity() == nullptr || jlvl == nullptr)
 		return;
 
 	add_base(1);
@@ -149,21 +150,21 @@ void SkillPoint::set_base(int32_t val)
 {
 	Attribute<SkillPoint>::set_base(val);
 
-	if (get_entity()->type() == ENTITY_PLAYER)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SKILLPOINT, total());
+	if (entity()->type() == ENTITY_PLAYER)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SKILLPOINT, total());
 }
 
 int32_t MaxWeight::compute(bool notify)
 {
-	if (get_entity() == nullptr || _str == nullptr)
+	if (entity() == nullptr || _str == nullptr)
 		return 0;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
 
 	set_base(job->max_weight + _str->get_base() * 300);
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MAX_WEIGHT, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MAX_WEIGHT, total());
 	
 	return total();
 }
@@ -172,8 +173,8 @@ void MovementSpeed::set_base(int32_t val)
 {
 	Attribute<MovementSpeed>::set_base(val);
 
-	if (get_entity()->type() == ENTITY_PLAYER)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MOVEMENT_SPEED, total());
+	if (entity()->type() == ENTITY_PLAYER)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MOVEMENT_SPEED, total());
 }
 
 int32_t StatusATK::compute(bool notify)
@@ -199,8 +200,8 @@ int32_t StatusATK::compute(bool notify)
 	// Melee: floor[(BaseLevel ÷ 4) + Str + (Dex ÷ 5) + (Luk ÷ 3)]
 	set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_ATK, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_ATK, total());
 	
 	return total();
 }
@@ -224,8 +225,8 @@ int32_t StatusMATK::compute(bool notify)
 	// floor[floor[BaseLevel ÷ 4] + Int + floor[Int ÷ 2] + floor[Dex ÷ 5] + floor[Luk ÷ 3]]
 	set_base(int_ + (blvl / 4) + (int_ / 2) + (dex / 5) + (luk / 3));
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_MATK, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_MATK, total());
 	
 	return total();
 }
@@ -240,8 +241,8 @@ int32_t SoftDEF::compute(bool notify)
 	// (VIT ÷ 2) + Max[(VIT × 0.3), (VIT ^ 2 ÷ 150) − 1]
 	set_base((vit / 2) + std::max((vit * 0.3), (std::pow(vit, 2) / 150) - 1));
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_DEF, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_DEF, total());
 	
 	return total();
 }
@@ -265,8 +266,8 @@ int32_t SoftMDEF::compute(bool notify)
 	// INT + VIT ÷ 5 + DEX ÷ 5 + BaseLv ÷ 4
 	set_base(int_ + (vit / 5) + (dex / 5) + (blvl / 4));
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_MDEF, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_MDEF, total());
 	
 	return total();
 }
@@ -287,8 +288,8 @@ int32_t HIT::compute(bool notify)
 	// 175 + BaseLv + DEX + Floor(LUK ÷ 3) + Bonus
 	set_base(175 + blvl + dex + (luk / 3));
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_HIT, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_HIT, total());
 	
 	return total();
 }
@@ -303,8 +304,8 @@ int32_t CRIT::compute(bool notify)
 	// LUK × 0.3 + Bonus
 	set_base(luk / 3);
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CRITICAL, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CRITICAL, total());
 	
 	return total();
 }
@@ -326,8 +327,8 @@ int32_t FLEE::compute(bool notify)
 
 	set_base(100 + blvl + agi + (luk / 5));
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_FLEE, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_FLEE, total());
 	
 	return total();
 }
@@ -338,7 +339,7 @@ int32_t EquipATK::compute(bool notify)
 {
 	int32_t str = 1, dex = 1;
 
-	if (get_entity() == nullptr || get_entity()->type() != ENTITY_PLAYER)
+	if (entity() == nullptr || entity()->type() != ENTITY_PLAYER)
 		return 0;
 
 	if (_str != nullptr)
@@ -347,7 +348,7 @@ int32_t EquipATK::compute(bool notify)
 	if (_dex != nullptr)
 		dex = _dex->total();
 
-	std::shared_ptr<Player> player = get_entity()->downcast<Player>();
+	std::shared_ptr<Player> player = entity()->downcast<Player>();
 	EquipmentListType const &equipments = player->inventory()->equipments();
 
 	std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
@@ -377,8 +378,8 @@ int32_t EquipATK::compute(bool notify)
 
 	set_base(_left_hand_val + _right_hand_val);
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_EQUIP_ATK, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_EQUIP_ATK, total());
 
 	return total();
 }
@@ -395,11 +396,11 @@ int32_t AttackSpeed::compute(bool notify)
 	float temp_aspd = 0.00f;
 	int amotion = 0;
 
-	if (get_entity()->type() == ENTITY_PLAYER) {
-		EquipmentListType const &equipments = get_entity()->downcast<Player>()->inventory()->equipments();
+	if (entity()->type() == ENTITY_PLAYER) {
+		EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 		std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
-		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(get_entity()->job_id());
+		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
 
 		item_weapon_type rhw_type, lhw_type;
 
@@ -452,8 +453,97 @@ int32_t AttackSpeed::compute(bool notify)
 
  	set_base(amotion);
 
-	if (get_entity()->type() == ENTITY_PLAYER && notify)
-		get_entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_ASPD, total());
+	if (entity()->type() == ENTITY_PLAYER && notify)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_ASPD, total());
+
+	return total();
+}
+
+int32_t AttackRange::compute(bool notify)
+{
+	if (entity()->type() == ENTITY_PLAYER) {
+		EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+		
+		if (equipments[IT_EQPI_HAND_R].second.expired() == true)
+			return 0;
+
+		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
+		std::shared_ptr<const item_config_data> rhwd = ItemDB->get_item_by_id(rhw->item_id);
+		
+		if (rhw == nullptr || rhwd == nullptr)
+			return 0;
+
+		set_base(rhwd->attack_range);
+
+		if (notify == true)
+			entity()->downcast<Player>()->get_session()->clif()->notify_attack_range_update(total());
+	} else if (entity()->type() == ENTITY_MONSTER) {
+		set_base(entity()->downcast<Monster>()->monster_config()->attack_range);
+	}
+
+	return total();
+}
+
+int32_t AttackMotion::compute()
+{
+	if (entity()->type() == ENTITY_PLAYER)
+		set_base(_attack_speed->get_base());
+	else if (entity()->type() == ENTITY_MONSTER)
+		set_base(entity()->downcast<Monster>()->monster_config()->attack_motion);
+
+	return total();
+}
+
+int32_t AttackDelay::compute()
+{
+	if (entity()->type() == ENTITY_PLAYER)
+		set_base(2 * _attack_motion->total());
+	else if (entity()->type() == ENTITY_MONSTER)
+		set_base(entity()->downcast<Monster>()->monster_config()->attack_delay);
+
+	return total();
+}
+
+int32_t DamageMotion::compute()
+{
+	if (entity()->type() == ENTITY_PLAYER)
+		set_base(800 - _agi->get_base() * 4);
+	else if (entity()->type() == ENTITY_MONSTER)
+		set_base(entity()->downcast<Monster>()->monster_config()->damage_motion);
+
+	return total();
+}
+
+int32_t BaseAttack::compute()
+{
+	if (entity()->type() == ENTITY_PLAYER) {
+		bool melee = true;
+		EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+		std::shared_ptr<const item_entry_data> rhw = nullptr;
+
+		if (!equipments[IT_EQPI_HAND_R].second.expired()) {
+			rhw = equipments[IT_EQPI_HAND_R].second.lock();
+			std::shared_ptr<const item_config_data> rhwd = ItemDB->get_item_by_id(rhw->item_id);
+
+			switch (rhwd->sub_type.weapon_t)
+			{
+			case IT_WT_BOW:
+			case IT_WT_MUSICAL:
+			case IT_WT_WHIP:
+			case IT_WT_REVOLVER:
+			case IT_WT_RIFLE:
+			case IT_WT_GATLING:
+			case IT_WT_SHOTGUN:
+			case IT_WT_GRENADE:
+				melee = false;
+			default:
+				break;
+			}
+		}
+		set_base((melee ? _str->total() : _dex->total()) + (float) ((melee ? _dex->get_base() : _str->total()) / 5) + (float) (_luk->get_base() / 3) + (_blvl->get_base() / 4));
+	}
+	else if (entity()->type() == ENTITY_MONSTER)
+		set_base(_str->total() + _blvl->get_base());
 
 	return total();
 }

@@ -27,8 +27,8 @@
  **************************************************/
 
 #include "GRF.hpp"
-#include "Utility/Utility.hpp"
 #include "Utility/StrUtils.hpp"
+#include "Utility/Utility.hpp"
 
 #include <iostream>
 #include <sys/stat.h>

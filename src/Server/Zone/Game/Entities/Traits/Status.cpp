@@ -39,10 +39,6 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <stdio.h>
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/mysql/connection.h>
-
 using namespace Horizon::Zone::Entities::Traits;
 
 void Status::initialize()
@@ -57,6 +53,10 @@ void Status::initialize()
 	set_max_hp(std::make_shared<MaxHP>(_entity, 1));
 	set_max_sp(std::make_shared<MaxSP>(_entity, 1));
 
+	set_size(std::make_shared<EntitySize>(_entity));
+
+	set_attack_range(std::make_shared<AttackRange>(_entity));
+
 	set_base_appearance(std::make_shared<BaseAppearance>(_entity, 0));
 	set_hair_color(std::make_shared<HairColor>(_entity, 0));
 	set_cloth_color(std::make_shared<ClothColor>(_entity, 0));
@@ -68,6 +68,10 @@ void Status::initialize()
 	set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, 0));
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
 	set_body_style(std::make_shared<BodyStyle>(_entity, 0));
+
+	initialize_combat_statuses();
+	
+	compute_combat_statuses(false);
 }
 
 bool Status::load(std::shared_ptr<Player> pl)
@@ -108,6 +112,8 @@ bool Status::load(std::shared_ptr<Player> pl)
 	set_intelligence(std::make_shared<Intelligence>(_entity, _int, 0, 0));
 	set_dexterity(std::make_shared<Dexterity>(_entity, dex, 0, 0));
 	set_luck(std::make_shared<Luck>(_entity, luk, 0, 0));
+
+	set_size(std::make_shared<EntitySize>(_entity));
 
 	set_strength_cost(std::make_shared<StrengthPointCost>(_entity, get_required_statpoints(str, str + 1)));
 	set_agility_cost(std::make_shared<AgilityPointCost>(_entity, get_required_statpoints(agi, agi + 1)));
@@ -190,7 +196,11 @@ void Status::initialize(std::shared_ptr<Entity> entity)
 
 	initialize_observable_statuses();
 
+	initialize_combat_statuses();
+
 	compute_compound_attributes(false);
+
+	compute_combat_statuses(true);
 
 	pl->get_session()->clif()->notify_initial_status(shared_from_this());
 
@@ -210,6 +220,8 @@ void Status::initialize_compound_attributes(std::shared_ptr<const job_config_dat
 	std::shared_ptr<FLEE> flee;
 	std::shared_ptr<AttackSpeed> aspd;
 	std::shared_ptr<MaxWeight> max_weight;
+
+	set_attack_range(std::make_shared<AttackRange>(_entity));
 
 	set_max_weight(max_weight = std::make_shared<MaxWeight>(_entity, job->max_weight));
 	max_weight->set_strength(strength().get());
@@ -255,7 +267,7 @@ void Status::initialize_compound_attributes(std::shared_ptr<const job_config_dat
 	flee->set_agility(agility().get());
 	flee->set_luck(luck().get());
 
-	set_aspd(aspd = std::make_shared<AttackSpeed>(_entity));
+	set_attack_speed(aspd = std::make_shared<AttackSpeed>(_entity));
 	aspd->set_base_level(base_level().get());
 	aspd->set_agility(agility().get());
 	aspd->set_dexterity(dexterity().get());
@@ -286,7 +298,7 @@ void Status::initialize_observable_statuses()
 	agility()->register_observers(
 		agility_cost().get(),
 		flee().get(),
-		aspd().get());
+		attack_speed().get());
 
 	vitality()->register_observers(
 		vitality_cost().get(),
@@ -305,7 +317,7 @@ void Status::initialize_observable_statuses()
 		status_matk().get(),
 		soft_mdef().get(),
 		hit().get(),
-		aspd().get());
+		attack_speed().get());
 
 	luck()->register_observers(
 		luck_cost().get(),
@@ -323,7 +335,7 @@ void Status::initialize_observable_statuses()
 		soft_mdef().get(), 
 		hit().get(), 
 		flee().get(), 
-		aspd().get());
+		attack_speed().get());
 
 	job_level()->register_observers(
 		skill_point().get(), 
@@ -332,6 +344,43 @@ void Status::initialize_observable_statuses()
 	base_experience()->register_observers(base_level().get());
 
 	job_experience()->register_observers(job_level().get());
+}
+
+void Status::initialize_combat_statuses()
+{
+	std::shared_ptr<AttackMotion> amotion = nullptr;
+	std::shared_ptr<AttackDelay> adelay = nullptr;
+	std::shared_ptr<DamageMotion> dmotion = nullptr;
+	std::shared_ptr<BaseAttack> batk = nullptr;
+
+	set_attack_motion(amotion = std::make_shared<AttackMotion>(_entity));
+	amotion->set_attack_speed(attack_speed().get());
+	amotion->set_agility(agility().get());
+
+	set_attack_delay(adelay = std::make_shared<AttackDelay>(_entity));
+	adelay->set_attack_motion(attack_motion().get());
+
+	set_damage_motion(dmotion = std::make_shared<DamageMotion>(_entity));
+	dmotion->set_agility(agility().get());
+
+	set_base_attack(batk = std::make_shared<BaseAttack>(_entity));
+	batk->set_strength(strength().get());
+	batk->set_dexterity(dexterity().get());
+	batk->set_luck(luck().get());
+	batk->set_base_level(base_level().get());
+
+	attack_motion()->register_observers(attack_speed().get(), agility().get());
+	attack_delay()->register_observers(attack_motion().get());
+	damage_motion()->register_observers(agility().get());
+	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
+}
+
+void Status::compute_combat_statuses(bool notify)
+{
+	attack_motion()->compute();
+	attack_delay()->compute();
+	damage_motion()->compute();
+	attack_range()->compute(notify);
 }
 
 void Status::compute_compound_attributes(bool notify)
@@ -345,7 +394,7 @@ void Status::compute_compound_attributes(bool notify)
 	hit()->compute(notify);
 	crit()->compute(notify);
 	flee()->compute(notify);
-	aspd()->compute(notify);
+	attack_speed()->compute(notify);
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)

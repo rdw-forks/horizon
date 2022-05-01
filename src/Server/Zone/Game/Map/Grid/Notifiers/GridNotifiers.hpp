@@ -30,10 +30,9 @@
 #ifndef HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP
 #define HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP
 
-#include <utility>
-
 #include "Core/Networking/Buffer/ByteBuffer.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifierPredicates.hpp"
 
 #define entity_ns(class) Horizon::Zone::Entities::class
@@ -219,9 +218,9 @@ struct GridPlayerNotifier
 {
 	std::weak_ptr<Horizon::Zone::Entity> _entity;
 	ByteBuffer _buf;
-	player_notifier_type _type;
+	grid_notifier_type _type;
 
-	explicit GridPlayerNotifier(ByteBuffer &buf, const std::shared_ptr<Horizon::Zone::Entity>& entity, player_notifier_type type = GRID_NOTIFY_AREA)
+	explicit GridPlayerNotifier(ByteBuffer &buf, const std::shared_ptr<Horizon::Zone::Entity>& entity, grid_notifier_type type = GRID_NOTIFY_AREA)
 	: _entity(entity), _buf(buf), _type(type)
 	{ }
 

@@ -33,6 +33,7 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/CombatDefinitions.hpp"
 
 namespace Horizon
 {
@@ -22714,7 +22715,22 @@ enum {
 };
 /**
  * @brief Main object for the aegis packet: ZC_NOTIFY_ACT3
- *
+ * 08c8 <src ID>.L <dst ID>.L <server tick>.L <src speed>.L <dst speed>.L <damage>.L <IsSPDamage>.B <div>.W <type>.B <damage2>.L (ZC_NOTIFY_ACT3)
+ * type:
+ *   0 = damage [ damage: total damage, div: amount of hits, damage2: assassin dual-wield damage ]
+ *   1 = pick up item
+ *   2 = sit down
+ *   3 = stand up
+ *   4 = damage (endure)
+ *   5 = (splash?)
+ *   6 = (skill?)
+ *   7 = (repeat damage?)
+ *   8 = multi-hit damage
+ *   9 = multi-hit damage (endure)
+ *   10 = critical hit
+ *   11 = lucky dodge
+ *   12 = (touch skill?)
+ *   13 = multi-hit critical
  */ 
 class ZC_NOTIFY_ACT3 : public Base::NetworkPacketTransmitter<ZoneSession>
 {
@@ -22724,7 +22740,7 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_ACT3() {}
 
-	void deliver(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, combat_damage_type_mask dmg_type, int left_damage);
+	void deliver(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage);
 	ByteBuffer &serialize();
 
 /* Structure */
@@ -22736,7 +22752,7 @@ public:
 	int32_t _damage{0};
 	int8_t _is_sp_damaged{0}; 
 	int16_t _number_of_hits{0};
-	uint8_t _dmg_type{0};
+	uint8_t _action_type{0};
 	int32_t _left_damage{0};
 };
 

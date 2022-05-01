@@ -39,15 +39,6 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Grid/GridHolder.hpp"
 
-#include <cassert>
-#include <unordered_map>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <boost/multi_array.hpp>
-
 namespace Horizon
 {
 namespace Zone
@@ -67,6 +58,8 @@ public:
 
 	uint16_t get_width() { return _width; }
 	uint16_t get_height() { return _height; }
+
+	map_cell_types get_cell_type(MapCoords coords) { return _cells[coords.x()][coords.y()].get_type(); }
 
 	GridHolderType &getGridHolder() { return _gridholder; }
 

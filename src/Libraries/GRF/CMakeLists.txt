@@ -46,5 +46,6 @@ set_target_properties(grf
 	PROPERTIES
 	LINKER_LANGUAGE CXX
         FOLDER
-        "GRF")
+        "GRF"
+    DISABLE_PRECOMPILE_HEADER ON)
 

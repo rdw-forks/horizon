@@ -33,7 +33,6 @@
 #include "Container/GridReferenceContainer.hpp"
 #include "Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
-#include <cassert>
 
 template
 <

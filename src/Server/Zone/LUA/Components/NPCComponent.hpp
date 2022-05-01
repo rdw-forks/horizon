@@ -29,7 +29,7 @@
 #ifndef HORIZON_ZONE_NPC_LUA_COMPONENT_HPP
 #define HORIZON_ZONE_NPC_LUA_COMPONENT_HPP
 
-#include <sol.hpp>
+
 #include "Server/Zone/LUA/Components/LUAComponent.hpp"
 
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"

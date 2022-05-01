@@ -17,17 +17,7 @@
 #ifndef HORIZON_CORE_UTILITY_TASKSCHEDULER_HPP
 #define HORIZON_CORE_UTILITY_TASKSCHEDULER_HPP
 
-#include <algorithm>
-#include <chrono>
-#include <vector>
-#include <queue>
-#include <random>
-#include <memory>
-#include <mutex>
-#include <utility>
-#include <cassert>
-#include <functional>
-#include <set>
+#include "Server/pch.hpp"
 
 /// Milliseconds shorthand typedef.
 typedef std::chrono::microseconds Microseconds;

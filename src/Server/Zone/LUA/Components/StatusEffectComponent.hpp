@@ -29,7 +29,6 @@
 #ifndef HORIZON_ZONE_STATUSEFFECT_LUA_COMPONENT_HPP
 #define HORIZON_ZONE_STATUSEFFECT_LUA_COMPONENT_HPP
 
-#include <sol.hpp>
 #include "Server/Zone/LUA/Components/LUAComponent.hpp"
 
 namespace Horizon

@@ -66,6 +66,8 @@ void Monster::initialize()
 
 	status()->movement_speed()->set_base(md->move_speed);
 
+	status()->size()->set_base((int32_t) monster_config()->size);
+
 	map()->ensure_grid_for_entity(this, map_coords());
 
     map()->container()->getScheduler().Schedule(

@@ -34,7 +34,7 @@
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 
-#include <sol.hpp>
+
 
 namespace Horizon
 {

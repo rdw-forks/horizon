@@ -59,6 +59,10 @@ add_executable(zone
 	${LUA_SOURCES}
 )
 
+target_precompile_headers(zone
+	PUBLIC
+		../pch.hpp)
+
 if (${CMAKE_VERSION} VERSION_GREATER "3.16.0")
 target_precompile_headers(zone
 	PRIVATE

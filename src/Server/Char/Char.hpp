@@ -30,11 +30,9 @@
 #ifndef HORIZON_CHAR_CHARMAIN_HPP
 #define HORIZON_CHAR_CHARMAIN_HPP
 
-#include "Server/Common/Server.hpp"
-#include "Utility/TaskScheduler.hpp"
+#include "Server/pch.hpp"
 
-#include <string>
-#include <boost/asio/deadline_timer.hpp>
+#include "Server/Common/Server.hpp"
 
 namespace Horizon
 {

@@ -31,8 +31,8 @@
 #include "Server/Common/Base/NetworkPacket.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/PlayerDefinitions.hpp"
 #include "Server/Common/Interfaces/ClientInterface.hpp"
-#include "Server/Zone/Game/Entities/Definitions/PlayerDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 
@@ -154,7 +154,7 @@ public:
 	/**
 	 * Combat
 	 */
-	bool notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, combat_damage_type_mask dmg_type, int left_damage);
+	bool notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage);
 
 protected:
 	uint32_t _npc_contact_guid{0};

@@ -40,6 +40,10 @@ add_executable(char
 	${CORE_SOURCES}
     ${UTILITY_SOURCES})
 
+target_precompile_headers(char
+	PUBLIC
+		../pch.hpp)
+
 target_link_libraries(char
 	PUBLIC
         ${Boost_LIBRARIES}

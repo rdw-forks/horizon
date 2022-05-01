@@ -34,7 +34,6 @@
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
-#include <memory>
 
 namespace Horizon
 {

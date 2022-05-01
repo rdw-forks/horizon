@@ -32,10 +32,6 @@
 
 #include "Server/Common/Server.hpp"
 
-#include <sqlpp11/table.h>
-#include <sqlpp11/data_types.h>
-#include <sqlpp11/char_sequence.h>
-
 enum game_account_gender_type
 {
 	ACCOUNT_GENDER_MALE,

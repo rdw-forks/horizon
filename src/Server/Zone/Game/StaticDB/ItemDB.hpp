@@ -32,16 +32,6 @@
 
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
-#include "Core/Multithreading/LockedLookupTable.hpp" // Linux
-
-#include <memory>
-#include <cstdio>
-#include <map>
-#include <cstring>
-#include <iostream>
-#include <array>
-
-#include <sol.hpp>
 
 namespace Horizon
 {
@@ -83,7 +73,24 @@ public:
 	uint8_t get_weapon_target_size_modifier(item_weapon_type wtype, entity_size_type stype)
 	{
 		std::shared_ptr<std::array<uint8_t, ESZ_MAX>> arr = _weapon_target_size_modifiers_db.at(wtype);
-		return arr != nullptr ? (*arr)[stype] : 0;
+		return arr != nullptr ? (*arr)[stype] : 100;
+	}
+
+	int32_t get_weapon_attribute_modifier(int32_t weapon_lv, element_type element, element_type def_ele)
+	{
+		if (weapon_lv < 1 || weapon_lv > 5) 
+			return 100;
+
+		if (element < ELE_NEUTRAL || element >= ELE_MAX)
+			return 100;
+
+		if (def_ele < ELE_NEUTRAL || def_ele >= ELE_MAX)
+			return 100;
+
+		std::shared_ptr<std::array<std::array<uint8_t, ELE_MAX>, ELE_MAX>> lvl_arr = _weapon_attribute_modifiers_db.at(weapon_lv);
+		std::array<uint8_t, ELE_MAX> ele_arr = lvl_arr->at(element);
+
+		return ele_arr[def_ele];
 	}
 
 	std::string get_weapon_type_name(item_weapon_type type)

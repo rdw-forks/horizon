@@ -30,10 +30,6 @@
 #ifndef HORIZON_ZONE_GAME_MAP_COORDINATES_HPP
 #define HORIZON_ZONE_GAME_MAP_COORDINATES_HPP
 
-#include <cstdint>
-#include <cstdlib>
-#include <algorithm>
-
 template <int16_t MAX_COORDINATES>
 class Coordinates
 {

@@ -32,7 +32,6 @@
 
 #include "Core/Structures/TypeList.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
-#include <cstdint>
 
 namespace Horizon
 {

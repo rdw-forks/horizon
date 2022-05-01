@@ -30,13 +30,9 @@
 #ifndef HORIZON_AUTH_HPP
 #define HORIZON_AUTH_HPP
 
-#include "Common/Server.hpp"
-#include "Utility/TaskScheduler.hpp"
+#include "Server/pch.hpp"
 
-#include <string>
-#include <mutex>
-#include <vector>
-#include <boost/asio/deadline_timer.hpp>
+#include "Common/Server.hpp"
 
 namespace Horizon
 {

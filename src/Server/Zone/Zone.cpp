@@ -39,14 +39,6 @@
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
 
-#include <iostream>
-#include <boost/make_shared.hpp>
-#include <chrono>
-#include <signal.h>
-#include <sqlpp11/sqlpp11.h>
-
-#include <sol.hpp>
-
 using namespace std;
 using namespace Horizon::Zone;
 

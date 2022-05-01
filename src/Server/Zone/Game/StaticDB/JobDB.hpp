@@ -32,15 +32,6 @@
 
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
-#include "Core/Multithreading/LockedLookupTable.hpp"
-
-#include <memory>
-#include <map>
-#include <vector>
-#include <array>
-#include <string>
-
-#include <sol.hpp>
 
 namespace Horizon
 {

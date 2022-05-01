@@ -31,16 +31,8 @@
 #define HORIZON_ZONE_GAME_MAPCONTAINERTHREAD_HPP
 
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
-#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
-
-#include <stdio.h>
-#include <thread>
-#include <unordered_map>
-#include <atomic>
-
-#include <sol.hpp>
 
 namespace Horizon
 {

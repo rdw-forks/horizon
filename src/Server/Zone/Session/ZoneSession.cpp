@@ -34,7 +34,6 @@
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <sqlpp11/sqlpp11.h>
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;

@@ -30,27 +30,35 @@
 #ifndef HORIZON_ZONE_GAME_ENTITIES_BATTLE_COMBAT_HPP
 #define HORIZON_ZONE_GAME_ENTITIES_BATTLE_COMBAT_HPP
 
-#include "Server/Zone/Game/Entities/Definitions/CombatDefinitions.hpp"
+#include "Server/Zone/Definitions/CombatDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Entity.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
-namespace Entities
-{  
 class Combat
 {
 public:
-    Combat(std::shared_ptr<Entity> entity, time_t start_time);
+    explicit Combat(std::shared_ptr<Entity> entity, std::shared_ptr<Entity> target, time_t start_time);
     ~Combat();
 
     time_t start_time() { return _start_time; }
 
+    std::shared_ptr<Entity> entity() const { return _entity.lock(); }
+    std::shared_ptr<Entity> target() const { return _target.lock(); }
+
+    combat_retaliate_type weapon_attack();
+    int64_t calculate_weapon_attack(int64_t damage);
+    int64_t calculate_magic_attack(int64_t damage);
+    int64_t calculate_misc_attack(int64_t damage);
+    int64_t deduce_weapon_element_attack(int64_t damage, element_type def_ele, item_equip_location_index loc);
+    int64_t deduce_damage_size_modifier(int64_t damage, item_equip_location_index loc);
+
 private:
     time_t _start_time{0};
-    std::weak_ptr<Entity> _entity{nullptr};
+    std::weak_ptr<Entity> _entity, _target;
 };
-}
 }
 }
 

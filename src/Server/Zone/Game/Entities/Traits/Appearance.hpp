@@ -30,8 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_APPEARANCE_HPP
 #define HORIZON_ZONE_GAME_TRAITS_APPEARANCE_HPP
 
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
-#include <memory> // Linux
+#include "Server/Zone/Definitions/EntityDefinitions.hpp" // Linux
 
 namespace Horizon
 {

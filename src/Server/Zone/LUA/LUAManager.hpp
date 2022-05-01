@@ -43,8 +43,6 @@
 #include "Server/Zone/LUA/Components/NPCComponent.hpp"
 #include "Server/Zone/LUA/Components/PlayerComponent.hpp"
 
-#include <sol.hpp>
-
 namespace Horizon
 {
 namespace Zone

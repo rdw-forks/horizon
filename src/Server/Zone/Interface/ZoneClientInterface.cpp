@@ -45,14 +45,6 @@
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <date/date.h>
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/insert.h>
-
-
-#include <memory>
-
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
@@ -362,7 +354,7 @@ void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> 
 	data.flee = status->flee()->total();
 	data.perfect_dodge = 0;
 	data.critical = status->crit()->total() / 10;
-	data.attack_speed = status->aspd()->total();
+	data.attack_speed = status->attack_speed()->total();
 	data.plus_aspd = 0;
 	
 	zcs.deliver(data);
@@ -741,123 +733,26 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 void ZoneClientInterface::action_request(int32_t target_guid, player_action_type action)
 {
-
-	// Statuses that don't let the player sit / attack / talk with NPCs(targeted)
-	// (not all are included in pc_can_attack)
-	// if( sd->sc.count && (
-	// 		sd->sc.data[SC_TRICKDEAD] ||
-	// 		(sd->sc.data[SC_AUTOCOUNTER] && action_type != ACT_ATTACK_REPEAT) ||
-	// 		 sd->sc.data[SC_BLADESTOP] ||
-	// 		 sd->sc.data[SC_DEEP_SLEEP] ||
-	// 		 sd->sc.data[SC_SUHIDE] )
-	// 		 )
-	// 	return;
-
-	// if (action_type != ACT_ATTACK && action_type != ACT_ATTACK_REPEAT)
-	// 	pc_stop_walking(sd, STOPWALKING_FLAG_FIXPOS);
-	// pc_stop_attack(sd);
-
-	// if(target_id<0 && -target_id == sd->bl.id) // for disguises [Valaris]
-	// 	target_id = sd->bl.id;
-
-	// switch(action_type) {
-	// 	case ACT_ATTACK: // once attack
-	// 	case ACT_ATTACK_REPEAT: // continuous attack
-	// 	{
-	// 		struct npc_data *nd = map->id2nd(target_id);
-	// 		if (nd != NULL) {
-	// 			if (sd->block_action.npc == 0) { // *pcblock script command
-	// 				npc->click(sd, nd);
-	// 			}
-	// 			return;
-	// 		}
-
-	// 		if (pc_cant_act_except_npc(sd) || (sd->npc_id != 0 && sd->state.using_megaphone == 0)
-	// 		    || pc_issit(sd) || (sd->sc.option & OPTION_HIDE) != 0 || pc_isvending(sd)) {
-	// 			return;
-	// 		}
-
-	// 		if (sd->sc.option & OPTION_COSTUME)
-	// 			return;
-
-	// 		if (!battle_config.sdelay_attack_enable && pc->checkskill(sd, SA_FREECAST) <= 0 && (skill->get_inf2(sd->ud.skill_id) & (INF2_FREE_CAST_REDUCED | INF2_FREE_CAST_NORMAL)) == 0) {
-	// 			if (DIFF_TICK(tick, sd->ud.canact_tick) < 0) {
-	// 				clif->skill_fail(sd, 1, USESKILL_FAIL_SKILLINTERVAL, 0, 0);
-	// 				return;
-	// 			}
-	// 		}
-
-	// 		pc->delinvincibletimer(sd);
-	// 		pc->update_idle_time(sd, BCIDLE_ATTACK);
-	// 		unit->attack(&sd->bl, target_id, action_type != ACT_ATTACK);
-	// 	}
-	// 	break;
-	// 	case ACT_SIT: // sitdown
-	// 		if (battle_config.basic_skill_check && !pc->check_basicskill(sd, 3)) {
-	// 			clif->skill_fail(sd, 1, USESKILL_FAIL_LEVEL, 2, 0);
-	// 			break;
-	// 		}
-
-	// 		if (sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN_POSTDELAY])
-	// 			return;
-
-	// 		if(pc_issit(sd)) {
-	// 			//Bugged client? Just refresh them.
-	// 			clif->sitting(&sd->bl);
-	// 			return;
-	// 		}
-
-	// 		if (sd->block_action.sitstand) // *pcblock script command
-	// 			break;
-
-	// 		if (sd->ud.skilltimer != INVALID_TIMER || (sd->sc.opt1 && sd->sc.opt1 != OPT1_BURNING ))
-	// 			break;
-
-	// 		if (sd->sc.count && (
-	// 			sd->sc.data[SC_DANCING] ||
-	// 			sd->sc.data[SC_ANKLESNARE] ||
-	// 			(sd->sc.data[SC_GRAVITATION] && sd->sc.data[SC_GRAVITATION]->val3 == BCT_SELF)
-	// 		)) //No sitting during these states either.
-	// 			break;
-
-	// 		pc->update_idle_time(sd, BCIDLE_SIT);
-
-	// 		pc_setsit(sd);
-	// 		skill->sit(sd,1);
-	// 		clif->sitting(&sd->bl);
-	// 	break;
-	// 	case ACT_STAND: // standup
-
-	// 		if (sd->sc.data[SC_SITDOWN_FORCE] || sd->sc.data[SC_BANANA_BOMB_SITDOWN_POSTDELAY])
-	// 			return;
-
-	// 		if (!pc_issit(sd)) {
-	// 			//Bugged client? Just refresh them.
-	// 			clif->standing(&sd->bl);
-	// 			return;
-	// 		}
-
-	// 		if (sd->block_action.sitstand) // *pcblock script command
-	// 			break;
-
-	// 		pc->update_idle_time(sd, BCIDLE_SIT);
-
-	// 		pc->setstand(sd);
-	// 		skill->sit(sd,0);
-	// 		clif->standing(&sd->bl);
-	// 	break;
-	// }
-
+	bool continuous = false;
 	switch(action)
 	{
 		case PLAYER_ACT_SIT:
 		case PLAYER_ACT_STAND:
-			get_session()->player()->perform_skill(1, 3);
+		{
+			std::shared_ptr<const skill_config_data> sk = SkillDB->get_skill_by_name("NV_BASIC");
+			get_session()->player()->perform_skill(sk->skill_id, 3);
 			break;
-			break;
-		case PLAYER_ACT_ATTACK:
+		}
 		case PLAYER_ACT_ATTACK_REPEAT:
+		{
+			continuous = true;
+		}
+		case PLAYER_ACT_ATTACK:
+		{
+			std::shared_ptr<Entity> target = get_session()->player()->get_nearby_entity(target_guid);
+			get_session()->player()->attack(target, continuous);
 			break;
+		}
 		default:
 			break;
 	};
@@ -896,10 +791,23 @@ bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_ty
 	return true;
 }
 
-bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, combat_damage_type_mask dmg_type, int left_damage)
+bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage)
 {
 	ZC_NOTIFY_ACT3 pkt(get_session());
-	pkt.deliver(guid, target_guid, start_time, delay_skill, delay_damage, damage, is_sp_damaged, number_of_hits, dmg_type, left_damage);
+
+	pkt._guid = guid;
+	pkt._target_guid = target_guid; 
+	pkt._start_time = start_time;
+	pkt._delay_skill = delay_skill;
+	pkt._delay_damage = delay_damage;
+	pkt._damage = damage;
+	pkt._is_sp_damaged = is_sp_damaged;
+	pkt._number_of_hits = number_of_hits;
+	pkt._action_type = action_type;
+	pkt._left_damage = left_damage; 
+
+	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
+
 	return true;
 }
 

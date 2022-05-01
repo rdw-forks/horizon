@@ -28,13 +28,8 @@
 #ifndef HORIZON_ZONE_RE_PACKET_LENGTH_TABLE
 #define HORIZON_ZONE_RE_PACKET_LENGTH_TABLE
 
-#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Server/Zone/Packets/HandledPackets.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
-
-#include <utility>
-#include <memory>
-
 
 namespace Horizon
 {

@@ -33,11 +33,6 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 
-// Includes for Linux
-#include <memory>
-#include <algorithm>
-#include <type_traits>
-
 namespace Horizon
 {
 namespace Zone
@@ -58,8 +53,8 @@ namespace Traits
 		}
 		virtual ~Attribute() { }
 
-		std::shared_ptr<Entity> get_entity() { return _entity.lock(); }
-		void set_entity(std::shared_ptr<Entity> e) { _entity = e; }
+		std::shared_ptr<Entity> entity() { return _entity.lock(); }
+		void entity(std::shared_ptr<Entity> e) { _entity = e; }
 
 		virtual void set_base(int32_t val)
 		{

@@ -33,7 +33,6 @@
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 
-#include <memory>
 
 namespace Horizon
 {

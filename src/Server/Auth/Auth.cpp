@@ -33,22 +33,6 @@
 #include "Server/Common/SQL/SessionData.hpp"
 #include "Server/Common/SQL/GameAccount.hpp"
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/asio.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/bind/placeholders.hpp>
-
-#include <sol.hpp>
-
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/insert.h>
-
 using boost::asio::ip::udp;
 using namespace std::chrono_literals;
 using namespace Horizon::Auth;

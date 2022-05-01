@@ -29,6 +29,8 @@
 #ifndef HORIZON_ZONE_COMBAT_DEFINITIONS_HPP
 #define HORIZON_ZONE_COMBAT_DEFINITIONS_HPP
 
+#include "EntityDefinitions.hpp"
+
 enum combat_damage_type_mask {
 	// Flag of the final calculation
 	CBT_DMGMASK_NONE       = 0x0000,
@@ -45,7 +47,7 @@ enum combat_damage_type_mask {
 };
 
 // state of a single attack attempt; used in flee/def penalty calculations when mobbed
-typedef enum combat_retaliate_type {
+enum combat_retaliate_type {
 	CBT_RET_NONE,    // not an attack
 	CBT_RET_LUCKY,   // attack was lucky-dodged
 	CBT_RET_FLEE,    // attack was dodged
@@ -93,14 +95,16 @@ enum combat_damage_hit_type {
 	//CBT_DMG_HIT_TOUCH     = 12, // (touch skill?)
 };
 
-struct damage {
-    int64_t right_dmg{0}, left_dmg{0};
+struct combat_damage {
+    int64_t right_damage{0}, left_damage{0};
     combat_damage_hit_type type{CBT_DMG_HIT_NORMAL};
     int number_of_hits{0};
     int amotion{0}, dmotion{0};
     int blewcount{0};
-    combat_damage_type_mask dmg_type{CBT_DMGMASK_NONE};
+    combat_damage_type_mask damage_type{CBT_DMGMASK_NONE};
     combat_retaliate_type ret_type{CBT_RET_NONE};
+    element_type element_type{ELE_NEUTRAL};
+    int8_t element_level{1};
 };
 
 #endif /* HORIZON_ZONE_COMBAT_DEFINITIONS_HPP */

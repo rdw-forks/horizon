@@ -35,8 +35,6 @@
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 
-#include <memory>
-
 #if CLIENT_TYPE == 'R'
 #if PACKET_VERSION >= 20190109
 #include "Server/Zone/Packets/RE/20190109.hpp"

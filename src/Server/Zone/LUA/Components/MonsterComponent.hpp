@@ -31,7 +31,7 @@
 
 #include "Server/Zone/LUA/Components/LUAComponent.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
-#include <sol.hpp>
+
 
 namespace Horizon
 {

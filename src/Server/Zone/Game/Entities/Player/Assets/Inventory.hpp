@@ -32,9 +32,6 @@
 
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
-#include <unordered_map>
-#include <array>
-
 namespace Horizon
 {
 namespace Zone

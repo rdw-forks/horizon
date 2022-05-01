@@ -31,7 +31,6 @@
 #define HORIZON_COMMON_UTILITIES_STRUTILS_HPP
 
 #include <sstream>
-#include <vector>
 
 class StrUtils
 {
