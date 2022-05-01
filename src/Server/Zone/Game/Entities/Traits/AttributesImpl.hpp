@@ -765,7 +765,7 @@ namespace Traits
 		void on_observable_changed(Agility *) { compute(true); }
 		void on_observable_changed(Dexterity *) { compute(true); }
 		void on_observable_changed(BaseLevel *) { compute(true); }
-		void on_weapon_changed() { compute(true); }
+		void on_equipment_changed() { compute(true); }
 
 		int32_t compute(bool notify);
 
@@ -788,7 +788,7 @@ namespace Traits
 		{ }
 		~AttackRange() { }
 
-		void on_weapon_changed() { compute(true); }
+		void on_equipment_changed() { compute(true); }
 
 		int32_t compute(bool notify);
 	};
@@ -808,6 +808,8 @@ namespace Traits
 		void on_observable_changed(Agility *) { compute(); }
 
 		int32_t compute();
+
+		void on_equipment_changed() { compute(); }
 
 		void set_attack_speed(AttackSpeed *aspd) { _attack_speed = aspd; }
 		void set_agility(Agility *agi) { _agi = agi; }
@@ -829,7 +831,8 @@ namespace Traits
 		~AttackDelay() { }
 
 		void on_observable_changed(AttackMotion *) { compute(); }
-
+		void on_equipment_changed() { compute(); }
+		
 		int32_t compute();
 
 		void set_attack_motion(AttackMotion *amotion) { _attack_motion = amotion; }
@@ -850,6 +853,7 @@ namespace Traits
 		~DamageMotion() { }
 
 		void on_observable_changed(Agility *) { compute(); }
+		void on_equipment_changed() { compute(); }
 
 		int32_t compute();
 
@@ -875,7 +879,7 @@ namespace Traits
 		void on_observable_changed(Luck *) { compute(); }
 		void on_observable_changed(BaseLevel *) { compute(); }
 
-		void on_weapon_changed() { compute(); }
+		void on_equipment_changed() { compute(); }
 
 		int32_t compute();
 

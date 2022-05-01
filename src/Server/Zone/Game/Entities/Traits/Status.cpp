@@ -28,6 +28,7 @@
  **************************************************/
 
 #include "Status.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
@@ -184,6 +185,24 @@ bool Status::save(std::shared_ptr<Player> pl)
 	HLog(info) << "Status saved for character " << pl->name() << "(" << pl->character()._character_id << ").";
 
 	return true;
+}
+
+void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entry_data> item)
+{
+	if (item == nullptr)
+		return;
+
+	if (item->type == IT_TYPE_WEAPON) {
+		status_atk()->set_weapon_type(equipped ? item->config->sub_type.weapon_t : IT_WT_FIST);
+		equip_atk()->on_weapon_changed();
+	}
+
+	attack_speed()->on_equipment_changed();
+	attack_range()->on_equipment_changed();
+	base_attack()->on_equipment_changed();
+	attack_motion()->on_equipment_changed();
+	attack_delay()->on_equipment_changed();
+	damage_motion()->on_equipment_changed();
 }
 
 void Status::initialize(std::shared_ptr<Entity> entity)

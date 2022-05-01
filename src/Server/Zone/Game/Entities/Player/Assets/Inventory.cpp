@@ -84,8 +84,7 @@ Inventory::~Inventory()
 void Inventory::initialize()
 {
 	for (auto item : _inventory_items) {
-		std::shared_ptr<const item_config_data> d = ItemDB->get_item_by_id(item->item_id);
-		player()->status()->current_weight()->add_base(d->weight * item->amount);
+		player()->status()->current_weight()->add_base(item->config->weight * item->amount);
 	}
 
 	player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, player()->status()->current_weight()->total());
@@ -98,9 +97,7 @@ bool Inventory::use_item(uint32_t inventory_index, uint32_t guid)
 	if (inv_item == nullptr)
 		return false;
 
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(inv_item->item_id);
-
-	if (itemd == nullptr) {
+	if (inv_item->config == nullptr) {
 		player()->get_session()->clif()->notify_use_item(inv_item, false);
 		return false;
 	}
@@ -119,33 +116,31 @@ item_equip_result_type Inventory::equip_item(uint32_t inventory_index, uint16_t 
 		return IT_EQUIP_FAIL;
 	}
 
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(inv_item->item_id);
-
-	if (itemd == nullptr) {
+	if (inv_item->config == nullptr) {
 		player()->get_session()->clif()->notify_equip_item(inv_item, IT_EQUIP_FAIL);
 		return IT_EQUIP_FAIL;
 	}
 
-	if (inv_item->current_equip_location_mask != 0 || itemd->equip_location_mask != equip_location_mask) {
+	if (inv_item->current_equip_location_mask != 0 || inv_item->config->equip_location_mask != equip_location_mask) {
 		player()->get_session()->clif()->notify_equip_item(inv_item, IT_EQUIP_FAIL);
 		return IT_EQUIP_FAIL;
 	}
 
-	auto req_job_it = std::find_if(itemd->requirements.job_ids.begin(), itemd->requirements.job_ids.end(),
+	auto req_job_it = std::find_if(inv_item->config->requirements.job_ids.begin(), inv_item->config->requirements.job_ids.end(),
 		[job_id](uint32_t id) {
 			return job_id == id;
 		});
-	if (req_job_it == itemd->requirements.job_ids.end()) {
+	if (req_job_it == inv_item->config->requirements.job_ids.end()) {
 		player()->get_session()->clif()->notify_equip_item(inv_item, IT_EQUIP_FAIL);
 		return IT_EQUIP_FAIL;
 	}
 
-	if (itemd->config.bind_on_equip != 0 && inv_item->bind_type == IT_BIND_NONE) {
+	if (inv_item->config->config.bind_on_equip != 0 && inv_item->bind_type == IT_BIND_NONE) {
 		inv_item->bind_type = IT_BIND_CHARACTER;
 		player()->get_session()->clif()->notify_bind_on_equip(inv_item->inventory_index);
 	}
 
-	inv_item->current_equip_location_mask = calculate_current_equip_location_mask(itemd);
+	inv_item->current_equip_location_mask = calculate_current_equip_location_mask(inv_item->config);
 
 	add_to_equipment_list(inv_item);
 
@@ -174,9 +169,7 @@ item_unequip_result_type Inventory::unequip_item(uint32_t inventory_index)
 		return IT_UNEQUIP_FAIL;
 	}
 
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(inv_item->item_id);
-
-	if (itemd == nullptr) {
+	if (inv_item->config == nullptr) {
 		player()->get_session()->clif()->notify_unequip_item(inv_item, IT_UNEQUIP_FAIL);
 		return IT_UNEQUIP_FAIL;
 	}
@@ -332,6 +325,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 	data.bind_type = IT_BIND_NONE;
 	data.info.is_identified = is_identified;
 	data.info.is_favorite = 0;
+	data.config = item;
 
 	if (_inventory_items.size() >= max_storage()) {
 		notify_add(data, amount, INVENTORY_ADD_NO_INV_SPACE);
@@ -533,6 +527,7 @@ int32_t Inventory::load()
 		i.current_equip_location_mask = row->equip_location_mask;
 		i.actual_equip_location_mask = d->equip_location_mask;
 		i.refine_level = row->refine_level;
+		i.config = d;
 
 		i.slot_item_id[0] = row->slot_item_id_0;
 		i.slot_item_id[1] = row->slot_item_id_1;

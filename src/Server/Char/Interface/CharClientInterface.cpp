@@ -474,7 +474,7 @@ bool CharClientInterface::select_character(uint8_t slot)
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.account_id == get_session()->get_session_data()._account_id and tch.slot == slot));
+	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.account_id == get_session()->get_session_data()._account_id and tch.slot == slot and tch.deleted_at.is_null()));
 	
 	if (res.empty()) {
 		HC_REFUSE_ENTER hre(get_session());

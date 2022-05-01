@@ -32,7 +32,6 @@
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
-#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -355,23 +354,19 @@ int32_t EquipATK::compute(bool notify)
 	std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 
 	if (lhw && lhw->type == IT_TYPE_WEAPON) {
-		std::shared_ptr<const item_config_data> lhwd = ItemDB->get_item_by_id(lhw->item_id);
-		assert(lhwd);
 		// Base Weapon Damage
-		_left_hand_val = lhwd->attack;
+		_left_hand_val = lhw->config->attack;
 		// StatBonus = BaseWeaponDamage × (Melee: Str / Ranged: Dex) ÷ 200
-		_left_hand_val += (lhwd->attack * (((1ULL<<lhwd->sub_type.weapon_t) & IT_WTM_MELEE) ? str : dex) / 200.00f);
+		_left_hand_val += (lhw->config->attack * (((1ULL << lhw->config->sub_type.weapon_t) & IT_WTM_MELEE) ? str : dex) / 200.00f);
 	} else {
 		_left_hand_val = 0;
 	}
 
 	if (rhw && rhw->type == IT_TYPE_WEAPON) {
-		std::shared_ptr<const item_config_data> rhwd = ItemDB->get_item_by_id(rhw->item_id);
-		assert(rhwd);
 		// Base Weapon Damage
-		_right_hand_val = rhwd->attack;
+		_right_hand_val = rhw->config->attack;
 		// StatBonus = BaseWeaponDamage × (Melee: Str / Ranged: Dex) ÷ 200
-		_right_hand_val += (rhwd->attack * (((1ULL<<rhwd->sub_type.weapon_t) & IT_WTM_MELEE) ? str : dex) / 200.00f);
+		_right_hand_val += (rhw->config->attack * ((( 1ULL << rhw->config->sub_type.weapon_t) & IT_WTM_MELEE) ? str : dex) / 200.00f);
 	} else {
 		_right_hand_val = 0;
 	}
@@ -407,15 +402,13 @@ int32_t AttackSpeed::compute(bool notify)
 		if (rhw == nullptr) { 
 			rhw_type = IT_WT_FIST;
 		} else {
-			std::shared_ptr<const item_config_data> rhwc = ItemDB->get_item_by_id(rhw->item_id);
-			rhw_type = rhwc->sub_type.weapon_t;
+			rhw_type = rhw->config->sub_type.weapon_t;
 		}
 
 		amotion = job->weapon_base_aspd[rhw_type];
 
 		if (rhw_type > IT_WT_SINGLE_MAX && lhw != nullptr) {
-			std::shared_ptr<const item_config_data> lhwc = ItemDB->get_item_by_id(lhw->item_id);
-			lhw_type = lhwc->sub_type.weapon_t;
+			lhw_type = lhw->config->sub_type.weapon_t;
 			amotion += job->weapon_base_aspd[lhw_type] / 4; // Dual-wield
 		}
 
@@ -468,12 +461,11 @@ int32_t AttackRange::compute(bool notify)
 			return 0;
 
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
-		std::shared_ptr<const item_config_data> rhwd = ItemDB->get_item_by_id(rhw->item_id);
 		
-		if (rhw == nullptr || rhwd == nullptr)
+		if (rhw == nullptr || rhw->config == nullptr)
 			return 0;
 
-		set_base(rhwd->attack_range);
+		set_base(rhw->config->attack_range);
 
 		if (notify == true)
 			entity()->downcast<Player>()->get_session()->clif()->notify_attack_range_update(total());
@@ -523,9 +515,8 @@ int32_t BaseAttack::compute()
 
 		if (!equipments[IT_EQPI_HAND_R].second.expired()) {
 			rhw = equipments[IT_EQPI_HAND_R].second.lock();
-			std::shared_ptr<const item_config_data> rhwd = ItemDB->get_item_by_id(rhw->item_id);
 
-			switch (rhwd->sub_type.weapon_t)
+			switch (rhw->config->sub_type.weapon_t)
 			{
 			case IT_WT_BOW:
 			case IT_WT_MUSICAL:

@@ -67,6 +67,8 @@ public:
 	bool save(std::shared_ptr<Player> pl);
 	bool load(std::shared_ptr<Player> pl);
 
+	void on_equipment_changed(bool equipped, std::shared_ptr<const item_entry_data> item);
+
 	/**
 	 * Attributes
 	 */

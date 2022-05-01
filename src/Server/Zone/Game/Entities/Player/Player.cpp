@@ -38,7 +38,6 @@
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
-#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
@@ -394,30 +393,12 @@ void Player::send_npc_menu_list(uint32_t npc_guid, std::string const &menu)
 
 void Player::on_item_equip(std::shared_ptr<const item_entry_data> item)
 {
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(item->item_id);
-	std::shared_ptr<Traits::Status> s = status();
-
-	if (item->type == IT_TYPE_WEAPON) {
-		s->status_atk()->set_weapon_type(itemd->sub_type.weapon_t);
-		s->equip_atk()->on_weapon_changed();
-		s->attack_speed()->on_weapon_changed();
-		s->attack_range()->on_weapon_changed();
-		s->base_attack()->on_weapon_changed();
-	}
+	status()->on_equipment_changed(true, item);
 }
 
 void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 {
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(item->item_id);
-	std::shared_ptr<Traits::Status> s = status();
-
-	if (item->type == IT_TYPE_WEAPON) {
-		s->status_atk()->set_weapon_type(IT_WT_FIST);
-		s->equip_atk()->on_weapon_changed();
-		s->attack_speed()->on_weapon_changed();
-		s->attack_range()->on_weapon_changed();
-		s->base_attack()->on_weapon_changed();
-	}
+	status()->on_equipment_changed(false, item);
 }
 
 void Player::on_map_enter()
@@ -555,7 +536,8 @@ bool Player::attack(std::shared_ptr<Entity> target, bool continuous)
 
 			if (is_in_range_of(combat->target(), range) == false && is_walking() == false) {
 				move_to_entity(combat->target());
-				context.Repeat(Milliseconds(status()->attack_delay()->total()));
+				if (continuous)
+					context.Repeat(Milliseconds(status()->attack_delay()->total()));
 				return;
 			} else if (is_walking() == true)
 				return;

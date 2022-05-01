@@ -475,6 +475,8 @@ struct item_entry_data
 	} info;
 	item_bind_type bind_type{IT_BIND_NONE}; // int16_t
 	uint64_t unique_id{0};
+	// Item configuration data.
+	std::shared_ptr<const item_config_data> config;
 };
 
 typedef std::array<std::pair<item_equip_location_mask, std::weak_ptr<item_entry_data>>, IT_EQPI_MAX> EquipmentListType;
