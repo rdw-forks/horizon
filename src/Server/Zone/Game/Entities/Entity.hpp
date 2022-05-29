@@ -33,7 +33,6 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
-#include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
@@ -221,6 +220,8 @@ private:
 	directions _facing_dir{DIR_SOUTH};
 
 	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;
+
+	int32_t _attackable_time;
 };
 }
 }

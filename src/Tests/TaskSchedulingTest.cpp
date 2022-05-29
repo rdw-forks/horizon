@@ -30,12 +30,11 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "TaskSchedulingTest"
 
-#include "Utility/TaskScheduler.hpp"
-
 #include <boost/test/unit_test.hpp>
 #include <cstring>
 #include <thread>
 
+#include "Utility/TaskScheduler.hpp"
 
 #define MAX_COUNT 3
 #define INTERVAL 5

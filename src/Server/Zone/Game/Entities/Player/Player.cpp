@@ -33,7 +33,6 @@
 #include "Server/Common/SQL/Character/Character.hpp"
 #include "Server/Common/SQL/Character/Status.hpp"
 
-#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
@@ -512,42 +511,6 @@ bool Player::attack(std::shared_ptr<Entity> target, bool continuous)
 {
 	if (Entity::attack(target, continuous) == false)
 		return false;
-
-	if (target == nullptr)
-		return false;
-
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0)
-		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
-
-	std::shared_ptr<Combat> combat = std::make_shared<Combat>(shared_from_this(), target, 
-						std::chrono::duration_cast<std::chrono::milliseconds>(
-							std::chrono::system_clock::now().time_since_epoch()).count()
-						);
-
-	map()->container()->getScheduler().Schedule(Milliseconds(Milliseconds(status()->attack_delay()->total())), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
-		[this, continuous, combat] (TaskContext context) {
-			if (path_to(combat->target())->size() == 0)
-				return;
-
-			int range = combat->target()->status()->attack_range()->get_base();
-
-			if (combat->target()->is_walking() && (combat->target()->type() == ENTITY_PLAYER || !(map()->get_cell_type(combat->target()->map_coords()) == CELL_ICE_WALL)))
-				range++;
-
-			if (is_in_range_of(combat->target(), range) == false && is_walking() == false) {
-				move_to_entity(combat->target());
-				if (continuous)
-					context.Repeat(Milliseconds(status()->attack_delay()->total()));
-				return;
-			} else if (is_walking() == true)
-				return;
-			
-			combat->weapon_attack();
-
-			HLog(debug) << "Attacking with delay " << status()->attack_delay()->total();
-			if (continuous)
-				context.Repeat(Milliseconds(status()->attack_delay()->total()));
-		});
 
 	return true;
 }

@@ -30,13 +30,14 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "AStarTest"
 
-#include "Server/Zone/Game/Map/Path/AStar.hpp"
-#include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
-#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
-
 #include <boost/test/unit_test.hpp>
 #include <cstring>
 #include <fstream>
+#include <cstdint>
+
+#include "Server/Zone/Game/Map/Path/AStar.hpp"
+#include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 
 using namespace Horizon::Zone;
 

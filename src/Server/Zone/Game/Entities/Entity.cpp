@@ -30,6 +30,7 @@
 #include "Entity.hpp"
 #include "GridObject.hpp"
 #include "Core/Logging/Logger.hpp"
+#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
@@ -315,10 +316,44 @@ bool Entity::status_effect_end(int type)
 
 bool Entity::is_dead() { return status()->current_hp()->get_base() == 0; }
 
-bool Entity::attack(std::shared_ptr<Entity> t, bool continuous)
+bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 {
-	if (t == nullptr || t->is_dead())
+	if (target == nullptr || target->is_dead())
 		return false;
+
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0)
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
+
+	std::shared_ptr<Combat> combat = std::make_shared<Combat>(shared_from_this(), target, 
+						std::chrono::duration_cast<std::chrono::milliseconds>(
+							std::chrono::system_clock::now().time_since_epoch()).count()
+						);
+
+	map()->container()->getScheduler().Schedule(Milliseconds(status()->attack_delay()->total()), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
+		[this, continuous, combat, target] (TaskContext context) {
+			if (path_to(target)->size() == 0)
+				return;
+
+			int range = target->status()->attack_range()->get_base();
+
+			if (target->is_walking() && (target->type() == ENTITY_PLAYER || !(map()->get_cell_type(target->map_coords()) == CELL_ICE_WALL)))
+				range++;
+
+			if (is_in_range_of(target, range) == false && is_walking() == false) {
+				move_to_entity(target);
+				if (continuous)
+					context.Repeat(Milliseconds(_attackable_time));
+				return;
+			} else if (is_walking() == true)
+				return;
+			
+			combat->weapon_attack();
+
+			_attackable_time = status()->attack_delay()->total();
+
+			if (continuous)
+				context.Repeat(Milliseconds(_attackable_time));
+		});
 
 	return true;
 }
