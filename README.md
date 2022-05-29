@@ -41,7 +41,7 @@ Before installing Horizon, you will need to install certain tools and applicatio
 
 #### Install on Windows
 1. Install [VCPKG](https://vcpkg.io/en/index.html).
-2. `vcpkg install vcpkg-cmake:x64-windows readline:x64-windows sqlpp11:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows`
+2. `vcpkg install vcpkg-cmake:x64-windows readline:x64-windows sqlpp11:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows sqlpp11-connector-mysql:x64-windows`
 3. `vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows`
 4. `git clone https://github.com/horizonxyz/horizon.git horizon`
 5. `cd horizon; mkdir build; cd build;`
