@@ -40,8 +40,9 @@ Before installing Horizon, you will need to install certain tools and applicatio
     - [TortoiseGit](https://tortoisegit.org/) (Windows)
 
 #### Install on Windows
-1. `vcpkg install cmake:x64-windows readline:x64-windows sqlpp11:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql:x64-windows`
-2. `vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows`
-3. `git clone https://github.com/horizonxyz/horizon.git horizon`
-4. `cd horizon; mkdir build; cd build;`
-5. `cmake .. -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_SOURCE_TREE=hierarchical-folders -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=<path-to-installation-dir>"`
+1. Install [VCPKG](https://vcpkg.io/en/index.html).
+2. `vcpkg install cmake:x64-windows readline:x64-windows sqlpp11:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql:x64-windows`
+3. `vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows`
+4. `git clone https://github.com/horizonxyz/horizon.git horizon`
+5. `cd horizon; mkdir build; cd build;`
+6. `cmake .. -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_SOURCE_TREE=hierarchical-folders -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=<path-to-installation-dir>"`
