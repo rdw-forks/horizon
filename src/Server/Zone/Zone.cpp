@@ -109,7 +109,7 @@ bool ZoneServer::read_config()
 
 void ZoneServer::verify_connected_sessions()
 {
-	SQL::TableSessionData tsd;
+	SQL::TableSessionData tsd = {};
 	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
 	
 	(*conn)(remove_from(tsd).where(tsd.current_server == "Z" and

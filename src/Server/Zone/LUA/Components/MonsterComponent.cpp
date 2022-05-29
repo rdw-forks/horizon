@@ -195,7 +195,7 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, md, mskd);
 				monster->initialize();
 				
-				register_single_spawned_monster(monster->guid(), std::move(monster));
+				register_single_spawned_monster(monster->guid(), monster);
 			}
 
 			monster_spawn_data spwd;
