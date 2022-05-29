@@ -23361,6 +23361,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	uint32_t _target_guid{0};
+	uint8_t _action{0};
 };
 
 enum {
@@ -34268,6 +34270,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_id{0};
 };
 
 enum {

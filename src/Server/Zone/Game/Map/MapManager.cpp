@@ -36,8 +36,6 @@
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <algorithm>
-
 using namespace Horizon::Zone;
 
 MapManager::~MapManager()

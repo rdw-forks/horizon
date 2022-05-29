@@ -30,7 +30,7 @@
 # Project Setup
 #################################
 cmake_minimum_required (VERSION 3.7 FATAL_ERROR)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(PROJECT_NAME "Horizon")
 
@@ -101,17 +101,17 @@ check_cxx_source_compiles("
 #################################
 # Boost Library
 #################################
-set(BOOST_REQUIRED_VERSION 1.66)
+set(BOOST_REQUIRED_VERSION 1.69.0)
 
 set(BOOST_COMPONENTS locale filesystem log log_setup)
 
 if (WITH_TESTS)
-		set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
+	set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
 endif()
 
 message(STATUS "Boost Components: ${BOOST_COMPONENTS}")
 
-find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS locale filesystem log log_setup unit_test_framework)
+find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 #################
 # Readline Library
@@ -134,9 +134,7 @@ include(FindSol2)
 #################
 # Find ZLIB
 #################
-if (WITH_TOOLS)
 find_package(ZLIB REQUIRED)
-endif()
 
 #################
 # Find Zlib

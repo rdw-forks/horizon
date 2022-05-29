@@ -37,7 +37,7 @@
 #include <memory>
 #include <list>
 #include <vector>
-#include <utility>
+
 
 template <typename Key, typename Value, typename Hash = std::hash<Key>>
 class LockedLookupTable
@@ -58,6 +58,8 @@ public:
 	LockedLookupTable(const LockedLookupTable &other) = delete;
 	LockedLookupTable &operator=(const LockedLookupTable &other) = delete;
 
+	Value const &operator[] (Key &k) { at(k); }
+	
 	Value at(Key const &key, Value const &default_value = Value()) const
 	{
 		return get_bucket(key).at(key, default_value);

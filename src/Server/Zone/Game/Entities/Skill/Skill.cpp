@@ -28,7 +28,7 @@
  **************************************************/
 
 #include "Skill.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 using namespace Horizon::Zone::Entities;
 
@@ -38,8 +38,17 @@ Skill::Skill(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
 	//
 }
 
-
 Skill::~Skill()
 {
 	//
 }
+
+void Skill::stop_movement() { }
+void Skill::on_pathfinding_failure() { }
+void Skill::on_movement_begin() { }
+void Skill::on_movement_step() { }
+void Skill::on_movement_end() { }
+
+void Skill::on_status_effect_start(std::shared_ptr<status_change_entry> sce) { }
+void Skill::on_status_effect_end(std::shared_ptr<status_change_entry> sce) { }
+void Skill::on_status_effect_change(std::shared_ptr<status_change_entry> sce) { }

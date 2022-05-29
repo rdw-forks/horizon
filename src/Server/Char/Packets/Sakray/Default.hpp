@@ -32,7 +32,7 @@
 #include "Server/Char/Packets/HandledPackets.hpp"
 #include "Server/Char/Packets/TransmittedPackets.hpp"
 
-#include <utility>
+
 #include <memory>
 
 

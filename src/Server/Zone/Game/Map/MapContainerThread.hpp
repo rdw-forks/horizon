@@ -31,15 +31,8 @@
 #define HORIZON_ZONE_GAME_MAPCONTAINERTHREAD_HPP
 
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
-#include "Core/Multithreading/LockedLookupTable.hpp"
-#include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
-
-#include <stdio.h>
-#include <thread>
-#include <unordered_map>
-#include <atomic>
-
-#include <sol.hpp>
+#include "Server/Zone/LUA/LUAManager.hpp"
+#include "Utility/TaskScheduler.hpp"
 
 namespace Horizon
 {
@@ -98,7 +91,9 @@ public:
 	//! world update loop and finalization of the same on shutdown.
 	void start();
 
-	std::shared_ptr<ScriptManager> get_script_manager() { return _script_mgr; }
+	std::shared_ptr<LUAManager> get_lua_manager() { return _lua_mgr; }
+
+	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 private:
 	//! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
@@ -115,7 +110,8 @@ private:
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
 	ThreadSafeQueue<std::pair<bool, std::shared_ptr<Entities::Player>>> _player_buffer;     ///< Thread-safe queue of players to add to/remove from the container.
 	LockedLookupTable<int32_t, std::shared_ptr<Entities::Player>> _managed_players;         ///< Thread-safe hash table of managed players.
-	std::shared_ptr<ScriptManager> _script_mgr;                                             ///< Non-thread-safe shared pointer and owner of a script manager.
+	std::shared_ptr<LUAManager> _lua_mgr;                                                   ///< Non-thread-safe shared pointer and owner of a script manager.
+	TaskScheduler _task_scheduler;
 };
 }
 }

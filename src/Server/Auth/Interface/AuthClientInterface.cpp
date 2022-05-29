@@ -35,8 +35,6 @@
 #include "Server/Auth/Session/AuthSession.hpp"
 #include "Server/Auth/Socket/AuthSocket.hpp"
 
-#include <memory>
-
 using namespace Horizon::Auth;
 
 AuthClientInterface::AuthClientInterface(std::shared_ptr<AuthSession> s)

@@ -29,6 +29,7 @@
 
 #include "MapContainerThread.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -111,7 +112,7 @@ std::shared_ptr<Entities::Player> MapContainerThread::get_player(int guid)
 //! This is mainly for members that can't be initialized from the constructor method.
 void MapContainerThread::initialize()
 {
-	_script_mgr = std::make_shared<ScriptManager>(shared_from_this());
+	_lua_mgr = std::make_shared<LUAManager>(shared_from_this());
 }
 
 //! @brief Process container finalization by cleanly disconnecting players after saving their data.
@@ -124,7 +125,7 @@ void MapContainerThread::finalize()
 		std::shared_ptr<Entities::Player> player = pi->second;
 
 		if (player && player->get_session())
-			player->sync_with_models();
+			player->save();
 
 		// Disconnect player.
 //		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
@@ -141,7 +142,7 @@ void MapContainerThread::finalize()
 		if (!player || !player->get_session())
 			continue;
 
-		player->sync_with_models();
+		player->save();
 //		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
 	}
 
@@ -169,14 +170,14 @@ void MapContainerThread::start()
 //! @thread MapContainerThread
 void MapContainerThread::start_internal()
 {
-	get_script_manager()->initialize();
+	get_lua_manager()->initialize_for_container();
 
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-		update(get_sys_time());
+		update(std::time(nullptr));
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	};
 
-	get_script_manager()->finalize();
+	get_lua_manager()->finalize();
 }
 
 //! @brief World update loop for a MapContainerThread.
@@ -218,14 +219,9 @@ void MapContainerThread::update(uint64_t diff)
 		}
 		// process packets
 		player->get_session()->update(diff);
-		// update entity.
-		player->update(diff);
 		pi++;
 	}
 
-	// Update NPCs
-	for (auto npci : _script_mgr->_npc_db) {
-		std::shared_ptr<Entities::NPC> npc = npci.second._npc;
-		npc->update(diff);
-	}
+	// Update Monsters
+	getScheduler().Update();
 }

@@ -28,7 +28,7 @@
  **************************************************/
 
 #include "Homunculus.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 using namespace Horizon::Zone::Entities;
 
@@ -38,8 +38,17 @@ Homunculus::Homunculus(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoord
 	//
 }
 
-
 Homunculus::~Homunculus()
 {
 	//
 }
+
+void Homunculus::stop_movement() { }
+void Homunculus::on_pathfinding_failure() { }
+void Homunculus::on_movement_begin() { }
+void Homunculus::on_movement_step() { }
+void Homunculus::on_movement_end() { }
+
+void Homunculus::on_status_effect_start(std::shared_ptr<status_change_entry> sce) { }
+void Homunculus::on_status_effect_end(std::shared_ptr<status_change_entry> sce) { }
+void Homunculus::on_status_effect_change(std::shared_ptr<status_change_entry> sce) { }

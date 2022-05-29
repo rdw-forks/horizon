@@ -173,59 +173,85 @@ struct ContainerMapList<TypeList<HEAD, TAIL>>
 // non-const insert functions
 namespace TypeListIterator
 {
-template<class SPECIFIC_TYPE>
-SPECIFIC_TYPE *Insert(ContainerMapList<SPECIFIC_TYPE> &elements, SPECIFIC_TYPE *obj)
-{
-	//elements._element[hdl] = obj;
-	obj->add_reference(elements._element);
-	return obj;
-}
-template<class SPECIFIC_TYPE>
-SPECIFIC_TYPE *Insert(ContainerMapList<TypeNull> &/*elements*/, SPECIFIC_TYPE */*obj*/)
-{
-	return nullptr;
-}
-// this is a missed
-template<class SPECIFIC_TYPE, class T>
-SPECIFIC_TYPE *Insert(ContainerMapList<T> &/*elements*/, SPECIFIC_TYPE */*obj*/)
-{
-	return nullptr;                                        // a missed
-}
-// Recursion
-template<class SPECIFIC_TYPE, class HEAD, class TAIL>
-SPECIFIC_TYPE* Insert(ContainerMapList<TypeList<HEAD, TAIL>> &elements, SPECIFIC_TYPE* obj)
-{
-	SPECIFIC_TYPE *t = Insert(elements._elements, obj);
-	return (t != nullptr ? t : Insert(elements._tail_elements, obj));
-}
+	// Invoked in the condition that the SPECIFIC_TYPE has been visited.
+	template<class SPECIFIC_TYPE>
+	SPECIFIC_TYPE *Insert(ContainerMapList<SPECIFIC_TYPE> &elements, SPECIFIC_TYPE *obj)
+	{
+		obj->add_reference(elements._element);
+		return obj;
+	}
+	// Invoked in the condition that a TypeNull has been visited.
+	template<class SPECIFIC_TYPE>
+	SPECIFIC_TYPE *Insert(ContainerMapList<TypeNull> &/*elements*/, SPECIFIC_TYPE */*obj*/)
+	{
+		return nullptr;
+	}
+	// In a case such as the following, where the ContainerMapList is not one of the specific type
+	// that we are in search of, the resulting return of the function is a nullptr. 
+	template<class SPECIFIC_TYPE, class T>
+	SPECIFIC_TYPE *Insert(ContainerMapList<T> &/*elements*/, SPECIFIC_TYPE */*obj*/)
+	{
+		return nullptr;
+	}
+	// In a condition such as the following where a ContainerMapList of a TypeList<HEAD, TAIL> is invoked,
+	// and the specific object that is to be inserted is also a valid argument. The function definition matches the 
+	// search criteria of the template function that is to be invoked. We try recursing to iterate through the TypeLists
+	// contained in the ContainerMapList until a reference has been added or the end of the TypeList (TypeNull) is met and the 
+	// appropriate function has been invoked to return a nullptr or a valid pointer to the object.
+	template<class SPECIFIC_TYPE, class HEAD, class TAIL>
+	SPECIFIC_TYPE* Insert(ContainerMapList<TypeList<HEAD, TAIL>> &elements, SPECIFIC_TYPE* obj)
+	{
+		SPECIFIC_TYPE *t = Insert(elements._elements, obj);
+		return (t != nullptr ? t : Insert(elements._tail_elements, obj));
+	}
 /*============================*
  * TypeListIterator Count Functions
  *============================*/
-// count functions
+	// Function for when the specific type has been invoked and the requirement of meeting the function
+	// definition has been successful.
 	template <class SPECIFIC_TYPE>
 	size_t count(ContainerMapList<SPECIFIC_TYPE> const &elements, SPECIFIC_TYPE */*fake*/)
 	{
 		return elements._element.get_size();
 	}
+	// Function for when a TypeNull has been visited.
 	template <class SPECIFIC_TYPE>
 	size_t count(ContainerMapList<TypeNull> const &/*elements*/, SPECIFIC_TYPE */*fake*/)
 	{
 		return 0;
 	}
+	// Function containing any other type than the one we are in search of, will be invoked.
 	template <class SPECIFIC_TYPE, class T>
 	size_t count(ContainerMapList<T> const &/*elements*/, SPECIFIC_TYPE */*fake*/)
 	{
 		return 0;
 	}
+	// Invoked in the condition that the a TypeList of type <SPECIFIC_TYPE, T> has been met. 
 	template <class SPECIFIC_TYPE, class T>
 	size_t count(ContainerMapList<TypeList<SPECIFIC_TYPE, T>> const &elements, SPECIFIC_TYPE *fake)
 	{
 		return count(elements._elements, fake);
 	}
+	// Invoked in the condition that any other TypeList, the ones that are not of the SPECIFIC_TYPE.
+	// All of the element types will be visited, invoking the count() function 
+	// for the specific type we are in search of.
 	template <class SPECIFIC_TYPE, class H, class T>
 	size_t count(ContainerMapList<TypeList<H, T>> const &elements, SPECIFIC_TYPE *fake)
 	{
 		return count(elements._tail_elements, fake);
+	}
+
+	template <class TypeNull>
+	size_t count_all(ContainerMapList<TypeNull> const &elements)
+	{
+		return 0;
+	}
+
+	// Counts all of the objects in a GridTypeListContainer.
+	template <class H, class T>
+	size_t count_all(ContainerMapList<TypeList<H, T>> const &elements)
+	{
+		return count(elements._elements, (H *) nullptr) + count_all(elements._tail_elements);
 	}
 }
 /*============================*
@@ -235,10 +261,16 @@ template<class OBJECT_TYPES>
 class TypeRefContainer
 {
 public:
+
 	template <class SPECIFIC_TYPE>
 	size_t count() const
 	{
 		return TypeListIterator::count(_elements, (SPECIFIC_TYPE *) nullptr);
+	}
+
+	size_t count_all() const
+	{
+		return TypeListIterator::count_all(_elements);
 	}
 
 	/// inserts a specific object into the container
@@ -260,12 +292,6 @@ private:
 /*============================*
  * Visitor Helper Functions
  *============================*/
-template<class VISITOR, class TYPE_CONTAINER>
-void VisitorHelper(VISITOR &v, TYPE_CONTAINER &c)
-{
-	v.Visit(c);
-}
-
 template<class VISITOR>
 void VisitorHelper(VISITOR &/*v*/, ContainerMapList<TypeNull> &/*c*/)
 {
@@ -282,8 +308,8 @@ void VisitorHelper(VISITOR &v, ContainerMapList<T> &c)
 template<class VISITOR, class H, class T>
 void VisitorHelper(VISITOR &v, ContainerMapList<TypeList<H, T>> &c)
 {
-	VisitorHelper(v, c._elements);
-	VisitorHelper(v, c._tail_elements);
+	VisitorHelper(v, c._elements); // template<class OBJECT> struct ContainerMapList
+	VisitorHelper(v, c._tail_elements); // template<class HEAD, class TAIL> struct ContainerMapList<TypeList<HEAD, TAIL>>
 }
 
 // for TypeRefContainer
@@ -330,6 +356,8 @@ void print_count(TypeRefContainer<MyTypes> &refContainer)
 	std::cout << "A: " << refContainer.count<A>()
 	<< " | B: " << refContainer.count<B>()
 	<< " | C: " << refContainer.count<C>() << std::endl;
+
+	std::cout << "Total of " << refContainer.count_all() << " elements created." << std::endl;
 }
 
 /*============================*

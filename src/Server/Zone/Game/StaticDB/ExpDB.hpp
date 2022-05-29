@@ -27,16 +27,19 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
-#ifndef HORIZON_ZONE_GAME_CONFIGURATION_EXPDB
-#define HORIZON_ZONE_GAME_CONFIGURATION_EXPDB
+#ifndef HORIZON_ZONE_STATICDB_EXPDB_HPP
+#define HORIZON_ZONE_STATICDB_EXPDB_HPP
 
 #include "Server/Common/Configuration/Horizon.hpp"
 
-#include <string>
-#include <vector>
-#include <cassert>
-#include <sol.hpp>
+#ifndef SOL_ALL_SAFETIES_ON
+#define SOL_ALL_SAFETIES_ON 1
+#endif
+#ifdef SOL_STD_VARIANT
+#define SOL_STD_VARIANT 0
+#endif
+
+
 
 namespace Horizon
 {
@@ -95,4 +98,4 @@ protected:
 
 #define ExpDB Horizon::Zone::ExpDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_CONFIGURATION_EXPDB */
+#endif /* HORIZON_ZONE_STATICDB_EXPDB_HPP */

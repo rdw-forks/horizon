@@ -31,6 +31,7 @@
 #define HORIZON_ZONE_GAME_CELL_HPP
 
 #include "Utility/Utility.hpp"
+#include "Server/Zone/Definitions/MapDefinitions.hpp"
 
 namespace Horizon
 {
@@ -41,13 +42,12 @@ struct Cell
 {
 public:
     Cell(uint8_t type)
-	: _walkable(0), _shootable(0), _is_water(0)
+    : _type((map_cell_types) type)
     {
-		validateType(type);
+		validate_type(_type);
     }
 
 	Cell()
-	: _walkable(0), _shootable(0), _is_water(0)
 	{
 
 	}
@@ -57,19 +57,20 @@ public:
         //
     }
 
-	void setType(uint8_t type) { validateType(type); }
+	void set_type(uint8_t type) { _type = (map_cell_types) type; validate_type(_type); }
+	map_cell_types get_type() { return _type; }
 
-	void validateType(uint8_t type)
+	void validate_type(map_cell_types type)
 	{
 		switch (type)
 		{
-			case 3: setWater(); // walkable water
-			case 0: // walkable ground
-			case 2: // ???
-			case 4: // ???
-			case 6: setWalkable(); // ???
-			case 5: setShootable(); // gap (snipable)
-			case 1: break; // non-walkable ground
+			case CELL_WALKABLE_SHOOTABLE_WATER: setWater(); // walkable water
+			case CELL_WALKABLE_SHOOTABLE_GROUND_0: // ground
+			case CELL_WALKABLE_SHOOTABLE_2: // ???
+			case CELL_WALKABLE_SHOOTABLE_4: // ???
+			case CELL_WALKABLE_SHOOTABLE_6: setWalkable(); // ???
+			case CELL_CLIFF_ONLY_SHOOTABLE_5: setShootable(); // gap (snipable)
+			case CELL_NONWALKABLE_GROUND: break;
 
 //			case 0: cell.walkable = 1; cell.shootable = 1; cell.water = 0; break; // walkable ground
 //			case 1: cell.walkable = 0; cell.shootable = 0; cell.water = 0; break; // non-walkable ground
@@ -83,19 +84,23 @@ public:
 		}
 	}
 
-	bool isWalkable() { return _walkable ? true : false; }
-	void setWalkable() { _walkable = 1; }
+	bool isWalkable() { return setting._walkable ? true : false; }
+	void setWalkable() { setting._walkable = 1; }
 
-	bool isShootable() { return _shootable ? true : false; }
-	void setShootable() { _shootable = 1; }
+	bool isShootable() { return setting._shootable ? true : false; }
+	void setShootable() { setting._shootable = 1; }
 
-	bool isWater() { return _is_water ? true : false; }
-	void setWater() { _is_water = 1; }
+	bool isWater() { return setting._is_water ? true : false; }
+	void setWater() { setting._is_water = 1; }
 
 private:
-	unsigned _walkable : 1;
-	unsigned _shootable : 1;
-	unsigned _is_water : 1;
+	struct {
+		unsigned _walkable : 1;
+		unsigned _shootable : 1;
+		unsigned _is_water : 1;
+		unsigned unused : 5;
+	} setting{0};
+	map_cell_types _type{0};
 };
 #pragma pack(pop)
 }

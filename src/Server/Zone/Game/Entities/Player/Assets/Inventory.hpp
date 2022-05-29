@@ -30,10 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_ASSETS_INVENTORY_HPP
 #define HORIZON_ZONE_GAME_ASSETS_INVENTORY_HPP
 
-#include "Common/Definitions/ItemDefinitions.hpp"
-
-#include <unordered_map>
-#include <array>
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
 namespace Horizon
 {
@@ -77,6 +74,8 @@ public:
 	std::shared_ptr<Entities::Player> player() { return _player.lock(); }
 	inventory_addition_result_type add_item(uint32_t item_id, uint16_t amount, bool is_identified = false);
 
+	void initialize();
+	
 	bool use_item(uint32_t inventory_index, uint32_t guid);
 	bool can_equip(uint32_t inventory_index);
 	item_equip_result_type equip_item(uint32_t inventory_index, uint16_t equip_location_mask);
@@ -92,8 +91,9 @@ public:
 	void notify_deletion(uint16_t idx, uint16_t amount, inventory_deletion_reason_type reason);
 	void notify_drop(uint16_t idx, uint16_t amount);
 	void notify_move_fail(uint16_t idx, bool silent);
-	uint32_t sync_to_model();
-	uint32_t sync_from_model();
+
+	int32_t save();
+	int32_t load();
 
 	void set_max_storage(uint32_t max_storage) { _max_storage = max_storage; }
 	uint32_t max_storage() { return _max_storage; }
@@ -106,7 +106,7 @@ private:
 	int32_t _max_storage;
 	std::weak_ptr<Entities::Player> _player;
 	EquipmentListType _equipments;
-	inventory_storage_type _inventory_items;
+	inventory_storage_type _inventory_items, _saved_inventory_items;
 };
 }
 }

@@ -28,17 +28,143 @@
  **************************************************/
 
 #include "Monster.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+
+#include "Core/Logging/Logger.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
+#include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
+#include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
+#include "Server/Zone/Game/Map/Map.hpp"
 
 using namespace Horizon::Zone::Entities;
 
-Monster::Monster(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_MONSTER, map, mcoords)
+Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+		std::shared_ptr<const monster_config_data> md,
+		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
+: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
-	//
+	set_name(md->name);
+	set_job_id(md->monster_id);
+	set_direction(DIR_SOUTH);
 }
 
 Monster::~Monster()
 {
-	//
+	if (has_valid_grid_reference())
+		remove_grid_reference();
 }
+
+void Monster::initialize()
+{
+	std::shared_ptr<const monster_config_data> md = _wmd_data.lock();
+
+	Entity::initialize();
+
+	status()->initialize();
+
+	status()->movement_speed()->set_base(md->move_speed);
+
+	status()->size()->set_base((int32_t) monster_config()->size);
+
+	map()->ensure_grid_for_entity(this, map_coords());
+
+    map()->container()->getScheduler().Schedule(
+    	Milliseconds(MOB_MIN_THINK_TIME_LAZY),
+    	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
+    	[this] (TaskContext context)
+    {
+    	behavior_passive();
+    	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
+    });
+}
+
+void Monster::behavior_passive()
+{
+	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
+		&& (next_walk_time() - std::time(nullptr) < 0)
+		&& !is_walking()
+		&& was_spotted_once()) {
+	    try {
+	        sol::load_result fx = lua_manager()->lua_state()->load_file("scripts/monsters/functionalities/walking_passive.lua");
+	        sol::protected_function_result result = fx(shared_from_this());
+	        if (!result.valid()) {
+	            sol::error err = result;
+	            HLog(error) << "Monster::behavior_passive: " << err.what();
+	        }
+	    } catch (sol::error &e) {
+	        HLog(error) << "Monster::behavior_passive: " << e.what();
+	    }
+	}
+}
+
+void Monster::behavior_active(std::shared_ptr<Player> pl)
+{
+	set_spotted(true);
+
+	int can_move = monster_config()->mode & MONSTER_MODE_MASK_CANMOVE;
+
+	if (_target != nullptr) {
+		// Check Validity of current target
+		HLog(debug) << "Monster (" << guid() << ") " << name() << " has begun aggressively engaging " << pl->name() << ".";
+	}
+
+	if (monster_config()->mode & MONSTER_MODE_MASK_AGGRESSIVE) {
+		GridMonsterAIActiveSearchTarget target_search(shared_from_this()->downcast<Monster>());
+		GridReferenceContainerVisitor<GridMonsterAIActiveSearchTarget, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(target_search);
+
+		map()->visit_in_range(map_coords(), ai_executor_caller);
+	} else if (monster_config()->mode & MONSTER_MODE_MASK_CHANGECHASE) {
+		GridMonsterAIChangeChaseTarget target_search(shared_from_this()->downcast<Monster>());
+		GridReferenceContainerVisitor<GridMonsterAIChangeChaseTarget, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(target_search);
+
+		map()->visit_in_range(map_coords(), ai_executor_caller);
+	}
+
+	// BL_ITEM
+
+	// Attempt to attack
+	if (_target != nullptr && distance_from(_target) < monster_config()->attack_range) {
+
+	}
+}
+
+void Monster::stop_movement()
+{
+}
+
+void Monster::on_pathfinding_failure()
+{
+	HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
+}
+
+void Monster::on_movement_begin()
+{
+
+}
+
+void Monster::on_movement_step()
+{
+	map()->ensure_grid_for_entity(this, map_coords());
+}
+
+void Monster::on_movement_end()
+{
+}
+
+void Monster::on_status_effect_start(std::shared_ptr<status_change_entry> sce)
+{
+
+}
+
+void Monster::on_status_effect_end(std::shared_ptr<status_change_entry> sce)
+{
+
+}
+
+void Monster::on_status_effect_change(std::shared_ptr<status_change_entry> sce)
+{
+
+}
+

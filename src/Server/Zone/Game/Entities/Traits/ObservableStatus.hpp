@@ -30,9 +30,6 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
 #define HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
 
-#include <tuple>
-#include <type_traits>
-
 template <typename OBSERVABLE, typename ... OBSERVERS>
 class ObservableStatus
 {
@@ -52,7 +49,7 @@ public:
 	inline typename std::enable_if<I < sizeof...(Tp), void>::type
 	notify(std::tuple<Tp...>& t)
 	{
-		std::get<I>(_observers).lock()->on_observable_changed(_observable);
+		std::get<I>(_observers)->on_observable_changed(_observable);
 		notify<I + 1, Tp...>(t);
 	}
 

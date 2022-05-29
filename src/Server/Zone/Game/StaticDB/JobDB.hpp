@@ -27,32 +27,23 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#pragma once
-#ifndef HORIZON_ZONE_GAME_JOBDB
-#define HORIZON_ZONE_GAME_JOBDB
+#ifndef HORIZON_ZONE_STATICDB_JOBDB_HPP
+#define HORIZON_ZONE_STATICDB_JOBDB_HPP
 
-#include "Common/Definitions/ItemDefinitions.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
-#include "Core/Multithreading/LockedLookupTable.hpp"
-
-#include <memory>
-#include <map>
-#include <vector>
-#include <array>
-#include <string>
-
-#include <sol.hpp>
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
-struct job_db_data
+struct job_config_data
 {
 	int id{0};
+	std::string name{""};
 	int max_weight{20000};
 	std::string base_exp_group{""}, job_exp_group{""};
-	std::array<int, IT_WT_MAX> weapon_base_aspd;
+	std::array<int, IT_WT_SINGLE_MAX> weapon_base_aspd;
 	std::vector<int> hp_table, sp_table;
 };
 class JobDatabase
@@ -72,12 +63,18 @@ public:
 
 	bool load();
 	int load_job(sol::table &job_tbl, std::string name = "");
-	bool load_job_internal(sol::table &job_tbl, job_db_data &data, std::string job_name = "");
-	bool load_hp_sp_table(sol::table &job_tbl, job_db_data &data, std::string &job_name, std::string table_name);
+	bool load_job_internal(sol::table &job_tbl, job_config_data &data, std::string job_name = "");
+	bool load_hp_sp_table(sol::table &job_tbl, job_config_data &data, std::string &job_name, std::string table_name);
 
-	std::shared_ptr<const job_db_data> get(uint16_t job_id) { return _job_db.at((job_class_type) job_id); }
+	std::shared_ptr<const job_config_data> get_job_by_id(uint16_t job_id) { return _job_db.at((job_class_type) job_id); }
+	std::string get_job_name_by_id(int32_t id) { 
+		for (auto j = _name2id_list.begin(); j != _name2id_list.end(); j++)
+			if (j->second == id)
+				return j->first;
+		return "";
+	}
 private:
-	LockedLookupTable<uint32_t, std::shared_ptr<const job_db_data>> _job_db;
+	LockedLookupTable<uint32_t, std::shared_ptr<const job_config_data>> _job_db;
 	std::map<std::string, int> _name2id_list;
 };
 }
@@ -85,4 +82,4 @@ private:
 
 #define JobDB Horizon::Zone::JobDatabase::get_instance()
 
-#endif /* HORIZON_ZONE_GAME_JOBDB */
+#endif /* HORIZON_ZONE_STATICDB_JOBDB_HPP */

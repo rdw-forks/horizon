@@ -33,4 +33,6 @@ set(UTILITY_SOURCES
 	${DIR}/Utility.hpp
 	${DIR}/Utility.cpp
 	${DIR}/StrUtils.hpp
+	${DIR}/TaskScheduler.cpp
+	${DIR}/TaskScheduler.hpp
 	PARENT_SCOPE)

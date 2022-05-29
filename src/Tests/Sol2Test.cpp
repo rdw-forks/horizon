@@ -89,6 +89,11 @@ BOOST_AUTO_TEST_CASE(Sol2Test)
 			   )"
 	);
 
+	if (lua["test"] != sol::lua_nil) 
+		std::cout << (int) lua["test"] << std::endl; // undefined value
+	else
+		std::cout << "nil value" << std::endl;
+
 	std::cout << std::endl;
 }
 

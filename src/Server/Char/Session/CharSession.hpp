@@ -33,6 +33,8 @@
 #include "Server/Char/Interface/CharClientInterface.hpp"
 
 #include <memory>
+#include <chrono>
+#include <mutex>
 
 #if CLIENT_TYPE == 'S'
 #if PACKET_VERSION >= 20090225

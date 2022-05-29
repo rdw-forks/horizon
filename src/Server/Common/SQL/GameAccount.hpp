@@ -32,10 +32,6 @@
 
 #include "Server/Common/Server.hpp"
 
-#include <sqlpp11/table.h>
-#include <sqlpp11/data_types.h>
-#include <sqlpp11/char_sequence.h>
-
 enum game_account_gender_type
 {
 	ACCOUNT_GENDER_MALE,
@@ -177,7 +173,7 @@ struct salt
 			}
 		};
 	};
-	using _traits = sqlpp::make_traits<sqlpp::varchar, sqlpp::tag::require_insert>;
+	using _traits = sqlpp::make_traits<sqlpp::varchar>;
 };
 
 struct gender
@@ -407,7 +403,7 @@ struct birth_date
 			}
 		};
 	};
-	using _traits = sqlpp::make_traits<sqlpp::day_point>;
+	using _traits = sqlpp::make_traits<sqlpp::varchar>;
 };
 
 struct character_slots

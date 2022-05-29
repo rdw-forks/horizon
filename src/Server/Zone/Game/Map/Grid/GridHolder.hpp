@@ -36,9 +36,6 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 
-#include <memory>
-#include <boost/multi_array.hpp>
-
 template
 <
 	class ACTIVE_OBJECT,

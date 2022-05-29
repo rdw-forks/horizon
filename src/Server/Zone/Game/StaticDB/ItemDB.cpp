@@ -28,11 +28,11 @@
  **************************************************/
 
 #include "ItemDB.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
-#include "Server/Common/Definitions/LuaDefinitionSync.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/LUA/Components/ItemComponent.hpp"
+#include "Server/Zone/LUA/Components/EntityComponent.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
-#include <chrono>
 
 using namespace Horizon::Zone;
 
@@ -67,31 +67,36 @@ ItemDatabase::ItemDatabase()
 
 bool ItemDatabase::load()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	auto start = std::chrono::high_resolution_clock::now();
 
-	lua.open_libraries(sol::lib::base);
-	lua.open_libraries(sol::lib::package);
+	lua->open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::package);
 
-	sync_entity_definitions(lua);
-	sync_item_definitions(lua);
+	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+	
+	entity_component->sync_definitions(lua);
+	entity_component->sync_data_types(lua);
+	entity_component->sync_functions(lua);
 
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
+	
 	int total_entries = 0;
 
-	std::string file_path = sZone->config().get_static_db_path().string() + "item_db.lua";
-
-	sol::protected_function_result safe_res = lua.safe_script_file(file_path);
 	
-	if (!safe_res.valid()) {
-		sol::error err = safe_res;
+	try {
+		std::string file_path = sZone->config().get_static_db_path().string() + "item_db.lua";
+	    sol::load_result fx = lua->load_file(file_path);
+		sol::table item_tbl = fx();
+		total_entries = load_items(item_tbl, file_path);
+		auto stop = std::chrono::high_resolution_clock::now();
+		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "' (" << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "µs, Max Collisions: " << _item_db.max_collisions() << ").";
+	} catch (sol::error err) {
 		HLog(error) << err.what();
-		return false;
 	}
-	
-	sol::table item_tbl = lua.get<sol::table>("item_db");
-	total_entries = load_items(item_tbl, file_path);
-	auto stop = std::chrono::high_resolution_clock::now();
-	HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "' (" << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "µs, Max Collisions: " << _item_db.max_collisions() << ").";
 
 	return true;
 }
@@ -278,6 +283,11 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 
 		id.key_name = key.as<std::string>();
 
+		if (id.key_name.length() < 1) {
+			HLog(error) << "ItemDB::load_items: Invalid or non-existent mandatory field 'AegisName' for entry " << id.item_id << " in '" << file_path << "'. Skipping...";
+			return;			
+		}
+
 		id.item_id = tbl.get_or("Id", 0);
 		if (id.item_id == 0) {
 			HLog(error) << "ItemDB::load_items: Invalid or non-existent mandatory field 'Id' for item '" << id.key_name << "' in '" << file_path << "'. Skipping...";
@@ -394,15 +404,119 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 
 		id.config.refineable = tbl.get_or("Refine", false);
 		id.config.allow_item_options = tbl.get_or("EnableOptions", true);
-		id.config.show_drop_effect = tbl.get_or("ShowDropEffect", false);
-		id.config.show_drop_effect = tbl.get_or("DropEffectMode", 0);
 
-		id.sprite_id = tbl.get_or("ViewSprite", 0);
+		id.config.bind_on_equip = tbl.get_or("BindOnEquip", false);
+		id.config.force_serial = tbl.get_or("ForceSerial", false);
+		id.config.keep_after_use = tbl.get_or("KeepAfterUse", false);
+		id.config.drop_announce = tbl.get_or("DropAnnounce", false);
+
+		id.config.show_drop_effect = tbl.get_or("ShowDropEffect", false);
+		id.drop_effect_mode = tbl.get_or("DropEffectMode", 0);
+
+		sol::optional<sol::object> no_trade = tbl.get<sol::optional<sol::object>>("NoTrade");
+
+		if (no_trade) {
+			sol::object nt = no_trade.value();
+
+			if (nt.get_type() == sol::type::table) {
+				nt.as<sol::table>().for_each([&id, &file_path] (sol::object const &key, sol::object const &value) {
+					if (value.get_type() != sol::type::number && value.get_type() != sol::type::boolean) {
+						HLog(warning) <<"Invalid type for 'NoTrade' in entry '" << id.key_name << "' in file '" << file_path << "'";
+						return;
+					}
+
+					if (key.get_type() != sol::type::number) {
+						if (key.as<std::string>().compare("override") == 0) {
+							id.trade_restriction_group_override_id = value.as<int>();
+							return;
+						} else if (key.as<std::string>().compare("partneroverride") == 0) {
+							id.trade_restriction_partner_override = value.as<bool>();
+							return;
+						}	
+					}
+
+					id.trade_restriction_mask |= value.as<int>();
+				});
+			} else if (nt.get_type() == sol::type::number) {
+				id.trade_restriction_mask |= nt.as<int>();
+			}
+		}
+
+		sol::optional<sol::object> no_use = tbl.get<sol::optional<sol::object>>("RestrictUsage");
+
+		if (no_use) {
+			sol::object nu = no_use.value();
+
+			if (nu.get_type() == sol::type::table) {
+				nu.as<sol::table>().for_each([&id, &file_path] (sol::object const &key, sol::object const &value) {
+					if (value.get_type() != sol::type::number) {
+						HLog(warning) <<"Invalid type for 'RestrictUsage' in entry '" << id.key_name << "' in file '" << file_path << "'";
+						return;
+					}
+
+					if (key.get_type() != sol::type::number) {
+						if (key.as<std::string>().compare("override") == 0) {
+							id.usage_restriction_group_override_id = value.as<int>();
+							return;
+						}
+					}
+
+					id.usage_restriction_mask |= value.as<int>();
+				});
+			} else if (nu.get_type() == sol::type::number) {
+				id.usage_restriction_mask |= nu.as<int>();
+			}
+		}
+
+		sol::optional<sol::object> stack = tbl.get<sol::optional<sol::object>>("Stack");
+
+		if (stack) {
+			sol::object s = stack.value();
+
+			if (s.get_type() == sol::type::table) {
+				s.as<sol::table>().for_each([&id, &file_path] (sol::object const &key, sol::object const &value) {
+					if (value.get_type() != sol::type::number) {
+						HLog(warning) << "Invalid type for 'Stack' in entry '" << id.key_name << "' in file '" << file_path << "'";
+						return;
+					}
+
+					if (key.as<std::string>().compare("Inventory") == 0) {
+						id.stack.inventory = value.as<int>();
+					} else if (key.as<std::string>().compare("Cart") == 0) {
+						id.stack.cart = value.as<int>();
+					} else if (key.as<std::string>().compare("Storage") == 0) {
+						id.stack.storage = value.as<int>();
+					} else if (key.as<std::string>().compare("GuildStorage") == 0) {
+						id.stack.guild_storage = value.as<int>();
+					} else {
+						HLog(warning) << "Invalid type '" << key.as<std::string>() << "' for 'Stack' in entry '" << id.key_name << "' in file '" << file_path << "', skipping...";
+					}
+				});
+			} else {
+				id.stack.inventory = MAX_INVENTORY_STACK_LIMIT;
+				id.stack.cart = MAX_CART_STACK_LIMIT;
+				id.stack.storage = MAX_STORAGE_STACK_LIMIT;
+				id.stack.guild_storage = MAX_GSTORAGE_STACK_LIMIT;
+
+				HLog(warning) << "Invalid value type for 'Stack' in entry '" << id.key_name << "' in file '" << file_path << "', defaulting to max stack limits...";
+			}
+		} else {
+			id.stack.inventory = MAX_INVENTORY_STACK_LIMIT;
+			id.stack.cart = MAX_CART_STACK_LIMIT;
+			id.stack.storage = MAX_STORAGE_STACK_LIMIT;
+			id.stack.guild_storage = MAX_GSTORAGE_STACK_LIMIT;
+		}
+
+		id.delay = tbl.get_or("Delay", 0);
+
+		id.sprite_id = tbl.get_or("Sprite", 0);
+
 		id.default_script = tbl.get_or("Script", std::string(""));
 		id.equip_script = tbl.get_or("OnEquipScript", std::string(""));
 		id.unequip_script = tbl.get_or("OnUnequipScript", std::string(""));
 
 		_item_db.insert(id.item_id, std::make_shared<item_config_data>(id));
+		_item_db_str.insert(id.key_name, std::make_shared<item_config_data>(id));
 	});
 
 	return _item_db.size();
@@ -494,23 +608,27 @@ bool ItemDatabase::load_refine_table(refine_type type, sol::table const &refine_
 
 bool ItemDatabase::load_weapon_target_size_modifiers_db()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	auto start = std::chrono::high_resolution_clock::now();
 
-	lua.open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::base);
 
-	sync_item_definitions(lua);
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
 
 	int total_entries = 0;
 
 	std::string file_path = sZone->config().get_static_db_path().string() + "weapon_target_size_modifiers.lua";
 
 	try {
-		lua.script_file(file_path);
+		lua->script_file(file_path);
 
-		sol::table size_mod_tbl = lua["weapon_target_size_modifiers"];
+		sol::table size_mod_tbl = (*lua)["weapon_target_size_modifiers"];
 
-		for (int i = IT_WT_FIST; i < IT_WT_MAX; i++) {
+		for (int i = IT_WT_FIST; i < IT_WT_SINGLE_MAX; i++) {
 			std::shared_ptr<std::array<uint8_t, ESZ_MAX>> arr = std::make_shared<std::array<uint8_t, ESZ_MAX>>();
 			for (int j = ESZ_SMALL; j < ESZ_MAX; j++) {
 				std::string size = j == ESZ_SMALL ? "Small" : j == ESZ_MEDIUM ? "Medium" : "Large";
@@ -536,42 +654,51 @@ bool ItemDatabase::load_weapon_target_size_modifiers_db()
 
 bool ItemDatabase::load_weapon_attribute_modifiers_db()
 {
-	sol::state lua;
+	std::shared_ptr<sol::state> lua = std::make_shared<sol::state>();
 	auto start = std::chrono::high_resolution_clock::now();
 
-	lua.open_libraries(sol::lib::base);
+	lua->open_libraries(sol::lib::base);
 
-	sync_item_definitions(lua);
+	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
+	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+
+	item_component->sync_definitions(lua);
+	item_component->sync_data_types(lua);
+	item_component->sync_functions(lua);
+
+	entity_component->sync_definitions(lua);
+	entity_component->sync_data_types(lua);
+	entity_component->sync_functions(lua);
 	
 	int total_entries = 0;
 
 	std::string file_path = sZone->config().get_static_db_path().string() + "weapon_attribute_modifiers.lua";
 
 	try {
-		lua.script_file(file_path);
+		lua->script_file(file_path);
 
-		sol::table attr_mod_tbl = lua["weapon_attribute_modifiers"];
+		sol::table attr_mod_tbl = (*lua)["weapon_attribute_modifiers"];
 
 		struct {
-			item_element_type type;
+			element_type type;
 			std::string ele_name;
 		} attr_s[] = {
-			{ IT_ELE_NEUTRAL, "Neutral" },
-			{ IT_ELE_WATER, "Water" },
-			{ IT_ELE_EARTH, "Earth" },
-			{ IT_ELE_FIRE, "Fire" },
-			{ IT_ELE_WIND, "Wind" },
-			{ IT_ELE_POISON, "Poison" },
-			{ IT_ELE_HOLY, "Holy" },
-			{ IT_ELE_DARK, "Dark" },
-			{ IT_ELE_GHOST, "Ghost" },
-			{ IT_ELE_UNDEAD, "Undead" },
+			{ ELE_NEUTRAL, "Neutral" },
+			{ ELE_WATER, "Water" },
+			{ ELE_EARTH, "Earth" },
+			{ ELE_FIRE, "Fire" },
+			{ ELE_WIND, "Wind" },
+			{ ELE_POISON, "Poison" },
+			{ ELE_HOLY, "Holy" },
+			{ ELE_DARK, "Dark" },
+			{ ELE_GHOST, "Ghost" },
+			{ ELE_UNDEAD, "Undead" },
 		};
 
 		for (int i = IT_LVL_WEAPON1; i < IT_LVL_MAX; i++) {
-			std::shared_ptr<std::array<std::array<uint8_t, IT_ELE_MAX>, IT_ELE_MAX>> arr = std::make_shared<std::array<std::array<uint8_t, IT_ELE_MAX>, IT_ELE_MAX>>();
-			for (int j = IT_ELE_NEUTRAL; j < IT_ELE_MAX; j++) {
-				for (int k = IT_ELE_NEUTRAL; k < IT_ELE_MAX; k++) {
+			std::shared_ptr<std::array<std::array<uint8_t, ELE_MAX>, ELE_MAX>> arr = std::make_shared<std::array<std::array<uint8_t, ELE_MAX>, ELE_MAX>>();
+			for (int j = ELE_NEUTRAL; j < ELE_MAX; j++) {
+				for (int k = ELE_NEUTRAL; k < ELE_MAX; k++) {
 					try {
 						(*arr)[j][k] = attr_mod_tbl[i][j][k + 1];
 					} catch (std::exception &err) {

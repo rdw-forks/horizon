@@ -32,8 +32,8 @@
 
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
-#include <memory>
 
 namespace Horizon
 {
@@ -42,13 +42,54 @@ namespace Zone
 class Map;
 namespace Entities
 {
+class Player;
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
-	Monster(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	explicit Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+		std::shared_ptr<const monster_config_data> md,
+		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd);
 	~Monster();
 
+	void initialize() override;
+
+	virtual void stop_movement() override;
+	virtual void on_pathfinding_failure() override;
+	virtual void on_movement_begin() override;
+	virtual void on_movement_step() override;
+	virtual void on_movement_end() override;
+
+	void set_spotted(bool spotted) { _was_spotted_once = spotted; }
+	bool was_spotted_once() { return _was_spotted_once; }
+
+	std::shared_ptr<const monster_config_data> monster_config() { return _wmd_data.lock(); }
+	void set_monster_config(std::shared_ptr<const monster_config_data> md) { _wmd_data = md; }
+
+    /**
+     * Status Effect
+     */
+    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
+
+    void behavior_passive();
+    void behavior_active(std::shared_ptr<Player> pl);
+
+    void set_next_walk_time(int walk_time) { _next_walk_time = walk_time; }
+    int next_walk_time() { return _next_walk_time; }
+
+    void set_target(std::shared_ptr<Entity> &target) { _target = target; }
+    std::shared_ptr<Entity> target() { return _target; }
+    void unlock_target() { _target = nullptr; }
+
 private:
+	bool _was_spotted_once{false};
+	int _next_walk_time{0}, _last_spotted_time{0}, _last_think_time{0};
+	std::weak_ptr<const monster_config_data> _wmd_data;
+	std::weak_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> _wms_data;
+
+    std::shared_ptr<Entity> _target{nullptr};
+
 };
 }
 }

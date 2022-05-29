@@ -44,6 +44,40 @@ Logger::~Logger()
 	//
 }
 
+std::string Logger::color(uint16_t color) { return "\033[" + std::to_string(color) + "m"; }
+ 
+void Logger::colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm)
+{
+    static auto date_time_formatter = boost::log::expressions::stream << boost::log::expressions::format_date_time<boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f");
+
+    strm << "[";
+    date_time_formatter(rec, strm);
+    strm << "] [";
+
+    auto severity = rec[boost::log::trivial::severity];
+
+    switch (*severity) {
+        case boost::log::trivial::trace:
+        case boost::log::trivial::debug:
+            strm << color(90);
+        break;
+        case boost::log::trivial::info:
+            strm << color(36);
+        break;
+        case boost::log::trivial::warning:
+            strm << color(33);
+        break;
+        case boost::log::trivial::error:
+        case boost::log::trivial::fatal:
+            strm << color(31);
+        break;
+        default:
+        break;
+    }
+
+    strm << severity << color(0) << "]  " << rec[boost::log::expressions::message];
+}
+
 void Logger::initialize()
 {
     /* init boost log 
@@ -81,7 +115,7 @@ void Logger::initialize()
     /* console sink */
     auto consoleSink = boost::log::add_console_log(std::clog);
     
-    consoleSink->set_formatter(logFmt);
+    consoleSink->set_formatter(std::bind(&Logger::colored_formatter, this, std::placeholders::_1, std::placeholders::_2));
 
     /* fs sink */
     auto fsSink = boost::log::add_file_log(

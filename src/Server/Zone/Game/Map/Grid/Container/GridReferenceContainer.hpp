@@ -60,58 +60,85 @@ struct GridTypeListContainer<TypeList<HEAD, TAIL>>
 // non-const insert functions
 namespace GridTypeListIterator
 {
+	// Invoked in the condition that the SPECIFIC_TYPE has been visited.
 	template<class SPECIFIC_TYPE>
 	SPECIFIC_TYPE *Insert(GridTypeListContainer<SPECIFIC_TYPE> &elements, SPECIFIC_TYPE *obj)
 	{
 		obj->add_grid_reference(elements._element);
 		return obj;
 	}
+	// Invoked in the condition that a TypeNull has been visited.
 	template<class SPECIFIC_TYPE>
 	SPECIFIC_TYPE *Insert(GridTypeListContainer<TypeNull> &/*elements*/, SPECIFIC_TYPE */*obj*/)
 	{
 		return nullptr;
 	}
-	// this is a missed
+	// In a case such as the following, where the GridTypeListContainer is not one of the specific type
+	// that we are in search of, the resulting return of the function is a nullptr. 
 	template<class SPECIFIC_TYPE, class T>
 	SPECIFIC_TYPE *Insert(GridTypeListContainer<T> &/*elements*/, SPECIFIC_TYPE */*obj*/)
 	{
-		return nullptr;                                        // a missed
+		return nullptr;
 	}
-	// Recursion
+	// In a condition such as the following where a GridTypeListContainer of a TypeList<HEAD, TAIL> is invoked,
+	// and the specific object that is to be inserted is also a valid argument. The function definition matches the 
+	// search criteria of the template function that is to be invoked. We try recursing to iterate through the TypeLists
+	// contained in the GridTypeListContainer until a reference has been added or the end of the TypeList (TypeNull) is met and the 
+	// appropriate function has been invoked to return a nullptr or a valid pointer to the object.
 	template<class SPECIFIC_TYPE, class HEAD, class TAIL>
 	SPECIFIC_TYPE* Insert(GridTypeListContainer<TypeList<HEAD, TAIL>> &elements, SPECIFIC_TYPE* obj)
 	{
 		SPECIFIC_TYPE *t = Insert(elements._elements, obj);
 		return (t != nullptr ? t : Insert(elements._tail_elements, obj));
 	}
-	/*============================*
-	 * TypeListIterator Count Functions
-	 *============================*/
-	// count functions
+/*============================*
+ * TypeListIterator Count Functions
+ *============================*/
+	// Function for when the specific type has been invoked and the requirement of meeting the function
+	// definition has been successful.
 	template <class SPECIFIC_TYPE>
 	size_t count(GridTypeListContainer<SPECIFIC_TYPE> const &elements, SPECIFIC_TYPE */*fake*/)
 	{
 		return elements._element.get_size();
 	}
+	// Function for when a TypeNull has been visited.
 	template <class SPECIFIC_TYPE>
 	size_t count(GridTypeListContainer<TypeNull> const &/*elements*/, SPECIFIC_TYPE */*fake*/)
 	{
 		return 0;
 	}
+	// Function containing any other type than the one we are in search of, will be invoked.
 	template <class SPECIFIC_TYPE, class T>
 	size_t count(GridTypeListContainer<T> const &/*elements*/, SPECIFIC_TYPE */*fake*/)
 	{
 		return 0;
 	}
+	// Invoked in the condition that the a TypeList of type <SPECIFIC_TYPE, T> has been met. 
 	template <class SPECIFIC_TYPE, class T>
 	size_t count(GridTypeListContainer<TypeList<SPECIFIC_TYPE, T>> const &elements, SPECIFIC_TYPE *fake)
 	{
 		return count(elements._elements, fake);
 	}
+	// Invoked in the condition that any other TypeList, the ones that are not of the SPECIFIC_TYPE we 
+	// are in search of, has been met. All of the element types will be visited, invoking the count() function 
+	// for the specific type we are in search of.
 	template <class SPECIFIC_TYPE, class H, class T>
 	size_t count(GridTypeListContainer<TypeList<H, T>> const &elements, SPECIFIC_TYPE *fake)
 	{
 		return count(elements._tail_elements, fake);
+	}
+
+	template <class TypeNull>
+	size_t count_all(GridTypeListContainer<TypeNull> const &elements)
+	{
+		return 0;
+	}
+
+	// Counts all of the objects in a GridTypeListContainer.
+	template <class H, class T>
+	size_t count_all(GridTypeListContainer<TypeList<H, T>> const &elements)
+	{
+		return count(elements._elements, (H *) nullptr) + count_all(elements._tail_elements);
 	}
 }
 /*============================*
@@ -125,6 +152,11 @@ public:
 	size_t count() const
 	{
 		return GridTypeListIterator::count(_elements, (SPECIFIC_TYPE *) nullptr);
+	}
+
+	size_t count_all() const
+	{
+		return GridTypeListIterator::count_all(_elements);
 	}
 
 	/// inserts a specific object into the container

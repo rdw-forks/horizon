@@ -31,10 +31,10 @@
 #define HORIZON_ZONE_GAME_ENTITIES_NPC_HPP
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
-#include "Common/Definitions/NPCDefinitions.hpp"
+#include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Game/Entities/GridObject.hpp"
 
-#include <sol.hpp>
+
 
 namespace Horizon
 {
@@ -48,21 +48,23 @@ public:
 	NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, uint32_t job_id, directions dir);
 	NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file);
 	NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::shared_ptr<NPC> duplicate);
-	NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, std::string const &script, uint8_t trigger_range);
+	NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, std::string const &script);
 	~NPC();
 
 	void initialize() override;
 
-	virtual void stop_movement() override;
-	virtual void on_movement_begin() override;
-	virtual void on_movement_step() override;
-	virtual void on_movement_end() override;
-	virtual void sync_with_models() override;
+    void stop_movement() override;
+    void on_pathfinding_failure() override;
+    void on_movement_begin() override;
+    void on_movement_step() override;
+    void on_movement_end() override;
 
-	npc_db_data const &get_db_data() { return _npc_data; }
+    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
+
 private:
 	sol::protected_function _fn;
-	npc_db_data _npc_data;
 };
 }
 }

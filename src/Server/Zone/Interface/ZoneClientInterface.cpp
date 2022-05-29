@@ -27,11 +27,11 @@
 
 #include "CharClientInterface.hpp"
 
-#include "Server/Common/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Common/SQL/GameAccount.hpp"
 #include "Server/Common/SQL/SessionData.hpp"
 #include "Server/Common/SQL/Character/Character.hpp"
-#include "Server/Common/SQL/Character/Status.hpp"
 #include "Server/Common/SQL/GameAccount.hpp"
 
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
@@ -40,17 +40,10 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Zone/Zone.hpp"
-
-#include <date/date.h>
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/insert.h>
-
-
-#include <memory>
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
@@ -69,7 +62,6 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 {
 	SQL::TableGameAccounts tga;
 	SQL::TableSessionData tsd;
-	SQL::TableCharacters tch;
 	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
 	
 	auto res = (*conn)(select(all_of(tsd)).from(tsd).where(tsd.game_account_id == account_id and tsd.auth_code == auth_code));
@@ -94,44 +86,18 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	}
 	
 	(*conn)(update(tsd).set(tsd.current_server = "Z").where(tsd.game_account_id == account_id and tsd.auth_code == auth_code));
+
+	std::shared_ptr<Player> pl = std::make_shared<Player>(get_session(), account_id);
 	
-	auto res3 = (*conn)(select(all_of(tch)).from(tch).where(tch.id == char_id));
-	
-	if (res3.empty()) {
-		HLog(error) << "Login error! Character with ID " << char_id << " does not exist.";
-		return false;
-	}
-	
-	MapCoords mcoords(res3.front().current_x, res3.front().current_y);
-	std::shared_ptr<Map> map = MapMgr->get_map(res3.front().current_map);
-	std::shared_ptr<Player> pl = std::make_shared<Player>(get_session(), account_id, map, mcoords);
-	
-	/* Initialize Player Model */
-	pl->character()._character_id = res3.front().id;
-	pl->character()._account_id = res3.front().account_id;
-	pl->character()._slot = res3.front().slot;
-	pl->set_name(res3.front().name);
-	pl->set_posture(POSTURE_STANDING);
-	pl->set_group_id(res2.front().group_id);
-	
-	std::string acc_gender = res2.front().gender;
-	std::string char_gender = res3.front().gender;
-	pl->character()._gender = strcmp(char_gender.c_str(), "U") == 0
-		? (strcmp(acc_gender.c_str(), "M") == 0 ? CHARACTER_GENDER_MALE : CHARACTER_GENDER_FEMALE)
-		: strcmp(char_gender.c_str(), "M") == 0 ? CHARACTER_GENDER_MALE : CHARACTER_GENDER_FEMALE;
-	
-	pl->character()._online = true;
-	pl->set_last_unique_id((uint64_t) res3.front().last_unique_id);
-	
-	
+	pl->create(char_id, res2.front().gender, res2.front().group_id);
+
 	ZC_AID zc_aid(get_session());
 	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
 	
-	zc_aid.deliver(account_id);
-	zc_ae2.deliver(uint16_t(res3.front().current_x), uint16_t(res3.front().current_y), DIR_SOUTH, uint16_t(res3.front().font));
+	zc_aid.deliver(pl->guid());
+	zc_ae2.deliver(pl->map_coords().x(), pl->map_coords().y(), DIR_SOUTH, pl->character()._font); // edit third argument to saved font.
 	
 	get_session()->set_player(pl);
-	map->container()->add_player(std::move(pl));
 	
 	ClientSocktMgr->set_socket_for_removal(get_session()->get_socket());
 	
@@ -152,7 +118,7 @@ bool ZoneClientInterface::restart(uint8_t type)
 		default:
 			SQL::TableSessionData tsd;
 			std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-			(*conn)(update(tsd).where(tsd.game_account_id == get_session()->player()->character()._account_id).set(tsd.current_server = "C", tsd.last_update = std::time(nullptr)));
+			(*conn)(update(tsd).where(tsd.game_account_id == get_session()->player()->account()._account_id).set(tsd.current_server = "C", tsd.last_update = std::time(nullptr)));
 			rpkt.deliver(type);
 			HLog(info) << "Character has moved to the character server.";
 			break;
@@ -229,10 +195,10 @@ bool ZoneClientInterface::notify_entity_name(uint32_t guid)
 	|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20141126) \
 	|| (CLIENT_TYPE == 'Z')
 	ZC_ACK_REQNAMEALL2 req(get_session());
-	req.deliver(guid, entity->name(), "", "", "", 0);
+	req.deliver(guid, std::string(entity->name()).append("(" + std::to_string(guid) + ")") , "", "", "", 0);
 #else
 	ZC_ACK_REQNAMEALL req(get_session());
-	req.deliver(guid, entity->name(), "", "", "");
+	req.deliver(guid, std::string(entity->name()).append("(" + std::to_string(guid) + ")"), "", "", "");
 #endif
 	
 	return true;
@@ -259,8 +225,8 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	entry.robe_id = status->robe_sprite()->get();
 	entry.guild_id = 0;
 	entry.guild_emblem_version = 0;
-	entry.honor = 0;
-	entry.virtue = 0;
+	entry.honor = entity->type() == ENTITY_PLAYER ? status->honor()->total() : 0;
+	entry.virtue = entity->type() == ENTITY_PLAYER ? status->virtue()->total() : 0;
 	entry.in_pk_mode = 0;
 	entry.current_x = entity->map_coords().x();
 	entry.current_y = entity->map_coords().y();
@@ -338,6 +304,13 @@ bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry en
 	return true;
 }
 
+bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCoords to)
+{
+	ZC_NOTIFY_MOVE pkt(get_session());
+	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
+	return true;
+}
+
 bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Entity> entity, entity_viewport_notification_type type)
 {
 	if (entity == nullptr)
@@ -370,7 +343,7 @@ void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> 
 	data.luck = status->luck()->get_base();
 	data.luck_req_stats = status->luck_cost()->get_base();
 	data.status_atk = status->status_atk()->total();
-	data.equip_atk = 0;
+	data.equip_atk = status->equip_atk()->total();
 	data.status_matk = status->status_matk()->total();
 	data.equip_matk = 0;
 	data.soft_def = status->soft_def()->total();
@@ -380,8 +353,8 @@ void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> 
 	data.hit = status->hit()->total();
 	data.flee = status->flee()->total();
 	data.perfect_dodge = 0;
-	data.critical = status->crit()->total();
-	data.attack_speed = 0;
+	data.critical = status->crit()->total() / 10;
+	data.attack_speed = status->attack_speed()->total();
 	data.plus_aspd = 0;
 	
 	zcs.deliver(data);
@@ -395,7 +368,7 @@ bool ZoneClientInterface::notify_appearance_update(entity_appearance_type type, 
 }
 
 // 0x00b0
-bool ZoneClientInterface::notify_complex_attribute_update(status_point_type type, int32_t value)
+bool ZoneClientInterface::notify_compound_attribute_update(status_point_type type, int32_t value)
 {
 	ZC_PAR_CHANGE pkt(get_session());
 	pkt.deliver(type, value);
@@ -436,7 +409,7 @@ bool ZoneClientInterface::notify_attack_range_update(int32_t value)
 // 0x0acb
 bool ZoneClientInterface::notify_experience_update(status_point_type type, int32_t value)
 {
-	notify_complex_attribute_update(type, value);
+	notify_compound_attribute_update(type, value);
 	return true;
 }
 
@@ -511,7 +484,7 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
 	if (message[msg_first_char] == '@') {
-		get_session()->player()->script_manager()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+		get_session()->player()->lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
 		return;
 	}
 
@@ -563,7 +536,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 		pkt.deliver(WRT_RECIPIENT_OFFLINE, 0);
 
 	ZC_WHISPER pkt2(player->get_session());
-	pkt2.deliver(get_session()->player()->name(), message, player->group_id() >= 99 ? true : false);
+	pkt2.deliver(get_session()->player()->name(), message, player->account()._group_id >= 99 ? true : false);
 }
 
 void ZoneClientInterface::use_item(int16_t inventory_index, int32_t guid)
@@ -664,6 +637,187 @@ bool ZoneClientInterface::notify_action_failure(int16_t message_type)
 	pkt.deliver(message_type);
 	return true;
 }
+
+void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
+{
+	ZC_SKILLINFO_UPDATE pkt(get_session());
+	
+	std::shared_ptr<skill_learnt_info> ls = get_session()->player()->get_learnt_skill(skill_id);
+
+	if (ls == nullptr) {
+		skill_learnt_info s;
+		s.skill_id = skill_id;
+		s.level = 1;
+		s.learn_type = SKILL_LEARN_PERMANENT;
+		ls = std::make_shared<skill_learnt_info>(s);
+		get_session()->player()->add_learnt_skill(ls);
+	} else {
+		ls->level += 1;
+	}
+
+	std::shared_ptr<const skill_config_data> skd = SkillDB->get_skill_by_id(ls->skill_id);
+
+	bool upgradeable = false;
+
+	job_class_type job_id = (job_class_type) get_session()->player()->job_id();
+	std::shared_ptr<const skill_tree_config> stc = SkillDB->get_skill_tree_skill_id_by_job_id(job_id, ls->skill_id);
+
+	if (stc == nullptr) {
+		HLog(error) << "Skill ID " << ls->skill_id << " not found for Job ID " << (int32_t) job_id << ".";
+		return;
+	}
+
+	upgradeable = (ls->level < stc->max_level) ? true : false;
+
+	get_session()->player()->status()->skill_point()->sub_base(1);
+
+	pkt.deliver(skill_id, ls->level, skd->sp_cost[ls->level], skd->use_range[ls->level], upgradeable);
+}
+
+bool ZoneClientInterface::notify_learnt_skill_list()
+{
+	const std::map<uint16_t, std::shared_ptr<skill_learnt_info>> &learnt_skills = get_session()->player()->get_learnt_skills();
+	std::vector<zc_skill_info_data> sidv;
+
+	for (auto sp : learnt_skills) {
+		const std::shared_ptr<skill_learnt_info> ls = sp.second;
+
+		if (ls == nullptr) {
+			HLog(error) << "Learnt skill was a nullptr.";
+			continue;
+		}
+
+		zc_skill_info_data si;
+
+		std::shared_ptr<const skill_config_data> skd = SkillDB->get_skill_by_id(ls->skill_id);
+		
+		if (skd == nullptr) {
+			HLog(error) << "Tried to send data for unknown skill with ID " << ls->skill_id;
+			continue;
+		}
+
+		si.skill_id = ls->skill_id;
+		si.skill_type = skd->primary_type;
+		si.level = ls->level;
+
+		si.sp_cost = ls->level ? skd->sp_cost[ls->level] : 0;
+		si.range = ls->level ? skd->use_range[ls->level] : 0;
+		
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+		si.level2 = ls->level;
+#else
+		strncpy(si.name, skd->name.c_str(), MAX_SKILL_NAME_LENGTH);
+#endif
+
+		if (ls->learn_type == SKILL_LEARN_PERMANENT) {
+			job_class_type job_id = (job_class_type) get_session()->player()->job_id();
+			std::shared_ptr<const skill_tree_config> stc = SkillDB->get_skill_tree_skill_id_by_job_id(job_id, ls->skill_id);
+
+			if (stc == nullptr) {
+				HLog(error) << "Skill ID " << ls->skill_id << " not found for Job ID " << (int32_t) job_id << ".";
+				continue;
+			}
+
+			si.upgradeable = (ls->level < stc->max_level) ? 1 : 0;
+		}
+
+		sidv.push_back(si);
+	}
+
+	ZC_SKILLINFO_LIST pkt(get_session());
+	pkt.deliver(sidv);
+
+	return true;
+}
+
+void ZoneClientInterface::action_request(int32_t target_guid, player_action_type action)
+{
+	bool continuous = false;
+	switch(action)
+	{
+		case PLAYER_ACT_SIT:
+		case PLAYER_ACT_STAND:
+		{
+			std::shared_ptr<const skill_config_data> sk = SkillDB->get_skill_by_name("NV_BASIC");
+			get_session()->player()->perform_skill(sk->skill_id, 3);
+			break;
+		}
+		case PLAYER_ACT_ATTACK_REPEAT:
+		{
+			continuous = true;
+		}
+		case PLAYER_ACT_ATTACK:
+		{
+			std::shared_ptr<Entity> target = get_session()->player()->get_nearby_entity(target_guid);
+			get_session()->player()->attack(target, continuous);
+			break;
+		}
+		default:
+			break;
+	};
+	
+}
+
+bool ZoneClientInterface::notify_action(player_action_type action)
+{
+	ZC_NOTIFY_ACT na(get_session());
+	na.deliver((int8_t) action);
+	return true;
+}
+
+bool ZoneClientInterface::notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3)
+{
+	ZC_MSG_STATE_CHANGE2 sc(get_session());
+
+	if (time_remaining < 0)
+		time_remaining = 9999;
+
+	sc.deliver(si_type, guid, state, time_remaining, val1, val2, val3);
+	return true;
+}
+
+bool ZoneClientInterface::notify_status_change_end(int16_t status_index, int32_t guid, int8_t state)
+{
+	ZC_MSG_STATE_CHANGE sce(get_session());
+	sce.deliver(status_index, guid, state);
+	return true;
+}
+
+bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause)
+{
+	ZC_ACK_TOUSESKILL pkt(get_session());
+	pkt.deliver(skill_id, message_type, item_id, cause);
+	return true;
+}
+
+bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage)
+{
+	ZC_NOTIFY_ACT3 pkt(get_session());
+
+	pkt._guid = guid;
+	pkt._target_guid = target_guid; 
+	pkt._start_time = start_time;
+	pkt._delay_skill = delay_skill;
+	pkt._delay_damage = delay_damage;
+	pkt._damage = damage;
+	pkt._is_sp_damaged = is_sp_damaged;
+	pkt._number_of_hits = number_of_hits;
+	pkt._action_type = action_type;
+	pkt._left_damage = left_damage; 
+
+	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
+
+	return true;
+}
+
+
+
+
+
+
+
+
 
 
 

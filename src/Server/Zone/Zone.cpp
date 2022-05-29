@@ -35,14 +35,9 @@
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
-
-#include <iostream>
-#include <boost/make_shared.hpp>
-#include <chrono>
-#include <signal.h>
-#include <sqlpp11/sqlpp11.h>
-
-#include <sol.hpp>
+#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
+#include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
 
 using namespace std;
 using namespace Horizon::Zone;
@@ -97,8 +92,7 @@ bool ZoneServer::read_config()
 	
 	HLog(info) << "Maps will be managed by '" << MAX_MAP_CONTAINER_THREADS << "' thread containers.";
 
-
-	config().set_session_max_timeout(tbl.get<int32_t>("session_max_timeout"));
+	config().set_session_max_timeout(tbl.get_or("session_max_timeout", 60));
 
 	HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "'.";
 
@@ -128,23 +122,23 @@ void ZoneServer::verify_connected_sessions()
 	HLog(info) << count << " connected session(s).";
 }
 
-void ZoneServer::update(uint64_t diff)
+void ZoneServer::update(uint64_t time)
 {
 	process_cli_commands();
 
 	/**
 	 * Task Scheduler Update.
 	 */
-	_task_scheduler.Update();
+	getScheduler().Update();
 
 	/**
 	 * Process Packets.
 	 */
-	ClientSocktMgr->update_socket_sessions(diff);
+	ClientSocktMgr->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(std::bind(&ZoneServer::update, this, std::time(nullptr)));
 	} else {
 		get_io_service().stop();
 	}
@@ -156,7 +150,11 @@ void ZoneServer::update(uint64_t diff)
  */
 void SignalHandler(int signal)
 {
-	if (signal == SIGINT || signal == SIGTERM || signal == SIGQUIT) {
+	if (signal == SIGINT || signal == SIGTERM
+#ifndef WIN32
+		|| signal == SIGQUIT
+#endif
+		) {
 		sZone->set_shutdown_stage(SHUTDOWN_INITIATED);
 		sZone->set_shutdown_signal(signal);
 	}
@@ -166,13 +164,10 @@ void ZoneServer::initialize_core()
 {
 	// Install a signal handler
 	signal(SIGINT, SignalHandler);
+#ifndef WIN32
 	signal(SIGQUIT, SignalHandler);
+#endif
 	signal(SIGTERM, SignalHandler);
-	
-	/**
-	 * Map Manager.
-	 */
-	MapMgr->initialize();
 
 	/**
 	 * Static Databases
@@ -184,7 +179,15 @@ void ZoneServer::initialize_core()
 	ItemDB->load_refine_db();
 	ItemDB->load_weapon_target_size_modifiers_db();
 	ItemDB->load_weapon_attribute_modifiers_db();
+	StatusEffectDB->load();
+	SkillDB->load();
+	MonsterDB->load();
 
+	/**
+	 * Map Manager.
+	 */
+	MapMgr->initialize();
+	
 	// Start Network
 	ClientSocktMgr->start(get_io_service(),
 						  general_conf().get_listen_ip(),
@@ -198,7 +201,7 @@ void ZoneServer::initialize_core()
 		context.Repeat();
 	});
 	
-	_update_timer.expires_from_now(boost::posix_time::milliseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 	
 	get_io_service().run();
@@ -211,7 +214,9 @@ void ZoneServer::initialize_core()
 	 * Server shutdown routine begins here...
 	 */
 	_task_scheduler.CancelAll();
+
 	ClientSocktMgr->stop_network();
+	
 	Server::finalize_core();
 }
 
@@ -231,6 +236,8 @@ void ZoneServer::initialize_cli_commands()
  */
 int main(int argc, const char * argv[])
 {
+	std::srand(std::time(nullptr));
+	
 	if (argc > 1)
 		sZone->parse_exec_args(argv, argc);
 

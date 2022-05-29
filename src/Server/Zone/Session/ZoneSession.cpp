@@ -34,7 +34,6 @@
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 #include "Server/Zone/Zone.hpp"
 
-#include <sqlpp11/sqlpp11.h>
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
@@ -78,7 +77,7 @@ void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 		}
 
 		if (packet_len != _buffer.active_length()) {
-			HLog(warning) << "Packet 0x" << std::hex << packet_id << " has length len " << std::dec << packet_len << " but buffer has " << _buffer.active_length() << " bytes... ignoring.";
+			HLog(warning) << "Packet 0x" << std::hex << packet_id << " has length " << std::dec << packet_len << " but buffer has " << _buffer.active_length() << " bytes... ignoring.";
 			return;
 		}
 
@@ -115,9 +114,9 @@ void ZoneSession::perform_cleanup()
 	if (player() != nullptr) {
 
 		player()->set_logged_in(false);
-		player()->notify_nearby_players_of_self(EVP_NOTIFY_LOGGED_OUT);
+		player()->notify_nearby_players_of_existence(EVP_NOTIFY_LOGGED_OUT);
 		player()->remove_grid_reference();
-		player()->sync_with_models();
+		player()->save();
 		player()->map_container()->remove_player(player());
 	}
 }

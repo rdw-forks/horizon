@@ -28,13 +28,8 @@
 #ifndef HORIZON_ZONE_RAGEXE_PACKET_LENGTH_TABLE
 #define HORIZON_ZONE_RAGEXE_PACKET_LENGTH_TABLE
 
-#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Server/Zone/Packets/HandledPackets.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
-
-#include <utility>
-#include <memory>
-
 
 namespace Horizon
 {
@@ -1096,6 +1091,8 @@ public:
 	TPacketTablePairType get_tpacket_info(uint16_t packet_id) { return _tpacket_length_table.at(packet_id); }
 
 protected:
+	// Here we use a LockedLookupTable. Reason being that ZoneSession::transmit_buffer can be called by 
+	// any of the MapContainerThreads during emulation.
 	LockedLookupTable<uint16_t, HPacketTablePairType> _hpacket_length_table;
 	LockedLookupTable<uint16_t, TPacketTablePairType> _tpacket_length_table;
 	std::weak_ptr<ZoneSession> _session;

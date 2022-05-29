@@ -30,24 +30,41 @@
 #ifndef HORIZON_ZONE_GAME_ENTITY_HPP
 #define HORIZON_ZONE_GAME_ENTITY_HPP
 
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
+#include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Core/Multithreading/TaskScheduler/TaskScheduler.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
-#include "Server/Zone/Game/Map/Script/ScriptManager.hpp"
+#include "Server/Zone/LUA/LUAManager.hpp"
+#include "Utility/TaskScheduler.hpp"
 
-#include <stdlib.h>
-#include <memory>
-#include <iostream>
+#define MIN_RANDOM_TRAVEL_TIME 4000
+#define MOB_LAZY_MOVE_RATE 1000
+#define MOB_MIN_THINK_TIME 100
+#define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME * 10)
 
 enum entity_task_schedule_group
 {
-	ENTITY_SCHEDULE_WALK = 1,
-	ENTITY_SCHEDULE_SAVE = 2,
+	ENTITY_SCHEDULE_WALK       = 1,
+	ENTITY_SCHEDULE_SAVE       = 2,
+	ENTITY_SCHEDULE_AI_THINK   = 3,
+	ENTITY_SCHEDULE_AI_WALK    = 4,
+	ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR = 5,
+	ENTITY_SCHEDULE_AI_ACTIVE  = 6,
+	ENTITY_SCHEDULE_ATTACK     = 7
 };
+
+enum entity_walk_state
+{
+	ENTITY_WALK_STOPPED = 0,
+	ENTITY_WALK_MOVING = 1
+};
+
+#define ENTITY_STATUS_EFFECT_CHECK_TIME 1000
 
 namespace Horizon
 {
@@ -61,31 +78,37 @@ namespace Zone
 		}
 	}
 class Map;
+
+static int32_t _last_np_entity_guid = NPC_START_GUID;
+
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
 	Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords);
-	~Entity();
+	Entity(uint32_t guid, entity_type type);
+	virtual ~Entity();
 
 	virtual void initialize();
 
-	bool is_initialized() { return _is_initialized; }
+	bool is_initialized() const { return _is_initialized; }
 
 	/**
 	 * Movement
 	 */
 	MapCoords const &dest_coords() const { return _dest_pos; }
-	virtual bool move_to_coordinates(uint16_t x, uint16_t y);
-	bool is_walking() { return (dest_coords() != MapCoords(0, 0)); }
+	virtual bool move_to_coordinates(int16_t x, int16_t y);
+	virtual bool move_to_entity(std::shared_ptr<Entity> entity);
+	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
 
-protected:
-	bool schedule_movement(MapCoords mcoords);
-	void move();
 	virtual void stop_movement() = 0;
+protected:
+	bool schedule_movement();
+	void move();
+	
+	virtual void on_pathfinding_failure() = 0;
 	virtual void on_movement_begin() = 0;
 	virtual void on_movement_step() = 0;
 	virtual void on_movement_end() = 0;
-	virtual void sync_with_models() = 0;
 
 	/**
 	 * Unit Data
@@ -118,18 +141,17 @@ public:
 	{
 		_map = map;
 		_map_container_thread = map->container();
-		_script_manager = map->container()->get_script_manager();
+		_lua_mgr = map->container()->get_lua_manager();
 	}
 
 	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
-	std::shared_ptr<ScriptManager> script_manager() { return _script_manager.lock(); }
+	std::shared_ptr<LUAManager> lua_manager() { return _lua_mgr.lock(); }
+
+	AStar::CoordinateList get_walk_path() { return _walk_path; }
 
 	/**
 	 * Entity applications
 	 */
-	virtual void update(uint64_t diff);
-	TaskScheduler &getScheduler() { return _scheduler; }
-
 	entity_type type() const { return _type; }
 
 	template <class T>
@@ -148,8 +170,31 @@ public:
 	void set_grid_coords(GridCoords const &coords) { _grid_coords = coords; }
 
 	bool is_in_range_of(std::shared_ptr<Entity> entity, uint8_t range = MAX_VIEW_RANGE);
-	virtual void notify_nearby_players_of_self(entity_viewport_notification_type notif_type);
+	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
+	void notify_nearby_players_of_spawn();
+	void notify_nearby_players_of_movement();
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
+
+	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
+    
+    std::map<int16_t, std::shared_ptr<status_change_entry>> &get_status_effects() { return _status_effects; }
+    
+    /**
+     * Status Effects
+     */
+    bool status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4);
+    bool status_effect_end(int type);
+
+    virtual void on_status_effect_start(std::shared_ptr<status_change_entry> sce) = 0;
+    virtual void on_status_effect_end(std::shared_ptr<status_change_entry> sce) = 0;
+    virtual void on_status_effect_change(std::shared_ptr<status_change_entry> sce) = 0;
+
+	std::shared_ptr<AStar::CoordinateList> path_to(std::shared_ptr<Entity> e);
+	int distance_from(std::shared_ptr<Entity> e) { return path_to(e)->size(); }
+
+	virtual bool attack(std::shared_ptr<Entity> target, bool continuous = false);
+
+	bool is_dead();
 
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
@@ -158,14 +203,14 @@ private:
 	std::weak_ptr<Map> _map;
 	MapCoords _map_coords{0, 0};
 	GridCoords _grid_coords{0, 0};
-	TaskScheduler _scheduler;
 
 	/* Simplified References */
 	std::weak_ptr<MapContainerThread> _map_container_thread;
-	std::weak_ptr<ScriptManager> _script_manager;
+	std::weak_ptr<LUAManager> _lua_mgr;
 
 	MapCoords _changed_dest_pos{0, 0}, _dest_pos{0, 0};
 	AStar::CoordinateList _walk_path;
+    int16_t _walk_path_index{0};
 
 	std::shared_ptr<Entities::Traits::Status> _status;
 
@@ -174,6 +219,8 @@ private:
 	uint16_t _job_id{0};
 	entity_posture_type _posture{POSTURE_STANDING};
 	directions _facing_dir{DIR_SOUTH};
+
+	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;
 };
 }
 }

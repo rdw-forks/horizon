@@ -53,6 +53,10 @@ target_link_libraries(auth
 		${MYSQL_LIBRARY}
 )
 
+target_precompile_headers(auth
+	PUBLIC
+		../pch.hpp)
+
 set(INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/src
 )

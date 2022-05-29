@@ -95,7 +95,10 @@ bool CharClientInterface::authorize_new_connection(uint32_t account_id, uint32_t
 	HC_BLOCK_CHARACTER hcbc(get_session());
 	
 	hcae2.deliver(gres.front().character_slots, MAX_CHARACTER_SLOTS - gres.front().character_slots);
-	hcae.prepare_and_deliver(account_id, MAX_CHARACTER_SLOTS, gres.front().character_slots, MAX_CHARACTER_SLOTS - gres.front().character_slots);
+
+	hcae.prepare(account_id, MAX_CHARACTER_SLOTS, gres.front().character_slots, MAX_CHARACTER_SLOTS - gres.front().character_slots);
+	hcae.deliver();
+	
 	hcbc.deliver();
 	
 	s_session_data sd;
@@ -137,7 +140,7 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.name == name || tch.deleted_at < std::chrono::system_clock::now()));
+	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.name == name));
 
 	if (!res.empty()) {
 		hcref.deliver(HC_CREATE_ERROR_ALREADY_EXISTS);
@@ -150,8 +153,8 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 		return false;
 	}
 	
-	std::string new_map = sChar->config().get_start_map();
-	uint16_t x = sChar->config().get_start_x(), y = sChar->config().get_start_y();
+	std::string new_map = sChar->config().start_map();
+	uint16_t x = sChar->config().start_x(), y = sChar->config().start_y();
 	
 	int c_last_insert_id = (*conn)(insert_into(tch).set(tch.account_id = get_session()->get_session_data()._account_id, tch.slot = slot, tch.name = name,
 														 tch.current_map = new_map, tch.current_x = x, tch.current_y = y,
@@ -159,17 +162,17 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 	
 	(*conn)(insert_into(tcs).set(tcs.id = c_last_insert_id, tcs.job_id = job_class, tcs.hair_color_id = hair_color, tcs.hair_style_id = hair_style));
 	
-	auto multi_insert = insert_into(tci).columns(tci.char_id, tci.inventory_index, tci.item_id, tci.amount, tci.is_identified);
+	auto multi_insert = insert_into(tci).columns(tci.char_id, tci.item_id, tci.amount, tci.is_identified);
 	int inv_index = 2;
 	
-	for (int j = 0; j < sChar->config().get_start_item_count(); j++) {
-		std::pair<uint32_t, uint32_t> p = sChar->config().get_start_item(j);
+	for (int j = 0; j < sChar->config().start_item_count(); j++) {
+		std::pair<uint32_t, uint32_t> p = sChar->config().start_item(j);
 		int item = p.first, c = p.second;
-		multi_insert.values.add(tci.char_id = c_last_insert_id, tci.inventory_index = inv_index, tci.item_id = item, tci.amount = c, tci.is_identified = 1);
+		multi_insert.values.add(tci.char_id = c_last_insert_id, tci.item_id = item, tci.amount = c, tci.is_identified = 1);
 		inv_index++;
 	}
 	
-	uint16_t start_zeny = sChar->config().get_start_zeny();
+	uint16_t start_zeny = sChar->config().start_zeny();
 	
 	HC_ACCEPT_MAKECHAR am(get_session());
 	am.deliver(c_last_insert_id, start_zeny, new_map, name, slot, hair_color, hair_style, job_class, gender);
@@ -201,9 +204,9 @@ character_delete_result CharClientInterface::character_delete_soft(uint32_t char
 		return CHAR_DEL_RESULT_PARTY_ERR;
 	
 	std::chrono::system_clock::time_point t = std::chrono::system_clock::now();
-	std::chrono::system_clock::time_point dt = t + std::chrono::seconds(sChar->config().get_character_deletion_time());
+	std::chrono::system_clock::time_point dt = t + std::chrono::seconds(sChar->config().character_deletion_time());
 	
-	(*conn)(update(tch).set(tch.deleted_at = dt).where(tch.id == character_id));
+	(*conn)(update(tch).set(tch.delete_reserved_at = dt).where(tch.id == character_id));
 	
 	return CHAR_DEL_RESULT_SUCCESS;
 }
@@ -244,25 +247,43 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 	std::string bd = "000000";
 	
 	if (!res.front().birth_date.is_null()) {
-		std::chrono::system_clock::time_point tp = res.front().birth_date.value();
-		bd = date::format("%Y%m%d", tp).substr(2, 7);
+		std::string b = res.front().birth_date.value();
+		bd = b.substr(2, 2);
+		bd.append(b.substr(5, 2));
+		bd.append(b.substr(8, 2));
 	}
+
+	if (birthdate.length() > 6)
+		birthdate = birthdate.substr(0, 6);
 	
+	HLog(debug) << birthdate << " - " << bd;
 	if (bd.compare(birthdate) != 0) {
 		dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_BIRTHDAY_ERR);
 		return false;
 	}
 	
-	if (sChar->config().get_char_hard_delete()) {
+	if (sChar->config().char_hard_delete()) {
 		(*conn)(remove_from(tcs).where(tcs.id == character_id));
 		(*conn)(remove_from(tci).where(tci.char_id == character_id));
 		(*conn)(remove_from(tch).where(tch.id == character_id));
+	} else {
+		(*conn)(update(tch).set(tch.deleted_at = std::chrono::system_clock::now()).where(tch.id == character_id));
 	}
 	
 	dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_SUCCESS);
 
-	HC_ACK_CHARINFO_PER_PAGE cpp(get_session());
-	cpp.prepare_and_deliver();
+	HC_ACK_CHARINFO_PER_PAGE chpp(get_session());
+	int count = chpp.prepare();
+	chpp.deliver();
+
+	// Hercules has this snippet to send an empty packet for the finishing of the previously sent one.
+	// Apparently it doesn't trigger the end code in the client if this isn't sent.
+	// And this only occurs if the characters sent previously are 3.
+	if (count == 3) {
+		HC_ACK_CHARINFO_PER_PAGE chpp2(get_session());
+		chpp2.prepare(true);
+		chpp2.deliver();
+	}
 	
 	return true;
 }
@@ -278,7 +299,7 @@ bool CharClientInterface::character_delete_reserve(uint32_t character_id)
 		return false;
 	}
 	
-	std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().get_character_deletion_time());
+	std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().character_deletion_time());
 	uint32_t dt = tp.time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 	uint32_t tt = std::chrono::system_clock::now().time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 	
@@ -294,14 +315,14 @@ bool CharClientInterface::character_delete_cancel(uint32_t char_id)
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	auto res = (*conn)(select(tch.deleted_at).from(tch).where(tch.id == char_id));
+	auto res = (*conn)(select(tch.delete_reserved_at).from(tch).where(tch.id == char_id));
 	
 	if (res.empty()) {
 		dcc.deliver(char_id, CHAR3_DEL_CANCEL_FAILURE);
 		return false;
 	}
 	
-	(*conn)(update(tch).set(tch.deleted_at = sqlpp::null).where(tch.id == char_id));
+	(*conn)(update(tch).set(tch.delete_reserved_at = sqlpp::null).where(tch.id == char_id));
 	dcc.deliver(char_id, CHAR3_DEL_CANCEL_SUCCESS);
 	return true;
 }
@@ -319,7 +340,7 @@ bool CharClientInterface::pincode_create(uint32_t account_id, char *pincode)
 	
 	{
 		std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
-		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().get_pincode_expiry());
+		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().pincode_expiry());
 		uint32_t pincode_expiry = tp.time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		(*conn)(update(tga).set(tga.pincode = decrypted, tga.pincode_expiry = pincode_expiry).where(tga.id == account_id));
 	}
@@ -364,7 +385,7 @@ bool CharClientInterface::pincode_change(uint32_t account_id, char *old_pin, cha
 	}
 	
 	{
-		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().get_pincode_expiry());
+		std::chrono::system_clock::time_point tp = std::chrono::system_clock::now() + std::chrono::seconds(sChar->config().pincode_expiry());
 		uint32_t pincode_expiry = tp.time_since_epoch().count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		(*conn)(update(tga).set(tga.pincode = new_decrypted, tga.pincode_expiry = pincode_expiry).where(tga.id == account_id));
 	}
@@ -410,7 +431,7 @@ bool CharClientInterface::pincode_verify(uint32_t account_id, char *pincode)
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	if (get_session()->get_session_data()._pincode_tries == sChar->config().get_pincode_retry()) {
+	if (get_session()->get_session_data()._pincode_tries == sChar->config().pincode_max_retry()) {
 #if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20180124 \
 || CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180124 \
 || CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180131
@@ -453,7 +474,7 @@ bool CharClientInterface::select_character(uint8_t slot)
 	
 	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
 	
-	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.account_id == get_session()->get_session_data()._account_id and tch.slot == slot));
+	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.account_id == get_session()->get_session_data()._account_id and tch.slot == slot and tch.deleted_at.is_null()));
 	
 	if (res.empty()) {
 		HC_REFUSE_ENTER hre(get_session());
@@ -463,7 +484,7 @@ bool CharClientInterface::select_character(uint8_t slot)
 	}
 
 	HC_NOTIFY_ZONESVR hnz(get_session());
-	hnz.deliver(res.front().id, std::string(res.front().current_map).append(".gat"), inet_addr(sChar->config().get_zone_server_ip().c_str()), sChar->config().get_zone_server_port());
+	hnz.deliver(res.front().id, std::string(res.front().current_map).append(".gat"), inet_addr(sChar->config().zone_server_ip().c_str()), sChar->config().zone_server_port());
 	
 	return true;
 }

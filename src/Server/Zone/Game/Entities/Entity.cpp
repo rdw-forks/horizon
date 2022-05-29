@@ -38,6 +38,7 @@
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Zone.hpp"
 
+
 using namespace Horizon::Zone;
 
 Entity::Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords)
@@ -46,124 +47,154 @@ Entity::Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoo
 	set_map(map);
 }
 
+// For Player
+Entity::Entity(uint32_t guid, entity_type type)
+: _guid(guid), _type(type), _map_coords(MapCoords(0, 0))
+{
+	// Map is set in player::load()
+}
+
 Entity::~Entity()
 {
 }
 
 void Entity::initialize()
 {
-
 	_status = std::make_shared<Entities::Traits::Status>(shared_from_this());
-
-//	if (get_type() == ENTITY_PLAYER)
-//		getScheduler().Schedule(Milliseconds(sZone->config().get_entity_save_interval()), ENTITY_SCHEDULE_SAVE,
-//			[this] (TaskContext context) {
-//				sync_with_models();
-//				context.Repeat();
-//			});
 	_is_initialized = true;
 }
 
-
-bool Entity::schedule_movement(MapCoords coords)
+std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e)
 {
-	AStar::Vec2i source_coords = { map_coords().x(), map_coords().y() };
-	AStar::Vec2i dest_coords = { coords.x(), coords.y() };
+	std::shared_ptr<AStar::CoordinateList> wp = std::make_shared<AStar::CoordinateList>(map()->get_pathfinder().findPath(map_coords(), e->map_coords()));
 
-	if (_walk_path.size())
+	if (wp->size() == 0 || wp->empty()) 
+		return nullptr;
+
+	return std::move(wp);
+}
+
+bool Entity::schedule_movement()
+{
+	MapCoords source_pos = { map_coords().x(), map_coords().y() };
+
+	if (!_walk_path.empty())
 		_walk_path.clear();
 
 	if (!map()) {
 		HLog(error) << "Reference to map object has been lost for entity " << (void *) this << ".";
+		_dest_pos = { 0, 0 };
 		return false;
 	}
 
-	HLog(debug) << "Moving From : (" << source_coords.x << ", " << source_coords.y << ") to (" << dest_coords.x << ", " << dest_coords.y << ")";
 	// This method returns vector of coordinates from target to source.
-	auto path = map()->get_pathfinder().findPath(source_coords, dest_coords);
-
-	if (path.size() == 0)
-		return false;
-
-	_walk_path = path;
-	std::reverse(_walk_path.begin(), _walk_path.end());
-	_walk_path.erase(_walk_path.begin());
+	_walk_path = map()->get_pathfinder().findPath(source_pos, _dest_pos);
 
 	_changed_dest_pos = {0, 0};
 
-	if (_walk_path.size() > 14) {
-		if (this->type() == ENTITY_PLAYER)
-			static_cast<Entities::Player *>(this)->stop_movement();
-	} else if (_walk_path.size() > 0) {
-		on_movement_begin();
-		move();
+	// If destination was a collision, nothing is returned.
+	if (_walk_path.size() == 0) {
+		HLog(warning) << "Entity::schedule_movement: Destination was a collision, no walk path available.";
+		_dest_pos = { 0, 0 };
+		return false;
 	}
 
+	std::reverse(_walk_path.begin(), _walk_path.end());
+	_walk_path.erase(_walk_path.begin());
+
+	if (_walk_path.empty()) {
+		on_pathfinding_failure();
+		HLog(warning) << "Entity::schedule_movement: Path too short or empty, failed to schedule movement.";
+		_dest_pos = { 0, 0 };
+		return false;
+	}
+
+	on_movement_begin();
+	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
+	notify_nearby_players_of_movement();
+	move();
+	
 	return true;
 }
 
 void Entity::move()
 {
-	MapCoords my_coords = map_coords();
-	AStar::Vec2i c = _walk_path.at(0);
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
+		_dest_pos = { 0, 0 };
+		return;
+	}
 
-	getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost)), ENTITY_SCHEDULE_WALK,
-		[this, c, my_coords] (TaskContext /*movement*/)
+	MapCoords c = _walk_path.at(0); // for the first step.
+
+	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
+		[this] (TaskContext context)
 		{
+			MapCoords c = _walk_path.at(0);
+
 			// Force stop as the current coordinates might asynchronously update after map has changed 
 			// and co-ordinates are reset to something in a previous walk path.
 			// This force stop will return before changing co-ordinates and 
 			// prevent further movement updates after map has changed.
-			if (_jump_walk_stop == true)
+			if (_jump_walk_stop) {
+				_dest_pos = { 0, 0 };
 				return;
+			}
 
-			MapCoords step_coords(c.x, c.y);
+			MapCoords step_coords(c.x(), c.y());
 
-			set_direction((directions) my_coords.direction_to(step_coords));
+			// set_direction((directions) my_coords.direction_to(step_coords));
 
-			notify_nearby_players_of_self(EVP_NOTIFY_OUT_OF_SIGHT);
+			notify_nearby_players_of_existence(EVP_NOTIFY_OUT_OF_SIGHT);
 			set_map_coords(step_coords);
-
-			HLog(debug) << "step_coords: " << step_coords.x() << ", " << step_coords.y() << ".";
-			
-			notify_nearby_players_of_self(EVP_NOTIFY_IN_SIGHT);
+			on_movement_step();
+			notify_nearby_players_of_existence(EVP_NOTIFY_IN_SIGHT);
 
 			_walk_path.erase(_walk_path.begin());
 
-			on_movement_step();
-
 			if (_changed_dest_pos != MapCoords(0, 0)) {
 				_dest_pos = _changed_dest_pos;
-				schedule_movement(_dest_pos);
+				schedule_movement();
 				return;
-			} else if (_dest_pos == MapCoords(c.x, c.y)) {
+			} else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty()) {
 				_dest_pos = { 0, 0 };
 				on_movement_end();
 			}
 
-			if (_walk_path.size() > 0)
-				move();
+			if (!_walk_path.empty())
+				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
 		});
 }
 
-bool Entity::move_to_coordinates(uint16_t x, uint16_t y)
+bool Entity::move_to_coordinates(int16_t x, int16_t y)
 {
-	if (getScheduler().Count(ENTITY_SCHEDULE_WALK)) {
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK))) {
 		_changed_dest_pos = { x, y };
 		return true;
 	}
 
 	_dest_pos = { x, y };
 
-	schedule_movement(_dest_pos);
+	if (schedule_movement() == false) {
+		HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
+		return false;
+	}
 
 	return true;
 }
 
-void Entity::update(uint64_t /*diff*/)
+bool Entity::move_to_entity(std::shared_ptr<Entity> entity)
 {
-	_scheduler.Update();
+	if (entity == nullptr)
+		return false;
+
+	if (move_to_coordinates(entity->map_coords().x(), entity->map_coords().y())){
+		HLog(warning) << "Entity (" << guid() << ") could not walk to (" << entity->guid() << ").";
+		return false;
+	}
+
+	return true;
 }
+
 
 bool Entity::is_in_range_of(std::shared_ptr<Entity> e, uint8_t range)
 {
@@ -180,13 +211,115 @@ std::shared_ptr<Entity> Entity::get_nearby_entity(uint32_t guid)
 
 	map()->visit_in_range(map_coords(), search_visitor);
 
-	return searcher.get_result().lock();
+	return searcher.get_result();
 }
 
-void Entity::notify_nearby_players_of_self(entity_viewport_notification_type notif_type)
+void Entity::notify_nearby_players_of_existence(entity_viewport_notification_type notif_type)
 {
 	GridEntityExistenceNotifier existence_notify(shared_from_this(), notif_type);
 	GridReferenceContainerVisitor<GridEntityExistenceNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(existence_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);
 }
+
+void Entity::notify_nearby_players_of_spawn()
+{
+	GridEntitySpawnNotifier spawn_notify(shared_from_this());
+	GridReferenceContainerVisitor<GridEntitySpawnNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(spawn_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+void Entity::notify_nearby_players_of_movement()
+{
+	GridEntityMovementNotifier movement_notify(shared_from_this());
+	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+bool Entity::status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4)
+{
+	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
+
+	if (it == get_status_effects().end()) {
+		std::shared_ptr<status_change_entry> sce = std::make_shared<status_change_entry>();
+		sce->type = type;
+		sce->val1 = val1;
+		sce->val2 = val2;
+		sce->val3 = val3;
+		sce->val4 = val4;
+
+		if (total_time < 0) {
+			sce->infinite_duration = true;
+			sce->current_time = 0;
+			sce->total_time = 0;
+		} else {
+			sce->current_time = std::time(nullptr) + total_time;
+			sce->total_time = total_time;
+		}
+
+		get_status_effects().insert(std::pair(type, sce));
+		on_status_effect_start(sce);
+	} else {
+		std::shared_ptr<status_change_entry> sce = it->second;
+		sce->current_time = std::time(nullptr) + total_time;
+		sce->total_time = total_time;
+
+		on_status_effect_change(sce);
+	}
+
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR)) == 0)
+		map()->container()->getScheduler().Schedule(
+			Milliseconds(ENTITY_STATUS_EFFECT_CHECK_TIME), 
+			get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR),
+			[this] (TaskContext context)
+			{
+				std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().begin();
+
+				int infinite_statuses = 0;
+				for (; it != get_status_effects().end(); it++) {
+					std::shared_ptr<status_change_entry> sce = it->second;
+					
+					if (sce->infinite_duration == false) {
+						infinite_statuses++;
+						continue;
+					}
+
+					if (sce->current_time - std::time(nullptr) <= 0)
+						status_effect_end(sce->type);
+				}
+
+				if (get_status_effects().size() > infinite_statuses)
+					context.Repeat(Milliseconds(ENTITY_STATUS_EFFECT_CHECK_TIME));
+			});
+
+	return true;
+}
+
+bool Entity::status_effect_end(int type)
+{
+	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
+
+	if (it == get_status_effects().end()) {
+		HLog(warning) << "Trying to end status effect that doesn't exist. ID " << type << ", ignoring...";
+		return false;
+	}
+
+	get_status_effects().erase(it);
+
+	on_status_effect_end(it->second);
+
+	return true;
+}
+
+bool Entity::is_dead() { return status()->current_hp()->get_base() == 0; }
+
+bool Entity::attack(std::shared_ptr<Entity> t, bool continuous)
+{
+	if (t == nullptr || t->is_dead())
+		return false;
+
+	return true;
+}
+

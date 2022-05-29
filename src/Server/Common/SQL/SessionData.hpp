@@ -33,10 +33,6 @@
 #include <ctime>
 #include <cstdint>
 
-#include <sqlpp11/table.h>
-#include <sqlpp11/data_types.h>
-#include <sqlpp11/char_sequence.h>
-
 class Server;
 
 namespace Horizon

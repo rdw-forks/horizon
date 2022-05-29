@@ -28,7 +28,6 @@
  **************************************************/
 
 #include "Map.hpp"
-#include "Core/Logging/Logger.hpp"
 #include "Utility/Utility.hpp"
 #include "Core/Multithreading/WorkerThreadPool.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
@@ -36,17 +35,13 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Grid/Grid.hpp"
 
-#include <type_traits>
-#include <functional>
-#include <fstream>
-
 using namespace Horizon::Zone;
 
 Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, uint16_t width, uint16_t height, std::vector<uint8_t> const &cells)
 : _container(container), _name(name), _width(width), _height(height),
   _max_grids((width / MAX_CELLS_PER_GRID), (height / MAX_CELLS_PER_GRID)),
   _gridholder(GridCoords(width, height)),
-  _pathfinder(AStar::Generator({width, height}, std::bind(&Map::has_obstruction_at, this, std::placeholders::_1, std::placeholders::_2)))
+  _pathfinder(AStar::Generator(MapCoords(width, height), std::bind(&Map::has_obstruction_at, this, std::placeholders::_1, std::placeholders::_2), MAX_VIEW_RANGE))
 {
 	for (int y = height - 1; y >= 0; --y) {
 		for (int x = 0; x < width; ++x) {
@@ -55,20 +50,21 @@ Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, u
 	}
 }
 
-bool Map::has_obstruction_at(uint16_t x, uint16_t y)
+Map::~Map()
 {
-	Cell c = _cells[x][y];
+}
 
+bool Map::has_obstruction_at(int16_t x, int16_t y)
+{
 	if (x < 0 || y < 0 || x > _width || y > _height)
 		return true;
 
+	Cell c = _cells[x][y];
+	
 	if (!c.isWalkable())
 		return true;
 
 	return false;
 }
 
-Map::~Map()
-{
-}
 

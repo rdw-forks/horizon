@@ -30,11 +30,6 @@
 #ifndef HORIZON_TOKENIZER_H
 #define HORIZON_TOKENIZER_H
 
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <chrono>
-
 class Tokenizer
 {
 	public:

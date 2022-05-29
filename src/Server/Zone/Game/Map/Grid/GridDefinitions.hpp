@@ -32,7 +32,6 @@
 
 #include "Core/Structures/TypeList.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
-#include <cstdint>
 
 namespace Horizon
 {
@@ -55,7 +54,7 @@ namespace Horizon
 template <class ACTIVE_OBJECT, class ZONE_OBJECT_TYPES>
 class GridHolder;
 
-template <uint16_t MAX_COORDINATES>
+template <int16_t MAX_COORDINATES>
 class Coordinates;
 
 template<class OBJECT_TYPES>

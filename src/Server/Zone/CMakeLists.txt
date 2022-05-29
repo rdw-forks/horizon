@@ -29,6 +29,7 @@
 
 add_subdirectory(Game)
 add_subdirectory(Packets)
+add_subdirectory(LUA)
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PRIVATE_SOURCES
@@ -55,14 +56,19 @@ add_executable(zone
 	${PACKET_SOURCES}
 	${PACKET_HEADERS}
 	${GAME_SOURCES}
+	${LUA_SOURCES}
 )
 
+target_precompile_headers(zone
+	PUBLIC
+		../pch.hpp)
+
+if (${CMAKE_VERSION} VERSION_GREATER "3.16.0")
 target_precompile_headers(zone
 	PRIVATE
 		<string>
 		<vector>
 		<memory>
-		${COMMON_HEADERS}
 		<cstdio>
 		<map>
 		<string>
@@ -71,6 +77,7 @@ target_precompile_headers(zone
 		"../../Core/Multithreading/LockedLookupTable.hpp"
 		"../../Core/Multithreading/ThreadSafeQueue.hpp"
 )
+endif()
 
 target_link_libraries(zone
 	PUBLIC
@@ -95,6 +102,7 @@ CollectIncludeDirectories(
 
 target_include_directories(zone
 	PUBLIC
+		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
 		${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}

@@ -588,7 +588,7 @@ public:
 	{}
 	virtual ~HC_ACCEPT_ENTER() {}
 
-	bool prepare_and_deliver(uint32_t account_id, uint8_t max_char_slots, uint8_t permitted_slots, uint8_t total_premium_slots);
+	bool prepare(uint32_t account_id, uint8_t max_char_slots, uint8_t permitted_slots, uint8_t total_premium_slots);
 	void deliver();
 	ByteBuffer &serialize();
 
@@ -601,6 +601,8 @@ public:
 	uint8_t _total_premium_slots{MAX_CHARACTER_SLOTS};
 #endif
 	uint8_t _unknown_bytes[20]{0}; ///< 20 Unknown bytes.
+
+	std::vector<s_hc_character_list_data> _characters;
 };
 
 enum {
@@ -747,12 +749,13 @@ public:
 	{}
 	virtual ~HC_ACK_CHARINFO_PER_PAGE() {}
 
-	void prepare_and_deliver();
+	int32_t prepare(bool empty = false);
 	void deliver();
 	ByteBuffer &serialize();
 
 /* Structure */
 	uint16_t _packet_length{24};
+	std::vector<s_hc_character_list_data> _characters;
 };
 
 enum {

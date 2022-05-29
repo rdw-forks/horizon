@@ -28,6 +28,9 @@
  **************************************************/
 
 #include "Inventory.hpp"
+
+#include "Server/Common/SQL/Character/Inventory.hpp"
+
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
@@ -35,9 +38,10 @@
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
-#include "Server/Zone/Game/Entities/Traits/Attributes.hpp"
+#include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone::Entities;
 using namespace Horizon::Zone::Entities::Traits;
@@ -74,6 +78,18 @@ Inventory::~Inventory()
 	//
 }
 
+/**
+ * Inventory initialization for player, called after Status is computed and notified.
+ */
+void Inventory::initialize()
+{
+	for (auto item : _inventory_items) {
+		player()->status()->current_weight()->add_base(item->config->weight * item->amount);
+	}
+
+	player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, player()->status()->current_weight()->total());
+}
+
 bool Inventory::use_item(uint32_t inventory_index, uint32_t guid)
 {
 	std::shared_ptr<item_entry_data> inv_item = _inventory_items.at(inventory_index - 2);
@@ -81,9 +97,7 @@ bool Inventory::use_item(uint32_t inventory_index, uint32_t guid)
 	if (inv_item == nullptr)
 		return false;
 
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(inv_item->item_id);
-
-	if (itemd == nullptr) {
+	if (inv_item->config == nullptr) {
 		player()->get_session()->clif()->notify_use_item(inv_item, false);
 		return false;
 	}
@@ -102,33 +116,31 @@ item_equip_result_type Inventory::equip_item(uint32_t inventory_index, uint16_t 
 		return IT_EQUIP_FAIL;
 	}
 
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(inv_item->item_id);
-
-	if (itemd == nullptr) {
+	if (inv_item->config == nullptr) {
 		player()->get_session()->clif()->notify_equip_item(inv_item, IT_EQUIP_FAIL);
 		return IT_EQUIP_FAIL;
 	}
 
-	if (inv_item->current_equip_location_mask != 0 || itemd->equip_location_mask != equip_location_mask) {
+	if (inv_item->current_equip_location_mask != 0 || inv_item->config->equip_location_mask != equip_location_mask) {
 		player()->get_session()->clif()->notify_equip_item(inv_item, IT_EQUIP_FAIL);
 		return IT_EQUIP_FAIL;
 	}
 
-	auto req_job_it = std::find_if(itemd->requirements.job_ids.begin(), itemd->requirements.job_ids.end(),
+	auto req_job_it = std::find_if(inv_item->config->requirements.job_ids.begin(), inv_item->config->requirements.job_ids.end(),
 		[job_id](uint32_t id) {
 			return job_id == id;
 		});
-	if (req_job_it == itemd->requirements.job_ids.end()) {
+	if (req_job_it == inv_item->config->requirements.job_ids.end()) {
 		player()->get_session()->clif()->notify_equip_item(inv_item, IT_EQUIP_FAIL);
 		return IT_EQUIP_FAIL;
 	}
 
-	if (itemd->config.bind_on_equip != 0 && inv_item->bind_type == IT_BIND_NONE) {
+	if (inv_item->config->config.bind_on_equip != 0 && inv_item->bind_type == IT_BIND_NONE) {
 		inv_item->bind_type = IT_BIND_CHARACTER;
 		player()->get_session()->clif()->notify_bind_on_equip(inv_item->inventory_index);
 	}
 
-	inv_item->current_equip_location_mask = calculate_current_equip_location_mask(itemd);
+	inv_item->current_equip_location_mask = calculate_current_equip_location_mask(inv_item->config);
 
 	add_to_equipment_list(inv_item);
 
@@ -157,9 +169,7 @@ item_unequip_result_type Inventory::unequip_item(uint32_t inventory_index)
 		return IT_UNEQUIP_FAIL;
 	}
 
-	std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(inv_item->item_id);
-
-	if (itemd == nullptr) {
+	if (inv_item->config == nullptr) {
 		player()->get_session()->clif()->notify_unequip_item(inv_item, IT_UNEQUIP_FAIL);
 		return IT_UNEQUIP_FAIL;
 	}
@@ -171,6 +181,7 @@ item_unequip_result_type Inventory::unequip_item(uint32_t inventory_index)
 	player()->on_item_unequip(inv_item);
 
 	print_inventory();
+
 	return IT_UNEQUIP_SUCCESS;
 }
 
@@ -285,7 +296,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 {
 	item_entry_data data;
 	std::shared_ptr<const item_config_data> item = ItemDB->get_item_by_id(item_id);
-	std::shared_ptr<const job_db_data> job = JobDB->get(player()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(player()->job_id());
 	std::shared_ptr<CurrentWeight> current_weight = player()->status()->current_weight();
 	std::shared_ptr<MaxWeight> max_weight = player()->status()->max_weight();
 
@@ -297,9 +308,14 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 		return INVENTORY_ADD_OVER_WEIGHT;
 	}
 
-	if (item->config.stack.inventory && amount > item->config.stack.max_amount) {
+	if (item->stack.inventory > 0 && (amount > item->stack.inventory)) {
 		notify_add(data, amount, INVENTORY_ADD_OVER_STACK_LIMIT);
 		return INVENTORY_ADD_OVER_STACK_LIMIT;
+	}
+
+	if (amount > MAX_INVENTORY_STACK_LIMIT) {
+		notify_add(data, amount, INVENTORY_ADD_OVER_QUANTITY);
+		return INVENTORY_ADD_OVER_QUANTITY;
 	}
 
 	// Copy item properties from static db entry.
@@ -309,29 +325,25 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 	data.bind_type = IT_BIND_NONE;
 	data.info.is_identified = is_identified;
 	data.info.is_favorite = 0;
+	data.config = item;
 
 	if (_inventory_items.size() >= max_storage()) {
 		notify_add(data, amount, INVENTORY_ADD_NO_INV_SPACE);
 		return INVENTORY_ADD_NO_INV_SPACE;
 	}
 
-	if (amount > MAX_ITEM_STACK_SIZE) {
-		notify_add(data, amount, INVENTORY_ADD_OVER_QUANTITY);
-		return INVENTORY_ADD_OVER_QUANTITY;
-	}
-
 	// Check if item is stackable
 	if (data.is_stackable()) {
 		// Check if item exists in inventory.
 		auto invitem = std::find_if(_inventory_items.begin(), _inventory_items.end(), 
-			[&data] (std::shared_ptr<item_entry_data> invit) { return (invit->amount < MAX_ITEM_STACK_SIZE && *invit == data); }
+			[&data] (std::shared_ptr<item_entry_data> invit) { return (invit->amount < MAX_INVENTORY_STACK_LIMIT && *invit == data); }
 		);
 		// If item was found in inventory...
 		if (invitem != _inventory_items.end()) {
 			// Check if amount exeeds stack size.
-			if ((*invitem)->amount + amount > MAX_ITEM_STACK_SIZE) {
+			if ((*invitem)->amount + amount > MAX_INVENTORY_STACK_LIMIT) {
 				// Add appropriately
-				int left_amt = (*invitem)->amount - MAX_ITEM_STACK_SIZE;
+				int left_amt = (*invitem)->amount - MAX_INVENTORY_STACK_LIMIT;
 				(*invitem)->amount += left_amt;
 				amount -= left_amt;
 				add_item(item_id, amount, is_identified);
@@ -340,7 +352,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 				notify_add(*(*invitem), amount, INVENTORY_ADD_SUCCESS);
 
 				current_weight->add_base(item->weight * amount);
-				player()->get_session()->clif()->notify_complex_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+				player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
 			}
 		} else {
 			data.amount += amount;
@@ -349,7 +361,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 			notify_add(data, amount, INVENTORY_ADD_SUCCESS);
 
 			current_weight->add_base(item->weight * amount);
-			player()->get_session()->clif()->notify_complex_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+			player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
 		}
 	} else {
 		for (int i = 0; i < amount; i++) {
@@ -361,7 +373,7 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 			notify_add(*itd, itd->amount, INVENTORY_ADD_SUCCESS);
 		}
 		current_weight->add_base(item->weight * amount);
-		player()->get_session()->clif()->notify_complex_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+		player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
 	}
 
 	return INVENTORY_ADD_SUCCESS;
@@ -399,73 +411,176 @@ void Inventory::notify_move_fail(uint16_t idx, bool silent)
 
 }
 
-uint32_t Inventory::sync_to_model()
+int32_t Inventory::save()
 {
-//	std::vector<item_entry_data> &model_items = player()->get_char_model()->get_inventory_model()->get_model_items();
-	uint32_t changes = 0;
+	int32_t changes = 0;
 
-//	// Add / Subtract existing or new items.
-//	for (auto &state_it : _item_store) {
-//		auto model_it = std::find_if(model_items.begin(), model_items.end(), [&state_it](item_entry_data &model_item) {
-//			return model_item == *state_it;
-//		});
-//
-//		if (model_it != model_items.end()) {
-//			bool changed = false;
-//			if (model_it->amount != state_it->amount) {
-//				model_it->amount = state_it->amount;
-//				changed = true;
-//			}
-//			if (model_it->current_equip_location_mask != state_it->current_equip_location_mask) {
-//				model_it->current_equip_location_mask = state_it->current_equip_location_mask;
-//				changed = true;
-//			}
-//			if (changed)
-//				changes++;
-//		} else {
-//			model_items.push_back(*state_it);
-//			changes++;
-//		}
-//	}
-//
-//	// Delete non-existing items.
-//	for (auto model_it = model_items.begin(); model_it != model_items.end(); model_it++) {
-//		auto state_it = std::find_if(_item_store.begin(), _item_store.end(), [&model_it](std::shared_ptr<item_entry_data> state_it) {
-//			return *state_it == *model_it;
-//		});
-//
-//		if (state_it == _item_store.end()) {
-//			model_it = model_items.erase(model_it);
-//			changes++;
-//		}
-//	}
+	SQL::TableCharacterInventory tci;
+	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
+
+	for (auto &i : _inventory_items) {
+		auto mit_i = std::find_if(_saved_inventory_items.begin(), _saved_inventory_items.end(), [&i](std::shared_ptr<item_entry_data> si) {
+			return *si == *i; // 'item_entry_data' and 'std::shared_ptr<item_entry_data>'
+		});
+
+		if (mit_i != _saved_inventory_items.end()) {
+			std::shared_ptr<item_entry_data> mit = *mit_i;
+			bool changed = false;
+
+			if (mit->amount != i->amount) {
+				mit->amount = i->amount;
+				changed = true;
+			}
+			if (mit->current_equip_location_mask != i->current_equip_location_mask) {
+				mit->current_equip_location_mask = i->current_equip_location_mask;
+				changed = true;
+			}
+			if (changed)
+				changes++;
+		} else {
+			_saved_inventory_items.push_back(i);
+			changes++;
+		}
+	}
+
+	// Delete Non-existent items.
+	for (auto mit = _saved_inventory_items.begin(); mit != _saved_inventory_items.end(); mit++) {
+		auto it = std::find_if(_inventory_items.begin(), _inventory_items.end(), [&mit] (std::shared_ptr<item_entry_data> it) {
+			return *it == *(*mit); // 'item_entry_data' and 'std::shared_ptr<item_entry_data>'
+		});
+
+		if (it == _inventory_items.end()) {
+			mit = _saved_inventory_items.erase(mit);
+			changes++;
+		}
+	}
+
+	(*conn)(remove_from(tci).where(tci.char_id == player()->character()._character_id));
+
+	auto mt_i = insert_into(tci).columns(tci.char_id, tci.item_id, tci.amount,
+		tci.equip_location_mask, tci.is_identified, tci.refine_level, tci.element_type,
+		tci.slot_item_id_0, tci.slot_item_id_1, tci.slot_item_id_2, tci.slot_item_id_3,
+		tci.opt_idx0, tci.opt_val0, tci.opt_idx1, tci.opt_val1,
+		tci.opt_idx2, tci.opt_val2, tci.opt_idx3, tci.opt_val3, tci.opt_idx4, tci.opt_val4,
+		tci.hire_expire_date, tci.is_favorite, tci.is_broken, tci.bind_type, tci.unique_id);
+
+	int count = 0;
+	for (auto mit_i = _saved_inventory_items.begin(); mit_i != _saved_inventory_items.end(); mit_i++) {
+		std::shared_ptr<const item_entry_data> mit = *mit_i;
+		mt_i.values.add(tci.char_id = (int) player()->character()._character_id, 
+			tci.item_id = (int) mit->item_id, 
+			tci.amount = (int) mit->amount,
+			tci.equip_location_mask = (int) mit->current_equip_location_mask, 
+			tci.is_identified = (int) mit->info.is_identified, 
+			tci.refine_level = (int) mit->refine_level, 
+			tci.element_type = (int) mit->ele_type,
+			tci.slot_item_id_0 = (int) mit->slot_item_id[0],
+			tci.slot_item_id_1 = (int) mit->slot_item_id[1],
+			tci.slot_item_id_2 = (int) mit->slot_item_id[2],
+			tci.slot_item_id_3 = (int) mit->slot_item_id[3],
+			tci.opt_idx0 = (int) mit->option_data[0].get_index(),
+			tci.opt_val0 = (int) mit->option_data[0].get_value(),
+			tci.opt_idx1 = (int) mit->option_data[1].get_index(),
+			tci.opt_val1 = (int) mit->option_data[1].get_value(),
+			tci.opt_idx2 = (int) mit->option_data[2].get_index(),
+			tci.opt_val2 = (int) mit->option_data[2].get_value(),
+			tci.opt_idx3 = (int) mit->option_data[3].get_index(),
+			tci.opt_val3 = (int) mit->option_data[3].get_value(),
+			tci.opt_idx4 = (int) mit->option_data[4].get_index(),
+			tci.opt_val4 = (int) mit->option_data[4].get_value(),
+			tci.hire_expire_date = (int) mit->hire_expire_date, 
+			tci.is_favorite = (int) mit->info.is_favorite, 
+			tci.is_broken = (int) mit->info.is_broken, 
+			tci.bind_type = (int) mit->bind_type, 
+			tci.unique_id = (int64_t) mit->unique_id);
+		count++;
+	}
+
+	if (count)
+		(*conn)(mt_i); // Transact.
 
 	return changes;
 }
 
-uint32_t Inventory::sync_from_model()
+int32_t Inventory::load()
 {
-//	if (_item_store.size() > 0) {
-//		HLog(warning) << "Horizon::Zone::Assets::Inventory::sync_from_model:\n"
-//			"Attempt to sync when item store is not empty. Current size: " << _item_store.size();
-//		return 0;
-//	}
-//
-//	std::vector<item_entry_data> &model_items = player()->get_char_model()->get_inventory_model()->get_model_items();
-//
-//	for (auto &mitem : model_items) {
-//		std::shared_ptr<item_entry_data> item = std::make_shared<item_entry_data>(mitem);
-//		std::shared_ptr<const item_config_data> itemd = ItemDB->get_item_by_id(item->item_id);
-//		item->type = mitem.type = itemd->type;
-//		item->sprite_id = mitem.sprite_id = itemd->sprite_id;
-//		item->actual_equip_location_mask = mitem.actual_equip_location_mask = itemd->equip_location_mask;
-//		_item_store.push_back(item);
-//		if (item->current_equip_location_mask > 0)
-//			add_to_equipment_list(item);
-//		// set without notifying client of weight, @see Player::on_map_enter is to be called after this
-//		// method to ensure client notifications.
-//		player()->get_status()->get_current_weight()->add_base(itemd->weight * item->amount, false);
-//	}
+	SQL::TableCharacterInventory tci;
+	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
+	
+	auto rows = (*conn)(select(all_of(tci)).from(tci).where(tci.char_id == player()->character()._character_id));
+
+	if (_inventory_items.size() != 0) {
+		HLog(warning) << "Attempt to synchronize the saved inventory, which should be empty at the time of load or re-load, size: " << _inventory_items.size();
+		return 0;
+	}
+
+	int inventory_index = 2;
+	for (auto row = rows.begin(); row != rows.end(); row++) {
+		item_entry_data i;
+
+		std::shared_ptr<const item_config_data> d = ItemDB->get_item_by_id(row->item_id);
+
+		i.inventory_index = inventory_index++;
+		i.item_id = row->item_id;
+		i.type = d->type;
+		i.amount = row->amount;
+		i.current_equip_location_mask = row->equip_location_mask;
+		i.actual_equip_location_mask = d->equip_location_mask;
+		i.refine_level = row->refine_level;
+		i.config = d;
+
+		i.slot_item_id[0] = row->slot_item_id_0;
+		i.slot_item_id[1] = row->slot_item_id_1;
+		i.slot_item_id[2] = row->slot_item_id_2;
+		i.slot_item_id[3] = row->slot_item_id_3;
+
+		i.hire_expire_date = row->hire_expire_date;
+		i.sprite_id = d->sprite_id;
+
+		i.ele_type = (element_type) (int) row->element_type;
+
+		if (row->opt_idx0) {
+			i.option_data[0].set_index(row->opt_idx0);
+			i.option_data[0].set_value(row->opt_val0);
+			i.option_count = 1;
+		}
+
+		if (row->opt_idx1) {
+			i.option_data[1].set_index(row->opt_idx1);
+			i.option_data[1].set_value(row->opt_val1);
+			i.option_count = 2;
+		}
+
+		if (row->opt_idx2) {
+			i.option_data[2].set_index(row->opt_idx2);
+			i.option_data[2].set_value(row->opt_val2);
+			i.option_count = 3;
+		}
+
+		if (row->opt_idx3) {
+			i.option_data[3].set_index(row->opt_idx3);
+			i.option_data[3].set_value(row->opt_val3);
+			i.option_count = 4;
+		}
+
+		if (row->opt_idx4) {
+			i.option_data[4].set_index(row->opt_idx4);
+			i.option_data[4].set_value(row->opt_val4);
+			i.option_count = 5;
+		}
+
+		i.info.is_identified = row->is_identified;
+		i.info.is_broken = row->is_broken;
+		i.info.is_favorite = row->is_favorite;
+		
+		i.bind_type = (item_bind_type) (int) row->bind_type; // int16_t
+		i.unique_id = row->unique_id;
+
+		std::shared_ptr<item_entry_data> item = std::make_shared<item_entry_data>(i);
+
+		_saved_inventory_items.push_back(item);
+		_inventory_items.push_back(item);
+	}
 
 	return _inventory_items.size();
 }

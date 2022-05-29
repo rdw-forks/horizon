@@ -123,7 +123,7 @@ private:
 	int _id;
 };
 
-#define MAX_LIMIT 10
+#define MAX_LIMIT 100000
 
 BOOST_AUTO_TEST_CASE(ReferenceListTest)
 {
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(ReferenceListTest)
 		player[i] = std::make_shared<Player>();
 		player[i]->add_reference(playerRefMgr);
 		player[i]->get_reference().source()->set_id(var[i]);
-		BOOST_TEST(player[i]->valid());
+		BOOST_CHECK_EQUAL(player[i]->valid(), true);
 	}
 
 	int ofs = MAX_LIMIT - 1;

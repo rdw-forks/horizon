@@ -31,7 +31,6 @@
 #define HORIZON_ZONE_GAME_ENTITIES_CREATURE_HPP
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
-#include <memory>
 
 namespace Horizon
 {
@@ -45,8 +44,6 @@ class Creature : public Entity
 public:
 	Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Creature();
-
-private:
 };
 }
 }

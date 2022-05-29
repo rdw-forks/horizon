@@ -29,7 +29,9 @@
 #define HORIZON_ZONECLIENTINTERFACE_HPP
 
 #include "Server/Common/Base/NetworkPacket.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/SkillDefinitions.hpp"
+#include "Server/Zone/Definitions/PlayerDefinitions.hpp"
 #include "Server/Common/Interfaces/ClientInterface.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
@@ -66,6 +68,7 @@ public:
 	/* Movement & Viewport*/
 	bool notify_player_movement(MapCoords from, MapCoords to);
 	bool notify_stop_movement(int32_t guid, int16_t x, int16_t y);
+	bool notify_entity_move(int32_t guid, MapCoords from, MapCoords to);
 
 	entity_viewport_entry create_viewport_entry(std::shared_ptr<Entity> entity);
 	bool notify_viewport_add_entity(entity_viewport_entry entry);
@@ -90,7 +93,7 @@ public:
 	 */
 	void notify_initial_status(std::shared_ptr<Entities::Traits::Status> status);
 	bool notify_appearance_update(entity_appearance_type type, int32_t value, int32_t value2);
-	bool notify_complex_attribute_update(status_point_type type, int32_t value);
+	bool notify_compound_attribute_update(status_point_type type, int32_t value);
 	bool notify_status_attribute_update(status_point_type type, int32_t value, bool success);
 	bool notify_required_attribute_update(status_point_type type, int32_t value);
 	bool notify_cart_weight_update();
@@ -130,6 +133,28 @@ public:
 	bool notify_unequip_item(std::shared_ptr<const item_entry_data> item, item_unequip_result_type result);
 	bool notify_equip_arrow(std::shared_ptr<const item_entry_data> item);
 	bool notify_action_failure(int16_t message_type);
+
+	/**
+	 * Skills
+	 */
+	void upgrade_skill_level(int16_t skill_id);
+	bool notify_learnt_skill_list();
+	bool notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause);
+
+	/* UI Requests */
+	void action_request(int32_t target_guid, player_action_type action);
+	bool notify_action(player_action_type action);
+
+	/**
+	 * Status
+	 */
+	bool notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3);
+	bool notify_status_change_end(int16_t status_index, int32_t guid, int8_t state);
+
+	/**
+	 * Combat
+	 */
+	bool notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage);
 
 protected:
 	uint32_t _npc_contact_guid{0};

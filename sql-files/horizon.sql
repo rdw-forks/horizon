@@ -56,6 +56,7 @@ CREATE TABLE `characters` (
   `name` varchar(30) NOT NULL DEFAULT '',
   `online` tinyint(2) NOT NULL DEFAULT 0,
   `gender` enum('M','F','U') NOT NULL DEFAULT 'U',
+  `delete_reserved_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
   `unban_time` int(11) unsigned NOT NULL DEFAULT 0,
   `rename_count` tinyint(2) unsigned NOT NULL DEFAULT 0,

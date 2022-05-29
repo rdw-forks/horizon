@@ -80,6 +80,7 @@ void CZ_REQ_ACCOUNTNAME::deserialize(ByteBuffer &buf) { }
 void CZ_REQUEST_ACT::handle(ByteBuffer &&buf)
 {
 	deserialize(buf);
+    get_session()->clif()->action_request(_target_guid, (player_action_type) _action);
 }
 
 void CZ_REQUEST_ACT::deserialize(ByteBuffer &buf) 
@@ -1696,9 +1697,18 @@ void CZ_CLOSE_SEARCH_STORE_INFO::deserialize(ByteBuffer &buf) { }
 /**
  * CZ_REQUEST_ACT2
  */
-void CZ_REQUEST_ACT2::handle(ByteBuffer &&buf) { }
+void CZ_REQUEST_ACT2::handle(ByteBuffer &&buf) 
+{
+    deserialize(buf);
+    get_session()->clif()->action_request(_target_guid, (player_action_type) _action);
+}
 
-void CZ_REQUEST_ACT2::deserialize(ByteBuffer &buf) { }
+void CZ_REQUEST_ACT2::deserialize(ByteBuffer &buf) 
+{
+    buf >> _packet_id;
+    buf >> _target_guid;
+    buf >> _action;
+}
 
 /**
  * CZ_INVENTORY_EXPAND
@@ -2571,9 +2581,17 @@ void CZ_EXIT_ROOM::deserialize(ByteBuffer &buf) { }
 /**
  * CZ_UPGRADE_SKILLLEVEL
  */
-void CZ_UPGRADE_SKILLLEVEL::handle(ByteBuffer &&buf) { }
+void CZ_UPGRADE_SKILLLEVEL::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->upgrade_skill_level(_skill_id);
+}
 
-void CZ_UPGRADE_SKILLLEVEL::deserialize(ByteBuffer &buf) { }
+void CZ_UPGRADE_SKILLLEVEL::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _skill_id;
+}
 
 /**
  * CZ_REQ_OPEN_ROULETTE

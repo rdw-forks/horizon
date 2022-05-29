@@ -35,6 +35,7 @@ CollectSourceFiles(
 list(REMOVE_ITEM TEST_SOURCES REGEX "${CMAKE_CURRENT_SOURCE_DIR}/prontera.cpp")
 
 set(CORE_DIR ${PROJECT_SOURCE_DIR}/src/Core)
+set(UTIL_DIR ${PROJECT_SOURCE_DIR}/src/Utility)
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -48,14 +49,19 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 	
 	if (TEST_NAME STREQUAL "TaskSchedulingTest")
 		set (ADD_SOURCES
-			${CORE_DIR}/Multithreading/TaskScheduler/TaskScheduler.cpp
-			${CORE_DIR}/Multithreading/TaskScheduler/TaskScheduler.hpp)
+			${UTIL_DIR}/TaskScheduler.cpp
+			${UTIL_DIR}/TaskScheduler.hpp)
 	elseif (TEST_NAME STREQUAL "Sol2Test")
 		set (ADD_LIBS ${LUA_LIBRARIES})
 		set (ADD_INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "LockedLookupTableTest"
 			OR TEST_NAME STREQUAL "ThreadSafeQueueTest"
 			OR TEST_NAME STREQUAL "WorkerThreadPoolTest")
+		set (ADD_LIBS -lpthread)
+	elseif (TEST_NAME STREQUAL "LoggingTest")
+		set (ADD_SOURCES
+			${CORE_DIR}/Logging/Logger.cpp
+			${CORE_DIR}/Logging/Logger.hpp)
 		set (ADD_LIBS -lpthread)
 	endif ()
 

@@ -31,6 +31,10 @@
 #define HORIZON_LOGGER_H
 
 #include <cstring>
+#include <atomic>
+#include <mutex>
+
+#define BOOST_LOG_DYN_LINK 1
 
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -39,15 +43,14 @@
 #include <boost/log/sinks/text_file_backend.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-#include <mutex>
 
 class Logger
 {
+private:
     typedef boost::log::sources::severity_logger<boost::log::trivial::severity_level> logtype;
+
 public:
 	Logger();
-
 	~Logger();
 
 	static Logger *getInstance()
@@ -62,15 +65,17 @@ public:
 
     void initialize();
     
-    logtype &get_core_log() { std::lock_guard<std::mutex> guard(_core_mtx); return _core_log; }
+    logtype &get_core_log() { return _core_log; }
     
+    void colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm);
+    std::string color(uint16_t color);
+
 protected:
     logtype _core_log;
-    std::mutex _core_mtx;
     std::atomic<bool> _initialized;
+
 };
 
 #define HLog(type) BOOST_LOG_SEV(Logger().getInstance()->get_core_log(), boost::log::trivial::type)
-
 
 #endif //HORIZON_LOGGER_H

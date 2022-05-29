@@ -28,7 +28,7 @@
  **************************************************/
 
 #include "Mercenary.hpp"
-#include "Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 using namespace Horizon::Zone::Entities;
 
@@ -38,8 +38,17 @@ Mercenary::Mercenary(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
 	//
 }
 
-
 Mercenary::~Mercenary()
 {
 	//
 }
+
+void Mercenary::stop_movement() { }
+void Mercenary::on_pathfinding_failure() { }
+void Mercenary::on_movement_begin() { }
+void Mercenary::on_movement_step() { }
+void Mercenary::on_movement_end() { }
+
+void Mercenary::on_status_effect_start(std::shared_ptr<status_change_entry> sce) { }
+void Mercenary::on_status_effect_end(std::shared_ptr<status_change_entry> sce) { }
+void Mercenary::on_status_effect_change(std::shared_ptr<status_change_entry> sce) { }

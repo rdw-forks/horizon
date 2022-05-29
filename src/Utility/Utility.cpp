@@ -113,7 +113,7 @@ int64_t get_sys_time()
 	struct timeval tval;
 	gettimeofday(&tval, nullptr);
 	// int64 cast to avoid overflows on platforms where time_t is 32 bit
-	return (int64_t)tval.tv_sec * 1000 + tval.tv_usec / 1000;
+	return (int64_t) tval.tv_sec * 1000 + tval.tv_usec / 1000;
 #endif
 }
 

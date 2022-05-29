@@ -9,8 +9,8 @@
 
 find_path(LUA_INCLUDE_DIR 
   NAMES lua.h
-  PATH_SUFFIXES lua
-  PATHS
+  PATH_SUFFIXES lua lua5.3
+  HINTS
   ~/Library/Frameworks
   /Library/Frameworks
   /sw # Fink
@@ -18,14 +18,16 @@ find_path(LUA_INCLUDE_DIR
   /opt/csw # Blastwave
   /opt
   /usr
+  /usr/local/opt/include
   /usr/local/include
+  /usr/include
   ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows/include
 )
 
 find_library(LUA_LIBRARIES
-  NAMES lua
+  NAMES lua lua5.3
   PATH_SUFFIXES lib
-  PATHS
+  HINTS
   ~/Library/Frameworks
   /Library/Frameworks
   /sw
@@ -34,8 +36,15 @@ find_library(LUA_LIBRARIES
   /opt
   /usr
   /usr/local/
+  /usr/lib/
   ${_VCPKG_INSTALLED_DIR}/x${PLATFORM}-windows
 )
+
+if (NOT LUA_INCLUDE_DIR)
+  message(FATAL_ERROR "Lua headers not found")
+else()
+  message(STATUS "Lua headers found at ${LUA_INCLUDE_DIR}")
+endif()
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LUA_FOUND to TRUE if

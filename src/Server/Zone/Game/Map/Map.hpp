@@ -31,21 +31,13 @@
 #define HORIZON_ZONE_GAME_MAP_HPP
 
 #include "Path/AStar.hpp"
+#include "Core/Logging/Logger.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Common/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Grid/GridHolder.hpp"
-
-#include <cassert>
-#include <unordered_map>
-#include <string>
-#include <sstream>
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <boost/multi_array.hpp>
 
 namespace Horizon
 {
@@ -67,22 +59,9 @@ public:
 	uint16_t get_width() { return _width; }
 	uint16_t get_height() { return _height; }
 
+	map_cell_types get_cell_type(MapCoords coords) { return _cells[coords.x()][coords.y()].get_type(); }
+
 	GridHolderType &getGridHolder() { return _gridholder; }
-
-	bool has_obstruction_at(uint16_t x, uint16_t y);
-
-	MapCoords get_random_coords()
-	{
-		uint16_t x = 0;
-		uint16_t y = 0;
-
-		do {
-			x = rand() % _width;
-			y = rand() % _height;
-		} while (has_obstruction_at(x, y));
-
-		return { x, y };
-	}
 
 	template <class T>
 	bool ensure_grid_for_entity(T *entity, MapCoords coords);
@@ -98,6 +77,66 @@ public:
 
 	AStar::Generator &get_pathfinder() { return _pathfinder; }
 
+	bool has_obstruction_at(int16_t x, int16_t y);
+
+	MapCoords get_random_accessible_coordinates()
+	{
+		int16_t x = 0;
+		int16_t y = 0;
+
+		do {
+			x = rand() % _width;
+			y = rand() % _height;
+		} while (has_obstruction_at(x, y));
+
+		return { x, y };
+	}
+
+	MapCoords get_random_coordinates_in_walkable_range(uint16_t x, uint16_t y, int16_t min, int16_t max)
+	{
+		int a = 0, b = 0;
+		int r = std::rand();
+		int d = r % (max - min + 1) + min;
+		int i = 0;
+
+		do {
+			a = r % (d * 2 + 1) - d;
+			b = r / (d * 2 + 1) % (d * 2 + 1) - d;
+
+			a += x;
+			b += y;
+			i++;
+		} while(has_obstruction_at(a, b) && i < 20);
+
+		if (i == 20) return MapCoords(0, 0);
+
+		return MapCoords(a, b);
+	}
+
+	MapCoords get_random_coordinates_in_walkable_area(uint16_t x, uint16_t y, int16_t xs, int16_t ys)
+	{
+		std::vector<MapCoords> available_cells;
+
+		assert(xs >= 0);
+		assert(ys >= 0);
+
+		for (int i = std::max(x - xs, 0); i < std::min(x + xs, (int) _width); i++) {
+			for (int j = std::max(y - ys, 0); j < std::min(y + ys,(int) _height); j++) {
+				if (i == x && j == y)
+					continue;
+				if (!has_obstruction_at(i, j))
+					available_cells.push_back(MapCoords(i, j));
+			}
+		}
+
+		if (available_cells.size() == 0)
+			return MapCoords(0, 0);
+
+		int rnd = rand() % available_cells.size();
+
+		return available_cells.at(rnd);
+	}
+	
 private:
 	std::weak_ptr<MapContainerThread> _container;
 	std::string _name{""};

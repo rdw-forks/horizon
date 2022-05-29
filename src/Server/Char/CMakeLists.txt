@@ -37,7 +37,12 @@ GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(char
 	${PRIVATE_SOURCES}
 	${COMMON_SOURCES}
-	${CORE_SOURCES})
+	${CORE_SOURCES}
+    ${UTILITY_SOURCES})
+
+target_precompile_headers(char
+	PUBLIC
+		../pch.hpp)
 
 target_link_libraries(char
 	PUBLIC
@@ -69,6 +74,7 @@ endif()
 
 target_include_directories(char
 	PUBLIC
+		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
         ${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
