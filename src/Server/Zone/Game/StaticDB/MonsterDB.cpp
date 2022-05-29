@@ -621,11 +621,12 @@ bool MonsterDatabase::parse_drops(sol::table const &table, monster_config_data &
 		if (maybe_tbl) {
 			sol::table drop_tbl = maybe_tbl.value();
 			int i = 0;
-			monster_config_data::rewards::drops items[mvp ? MAX_MVP_DROP : MAX_MOB_DROP];
+			std::vector<monster_config_data::rewards::drops> items;
 			for (auto const &d : drop_tbl) {
 				sol::object const &k = d.first;
 				sol::object const &v = d.second;
 				std::shared_ptr<const item_config_data> it = nullptr;
+				monster_config_data::rewards::drops drop;
 
 				if (k.is<std::string>()) {
 					std::string name = k.as<std::string>();
@@ -653,16 +654,23 @@ bool MonsterDatabase::parse_drops(sol::table const &table, monster_config_data &
 					continue;
 				}
 
-				items[i].item_id = it->item_id;
-				items[i].chance = v.as<int>();
+				drop.item_id = it->item_id;
+				drop.chance = v.as<int>();
 
 				i++;
+
+				items.push_back(drop);
 			}
 
-			if (mvp)
-				memcpy(&data.rewards.items_mvp, &items, MAX_MVP_DROP);
-			else
-				memcpy(&data.rewards.items, &items, MAX_MVP_DROP);
+			i = 0;
+			for (auto it : items) {
+				if (mvp) {
+					data.rewards.items_mvp[i] = items[i];
+				} else {
+					data.rewards.items[i] = items[i];
+				}
+				i++;
+			}
 		}
 	} catch (sol::error &error) {
 		HLog(error) << "Error parsing " << (mvp ? "MvpDrops" : "Drops") << " for monster '" << data.sprite_name << "' - " << error.what() << ".";

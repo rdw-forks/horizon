@@ -1,3 +1,4 @@
+#pragma once
 #ifndef HORIZON_PRECOMPILED_HEADERS
 #define HORIZON_PRECOMPILED_HEADERS
 
@@ -42,12 +43,12 @@
 #include <boost/filesystem.hpp>
 #include <boost/bind/placeholders.hpp>
 
+#include <date/date.h>
 #include <sqlpp11/sqlpp11.h>
 #include <sqlpp11/mysql/mysql.h>
 #include <sqlpp11/table.h>
 #include <sqlpp11/data_types.h>
 #include <sqlpp11/char_sequence.h>
-#include <date/date.h>
 #include <sqlpp11/functions.h>
 #include <sqlpp11/insert.h>
 
