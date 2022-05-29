@@ -34,6 +34,7 @@
 #include <thread>
 #include <vector>
 #include <future>
+#include <type_traits>
 
 class FunctionWrapper
 {
