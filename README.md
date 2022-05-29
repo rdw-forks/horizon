@@ -44,4 +44,4 @@ Before installing Horizon, you will need to install certain tools and applicatio
 2. `vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows`
 3. `git clone https://github.com/horizonxyz/horizon.git horizon`
 4. `cd horizon; mkdir build; cd build;`
-5. `cmake .. -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_SOURCE_TREE=heirarchical-folders -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=<path-to-installation-dir>"`
+5. `cmake .. -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITH_SOURCE_TREE=hierarchical-folders -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=<path-to-installation-dir>"`
