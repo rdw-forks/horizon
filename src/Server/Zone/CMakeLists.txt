@@ -63,22 +63,6 @@ target_precompile_headers(zone
 	PUBLIC
 		../pch.hpp)
 
-if (${CMAKE_VERSION} VERSION_GREATER "3.16.0")
-target_precompile_headers(zone
-	PRIVATE
-		<string>
-		<vector>
-		<memory>
-		<cstdio>
-		<map>
-		<string>
-		<iostream>
-		<array>
-		"../../Core/Multithreading/LockedLookupTable.hpp"
-		"../../Core/Multithreading/ThreadSafeQueue.hpp"
-)
-endif()
-
 target_link_libraries(zone
 	PUBLIC
         ${Boost_LIBRARIES}

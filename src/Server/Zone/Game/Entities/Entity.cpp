@@ -30,7 +30,6 @@
 #include "Entity.hpp"
 #include "GridObject.hpp"
 #include "Core/Logging/Logger.hpp"
-#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
@@ -75,7 +74,7 @@ std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e
 	return std::move(wp);
 }
 
-bool Entity::schedule_movement()
+bool Entity::schedule_walk()
 {
 	MapCoords source_pos = { map_coords().x(), map_coords().y() };
 
@@ -95,7 +94,7 @@ bool Entity::schedule_movement()
 
 	// If destination was a collision, nothing is returned.
 	if (_walk_path.size() == 0) {
-		HLog(warning) << "Entity::schedule_movement: Destination was a collision, no walk path available.";
+		HLog(warning) << "Entity::schedule_walk: Destination was a collision, no walk path available.";
 		_dest_pos = { 0, 0 };
 		return false;
 	}
@@ -105,7 +104,7 @@ bool Entity::schedule_movement()
 
 	if (_walk_path.empty()) {
 		on_pathfinding_failure();
-		HLog(warning) << "Entity::schedule_movement: Path too short or empty, failed to schedule movement.";
+		HLog(warning) << "Entity::schedule_walk: Path too short or empty, failed to schedule movement.";
 		_dest_pos = { 0, 0 };
 		return false;
 	}
@@ -113,15 +112,15 @@ bool Entity::schedule_movement()
 	on_movement_begin();
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
 	notify_nearby_players_of_movement();
-	move();
+	walk();
 	
 	return true;
 }
 
-void Entity::move()
+void Entity::walk()
 {
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
-		_dest_pos = { 0, 0 };
+		stop_walking();
 		return;
 	}
 
@@ -137,7 +136,7 @@ void Entity::move()
 			// This force stop will return before changing co-ordinates and 
 			// prevent further movement updates after map has changed.
 			if (_jump_walk_stop) {
-				_dest_pos = { 0, 0 };
+				stop_walking(true);
 				return;
 			}
 
@@ -154,11 +153,10 @@ void Entity::move()
 
 			if (_changed_dest_pos != MapCoords(0, 0)) {
 				_dest_pos = _changed_dest_pos;
-				schedule_movement();
+				schedule_walk();
 				return;
 			} else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty()) {
-				_dest_pos = { 0, 0 };
-				on_movement_end();
+				stop_walking();
 			}
 
 			if (!_walk_path.empty())
@@ -166,16 +164,31 @@ void Entity::move()
 		});
 }
 
-bool Entity::move_to_coordinates(int16_t x, int16_t y)
+bool Entity::stop_walking(bool cancel)
+{
+	_dest_pos = { 0, 0 };
+
+	if (cancel)
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
+
+	on_movement_end();
+
+	return true;
+}
+
+bool Entity::walk_to_coordinates(int16_t x, int16_t y)
 {
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK))) {
 		_changed_dest_pos = { x, y };
 		return true;
 	}
 
+	if (is_attacking())
+		stop_attacking();
+
 	_dest_pos = { x, y };
 
-	if (schedule_movement() == false) {
+	if (schedule_walk() == false) {
 		HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
 		return false;
 	}
@@ -183,12 +196,12 @@ bool Entity::move_to_coordinates(int16_t x, int16_t y)
 	return true;
 }
 
-bool Entity::move_to_entity(std::shared_ptr<Entity> entity)
+bool Entity::walk_to_entity(std::shared_ptr<Entity> entity)
 {
 	if (entity == nullptr)
 		return false;
 
-	if (move_to_coordinates(entity->map_coords().x(), entity->map_coords().y())){
+	if (walk_to_coordinates(entity->map_coords().x(), entity->map_coords().y())){
 		HLog(warning) << "Entity (" << guid() << ") could not walk to (" << entity->guid() << ").";
 		return false;
 	}
@@ -316,40 +329,59 @@ bool Entity::status_effect_end(int type)
 
 bool Entity::is_dead() { return status()->current_hp()->get_base() == 0; }
 
-bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
+bool Entity::is_attacking() { return map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0; }
+
+bool Entity::stop_attacking()
 {
-	if (target == nullptr || target->is_dead())
+	if (!is_attacking())
 		return false;
 
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0)
-		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
+	map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
 
-	std::shared_ptr<Combat> combat = std::make_shared<Combat>(shared_from_this(), target, 
-						std::chrono::duration_cast<std::chrono::milliseconds>(
-							std::chrono::system_clock::now().time_since_epoch()).count()
-						);
+	return true;
+}
 
-	map()->container()->getScheduler().Schedule(Milliseconds(status()->attack_delay()->total()), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
-		[this, continuous, combat, target] (TaskContext context) {
-			if (path_to(target)->size() == 0)
+bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
+{
+	if (target == nullptr)
+		return false;
+
+	map()->container()->getScheduler().Schedule(Milliseconds(0), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
+		[this, continuous, target] (TaskContext context) {
+
+			Combat combat(shared_from_this(), target);
+
+			if (target->is_dead()) {
 				return;
+			}
+
+			if (path_to(target)->size() == 0) {
+				return;
+			}
 
 			int range = target->status()->attack_range()->get_base();
+			
+			_attackable_time = status()->attack_delay()->total();
 
-			if (target->is_walking() && (target->type() == ENTITY_PLAYER || !(map()->get_cell_type(target->map_coords()) == CELL_ICE_WALL)))
-				range++;
+			if (!is_in_range_of(target, range) && !is_walking()) {
 
-			if (is_in_range_of(target, range) == false && is_walking() == false) {
-				move_to_entity(target);
+				walk_to_entity(target);
+
 				if (continuous)
 					context.Repeat(Milliseconds(_attackable_time));
-				return;
-			} else if (is_walking() == true)
-				return;
-			
-			combat->weapon_attack();
 
-			_attackable_time = status()->attack_delay()->total();
+				return;
+			}
+
+			if (!is_in_range_of(target, range) && is_walking()) {
+				context.Repeat(Milliseconds(_attackable_time));
+				return;
+			}
+
+			if (is_in_range_of(target, range) && is_walking())
+				stop_walking();
+			
+			combat.weapon_attack();
 
 			if (continuous)
 				context.Repeat(Milliseconds(_attackable_time));

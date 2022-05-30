@@ -39,15 +39,13 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
-Combat::Combat(std::shared_ptr<Entity> entity, std::shared_ptr<Entity> target, time_t start_time)
-: _entity(entity), _target(target), _start_time(start_time)
+Combat::Combat(std::shared_ptr<Entity> entity, std::shared_ptr<Entity> target)
+: _entity(entity), _target(target), _start_time(std::time(nullptr))
 {
-    //
 }
 
 Combat::~Combat()
 {
-    //
 }
 
 combat_retaliate_type Combat::weapon_attack()

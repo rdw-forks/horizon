@@ -17,7 +17,7 @@ if mc:x() == 0 and mc:y() == 0 then
 	return
 end
 
-if entity:move_to_coordinates(mc:x(), mc:y()) == false then
+if entity:walk_to_coordinates(mc:x(), mc:y()) == false then
 	print("Monster (" .. entity:guid() .. ") ".. entity:name() .. " could not move to coordinates.")
 	return
 end

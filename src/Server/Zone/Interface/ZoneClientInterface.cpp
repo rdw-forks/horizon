@@ -172,7 +172,7 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 
 bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t dir)
 {
-	get_session()->player()->move_to_coordinates(x, y);
+	get_session()->player()->walk_to_coordinates(x, y);
 	return true;
 }
 

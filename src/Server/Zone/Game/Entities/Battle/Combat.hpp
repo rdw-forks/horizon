@@ -40,10 +40,8 @@ namespace Zone
 class Combat
 {
 public:
-    explicit Combat(std::shared_ptr<Entity> entity, std::shared_ptr<Entity> target, time_t start_time);
+    explicit Combat(std::shared_ptr<Entity> entity, std::shared_ptr<Entity> target);
     ~Combat();
-
-    time_t start_time() { return _start_time; }
 
     std::shared_ptr<Entity> entity() const { return _entity.lock(); }
     std::shared_ptr<Entity> target() const { return _target.lock(); }

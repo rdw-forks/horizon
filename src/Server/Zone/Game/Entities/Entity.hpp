@@ -30,10 +30,11 @@
 #ifndef HORIZON_ZONE_GAME_ENTITY_HPP
 #define HORIZON_ZONE_GAME_ENTITY_HPP
 
+#include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
-#include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
@@ -95,14 +96,15 @@ public:
 	 * Movement
 	 */
 	MapCoords const &dest_coords() const { return _dest_pos; }
-	virtual bool move_to_coordinates(int16_t x, int16_t y);
-	virtual bool move_to_entity(std::shared_ptr<Entity> entity);
+	virtual bool walk_to_coordinates(int16_t x, int16_t y);
+	virtual bool walk_to_entity(std::shared_ptr<Entity> entity);
 	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
 
 	virtual void stop_movement() = 0;
 protected:
-	bool schedule_movement();
-	void move();
+	bool schedule_walk();
+	void walk();
+	bool stop_walking(bool cancel = false);
 	
 	virtual void on_pathfinding_failure() = 0;
 	virtual void on_movement_begin() = 0;
@@ -192,6 +194,8 @@ public:
 	int distance_from(std::shared_ptr<Entity> e) { return path_to(e)->size(); }
 
 	virtual bool attack(std::shared_ptr<Entity> target, bool continuous = false);
+	virtual bool stop_attacking();
+	bool is_attacking();
 
 	bool is_dead();
 
@@ -221,7 +225,7 @@ private:
 
 	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;
 
-	int32_t _attackable_time;
+	int32_t _attackable_time{0};
 };
 }
 }

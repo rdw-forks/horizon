@@ -597,7 +597,7 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
     );
 	state->new_usertype<Entity>("Entity",
 		"dest_coords", &Entity::dest_coords,
-		"move_to_coordinates", &Entity::move_to_coordinates,
+		"walk_to_coordinates", &Entity::walk_to_coordinates,
 		"is_walking", &Entity::is_walking,
 		"stop_movement", &Entity::stop_movement,
 		"guid", &Entity::guid,
