@@ -342,7 +342,7 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 			"b.`job_id`, b.`base_level`, b.`job_level`, b.`base_experience`, b.`job_experience`, b.`zeny`, b.`strength`, " // 31 - 37
 			"b.`agility`, b.`vitality`, b.`intelligence`, b.`dexterity`, b.`luck`, b.`maximum_hp`, b.`hp`, b.`maximum_sp`, " // 38 - 45
 			"b.`sp`, b.`status_points`, b.`skill_points`, b.`body_state`, b.`virtue`, b.`honor`, b.`manner`, b.`hair_style_id`, " // 46 - 53
-			"b.`hair_color_id`, b.`cloth_color_id`, b.`body_id`, b.`weapon_id`, b.`shield_id`, b.`head_top_view_id`, b.`head_mid_view_id`, " // 54 - 60
+			"b.`hair_color_id`, b.`cloth_color_id`, b.`body_id`, b.`weapon_view_id`, b.`shield_view_id`, b.`head_top_view_id`, b.`head_mid_view_id`, " // 54 - 60
 			"b.`head_bottom_view_id`, b.`robe_view_id` " // 61 - 62
 			"FROM `characters` as a LEFT JOIN `character_status` as b ON a.id = b.id WHERE a.account_id = ? AND a.deleted_at = ?")
 			.bind(account_id, 0)
@@ -355,6 +355,8 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 	_permitted_slots = permitted_slots;
 	_total_premium_slots = total_premium_slots;
 #endif
+
+	std::cout << rs.size() << std::endl;
 
 	_packet_length = 0;
 	for (auto r : rs) {
@@ -435,6 +437,10 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 	} // end for
 	}
 	catch (mysqlx::Error& error) {
+		HLog(error) << "HC_ACCEPT_ENTER::prepare: " << error.what();
+		return false;
+	}
+	catch (std::exception& error) {
 		HLog(error) << "HC_ACCEPT_ENTER::prepare: " << error.what();
 		return false;
 	}
