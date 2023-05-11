@@ -35,7 +35,6 @@
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Common/SQL/Character/Status.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -77,113 +76,137 @@ void Status::initialize()
 
 bool Status::load(std::shared_ptr<Player> pl)
 {
-	SQL::TableCharacterStatus tcs;
+	try {
+		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
+			"`luck`, `status_points`, `skill_points`, `hp`, `sp`, `maximum_hp`, `maximum_sp`, `base_level`, `job_level`, `base_experience`, `job_experience`, "
+			"`hair_color_id`, `cloth_color_id`, `head_top_view_id`, `head_mid_view_id`, `head_bottom_view_id`, `hair_style_id`, `shield_view_id`, `weapon_view_id`, `robe_view_id`, "
+			"`body_id`, `zeny`, `virtue`, `honor`, `manner` FROM `character_status` WHERE `id` = ?")
+			.bind(pl->character()._character_id)
+			.execute();
 
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-	
-	auto res = (*conn)(select(all_of(tcs)).from(tcs).where(tcs.id == pl->character()._character_id));
-	
-	if (res.empty()) {
-		HLog(error) << "Error loading status, character with ID " << pl->character()._character_id << " does not exist.";
+		mysqlx::Row r = rr.fetchOne();
+
+		if (r.isNull()) {
+			HLog(error) << "Error loading status, character with ID " << pl->character()._character_id << " does not exist.";
+			return false;
+		}
+
+		int32_t job_id = r[0].get<int>();
+
+		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(job_id);
+		std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
+		std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
+
+		pl->set_job_id(job_id);
+		pl->set_job(job);
+
+		int32_t str = r[1].get<int>();
+		int32_t agi = r[2].get<int>();
+		int32_t vit = r[3].get<int>();
+		int32_t _int = r[4].get<int>();
+		int32_t dex = r[5].get<int>();
+		int32_t luk = r[6].get<int>();
+
+		/**
+		 * Main Attributes.
+		 */
+		set_strength(std::make_shared<Strength>(_entity, str));
+		set_agility(std::make_shared<Agility>(_entity, agi, 0, 0));
+		set_vitality(std::make_shared<Vitality>(_entity, vit, 0, 0));
+		set_intelligence(std::make_shared<Intelligence>(_entity, _int, 0, 0));
+		set_dexterity(std::make_shared<Dexterity>(_entity, dex, 0, 0));
+		set_luck(std::make_shared<Luck>(_entity, luk, 0, 0));
+
+		set_size(std::make_shared<EntitySize>(_entity));
+
+		set_strength_cost(std::make_shared<StrengthPointCost>(_entity, get_required_statpoints(str, str + 1)));
+		set_agility_cost(std::make_shared<AgilityPointCost>(_entity, get_required_statpoints(agi, agi + 1)));
+		set_vitality_cost(std::make_shared<VitalityPointCost>(_entity, get_required_statpoints(vit, vit + 1)));
+		set_intelligence_cost(std::make_shared<IntelligencePointCost>(_entity, get_required_statpoints(_int, _int + 1)));
+		set_dexterity_cost(std::make_shared<DexterityPointCost>(_entity, get_required_statpoints(dex, dex + 1)));
+		set_luck_cost(std::make_shared<LuckPointCost>(_entity, get_required_statpoints(luk, luk + 1)));
+
+		set_status_point(std::make_shared<StatusPoint>(_entity, uint32_t(r[7].get<int>())));
+		set_skill_point(std::make_shared<SkillPoint>(_entity, uint32_t(r[8].get<int>())));
+
+		set_current_hp(std::make_shared<CurrentHP>(_entity, uint32_t(r[9].get<int>())));
+		set_current_sp(std::make_shared<CurrentSP>(_entity, uint32_t(r[10].get<int>())));
+		set_max_hp(std::make_shared<MaxHP>(_entity, uint32_t(r[11].get<int>())));
+		set_max_sp(std::make_shared<MaxSP>(_entity, uint32_t(r[12].get<int>())));
+
+		uint32_t base_level = uint32_t(r[13].get<int>());
+		uint32_t job_level = uint32_t(r[14].get<int>());
+
+		set_base_level(std::make_shared<BaseLevel>(_entity, base_level));
+		set_job_level(std::make_shared<JobLevel>(_entity, job_level));
+
+		set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(r[15].get<int>())));
+		set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(r[16].get<int>())));
+		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, bexpg->exp[base_level - 1]));
+		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, bexpg->exp[job_level - 1]));
+		set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
+
+		set_base_appearance(std::make_shared<BaseAppearance>(_entity, job_id));
+		set_hair_color(std::make_shared<HairColor>(_entity, uint32_t(r[17].get<int>())));
+		set_cloth_color(std::make_shared<ClothColor>(_entity, uint32_t(r[18].get<int>())));
+		set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, uint32_t(r[19].get<int>())));
+		set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, uint32_t(r[20].get<int>())));
+		set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, uint32_t(r[21].get<int>())));
+		set_hair_style(std::make_shared<HairStyle>(_entity, uint32_t(r[22].get<int>())));
+		set_shield_sprite(std::make_shared<ShieldSprite>(_entity, uint32_t(r[23].get<int>())));
+		set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, uint32_t(r[24].get<int>())));
+		set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(r[25].get<int>())));
+		set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(r[26].get<int>())));
+
+		/**
+		 * Misc
+		 */
+		set_zeny(std::make_shared<Zeny>(_entity, int32_t(r[27].get<int>())));
+		set_virtue(std::make_shared<Virtue>(_entity, int32_t(r[28].get<int>())));
+		set_honor(std::make_shared<Honor>(_entity, int32_t(r[29].get<int>())));
+		set_manner(std::make_shared<Manner>(_entity, int32_t(r[30].get<int>())));
+
+		HLog(info) << "Status loaded for character " << pl->name() << "(" << pl->character()._character_id << ").";
+	}
+	catch (mysqlx::Error& error) {
+		HLog(error) << "Status::load:" << error.what();
 		return false;
 	}
-
-	int32_t job_id = res.front().job_id;
-	
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(job_id);
-	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
-	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
-
-	pl->set_job_id(job_id);
-	pl->set_job(job);
-
-	int32_t str = res.front().strength;
-	int32_t agi = res.front().agility;
-	int32_t vit = res.front().vitality;
-	int32_t _int = res.front().intelligence;
-	int32_t dex = res.front().dexterity;
-	int32_t luk = res.front().luck;
-
-	/**
-	 * Main Attributes.
-	 */
-	set_strength(std::make_shared<Strength>(_entity, str));
-	set_agility(std::make_shared<Agility>(_entity, agi, 0, 0));
-	set_vitality(std::make_shared<Vitality>(_entity, vit, 0, 0));
-	set_intelligence(std::make_shared<Intelligence>(_entity, _int, 0, 0));
-	set_dexterity(std::make_shared<Dexterity>(_entity, dex, 0, 0));
-	set_luck(std::make_shared<Luck>(_entity, luk, 0, 0));
-
-	set_size(std::make_shared<EntitySize>(_entity));
-
-	set_strength_cost(std::make_shared<StrengthPointCost>(_entity, get_required_statpoints(str, str + 1)));
-	set_agility_cost(std::make_shared<AgilityPointCost>(_entity, get_required_statpoints(agi, agi + 1)));
-	set_vitality_cost(std::make_shared<VitalityPointCost>(_entity, get_required_statpoints(vit, vit + 1)));
-	set_intelligence_cost(std::make_shared<IntelligencePointCost>(_entity, get_required_statpoints(_int, _int + 1)));
-	set_dexterity_cost(std::make_shared<DexterityPointCost>(_entity, get_required_statpoints(dex, dex + 1)));
-	set_luck_cost(std::make_shared<LuckPointCost>(_entity, get_required_statpoints(luk, luk + 1)));
-
-	set_status_point(std::make_shared<StatusPoint>(_entity, uint32_t(res.front().status_points)));
-	set_skill_point(std::make_shared<SkillPoint>(_entity, uint32_t(res.front().skill_points)));
-
-	set_current_hp(std::make_shared<CurrentHP>(_entity, uint32_t(res.front().hp)));
-	set_current_sp(std::make_shared<CurrentSP>(_entity, uint32_t(res.front().sp)));
-	set_max_hp(std::make_shared<MaxHP>(_entity, uint32_t(res.front().maximum_hp)));
-	set_max_sp(std::make_shared<MaxSP>(_entity, uint32_t(res.front().maximum_sp)));
-
-	uint32_t base_level = uint32_t(res.front().base_level);
-	uint32_t job_level = uint32_t(res.front().job_level);
-	
-	set_base_level(std::make_shared<BaseLevel>(_entity, base_level));
-	set_job_level(std::make_shared<JobLevel>(_entity, job_level));
-
-	set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(res.front().base_experience)));
-	set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(res.front().job_experience)));
-	set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, bexpg->exp[base_level - 1]));
-	set_next_job_experience(std::make_shared<NextJobExperience>(_entity, bexpg->exp[job_level - 1]));
-	set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
-
-	set_base_appearance(std::make_shared<BaseAppearance>(_entity, job_id));
-	set_hair_color(std::make_shared<HairColor>(_entity, uint32_t(res.front().hair_color_id)));
-	set_cloth_color(std::make_shared<ClothColor>(_entity, uint32_t(res.front().cloth_color_id)));
-	set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, uint32_t(res.front().head_top_view_id)));
-	set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, uint32_t(res.front().head_mid_view_id)));
-	set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, uint32_t(res.front().head_bottom_view_id)));
-	set_hair_style(std::make_shared<HairStyle>(_entity, uint32_t(res.front().hair_style_id)));
-	set_shield_sprite(std::make_shared<ShieldSprite>(_entity, uint32_t(res.front().shield_id)));
-	set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, uint32_t(res.front().weapon_id)));
-	set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(res.front().robe_view_id)));
-	set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(res.front().body_id)));
-
-	/**
-	 * Misc
-	 */ 
-	set_zeny(std::make_shared<Zeny>(_entity, int32_t(res.front().zeny)));
-	set_virtue(std::make_shared<Virtue>(_entity, int32_t(res.front().virtue)));
-	set_honor(std::make_shared<Honor>(_entity, int32_t(res.front().honor)));
-	set_manner(std::make_shared<Manner>(_entity, int32_t(res.front().manner)));
-
-	HLog(info) << "Status loaded for character " << pl->name() << "(" << pl->character()._character_id << ").";
-
+	catch (std::exception& error) {
+		HLog(error) << "Status::load:" << error.what();
+		return false;
+	}
 	return true;
 }
 
 bool Status::save(std::shared_ptr<Player> pl)
 {
-	SQL::TableCharacterStatus tcs;
+	try {
+		sZone->get_db_connection()->sql("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
+			"`zeny` = ?, `strength` = ?, `agility` = ?, `vitality` = ?, `intelligence` = ?, `dexterity` = ?, `luck` = ?, `maximum_hp` = ?, `hp` = ? `maximum_sp` = ?, `sp` = ?, "
+			"`status_points` = ?, `skill_points` = ?, `body_state` = ?, `virtue` = ?, `honor` = ?, `manner` = ?, `hair_style_id` = ?, `hair_color_id` = ?, `cloth_color_id` = ?, `body_id` = ?, "
+			"`weapon_view_id` = ?, `shield_view_id` = ?, `head_top_view_id` = ?, `head_mid_view_id` = ?, `head_bottom_view_id` = ?, `robe_view_id` = ? "
+			"WHERE id = ?")
+			.bind(pl->job_id(), base_level()->total(), job_level()->total(), base_experience()->total(),
+				job_experience()->total(), zeny()->total(), strength()->total(), agility()->total(), vitality()->total(),
+				intelligence()->total(), dexterity()->total(),
+				luck()->total(), max_hp()->total(), current_hp()->total(), max_sp()->total(), current_sp()->total(), status_point()->total(),
+				skill_point()->total(), 0, virtue()->total(), honor()->total(), manner()->total(), hair_style()->get(),
+				hair_color()->get(), cloth_color()->get(), body_style()->get(), weapon_sprite()->get(), shield_sprite()->get(),
+				head_top_sprite()->get(), head_mid_sprite()->get(), head_bottom_sprite()->get(), robe_sprite()->get(),
+				pl->character()._character_id)
+			.execute();
 
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-
-	(*conn)(update(tcs).set(tcs.job_id = pl->job_id(), tcs.base_level = base_level()->total(), tcs.job_level = job_level()->total(), tcs.base_experience = base_experience()->total(),
-		tcs.job_experience = job_experience()->total(), tcs.zeny = zeny()->total(), tcs.strength = strength()->total(), tcs.agility = agility()->total(), tcs.vitality = vitality()->total(),
-		tcs.intelligence = intelligence()->total(), tcs.dexterity = dexterity()->total(),
-		tcs.luck = luck()->total(), tcs.maximum_hp = max_hp()->total(), tcs.hp = current_hp()->total(), tcs.maximum_sp = max_sp()->total(), tcs.sp = current_sp()->total(), tcs.status_points = status_point()->total(),
-		tcs.skill_points = skill_point()->total(), tcs.body_state = 0, tcs.virtue = virtue()->total(), tcs.honor = honor()->total(), tcs.manner = manner()->total(), tcs.hair_style_id = hair_style()->get(),
-		tcs.hair_color_id = hair_color()->get(), tcs.cloth_color_id = cloth_color()->get(), tcs.body_id = body_style()->get(), tcs.weapon_id = weapon_sprite()->get(), tcs.shield_id = shield_sprite()->get(),
-		tcs.head_top_view_id = head_top_sprite()->get(), tcs.head_mid_view_id = head_mid_sprite()->get(), tcs.head_bottom_view_id = head_bottom_sprite()->get(), tcs.robe_view_id = robe_sprite()->get()).where(tcs.id == pl->character()._character_id));
-
-	HLog(info) << "Status saved for character " << pl->name() << "(" << pl->character()._character_id << ").";
-
+		HLog(info) << "Status saved for character " << pl->name() << "(" << pl->character()._character_id << ").";
+	}
+	catch (mysqlx::Error& error) {
+		HLog(error) << "Status::save:" << error.what();
+		return false;
+	}
+	catch (std::exception& error) {
+		HLog(error) << "Status::save:" << error.what();
+		return false;
+	}
 	return true;
 }
 

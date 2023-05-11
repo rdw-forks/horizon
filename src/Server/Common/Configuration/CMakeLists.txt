@@ -32,4 +32,5 @@ set(CONFIGURATION_HEADERS
 	${DIR}/ServerConfiguration.hpp
 	${DIR}/Horizon.hpp
 	${DIR}/Client.hpp
+	${DIR}/Database.hpp
 	PARENT_SCOPE)

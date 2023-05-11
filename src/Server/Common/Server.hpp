@@ -87,7 +87,7 @@ public:
 	 */
 	bool clicmd_shutdown(std::string /*cmd*/);
     
-	std::shared_ptr<sqlpp::mysql::connection> get_db_connection() { return _mysql_connection; }
+	std::shared_ptr<mysqlx::Session> get_db_connection() { return _mysql_connection; }
     
 protected:
 	/* General Configuration */
@@ -98,8 +98,7 @@ protected:
 	std::atomic<shutdown_stages> _shutdown_stage;
 	std::atomic<int> _shutdown_signal;
 	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
-	std::shared_ptr<sqlpp::mysql::connection_config> _mysql_config;
-	std::shared_ptr<sqlpp::mysql::connection> _mysql_connection;
+	std::shared_ptr<mysqlx::Session> _mysql_connection;
     
 	/**
 	 * Core IO Service

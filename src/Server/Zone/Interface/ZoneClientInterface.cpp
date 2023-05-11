@@ -29,10 +29,6 @@
 
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
-#include "Server/Common/SQL/GameAccount.hpp"
-#include "Server/Common/SQL/SessionData.hpp"
-#include "Server/Common/SQL/Character/Character.hpp"
-#include "Server/Common/SQL/GameAccount.hpp"
 
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
@@ -59,37 +55,41 @@ ZoneClientInterface::~ZoneClientInterface()
 }
 
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
-{
-	SQL::TableGameAccounts tga;
-	SQL::TableSessionData tsd;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-	
-	auto res = (*conn)(select(all_of(tsd)).from(tsd).where(tsd.game_account_id == account_id and tsd.auth_code == auth_code));
-	
-	if (res.empty()) {
+{	
+	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?")
+		.bind(account_id, auth_code)
+		.execute();
+	mysqlx::Row r = rr.fetchOne();
+
+	if (r.isNull()) {
 		HLog(error) << "Login error! Session data for game account " << account_id << " and authentication code " << auth_code << " does not exist.";
 		return false;
 	}
 
-	std::string current_server = res.front().current_server;
+	std::string current_server = r[0].get<std::string>();
 	if (current_server.compare("Z") == 0) {
 		ZC_REFUSE_ENTER pkt(get_session());
 		pkt.deliver(ZONE_SERV_ERROR_REJECT);
 		return false;
 	}
+
+	mysqlx::RowResult rr2 = sZone->get_db_connection()->sql("SELECT `gender`, `group_id` FROM `game_accounts` WHERE `id` = ?")
+		.bind(account_id)
+		.execute();
+	mysqlx::Row r2 = rr2.fetchOne();
 	
-	auto res2 = (*conn)(select(all_of(tga)).from(tga).where(tga.id == account_id));
-	
-	if (res2.empty()) {
+	if (r2.isNull()) {
 		HLog(error) << "Login error! Game account with id " << account_id << " does not exist.";
 		return false;
 	}
 	
-	(*conn)(update(tsd).set(tsd.current_server = "Z").where(tsd.game_account_id == account_id and tsd.auth_code == auth_code));
+	sZone->get_db_connection()->sql("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?")
+		.bind(current_server, account_id, auth_code)
+		.execute();
 
 	std::shared_ptr<Player> pl = std::make_shared<Player>(get_session(), account_id);
 	
-	pl->create(char_id, res2.front().gender, res2.front().group_id);
+	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
 
 	ZC_AID zc_aid(get_session());
 	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
@@ -116,9 +116,6 @@ bool ZoneClientInterface::restart(uint8_t type)
 			HLog(info) << "Character is being respawned.";
 			break;
 		default:
-			SQL::TableSessionData tsd;
-			std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-			(*conn)(update(tsd).where(tsd.game_account_id == get_session()->player()->account()._account_id).set(tsd.current_server = "C", tsd.last_update = std::time(nullptr)));
 			rpkt.deliver(type);
 			HLog(info) << "Character has moved to the character server.";
 			break;
@@ -143,21 +140,21 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 bool ZoneClientInterface::update_session(int32_t account_id)
 {
-	SQL::TableSessionData tsd;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
+	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `current_server` FROM `session_data` WHERE `id` = ?")
+		.bind(account_id)
+		.execute();
+	mysqlx::Row r = rr.fetchOne();
 
 	HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
-	
-	auto sres = (*conn)(select(all_of(tsd)).from(tsd).where(tsd.game_account_id == account_id));
 
-	if (sres.empty()) {
+	if (r.isNull()) {
 		ZC_ACK_REQ_DISCONNECT pkt(get_session());
 		HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
 		pkt.deliver(0);
 		return false;
 	}
 
-	std::string current_server = sres.front().current_server;
+	std::string current_server = r[0].get<std::string>();
 
 	if (current_server.compare("C") != 0) {
 		ZC_ACK_REQ_DISCONNECT pkt(get_session());
@@ -165,8 +162,10 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 		pkt.deliver(0);
 		return false;
 	}
-
-	(*conn)(update(tsd).where(tsd.game_account_id == account_id).set(tsd.last_update = std::time(nullptr)));
+	
+	sZone->get_db_connection()->sql("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?")
+		.bind(account_id, std::time(nullptr))
+		.execute();
 	return true;
 }
 

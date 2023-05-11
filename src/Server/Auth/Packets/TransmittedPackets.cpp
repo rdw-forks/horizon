@@ -185,8 +185,6 @@ void AC_REFUSE_LOGIN::deliver(login_error_codes error_code, char *block_date, st
 	serialize();
 	
 	transmit();
-	
-	HLog(debug) << "AC_REFUSE_LOGIN sent with error code " << (int) error_code;
 }
 
 ByteBuffer &AC_REFUSE_LOGIN::serialize()

@@ -34,6 +34,7 @@ version.hpp
 bin
 resources/
 \.DS_Store
+.vs/horizon/*
 
 # Skip objects and static libraries.
 *.o

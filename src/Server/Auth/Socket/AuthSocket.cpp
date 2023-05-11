@@ -118,8 +118,6 @@ void AuthSocket::read_handler()
 		
 		int16_t packet_length = p.first;
 		
-		HLog(debug) << "Received packet 0x" << packet_id << " of length " << packet_length << " from client.";
-		
 		if (packet_length == -1) {
 			memcpy(&packet_length, get_read_buffer().get_read_pointer() + 2, sizeof(int16_t));
 			if (get_read_buffer().active_length() < packet_length) {

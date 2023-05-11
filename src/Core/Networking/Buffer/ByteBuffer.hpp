@@ -208,50 +208,50 @@ public:
 
 	ByteBuffer &operator>>(uint8_t &value)
 	{
-		value = read<uint8_t>();
+		value = static_cast<int>(read<unsigned char>());
 		return *this;
 	}
 
 	ByteBuffer &operator>>(uint16_t &value)
 	{
-		value = read<uint16_t>();
+		value = read<unsigned short>();
 		return *this;
 	}
 
 	ByteBuffer &operator>>(uint32_t &value)
 	{
-		value = read<uint32_t>();
+		value = read<unsigned int>();
 		return *this;
 	}
 
 	ByteBuffer &operator>>(uint64_t &value)
 	{
-		value = read<uint64_t>();
+		value = read<unsigned long>();
 		return *this;
 	}
 
 	//signed as in 2e complement
 	ByteBuffer &operator>>(int8_t &value)
 	{
-		value = read<int8_t>();
+		value = static_cast<int>(read<signed char>());
 		return *this;
 	}
 
 	ByteBuffer &operator>>(int16_t &value)
 	{
-		value = read<int16_t>();
+		value = read<short>();
 		return *this;
 	}
 
 	ByteBuffer &operator>>(int32_t &value)
 	{
-		value = read<int32_t>();
+		value = read<int>();
 		return *this;
 	}
 
 	ByteBuffer &operator>>(int64_t &value)
 	{
-		value = read<int64_t>();
+		value = read<long>();
 		return *this;
 	}
 
@@ -365,7 +365,8 @@ public:
 		_rpos += skip;
 	}
 
-	template <typename T> T read()
+	template <typename T> 
+	T read()
 	{
 		T r = read<T>(_rpos);
 		_rpos += sizeof(T);
@@ -376,7 +377,7 @@ public:
 	{
 		if (pos + sizeof(T) > maximum_length())
 			throw ByteBufferPositionException(false, pos, sizeof(T), maximum_length());
-		T val = *((T const*)&_storage[pos]);
+		T val = *(reinterpret_cast<T const*>(& _storage[pos]));
 		return val;
 	}
 

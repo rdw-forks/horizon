@@ -27,13 +27,14 @@
 
 #include "AuthClientInterface.hpp"
 
-#include "Server/Common/SQL/GameAccount.hpp"
-#include "Server/Common/SQL/SessionData.hpp"
+#include "Common/Configuration/Database.hpp"
 
 #include "Server/Auth/Auth.hpp"
 #include "Server/Auth/Packets/TransmittedPackets.hpp"
 #include "Server/Auth/Session/AuthSession.hpp"
 #include "Server/Auth/Socket/AuthSocket.hpp"
+
+#include <mysqlx/xdevapi.h>
 
 using namespace Horizon::Auth;
 
@@ -51,102 +52,124 @@ AuthClientInterface::~AuthClientInterface()
 
 bool AuthClientInterface::process_login(std::string username, std::string password, uint16_t version, uint16_t client_type)
 {
-	SQL::TableGameAccounts tga;
 	AC_ACCEPT_LOGIN acal(get_session());
 	AC_REFUSE_LOGIN acrl(get_session());
 	int pos = 0;
-	char block_date[20]{0};
-	std::shared_ptr<sqlpp::mysql::connection> conn = sAuth->get_db_connection();
-	
+	char block_date[20]{ 0 };
+
 	if (((pos = username.find("_m")) || (pos = username.find("_f"))) && pos != std::string::npos) {
 		enum game_account_gender_type gender = ACCOUNT_GENDER_NONE;
-		
+
 		if (username.find("_m")) {
 			username = username.substr(0, pos);
 			gender = ACCOUNT_GENDER_MALE;
-		} else if (username.find("_f")) {
+		}
+		else if (username.find("_f")) {
 			username = username.substr(0, pos);
 			gender = ACCOUNT_GENDER_FEMALE;
 		}
-		
+
 		//std::string salt = sAuth->get_auth_config()._password_salt_mix.c_str();
 		//std::string hash = argon2.gen_hash(password, salt);
-		
-		std::shared_ptr<sqlpp::mysql::connection> conn = sAuth->get_db_connection();
-		
-		auto res = (*conn)(select(all_of(tga)).from(tga).where(tga.username == username));
-		
-		if (res.empty()) {
+
+		mysqlx::RowResult rr = sAuth->get_db_connection()->sql("SELECT * `game_accounts` WHERE `username` = ?").bind(username).execute();
+
+		mysqlx::Row r = rr.fetchOne();
+
+		if (r.isNull()) {
 			HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
 
 			enum game_account_gender_type gender;
-			
+
 			HLog(info) << "Creating a new account for user '" << username << "' with password '" << password << "'.";
-			
-			// std::string salt = sAuth->get_auth_config()._password_salt_mix.c_str();
-			// std::string hash = argon2.gen_hash(password, salt);
-			
-			// HLog(debug) << "Argon2 hash created:" << std::hex << hash;
-			
+
 			try {
-				auto last_insert_id = (*conn)(insert_into(tga).set(tga.username = username, tga.hash = password, tga.salt = "", tga.gender = (gender == (int) ACCOUNT_GENDER_FEMALE ? "F" : "M"),
-											 tga.group_id = 0, tga.state = (int) ACCOUNT_STATE_NONE, tga.login_count = 1, tga.last_login = std::chrono::system_clock::now(),
-											 tga.last_ip = get_session()->get_socket()->remote_ip_address(), tga.character_slots = 3));
+				sAuth->get_db_connection()->sql("INSERT INTO `game_accounts` (`username`, `hash`, `salt`, `gender`, `group_id`, `state`, `login_count`, `last_login`, `last_ip`, `character_slots`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+					.bind(username, password, "", (gender == (int)ACCOUNT_GENDER_FEMALE ? "F" : "M"), 0, (int)ACCOUNT_STATE_NONE, 1, std::time(nullptr), get_session()->get_socket()->remote_ip_address(), 3)
+					.execute();
+				mysqlx::RowResult rr = sAuth->get_db_connection()->sql("SELECT LAST_INSERT_ID() AS id;").execute();
+				mysqlx::Row r = rr.fetchOne();
+				int last_insert_id = r[0].get<int>();
 				uint32_t aid = last_insert_id;
 				acal.deliver(aid, aid, 0, gender);
-				
-				SQL::TableSessionData tsd;
-				auto res = (*conn)(select(all_of(tsd)).from(tsd).where(tsd.game_account_id == aid));
-				if (!res.empty())
-					(*conn)(update(tsd).set(tsd.connect_time = std::chrono::system_clock::now(), tsd.current_server = "A").where(tsd.auth_code == aid));
-				else
-					(*conn)(insert_into(tsd).set(tsd.auth_code = last_insert_id, tsd.game_account_id = aid, tsd.client_version = PACKET_VERSION, tsd.client_type = client_type, tsd.character_slots = 3, tsd.group_id = 0, tsd.connect_time = std::chrono::system_clock::now(), tsd.current_server = "A"));
-				HLog(info) << "Request for authorization of account '" << username << "' has been granted.";
-			} catch (std::exception &error) {
+
+				sAuth->get_db_connection()->sql("REPLACE INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);")
+					.bind(last_insert_id, aid, PACKET_VERSION, client_type, 3, 0, std::time(nullptr), "A")
+					.execute();
+
+				HLog(info) << "Session (" << aid << ") has been initiated.";
+				HLog(info) << "Request for authorization of account '" << username << "' (" << aid << ")" << " has been granted.";
+			}
+			catch (std::exception& error) {
 				HLog(error) << error.what();
 				acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
 				return false;
 			}
-			
+
 			return true;
 		}
-		
+
 		acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
 		return false;
 	}
-	
-	auto res = (*conn)(select(all_of(tga)).from(tga).where(tga.username == username));
-	
-	if (res.empty()) {
-		HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
-		acrl.deliver(login_error_codes::ERR_UNREGISTERED_ID, block_date, 0);
+
+	try
+	{
+		mysqlx::RowResult rr = sAuth->get_db_connection()->sql("SELECT * FROM `game_accounts` WHERE `username` = ?")
+			.bind(username)
+			.execute();
+
+		mysqlx::Row r = rr.fetchOne();
+
+		if (r.isNull()) {
+			HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
+			acrl.deliver(login_error_codes::ERR_UNREGISTERED_ID, block_date, 0);
+			return false;
+		}
+
+		std::string hash = r[2].get<std::string>();
+		// std::string salt = res.front().salt;
+
+		uint32_t aid = r[0].get<int>();
+		uint32_t group_id = r[6].get<int>();
+		uint32_t gender = r[4].get<std::string>().compare("M") == 0 ? 0 : 1;
+
+		if (password.compare(hash) != 0) {
+			HLog(info) << "Incorrect password for account '" << username << "' with password '" << password << "'.";
+			acrl.deliver(login_error_codes::ERR_INCORRECT_PASSWORD, block_date, 0);
+			return false;
+		}
+
+		mysqlx::RowResult rr2 = sAuth->get_db_connection()->sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
+			.bind(aid)
+			.execute();
+
+		mysqlx::Row r3 = rr2.fetchOne();
+
+		if (!r3.isNull()) {
+			acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
+			return false;
+		}
+		else {
+			sAuth->get_db_connection()->sql("INSERT INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+				.bind(aid, aid, PACKET_VERSION, client_type, 3, 0, std::time(nullptr), "A")
+				.execute();
+
+			HLog(info) << "Session (" << aid << ") has been initiated.";
+		}
+
+		acal.deliver(aid, aid, group_id, gender);
+
+		HLog(info) << "Request for authorization of account '" << username << "' (" << aid << ")" << " has been granted.";
+	}
+	catch (mysqlx::Error& err) {
+		HLog(error) << err.what();
 		return false;
 	}
-	
-	std::string hash = res.front().hash;
-	// std::string salt = res.front().salt;
-	
-	uint32_t aid = res.front().id;
-	uint32_t group_id = res.front().group_id;
-	uint32_t gender = res.front().gender == "M" ? 0 : 1;
-	
-	if (password.compare(hash) != 0) {
-		HLog(info) << "Incorrect password for account '" << username << "' with password '" << password << "'.";
-		acrl.deliver(login_error_codes::ERR_INCORRECT_PASSWORD, block_date, 0);
+	catch (std::exception& err) {
+		HLog(error) << err.what();
 		return false;
 	}
-	
-	SQL::TableSessionData tsd;
-	auto res2 = (*conn)(select(all_of(tsd)).from(tsd).where(tsd.game_account_id == aid));
-	if (!res2.empty()) {
-		acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
-		return false;
-	} else {
-		(*conn)(insert_into(tsd).set(tsd.auth_code = aid, tsd.game_account_id = aid, tsd.client_version = PACKET_VERSION, tsd.client_type = client_type, tsd.character_slots = 3, tsd.group_id = 0, tsd.connect_time = std::chrono::system_clock::now(), tsd.current_server = "A"));
-	}
-	
-	acal.deliver(aid, aid, group_id, gender);
-	
-	HLog(info) << "Request for authorization of account '" << username << "' has been granted.";
+
 	return true;
 }

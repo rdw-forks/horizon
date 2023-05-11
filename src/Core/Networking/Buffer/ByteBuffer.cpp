@@ -59,8 +59,8 @@ ByteBufferSourceException::ByteBufferSourceException(size_t pos, size_t size,
 void ByteBuffer::print_storage() const
 {
 	std::ostringstream o;
-	o << "STORAGE_SIZE: " << active_length();
-	for (uint32_t i = 0; i < active_length(); ++i)
+	o << "STORAGE_SIZE: " << _storage.size();
+	for (uint32_t i = 0; i < _storage.size(); ++i)
 		o << read<uint8_t>(i) << " - ";
 	o << " ";
 

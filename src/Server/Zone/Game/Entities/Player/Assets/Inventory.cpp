@@ -29,8 +29,6 @@
 
 #include "Inventory.hpp"
 
-#include "Server/Common/SQL/Character/Inventory.hpp"
-
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
@@ -415,9 +413,6 @@ int32_t Inventory::save()
 {
 	int32_t changes = 0;
 
-	SQL::TableCharacterInventory tci;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-
 	for (auto &i : _inventory_items) {
 		auto mit_i = std::find_if(_saved_inventory_items.begin(), _saved_inventory_items.end(), [&i](std::shared_ptr<item_entry_data> si) {
 			return *si == *i; // 'item_entry_data' and 'std::shared_ptr<item_entry_data>'
@@ -455,131 +450,158 @@ int32_t Inventory::save()
 		}
 	}
 
-	(*conn)(remove_from(tci).where(tci.char_id == player()->character()._character_id));
+	try {
+		sZone->get_db_connection()->sql("DELETE FROM `character_inventory` WHERE `char_id` = ?")
+			.bind(player()->character()._character_id)
+			.execute();
 
-	auto mt_i = insert_into(tci).columns(tci.char_id, tci.item_id, tci.amount,
-		tci.equip_location_mask, tci.is_identified, tci.refine_level, tci.element_type,
-		tci.slot_item_id_0, tci.slot_item_id_1, tci.slot_item_id_2, tci.slot_item_id_3,
-		tci.opt_idx0, tci.opt_val0, tci.opt_idx1, tci.opt_val1,
-		tci.opt_idx2, tci.opt_val2, tci.opt_idx3, tci.opt_val3, tci.opt_idx4, tci.opt_val4,
-		tci.hire_expire_date, tci.is_favorite, tci.is_broken, tci.bind_type, tci.unique_id);
+		mysqlx::Schema schema = sZone->get_db_connection()->getSchema("horizon");
+		mysqlx::Table table = schema.getTable("character_inventory");
+		mysqlx::TableInsert ti = table.insert("char_id", "item_id", "amount", "equip_location_mask",
+			"is_identified", "refine_level", "element_type", "slot_item_id_0", "slot_item_id_1", "slot_item_id_2", "slot_item_id_3", "opt_idx0", "opt_val0",
+			"opt_idx1", "opt_val1", "opt_idx2", "opt_val2", "opt_idx3", "opt_val3", "opt_idx4", "opt_val4", "hire_expire_date", "is_favorite", "is_broken", "bind_type", "unique_id");
 
-	int count = 0;
-	for (auto mit_i = _saved_inventory_items.begin(); mit_i != _saved_inventory_items.end(); mit_i++) {
-		std::shared_ptr<const item_entry_data> mit = *mit_i;
-		mt_i.values.add(tci.char_id = (int) player()->character()._character_id, 
-			tci.item_id = (int) mit->item_id, 
-			tci.amount = (int) mit->amount,
-			tci.equip_location_mask = (int) mit->current_equip_location_mask, 
-			tci.is_identified = (int) mit->info.is_identified, 
-			tci.refine_level = (int) mit->refine_level, 
-			tci.element_type = (int) mit->ele_type,
-			tci.slot_item_id_0 = (int) mit->slot_item_id[0],
-			tci.slot_item_id_1 = (int) mit->slot_item_id[1],
-			tci.slot_item_id_2 = (int) mit->slot_item_id[2],
-			tci.slot_item_id_3 = (int) mit->slot_item_id[3],
-			tci.opt_idx0 = (int) mit->option_data[0].get_index(),
-			tci.opt_val0 = (int) mit->option_data[0].get_value(),
-			tci.opt_idx1 = (int) mit->option_data[1].get_index(),
-			tci.opt_val1 = (int) mit->option_data[1].get_value(),
-			tci.opt_idx2 = (int) mit->option_data[2].get_index(),
-			tci.opt_val2 = (int) mit->option_data[2].get_value(),
-			tci.opt_idx3 = (int) mit->option_data[3].get_index(),
-			tci.opt_val3 = (int) mit->option_data[3].get_value(),
-			tci.opt_idx4 = (int) mit->option_data[4].get_index(),
-			tci.opt_val4 = (int) mit->option_data[4].get_value(),
-			tci.hire_expire_date = (int) mit->hire_expire_date, 
-			tci.is_favorite = (int) mit->info.is_favorite, 
-			tci.is_broken = (int) mit->info.is_broken, 
-			tci.bind_type = (int) mit->bind_type, 
-			tci.unique_id = (int64_t) mit->unique_id);
-		count++;
+		int count = 0;
+		for (auto mit_i = _saved_inventory_items.begin(); mit_i != _saved_inventory_items.end(); mit_i++) {
+			std::shared_ptr<const item_entry_data> mit = *mit_i;
+			ti.values(player()->character()._character_id,
+				(int)mit->item_id,
+				(int)mit->amount,
+				(int)mit->current_equip_location_mask,
+				(int)mit->info.is_identified,
+				(int)mit->refine_level,
+				(int)mit->ele_type,
+				(int)mit->slot_item_id[0],
+				(int)mit->slot_item_id[1],
+				(int)mit->slot_item_id[2],
+				(int)mit->slot_item_id[3],
+				(int)mit->option_data[0].get_index(),
+				(int)mit->option_data[0].get_value(),
+				(int)mit->option_data[1].get_index(),
+				(int)mit->option_data[1].get_value(),
+				(int)mit->option_data[2].get_index(),
+				(int)mit->option_data[2].get_value(),
+				(int)mit->option_data[3].get_index(),
+				(int)mit->option_data[3].get_value(),
+				(int)mit->option_data[4].get_index(),
+				(int)mit->option_data[4].get_value(),
+				(int)mit->hire_expire_date,
+				(int)mit->info.is_favorite,
+				(int)mit->info.is_broken,
+				(int)mit->bind_type,
+				(int64_t)mit->unique_id);
+
+			count++;
+		}
+
+		if (count)
+			ti.execute();
 	}
-
-	if (count)
-		(*conn)(mt_i); // Transact.
+	catch (mysqlx::Error& error) {
+		HLog(error) << "Inventory::save:" << error.what();
+		return false;
+	}
+	catch (std::exception& error) {
+		HLog(error) << "Inventory::save:" << error.what();
+		return false;
+	}
 
 	return changes;
 }
 
 int32_t Inventory::load()
-{
-	SQL::TableCharacterInventory tci;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-	
-	auto rows = (*conn)(select(all_of(tci)).from(tci).where(tci.char_id == player()->character()._character_id));
+{	
+	try {
+		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `item_id`, `amount`, `equip_location_mask`, `refine_level`, `slot_item_id_0`,"
+			"`slot_item_id_1`, `slot_item_id_2`, `slot_item_id_3`, `hire_expire_date`, `element_type`, `opt_idx0`, `opt_val0`, `opt_idx1`, `opt_val1`,"
+			"`opt_idx2`, `opt_val2`, `opt_idx3`, `opt_val3`, `opt_idx4`, `opt_val4`, `is_identified`, `is_broken`, `is_favorite`, `bind_type`, `unique_id`"
+			" FROM `character_inventory` WHERE `char_id` = ?")
+			.bind(player()->character()._character_id)
+			.execute();
 
-	if (_inventory_items.size() != 0) {
-		HLog(warning) << "Attempt to synchronize the saved inventory, which should be empty at the time of load or re-load, size: " << _inventory_items.size();
-		return 0;
+		std::list<mysqlx::Row> rows = rr.fetchAll();
+
+		if (_inventory_items.size() != 0) {
+			HLog(warning) << "Attempt to synchronize the saved inventory, which should be empty at the time of load or re-load, size: " << _inventory_items.size();
+			return 0;
+		}
+
+		int inventory_index = 2;
+		for (std::list<mysqlx::Row>::iterator r = rows.begin(); r != rows.end(); r++) {
+			mysqlx::Row row = *r;
+			item_entry_data i;
+
+			std::shared_ptr<const item_config_data> d = ItemDB->get_item_by_id(row[0].get<int>());
+
+			i.inventory_index = inventory_index++;
+			i.item_id = row[0].get<int>();
+			i.type = d->type;
+			i.amount = row[1].get<int>();
+			i.current_equip_location_mask = row[2].get<int>();
+			i.actual_equip_location_mask = d->equip_location_mask;
+			i.refine_level = row[3].get<int>();
+			i.config = d;
+
+			i.slot_item_id[0] = row[4].get<int>();
+			i.slot_item_id[1] = row[5].get<int>();
+			i.slot_item_id[2] = row[6].get<int>();
+			i.slot_item_id[3] = row[7].get<int>();
+
+			i.hire_expire_date = row[8].get<int>();
+			i.sprite_id = d->sprite_id;
+
+			i.ele_type = (element_type)(int)row[9].get<int>();
+
+			if (row[10].get<int>()) {
+				i.option_data[0].set_index(row[10].get<int>());
+				i.option_data[0].set_value(row[11].get<int>());
+				i.option_count = 1;
+			}
+
+			if (row[12].get<int>()) {
+				i.option_data[1].set_index(row[12].get<int>());
+				i.option_data[1].set_value(row[13].get<int>());
+				i.option_count = 2;
+			}
+
+			if (row[14].get<int>()) {
+				i.option_data[2].set_index(row[14].get<int>());
+				i.option_data[2].set_value(row[15].get<int>());
+				i.option_count = 3;
+			}
+
+			if (row[16].get<int>()) {
+				i.option_data[3].set_index(row[16].get<int>());
+				i.option_data[3].set_value(row[17].get<int>());
+				i.option_count = 4;
+			}
+
+			if (row[18].get<int>()) {
+				i.option_data[4].set_index(row[18].get<int>());
+				i.option_data[4].set_value(row[19].get<int>());
+				i.option_count = 5;
+			}
+
+			i.info.is_identified = row[20].get<int>();
+			i.info.is_broken = row[21].get<int>();
+			i.info.is_favorite = row[22].get<int>();
+
+			i.bind_type = (item_bind_type)(int)row[23].get<int>(); // int16_t
+			i.unique_id = row[24].get<int>();
+
+			std::shared_ptr<item_entry_data> item = std::make_shared<item_entry_data>(i);
+
+			_saved_inventory_items.push_back(item);
+			_inventory_items.push_back(item);
+		}
 	}
-
-	int inventory_index = 2;
-	for (auto row = rows.begin(); row != rows.end(); row++) {
-		item_entry_data i;
-
-		std::shared_ptr<const item_config_data> d = ItemDB->get_item_by_id(row->item_id);
-
-		i.inventory_index = inventory_index++;
-		i.item_id = row->item_id;
-		i.type = d->type;
-		i.amount = row->amount;
-		i.current_equip_location_mask = row->equip_location_mask;
-		i.actual_equip_location_mask = d->equip_location_mask;
-		i.refine_level = row->refine_level;
-		i.config = d;
-
-		i.slot_item_id[0] = row->slot_item_id_0;
-		i.slot_item_id[1] = row->slot_item_id_1;
-		i.slot_item_id[2] = row->slot_item_id_2;
-		i.slot_item_id[3] = row->slot_item_id_3;
-
-		i.hire_expire_date = row->hire_expire_date;
-		i.sprite_id = d->sprite_id;
-
-		i.ele_type = (element_type) (int) row->element_type;
-
-		if (row->opt_idx0) {
-			i.option_data[0].set_index(row->opt_idx0);
-			i.option_data[0].set_value(row->opt_val0);
-			i.option_count = 1;
-		}
-
-		if (row->opt_idx1) {
-			i.option_data[1].set_index(row->opt_idx1);
-			i.option_data[1].set_value(row->opt_val1);
-			i.option_count = 2;
-		}
-
-		if (row->opt_idx2) {
-			i.option_data[2].set_index(row->opt_idx2);
-			i.option_data[2].set_value(row->opt_val2);
-			i.option_count = 3;
-		}
-
-		if (row->opt_idx3) {
-			i.option_data[3].set_index(row->opt_idx3);
-			i.option_data[3].set_value(row->opt_val3);
-			i.option_count = 4;
-		}
-
-		if (row->opt_idx4) {
-			i.option_data[4].set_index(row->opt_idx4);
-			i.option_data[4].set_value(row->opt_val4);
-			i.option_count = 5;
-		}
-
-		i.info.is_identified = row->is_identified;
-		i.info.is_broken = row->is_broken;
-		i.info.is_favorite = row->is_favorite;
-		
-		i.bind_type = (item_bind_type) (int) row->bind_type; // int16_t
-		i.unique_id = row->unique_id;
-
-		std::shared_ptr<item_entry_data> item = std::make_shared<item_entry_data>(i);
-
-		_saved_inventory_items.push_back(item);
-		_inventory_items.push_back(item);
+	catch (mysqlx::Error& error) {
+		HLog(error) << "Inventory::load:" << error.what();
+		return false;
+	}
+	catch (std::exception& error) {
+		HLog(error) << "Inventory::load:" << error.what();
+		return false;
 	}
 
 	return _inventory_items.size();

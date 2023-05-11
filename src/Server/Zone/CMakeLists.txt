@@ -71,8 +71,8 @@ target_link_libraries(zone
 		mcache
 		${Readline_LIBRARY}
 		${LUA_LIBRARIES}
-		${SQLPP11_MYSQL_LIBRARIES}
 		${MYSQL_LIBRARY}
+		unofficial::mysql-connector-cpp::connector
 )
 
 set(INCLUDE_DIRS
@@ -92,8 +92,8 @@ target_include_directories(zone
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
 		${SQLPP11_INCLUDE_DIR}
-		${SQLPP11_MYSQL_INCLUDE_DIR}
 		${MYSQL_INCLUDE_DIR}
+		${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 )

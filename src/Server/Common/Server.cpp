@@ -37,7 +37,6 @@
 
 /* Public */
 Server::Server()
-: _mysql_config(std::make_shared<sqlpp::mysql::connection_config>())
 {
 	HLog(info) << "   _   _            _                  ";
 	HLog(info) << "  | | | |          (_)                 ";
@@ -113,23 +112,25 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_user(db_tbl.get_or<std::string>("user", "horizon"));
 		general_conf().set_db_database(db_tbl.get_or<std::string>("db", "horizon"));
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
-		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 3306));
+		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
 		
-		_mysql_config->database = general_conf().get_db_database();
-		_mysql_config->user = general_conf().get_db_user();
-		_mysql_config->password = general_conf().get_db_pass();
-		_mysql_config->port = general_conf().get_db_port();
-		_mysql_config->host = general_conf().get_db_host();
-		_mysql_connection = std::make_shared<sqlpp::mysql::connection>(_mysql_config);
-		
+		_mysql_connection = std::make_shared<mysqlx::Session>(general_conf().get_db_host(), general_conf().get_db_port(), general_conf().get_db_user(), general_conf().get_db_pass());
+
 		HLog(info) << "Database tcp://" << general_conf().get_db_user()
-		<< ":" << general_conf().get_db_pass()
-		<< "@" << general_conf().get_db_host()
-		<< ":" << general_conf().get_db_port()
-		<< "/" << general_conf().get_db_database()
-		<< ".";
-	} catch (const std::exception &error) {
-		HLog(error) << "Database configuration error:" << error.what() << ".";
+			<< ":" << general_conf().get_db_pass()
+			<< "@" << general_conf().get_db_host()
+			<< ":" << general_conf().get_db_port()
+			<< "/" << general_conf().get_db_database()
+			<< (_mysql_connection->getSchema(general_conf().get_db_database()).existsInDatabase() ? " (connected)" : "(not connected)");
+
+		_mysql_connection->sql(std::string("USE ").append(general_conf().get_db_database())).execute();
+	}
+	catch (const mysqlx::Error& error) {
+		HLog(error) << error.what() << ".";
+		return false;
+	}
+	catch (const std::exception &error) {
+		HLog(error) << error.what() << ".";
 		return false;
 	}
 

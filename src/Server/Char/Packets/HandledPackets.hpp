@@ -379,7 +379,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
-	uint8_t _slot{0};
+	int8_t _slot{0};
 };
 
 enum {

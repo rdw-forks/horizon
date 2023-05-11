@@ -44,13 +44,7 @@
 #include <boost/bind/placeholders.hpp>
 
 #include <date/date.h>
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/mysql/mysql.h>
-#include <sqlpp11/table.h>
-#include <sqlpp11/data_types.h>
-#include <sqlpp11/char_sequence.h>
-#include <sqlpp11/functions.h>
-#include <sqlpp11/insert.h>
+#include <mysqlx/xdevapi.h>
 
 #ifndef SOL_ALL_SAFETIES_ON
 #define SOL_ALL_SAFETIES_ON 1

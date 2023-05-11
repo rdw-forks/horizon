@@ -1,4 +1,5 @@
 /***************************************************
+/***************************************************
  *       _   _            _                        *
  *      | | | |          (_)                       *
  *      | |_| | ___  _ __ _ _______  _ __          *
@@ -29,7 +30,6 @@
 
 #include "Char.hpp"
 
-#include "Server/Common/SQL/SessionData.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Char/SocketMgr/ClientSocketMgr.hpp"
 
@@ -38,7 +38,7 @@
 #include <iostream>
 
 #include <sol.hpp>
-#include <sqlpp11/sqlpp11.h>
+#include <mysqlx/xdevapi.h>
 
 using namespace Horizon::Char;
 
@@ -138,7 +138,7 @@ bool CharServer::read_config()
 	try {
 		int32_t pincode_expiry = tbl.get<int32_t>("pincode_expiry");
 		config().set_pincode_expiry(pincode_expiry);
-		HLog(info) << "Pincode max retry to '" << config().pincode_expiry() << "'.";
+		HLog(info) << "Pincode expiry to '" << config().pincode_expiry() << "'.";
 	} catch (sol::error &err) {
 		HLog(error) << "Error for setting pincode_expiry:" << err.what();
 	}
@@ -195,17 +195,31 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 
 void CharServer::verify_connected_sessions()
 {
-	SQL::TableSessionData tsd;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
-	
-	(*conn)(remove_from(tsd).where(tsd.current_server == "C" and
-		tsd.last_update < std::time(nullptr) - config().session_max_timeout()));
+	try {
+		sChar->get_db_connection()->sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
+			.bind("C", std::time(nullptr) - config().session_max_timeout())
+			.execute();
 
-	auto sres = (*conn)(select(count(tsd.game_account_id)).from(tsd).where(tsd.current_server == "C"));
+		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
+			.bind("C")
+			.execute();
 
-	int32_t count = sres.front().count;
+		mysqlx::Row r = rr.fetchOne();
+		if (r.isNull()) {
+			HLog(info) << "There are no connected session(s).";
+			return;
+		}
 
-	HLog(info) << count << " connected session(s).";
+		int32_t count = r[0].get<int>();
+
+		HLog(info) << count << " connected session(s).";
+	}
+	catch (mysqlx::Error& error) {
+		HLog(error) << error.what();
+	}
+	catch (std::exception& error) {
+		HLog(error) << error.what();
+	}
 }
 
 void CharServer::update(uint64_t time)

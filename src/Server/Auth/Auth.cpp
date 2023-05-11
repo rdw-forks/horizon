@@ -30,8 +30,7 @@
 
 #include "Server/Auth/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Common/Server.hpp"
-#include "Server/Common/SQL/SessionData.hpp"
-#include "Server/Common/SQL/GameAccount.hpp"
+#include "Server/Common/Configuration/Database.hpp"
 
 using boost::asio::ip::udp;
 using namespace std::chrono_literals;
@@ -132,9 +131,9 @@ bool AuthServer::clicmd_reload_config(std::string /*cmd*/)
 
 bool AuthServer::clicmd_create_new_account(std::string cmd)
 {
-	SQL::TableGameAccounts tga;
 	std::vector<std::string> separated_args;
-	std::string help_str = "Usage: create-account <username> <password> <email> <birthdate: YYYY-MM-DD> <pincode> {<group_id>, {<character_slots>}}";
+	std::string help_str = "Usage: create-account <username> <password> <email> <birthdate: YYYY-MM-DD> <pincode> {"
+		"{<account_gender = 'M' or 'F' or 'C' (Character Dependent)>}, {<group_id>}, {<character_slots>}}";
 	
 	boost::algorithm::split(separated_args, cmd, boost::algorithm::is_any_of(" "));
 
@@ -150,21 +149,29 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	std::string birthdate = separated_args[4];
 	std::string pincode = separated_args[5];
 
-	int group_id = separated_args.size() >= 7 ? std::stoi(separated_args[6]) : 0;
-	int character_slots = separated_args.size() >= 8 ? std::stoi(separated_args[7]) : 3;
+	game_account_gender_type gender = separated_args.size() >= 7 ? ((separated_args[6] == "M" ? ACCOUNT_GENDER_MALE : (separated_args[6] == "F" ? ACCOUNT_GENDER_FEMALE : ACCOUNT_GENDER_NONE))) : ACCOUNT_GENDER_NONE;
+	int group_id = separated_args.size() >= 8 ? std::stoi(separated_args[7]) : 0;
+	int character_slots = separated_args.size() >= 9 ? std::stoi(separated_args[8]) : 3;
 
-	std::shared_ptr<sqlpp::mysql::connection> conn = sAuth->get_db_connection();
+	try {
+		auto res = sAuth->get_db_connection()->sql("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username).execute();
+		mysqlx::Row r = res.fetchOne();
 
-	auto res = (*conn)(select(count(tga.id)).from(tga).where(tga.username == username));
+		if (!r.isNull()) {
+			HLog(error) << "Account with username '" << username << "' already exists.";
+			return false;
+		}
 
-	if (res.front().count) {
-		HLog(error) << "Account with username '" << username << "' already exists.";
+		sAuth->get_db_connection()->sql("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")
+			.bind(username, password, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
+				email, birthdate, character_slots, pincode, group_id, (int)ACCOUNT_STATE_NONE)
+			.execute();
+	}
+	catch (mysqlx::Error& err) {
+		HLog(error) << err.what();
 		return false;
 	}
-	
-	(*conn)(insert_into(tga).set(tga.username = username, tga.hash = password, tga.gender = "U", tga.email = email,
-		tga.birth_date = birthdate, tga.character_slots = character_slots, tga.pincode = pincode, 
-		tga.group_id = group_id, tga.state = (int) ACCOUNT_STATE_NONE, tga.last_ip = "", tga.login_count = 0, tga.last_login = std::chrono::system_clock::now()));
 
 	HLog(info) << "Account '" << username << "' has been created successfully.";
 

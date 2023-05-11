@@ -137,11 +137,10 @@ include(FindSol2)
 find_package(ZLIB REQUIRED)
 
 #################
-# Find Zlib
+# Find MySQL
 #################
 include(FindMySQL)
-find_package(sqlpp11 REQUIRED)
-include(FindSqlpp11-connector-mysql REQUIRED)
+find_package(unofficial-mysql-connector-cpp CONFIG REQUIRED)
 
 #################
 # Horizon Project Source

@@ -61,7 +61,7 @@ void AuthSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 		int16_t packet_len = 0;
 		
 		memcpy(&packet_id, _buffer.get_read_pointer(), sizeof(int16_t));
-		
+
 		TPacketTablePairType p = _pkt_tbl->get_tpacket_info(packet_id);
 		
 		if (p.first == -1) {
@@ -86,9 +86,6 @@ void AuthSession::update(uint32_t /*diff*/)
 		uint16_t packet_id = 0x0;
 		memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(uint16_t));
 		HPacketTablePairType p = _pkt_tbl->get_hpacket_info(packet_id);
-		
-		HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - 0x" << p.first << std::endl;
-		
 		p.second->handle(std::move(*read_buf));
 	}
 }

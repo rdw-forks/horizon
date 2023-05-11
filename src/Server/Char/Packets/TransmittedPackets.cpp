@@ -30,12 +30,9 @@
 #include "Server/Char/Session/CharSession.hpp"
 #include "Server/Char/Interface/CharClientInterface.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Common/SQL/Character/Character.hpp"
-#include "Server/Common/SQL/Character/Status.hpp"
 #include "Server/Char/Char.hpp"
 
-#include <sqlpp11/sqlpp11.h>
-#include <sqlpp11/functions.h>
+#include <mysqlx/xdevapi.h>
 
 using namespace Horizon::Char;
 
@@ -332,15 +329,26 @@ ByteBuffer &HC_ACK_CHANGE_CHARNAME::serialize()
 /**
  * HC_ACCEPT_ENTER
  */
-
 bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8_t permitted_slots, uint8_t total_premium_slots)
 {
-	SQL::TableCharacters tch;
-	SQL::TableCharacterStatus tcs;
+	mysqlx::RowResult rr;
+	
+	try {
+		rr = sChar->get_db_connection()->sql("SELECT "
+			"a.`id`, a.`account_id`, a.`slot`, a.`name`, a.`online`, a.`gender`, a.`delete_reserved_at`, a.`deleted_at`, a.`unban_time`, " // 0 - 8
+			"a.`rename_count`, a.`last_unique_id`, a.`hotkey_row_index`, a.`change_slot_count`, a.`font`, a.`show_equip`, a.`allow_party`, " // 9 - 15
+			"a.`partner_aid`, a.`father_aid`, a.`mother_aid`, a.`child_aid`, a.`party_id`, a.`guild_id`, a.`pet_id`, a.`homun_id`, " // 16 - 23
+			"a.`elemental_id`, a.`current_map`, a.`current_x`, a.`current_y`, a.`saved_map`, a.`saved_x`, a.`saved_y`, " // 24 - 30
+			"b.`job_id`, b.`base_level`, b.`job_level`, b.`base_experience`, b.`job_experience`, b.`zeny`, b.`strength`, " // 31 - 37
+			"b.`agility`, b.`vitality`, b.`intelligence`, b.`dexterity`, b.`luck`, b.`maximum_hp`, b.`hp`, b.`maximum_sp`, " // 38 - 45
+			"b.`sp`, b.`status_points`, b.`skill_points`, b.`body_state`, b.`virtue`, b.`honor`, b.`manner`, b.`hair_style_id`, " // 46 - 53
+			"b.`hair_color_id`, b.`cloth_color_id`, b.`body_id`, b.`weapon_id`, b.`shield_id`, b.`head_top_view_id`, b.`head_mid_view_id`, " // 54 - 60
+			"b.`head_bottom_view_id`, b.`robe_view_id` " // 61 - 62
+			"FROM `characters` as a LEFT JOIN `character_status` as b ON a.id = b.id WHERE a.account_id = ? AND a.deleted_at = ?")
+			.bind(account_id, 0)
+			.execute();
 
-	std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
-
-	auto cres = (*conn)(select(all_of(tch).as(sqlpp::alias::left), all_of(tcs).as(sqlpp::alias::right)).from(tch.join(tcs).on(tch.id == tcs.id)).where(tch.account_id == account_id and tch.deleted_at.is_null()));
+	std::list<mysqlx::Row> rs = rr.fetchAll();
 
 #if PACKET_VERSION >= 20100413
 	_max_char_slots = max_char_slots;
@@ -349,62 +357,59 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 #endif
 
 	_packet_length = 0;
-	for (auto i = cres.begin(); i != cres.end(); i++)
-	{
+	for (auto r : rs) {
 		s_hc_character_list_data c;
-		
-		c._character_id = i->right.id;          ///< 0
-		c._base_experience = i->right.base_experience;
-		c._zeny = i->right.zeny;                    ///< 8
-		c._job_experience = i->right.job_experience;
-		c._job_level = i->right.job_level;               ///< 16
+		c._character_id = r[0].get<int>();;          ///< 0
+		c._base_experience = r[34].get<int64_t>();
+		c._zeny = r[36].get<int64_t>();                    ///< 8
+		c._job_experience = r[35].get<int64_t>();
+		c._job_level = r[33].get<int>();               ///< 16
 		c._sc_opt1 = 0;                 ///< 20 Probably OPT1 / 2
 		c._sc_opt2 = 0;                 ///< 24
-		c._body_state = i->right.body_state;              ///< 28
-		c._virtue = i->right.virtue;                  ///< 32
-		c._honor = i->right.honor;                   ///< 36
-		c._status_points = i->right.status_points;           ///< 40
-		c._hp = i->right.hp;                      ///< 42
-		c._maximum_hp = i->right.maximum_hp;              ///< 46
-		c._sp = i->right.sp;                      ///< 50
-		c._maximum_sp = i->right.maximum_sp;              ///< 52
-		c._walk_speed = DEFAULT_MOVEMENT_SPEED;              ///< 54
-		c._job_id = i->right.job_id;                  ///< 56
-		c._hair_view_id = i->right.hair_style_id;            ///< 58
+		c._body_state = r[49].get<int64_t>();              ///< 28
+		c._virtue = r[50].get<int>();                  ///< 32
+		c._honor = r[51].get<int>();                   ///< 36
+		c._status_points = r[47].get<int>();           ///< 40
+		c._hp = r[44].get<int>();                      ///< 42
+		c._maximum_hp = r[43].get<int>();              ///< 46
+		c._sp = r[46].get<int>();                      ///< 50
+		c._maximum_sp = r[47].get<int>();              ///< 52
+		c._walk_speed = int16_t(DEFAULT_MOVEMENT_SPEED);              ///< 54
+		c._job_id = r[31].get<int>();                  ///< 56
+		c._hair_view_id = r[53].get<int>();            ///< 58
 #if PACKET_VERSION >= 20141022
-		c._body_view_id = i->right.body_id;            ///< 60 p->body in hercules.
+		c._body_view_id = r[56].get<int>();            ///< 60 p->body in hercules.
 #endif
-		c._weapon_view_id = i->right.weapon_id;          ///< 62 OPTION_* in hercules.
-		c._base_level = i->right.base_level;              ///< 64
-		c._skill_point = i->right.skill_points;             ///< 66
-		c._head_bottom_view_id = i->right.head_bottom_view_id;     ///< 68
-		c._shield_id = i->right.shield_id;               ///< 70
-		c._head_top_view_id = i->right.head_top_view_id;        ///< 72
-		c._head_mid_view_id = i->right.head_mid_view_id;        ///< 74
-		c._hair_color_id = i->right.hair_color_id;           ///< 76
-		c._clothes_color_id = i->right.cloth_color_id;        ///< 78
+		c._weapon_view_id = r[57].get<int>();          ///< 62 OPTION_* in hercules.
+		c._base_level = r[32].get<int>();              ///< 64
+		c._skill_point = r[48].get<int>();             ///< 66
+		c._head_bottom_view_id = r[61].get<int>();     ///< 68
+		c._shield_id = r[58].get<int>();               ///< 70
+		c._head_top_view_id = r[59].get<int>();        ///< 72
+		c._head_mid_view_id = r[60].get<int>();        ///< 74
+		c._hair_color_id = r[61].get<int>();           ///< 76
+		c._clothes_color_id = r[55].get<int>();        ///< 78
 		
-		std::string lname =i->left.name;
+		std::string lname = r[3].get<std::string>();
 		strncpy(c._name,  lname.c_str(), MAX_UNIT_NAME_LENGTH);  ///< 80
 		
-		c._strength = i->right.strength;                 ///< 104
-		c._agility = i->right.agility;
-		c._vitality = i->right.vitality;
-		c._intelligence = i->right.intelligence;
-		c._dexterity = i->right.dexterity;
-		c._luck = i->right.luck;
-		c._char_slot = i->left.slot;               ///< 110
+		c._strength = r[37].get<int>();                 ///< 104
+		c._agility = r[38].get<int>();
+		c._vitality = r[39].get<int>();
+		c._intelligence = r[40].get<int>();
+		c._dexterity = r[41].get<int>();
+		c._luck = r[42].get<int>();
+		c._char_slot = r[2].get<int>();               ///< 110
 #if PACKET_VERSION >= 20061023
-		c._rename_count = i->left.rename_count ? 0 : 1;            ///< 112
+		c._rename_count = r[9].get<int>() ? 0 : 1;            ///< 112
 #endif
 #if (PACKET_VERSION >= 20100720 && PACKET_VERSION <= 20100727) || PACKET_VERSION >= 20100803
-		std::string current_map = i->left.current_map;
+		std::string current_map = r[25].get<std::string>();
 		strncpy(c._map_name,  current_map.c_str(), MAP_NAME_LENGTH_EXT);///< 114
 #endif
 #if PACKET_VERSION >= 20100803
-		if (!i->left.deleted_at.is_null()) {
-			std::chrono::system_clock::time_point tp(i->left.deleted_at.value());             ///< 130
-			std::chrono::system_clock::duration dn = tp.time_since_epoch();
+		if (r[7].get<int>() != 0) {             ///< 130
+			std::chrono::system_clock::duration dn = std::chrono::system_clock::duration(r[7].get<int>());
 			c._deleted_at = dn.count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		}
 		else {
@@ -412,21 +417,26 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 		}
 #endif
 #if PACKET_VERSION >= 20110111
-		c._robe_view_id = i->right.robe_view_id;            ///< 134
+		c._robe_view_id = r[62].get<int>();            ///< 134
 #endif
 #if PACKET_VERSION != 20111116 //2011-11-16 wants 136, ask gravity.
 #if PACKET_VERSION >= 20110928
-		c._change_slot_count = i->left.change_slot_count ? 1 : 0;       ///< 138
+		c._change_slot_count = r[12].get<int>() ? 1 : 0;       ///< 138
 #endif
 #if PACKET_VERSION >= 20111025
-		c._addon_option = i->left.rename_count ? 1 : 0;            ///< 142 1: Displays "Addon" on side-bar.
+		c._addon_option = r[9].get<int>() ? 1 : 0;            ///< 142 1: Displays "Addon" on side-bar.
 #endif
 #if PACKET_VERSION >= 20141016
-		c._gender = i->left.gender == "M" ? 1 : i->left.gender == "F" ? 0 : 99;                   ///< 146 0: Female, 1: Male, 99: Account-based.
+		c._gender = r[5].get<std::string>() == "M" ? 1 : r[5].get<std::string>() == "F" ? 0 : 99;                   ///< 146 0: Female, 1: Male, 99: Account-based.
 #endif
 #endif
 		_packet_length += sizeof(c);
 		_characters.push_back(c);
+	} // end for
+	}
+	catch (mysqlx::Error& error) {
+		HLog(error) << "HC_ACCEPT_ENTER::prepare: " << error.what();
+		return false;
 	}
 
 #if PACKET_VERSION >= 20100413
@@ -536,68 +546,86 @@ int32_t HC_ACK_CHARINFO_PER_PAGE::prepare(bool empty)
 	_packet_length = 4;
 	
 	if (!empty) {
-		SQL::TableCharacters tch;
-		SQL::TableCharacterStatus tcs;
-		
-		std::shared_ptr<sqlpp::mysql::connection> conn = sChar->get_db_connection();
-		auto cres = (*conn)(select(all_of(tch).as(sqlpp::alias::left), all_of(tcs).as(sqlpp::alias::right)).from(tch.join(tcs).on(tch.id == tcs.id)).where(tch.account_id == get_session()->get_session_data()._account_id and tch.deleted_at.is_null()));
-		
-		for (auto i = cres.begin(); i != cres.end(); i++)
+
+		mysqlx::RowResult rr;
+
+		try {
+			rr = sChar->get_db_connection()->sql("SELECT "
+				"a.`id`, a.`account_id`, a.`slot`, a.`name`, a.`online`, a.`gender`, a.`delete_reserved_at`, a.`deleted_at`, a.`unban_time`, "
+				"a.`rename_count`, a.`last_unique_id`, a.`hotkey_row_index`, a.`change_slot_count`, a.`font`, a.`show_equip`, a.`allow_party`, "
+				"a.`partner_aid`, a.`father_aid`, a.`mother_aid`, a.`child_aid`, a.`party_id`, a.`guild_id`, a.`pet_id`, a.`homun_id`, "
+				"a.`elemental_id`, a.`current_map`, a.`current_x`, a.`current_y`, a.`saved_map`, a.`saved_x`, a.`saved_y`, "
+				"b.`job_id`, b.`base_level`, b.`job_level`, b.`base_experience`, b.`job_experience`, b.`zeny`, b.`strength`, "
+				"b.`agility`, b.`vitality`, b.`intelligence`, b.`dexterity`, b.`luck`, b.`maximum_hp`, b.`hp`, b.`maximum_sp`, "
+				"b.`sp`, b.`status_points`, b.`skill_points`, b.`body_state`, b.`virtue`, b.`honor`, b.`manner`, b.`hair_style_id`, "
+				"b.`hair_color_id`, b.`cloth_color_id`, b.`body_id`, b.`weapon_id`, b.`shield_id`, b.`head_top_view_id`, b.`head_mid_view_id`, "
+				"b.`head_bottom_view_id`, b.`robe_view_id` "
+				"FROM `characters` as a LEFT JOIN `character_status` as b ON a.id = b.id WHERE a.account_id = ? AND a.deleted_at = ?")
+				.bind(get_session()->get_session_data()._account_id, 0)
+				.execute();
+		}
+		catch (mysqlx::Error& error) {
+			HLog(error) << "HC_ACK_CHARINFO_PER_PAGE::prepare:" << error.what();
+			return false;
+		}
+
+		std::list<mysqlx::Row> rs = rr.fetchAll();
+
+		for (auto r : rs)
 		{
 			s_hc_character_list_data c;
 			
-			c._character_id = i->right.id;          ///< 0
-			c._base_experience = i->right.base_experience;
-			c._zeny = i->right.zeny;                    ///< 8
-			c._job_experience = i->right.job_experience;
-			c._job_level = i->right.job_level;               ///< 16
+			c._character_id = r[0].get<int>();          ///< 0
+			c._base_experience = r[34].get<int64_t>();
+			c._zeny = r[36].get<int64_t>();                    ///< 8
+			c._job_experience = r[35].get<int64_t>();
+			c._job_level = r[33].get<int>();               ///< 16
 			c._sc_opt1 = 0;                 ///< 20 Probably OPT1 / 2
 			c._sc_opt2 = 0;                 ///< 24
-			c._body_state = i->right.body_state;              ///< 28
-			c._virtue = i->right.virtue;                  ///< 32
-			c._honor = i->right.honor;                   ///< 36
-			c._status_points = i->right.status_points;           ///< 40
-			c._hp = i->right.hp;                      ///< 42
-			c._maximum_hp = i->right.maximum_hp;              ///< 46
-			c._sp = i->right.sp;                      ///< 50
-			c._maximum_sp = i->right.maximum_sp;              ///< 52
-			c._walk_speed = DEFAULT_MOVEMENT_SPEED;              ///< 54
-			c._job_id = i->right.job_id;                  ///< 56
-			c._hair_view_id = i->right.hair_style_id;            ///< 58
+			c._body_state = r[49].get<int>();              ///< 28
+			c._virtue = r[50].get<int>();                  ///< 32
+			c._honor = r[51].get<int>();                   ///< 36
+			c._status_points = r[47].get<int>();           ///< 40
+			c._hp = r[44].get<int>();                      ///< 42
+			c._maximum_hp = r[43].get<int>();              ///< 46
+			c._sp = r[46].get<int>();                      ///< 50
+			c._maximum_sp = r[45].get<int>();              ///< 52
+			c._walk_speed = int16_t(DEFAULT_MOVEMENT_SPEED);              ///< 54
+			c._job_id = r[31].get<int>();                  ///< 56
+			c._hair_view_id = r[53].get<int>();            ///< 58
 	#if PACKET_VERSION >= 20141022
-			c._body_view_id = i->right.body_id;            ///< 60 p->body in hercules.
+			c._body_view_id = r[56].get<int>();            ///< 60 p->body in hercules.
 	#endif
-			c._weapon_view_id = i->right.weapon_id;          ///< 62 OPTION_* in hercules.
-			c._base_level = i->right.base_level;              ///< 64
-			c._skill_point = i->right.skill_points;             ///< 66
-			c._head_bottom_view_id = i->right.head_bottom_view_id;     ///< 68
-			c._shield_id = i->right.shield_id;               ///< 70
-			c._head_top_view_id = i->right.head_top_view_id;        ///< 72
-			c._head_mid_view_id = i->right.head_mid_view_id;        ///< 74
-			c._hair_color_id = i->right.hair_color_id;           ///< 76
-			c._clothes_color_id = i->right.cloth_color_id;        ///< 78
+			c._weapon_view_id = r[57].get<int>();          ///< 62 OPTION_* in hercules.
+			c._base_level = r[32].get<int>();              ///< 64
+			c._skill_point = r[48].get<int>();             ///< 66
+			c._head_bottom_view_id = r[61].get<int>();     ///< 68
+			c._shield_id = r[58].get<int>();               ///< 70
+			c._head_top_view_id = r[59].get<int>();        ///< 72
+			c._head_mid_view_id = r[60].get<int>();        ///< 74
+			c._hair_color_id = r[54].get<int>();           ///< 76
+			c._clothes_color_id = r[55].get<int>();        ///< 78
 			
-			std::string lname =i->left.name;
+			std::string lname = r[3].get<std::string>();
 			strncpy(c._name,  lname.c_str(), MAX_UNIT_NAME_LENGTH);  ///< 80
 			
-			c._strength = i->right.strength;                 ///< 104
-			c._agility = i->right.agility;
-			c._vitality = i->right.vitality;
-			c._intelligence = i->right.intelligence;
-			c._dexterity = i->right.dexterity;
-			c._luck = i->right.luck;
-			c._char_slot = i->left.slot;               ///< 110
+			c._strength = r[37].get<int>();                 ///< 104
+			c._agility = r[38].get<int>();
+			c._vitality = r[39].get<int>();
+			c._intelligence = r[40].get<int>();
+			c._dexterity = r[41].get<int>();
+			c._luck = r[42].get<int>();
+			c._char_slot = r[2].get<int>();               ///< 110
 #if PACKET_VERSION >= 20061023
-			c._rename_count = i->left.rename_count ? 0 : 1;            ///< 112
+			c._rename_count = r[9].get<int>() ? 0 : 1;            ///< 112
 #endif
 #if (PACKET_VERSION >= 20100720 && PACKET_VERSION <= 20100727) || PACKET_VERSION >= 20100803
-			std::string current_map = i->left.current_map;
+			std::string current_map = r[25].get<std::string>();
 			strncpy(c._map_name,  current_map.c_str(), MAP_NAME_LENGTH_EXT);///< 114
 #endif
 #if PACKET_VERSION >= 20100803
-		if (!i->left.deleted_at.is_null()) {
-			std::chrono::system_clock::time_point tp(i->left.deleted_at.value());             ///< 130
-			std::chrono::system_clock::duration dn = tp.time_since_epoch();
+		if (r[7].get<int>() != 0) {
+			std::chrono::system_clock::duration dn = std::chrono::system_clock::duration(r[7].get<int>());
 			c._deleted_at = dn.count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		}
 		else {
@@ -605,17 +633,17 @@ int32_t HC_ACK_CHARINFO_PER_PAGE::prepare(bool empty)
 		}
 #endif
 #if PACKET_VERSION >= 20110111
-			c._robe_view_id = i->right.robe_view_id;            ///< 134
+			c._robe_view_id = r[62].get<int>();            ///< 134
 #endif
 #if PACKET_VERSION != 20111116 //2011-11-16 wants 136, ask gravity.
 	#if PACKET_VERSION >= 20110928
-			c._change_slot_count = i->left.change_slot_count ? 1 : 0;       ///< 138
+			c._change_slot_count = r[12].get<int>() ? 1 : 0;       ///< 138
 	#endif
 	#if PACKET_VERSION >= 20111025
-			c._addon_option = i->left.rename_count ? 1 : 0;            ///< 142 1: Displays "Addon" on side-bar.
+			c._addon_option = r[9].get<int>() ? 1 : 0;            ///< 142 1: Displays "Addon" on side-bar.
 	#endif
 	#if PACKET_VERSION >= 20141016
-			c._gender = i->left.gender == "M" ? 1 : i->left.gender == "F" ? 0 : 99;                   ///< 146 0: Female, 1: Male, 99: Account-based.
+			c._gender = r[5].get<std::string>() == "M" ? 1 : r[5].get<std::string>() == "F" ? 0 : 99;                   ///< 146 0: Female, 1: Male, 99: Account-based.
 	#endif
 #endif
 			_packet_length += sizeof(c);

@@ -219,7 +219,6 @@ protected:
 		std::size_t bytes_to_send = to_send.active_length();
 		memcpy(&packet_id, to_send.get_read_pointer(), sizeof(int16_t));
 		std::size_t bytes_sent = _socket->write_some(boost::asio::buffer(to_send.get_read_pointer(), bytes_to_send), error);
-		HLog(debug) << "Transmitted packet 0x" << std::hex << packet_id << " of size " << std::dec << to_send.active_length() << " to endpoint " << remote_ip_address() << ".";
 		return bytes_sent;
 	}
 private:
@@ -243,7 +242,13 @@ private:
 				on_error();
 				close_socket();
 			}
-			HLog(debug) << "Socket::read_handler_internal: " << error.value() << " (Code: " << error.message() << ").";
+			switch (error.value())
+			{
+			case 2: // End of file
+				break;
+			default:
+				HLog(debug) << "Socket::read_handler_internal: " << error.value() << " (Code: " << error.message() << ").";
+			}
 			return;
 		}
 

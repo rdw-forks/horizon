@@ -30,8 +30,6 @@
 #include "Player.hpp"
 
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
-#include "Server/Common/SQL/Character/Character.hpp"
-#include "Server/Common/SQL/Character/Status.hpp"
 
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
@@ -137,69 +135,92 @@ void Player::stop_movement()
 
 bool Player::save()
 {
-	SQL::TableCharacters tch;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-	
-	(*conn)(update(tch).set(tch.account_id = account()._account_id, tch.slot = character()._slot, tch.name = name(), tch.online = character()._online, tch.gender = character()._gender == ENTITY_GENDER_MALE ? "M" : "F",
-		tch.unban_time = character()._unban_time, tch.rename_count = character()._rename_count, tch.last_unique_id = character()._last_unique_id, tch.hotkey_row_index = character()._hotkey_row_index, 
-		tch.change_slot_count = character()._change_slot_count, tch.font = character()._font, tch.show_equip = character()._show_equip, tch.allow_party = character()._allow_party, 
-		tch.partner_aid = character()._partner_aid, tch.father_aid = character()._father_aid, tch.mother_aid = character()._mother_aid, tch.child_aid = character()._child_aid, tch.party_id = character()._party_id,
-		tch.guild_id = character()._guild_id, tch.pet_id = character()._pet_id, tch.homun_id = character()._homun_id, tch.elemental_id = character()._elemental_id,
-		tch.current_map = map()->get_name(), tch.current_x = map_coords().x(), tch.current_y = map_coords().y(),
-		tch.saved_map = character()._saved_map, tch.saved_x = character()._saved_x, tch.saved_y = character()._saved_y).where(tch.id == character()._character_id));
+	try {
+		sZone->get_db_connection()->sql("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
+			"`last_unique_id` = ?, `hotkey_row_index` = ?, `change_slot_count` = ?, `font` = ?, `show_equip` = ?, `allow_party` = ?, `partner_aid` = ?, `father_aid` = ?, `mother_aid` = ?,"
+			"`child_aid` = ?, `party_id` = ?, `guild_id` = ?, `pet_id` = ?, `homun_id` = ?, `elemental_id` = ?, `current_map` = ?, `current_x` = ?, `current_y` = ?,"
+			"`saved_map` = ?, `saved_x` = ?, `saved_y` = ? "
+			"WHERE `id` = ?")
+			.bind(account()._account_id, character()._slot, name(), character()._online, character()._gender == ENTITY_GENDER_MALE ? "M" : "F", character()._unban_time, character()._rename_count,
+				character()._last_unique_id, character()._hotkey_row_index, character()._change_slot_count, character()._font, character()._show_equip, character()._allow_party,
+				character()._partner_aid, character()._father_aid, character()._mother_aid, character()._child_aid, character()._party_id, character()._guild_id, character()._pet_id,
+				character()._homun_id, character()._elemental_id, map()->get_name(), map_coords().x(), map_coords().y(), character()._saved_map, character()._saved_x, character()._saved_y,
+				character()._character_id
+			)
+			.execute();
 
-	// Status
-	status()->save(shared_from_this()->downcast<Player>());
+		// Status
+		status()->save(shared_from_this()->downcast<Player>());
 
-	// Inventory
-	inventory()->save();
-
+		// Inventory
+		inventory()->save();
+	}
+	catch (mysqlx::Error& error) {
+		HLog(error) << "Player::save:" << error.what();
+		return false;
+	}
+	catch (std::exception& error) {
+		HLog(error) << "Player::save:" << error.what();
+		return false;
+	}
 	return true;
 }
 
 bool Player::load()
 {
-	SQL::TableCharacters tch;
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-	
-	auto res = (*conn)(select(all_of(tch)).from(tch).where(tch.id == character()._character_id));
-	
-	if (res.empty()) {
-		HLog(error) << "Error loading player, character with ID " << character()._character_id << " does not exist.";
+	try {
+		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
+			"`current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?")
+			.bind(character()._character_id)
+			.execute();
+
+		mysqlx::Row r = rr.fetchOne();
+
+		if (r.isNull()) {
+			HLog(error) << "Error loading player, character with ID " << character()._character_id << " does not exist.";
+			return false;
+		}
+
+		/* Initialize Player Model */
+		character()._character_id = r[0].get<int>();
+		account()._account_id = r[1].get<int>();
+		character()._slot = r[2].get<int>();
+		set_name(r[3].get<std::string>());
+		set_posture(POSTURE_STANDING);
+		character()._font = r[4].get<int>();
+
+		std::string char_gender = r[5].get<std::string>();
+
+		character()._gender = strcmp(char_gender.c_str(), "U") == 0
+			? (strcmp(account()._account_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE)
+			: strcmp(char_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE;
+
+		character()._online = 1;
+		set_last_unique_id((uint64_t)r[6].get<int64_t>());
+
+		character()._saved_map = r[7].get<std::string>();;
+		character()._saved_x = r[8].get<int>();
+		character()._saved_y = r[9].get<int>();
+
+		/**
+		 * Set map and coordinates for entity.
+		 */
+		MapCoords mcoords(r[11].get<int>(), r[12].get<int>());
+		std::shared_ptr<Map> map = MapMgr->get_map(r[10].get<std::string>());
+
+		map->container()->add_player(shared_from_this()->downcast<Player>());
+
+		set_map(map);
+		set_map_coords(mcoords);
+	}
+	catch (mysqlx::Error& error) {
+		HLog(error) << "Player::load:" << error.what();
 		return false;
 	}
-
-	/* Initialize Player Model */
-	character()._character_id = res.front().id;
-	account()._account_id = res.front().account_id;
-	character()._slot = res.front().slot;
-	set_name(res.front().name);
-	set_posture(POSTURE_STANDING);
-	character()._font = res.front().font;
-	
-	std::string char_gender = res.front().gender;
-
-	character()._gender = strcmp(char_gender.c_str(), "U") == 0
-		? (strcmp(account()._account_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE)
-		: strcmp(char_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE;
-	
-	character()._online = 1;
-	set_last_unique_id((uint64_t) res.front().last_unique_id);
-
-	character()._saved_map = res.front().saved_map;
-	character()._saved_x = res.front().saved_x;
-	character()._saved_y = res.front().saved_y;
-
-	/**
-	 * Set map and coordinates for entity.
-	 */
-	MapCoords mcoords(res.front().current_x, res.front().current_y);
-	std::shared_ptr<Map> map = MapMgr->get_map(res.front().current_map);
-	
-	map->container()->add_player(shared_from_this()->downcast<Player>());
-
-	set_map(map);
-	set_map_coords(mcoords);
+	catch (std::exception& error) {
+		HLog(error) << "Player::load:" << error.what();
+		return false;
+	}
 
 	return true;
 }

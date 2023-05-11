@@ -29,7 +29,6 @@
 
 #include "Zone.hpp"
 
-#include "Server/Common/SQL/SessionData.hpp"
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
@@ -108,16 +107,17 @@ bool ZoneServer::read_config()
 }
 
 void ZoneServer::verify_connected_sessions()
-{
-	SQL::TableSessionData tsd = {};
-	std::shared_ptr<sqlpp::mysql::connection> conn = sZone->get_db_connection();
-	
-	(*conn)(remove_from(tsd).where(tsd.current_server == "Z" and
-		tsd.last_update < std::time(nullptr) - config().session_max_timeout()));
+{	
+	sZone->get_db_connection()->sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
+		.bind("Z", std::time(nullptr) - config().session_max_timeout())
+		.execute();
 
-	auto sres = (*conn)(select(count(tsd.game_account_id)).from(tsd).where(tsd.current_server == "Z"));
+	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
+		.bind("Z")
+		.execute();
+	mysqlx::Row r = rr.fetchOne();
 
-	int32_t count = sres.front().count;
+	int32_t count = r[0].get<int>();
 
 	HLog(info) << count << " connected session(s).";
 }

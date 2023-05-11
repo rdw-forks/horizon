@@ -26,7 +26,6 @@
 ###################################################
 
 add_subdirectory(CLI)
-add_subdirectory(SQL)
 add_subdirectory(Definitions)
 add_subdirectory(Interfaces)
 add_subdirectory(Base)

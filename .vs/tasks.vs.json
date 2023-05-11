@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "MySQLTest",
+      "appliesTo": "src/Tests/MySQLTest.cpp",
+      "type": "launch"
+    },
+    {
+      "taskLabel": "task-Char",
+      "appliesTo": "src/Server/Char/Char.cpp",
+      "type": "launch"
+    }
+  ]
+}

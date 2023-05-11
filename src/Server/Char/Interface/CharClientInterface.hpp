@@ -59,7 +59,7 @@ public:
 	bool pincode_verify(uint32_t account_id, char *pincode);
 	void pincode_decrypt(uint32_t seed, char *input, char *output);
 	
-	bool select_character(uint8_t slot);
+	bool select_character(int slot);
 
 	bool update_session(int32_t account_id);
 	

@@ -39,6 +39,7 @@ set(UTIL_DIR ${PROJECT_SOURCE_DIR}/src/Utility)
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
+message(STATUS "Building Tests -")
 foreach(TEST_SOURCE ${TEST_SOURCES})
 	# Extract the filename without an extension (NAME_WE)
 	get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)
@@ -63,7 +64,12 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${CORE_DIR}/Logging/Logger.cpp
 			${CORE_DIR}/Logging/Logger.hpp)
 		set (ADD_LIBS -lpthread)
+	elseif (TEST_NAME STREQUAL "MySQLTest")
+		set(ADD_INCLUDE_DIRS ${MYSQL_INCLUDE_DIR} ${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR})
+		set(ADD_LIBS ${MYSQL_LIBRARY} unofficial::mysql-connector-cpp::connector)
 	endif ()
+
+	message(STATUS ${TEST_NAME})
 
 	# Add test executable.
 	add_executable(${TEST_NAME} ${TEST_SOURCE} ${ADD_SOURCES})
