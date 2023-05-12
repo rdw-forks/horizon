@@ -30,7 +30,7 @@ jobs:
       run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
     
     - name: VCPKG Install Boost
-      run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
+      run: vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows
 
     - name : VCPKG Integrate
       run: vcpkg integrate install
