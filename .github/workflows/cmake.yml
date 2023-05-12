@@ -18,6 +18,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: run-vcpkg
+      uses: lukka/run-vcpkg@v11.1
+
     - name: VCPKG Install
       run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
     
