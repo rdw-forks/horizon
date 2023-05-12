@@ -48,7 +48,6 @@ target_link_libraries(char
 	PUBLIC
         ${Boost_LIBRARIES}
         networking
-	    -lpthread
         ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		${MYSQL_LIBRARIES}

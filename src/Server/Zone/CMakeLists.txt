@@ -67,7 +67,6 @@ target_link_libraries(zone
 	PUBLIC
         ${Boost_LIBRARIES}
 		networking
-		-lpthread
 		mcache
 		${Readline_LIBRARY}
 		${LUA_LIBRARIES}
