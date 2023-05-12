@@ -21,8 +21,8 @@ jobs:
     - name: run-vcpkg
       uses: lukka/run-vcpkg@v11.1
       with: 
-        vcpkgGitCommitId: ed8fb07a8bd19568c8594c6f1a04955242f82d35
-
+        vcpkgGitCommitId: ed8fb07a8bd19568c8594c6f1a04955242f82d3
+        
     - name: VCPKG Install
       run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
     
