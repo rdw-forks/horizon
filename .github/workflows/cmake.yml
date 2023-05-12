@@ -18,19 +18,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: run-vcpkg
-      uses: lukka/run-vcpkg@v11.1
-      with:
-          # This is the default location of the directory containing vcpkg sources.
-          # Change it to the right location if needed.
-          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-          
-    - uses: actions/checkout@v3
     - name: VCPKG Install
-      run: vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
+      run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
     
     - name: VCPKG Install Boost
-      run: vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
+      run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows mysql-connector-cpp:x64-windows
 
     - name : VCPKG Integrate
       run: vcpkg integrate install
