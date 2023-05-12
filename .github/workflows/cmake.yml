@@ -20,14 +20,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    
-    - name: run-vcpkg
-      uses: lukka/run-vcpkg@v11.1
-      with: 
-        vcpkgGitCommitId: 501db0f17ef6df184fcdbfbe0f87cde2313b6ab1
-        
+      
     - name: VCPKG Install
-      run: vcpkg/vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows libmysql:x64-windows mysql-connector-cpp:x64-windows
+      run: vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows libmysql:x64-windows mysql-connector-cpp:x64-windows
     
     - name: VCPKG Install Boost
       run: vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows
