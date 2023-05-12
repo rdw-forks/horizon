@@ -17,6 +17,17 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
 
+    services:
+      mysql:
+        image: mysql:8.0.21
+        env:
+          MYSQL_DATABASE: horizon
+          MYSQL_USER: horizon
+          MYSQL_PASSWORD: horizon
+          MYSQL_ROOT_PASSWORD: horizon
+        ports:
+        - 33306:33060
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
     - name: Checkout
       uses: actions/checkout@v3
