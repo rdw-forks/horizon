@@ -34,7 +34,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Build
-      run: cmake -B ${{github.workspace}}\build -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build";
+      run: cmake -B ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build";
           cmake --build ${{github.workspace}}\build --config Release;
     - name: Run
       run: 
