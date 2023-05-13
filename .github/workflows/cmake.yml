@@ -41,27 +41,27 @@ jobs:
       run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
     - name: Run
       run: sh ./horizon.sh run-tests "build\test\Release";
-  build-install-and-run:
-    needs: testing
-    runs-on: self-hosted
-    steps:
+build-install-and-run:
+  needs: testing
+  runs-on: self-hosted
+  steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure Step & Build
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\build" ; 
+      run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" ;
     - name: Install
       run: sh ./horizon.sh install "build/bin/Release";
     - name: Install Database
-      run: sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
-           sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
-           sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon;
+      run: |
+        sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+        sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
     - name: Run
       working-directory: ${{github.workspace}}\build\bin\Release
-      run: ./auth.exe --with-config="config\auth-server.lua" --test-run;
-           ./char.exe --with-config="config\char-server.lua" --test-run;
-           ./zone.exe --with-config="config\zone-server.lua" --test-run;
+      run: |
+        ./auth.exe --with-config="config\auth-server.lua" --test-run
+        ./char.exe --with-config="config\char-server.lua" --test-run
+        ./zone.exe --with-config="config\zone-server.lua" --test-run
       
   cleanup:
     needs: build-install-and-run
