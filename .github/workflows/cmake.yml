@@ -36,9 +36,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Build
-      run: ./horizon.sh build-tests
+      run: . ./horizon.sh build-tests
     - name: Run
-      run: ./horizon.sh run-tests "build\bin\Release"
+      run: . ./horizon.sh run-tests "build\bin\Release"
   build-and-install:
     runs-on: self-hosted
     steps:
@@ -47,20 +47,20 @@ jobs:
     - name: Configure Step & Build
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\build"  
+      run: . ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\build"  
     - name: Install
-      run: ./horizon.sh install "build/bin/Release"
+      run: . ./horizon.sh install "build/bin/Release"
     - name: Install Database
-      run: ./horizon.sh createdb horizon ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}};
-           ./horizon.sh importdb horizon ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}};
-           ./horizon.sh adduser horizon horizon horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
+      run: . ./horizon.sh createdb horizon ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}};
+           . ./horizon.sh importdb horizon ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}};
+           . ./horizon.sh adduser horizon horizon horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
     - name: Run
-      run: ./horizon.sh auth build\bin\Release --with-config="build\bin\Release\config\auth-server.lua" --test-run
-           ./horizon.sh char build\bin\Release --with-config="build\bin\Release\config\char-server.lua" --test-run
-           ./horizon.sh zone build\bin\Release --with-config="build\bin\Release\config\zone-server.lua" --test-run
+      run: . ./horizon.sh auth build\bin\Release --with-config="build\bin\Release\config\auth-server.lua" --test-run
+           . ./horizon.sh char build\bin\Release --with-config="build\bin\Release\config\char-server.lua" --test-run
+           . ./horizon.sh zone build\bin\Release --with-config="build\bin\Release\config\zone-server.lua" --test-run
       
   cleanup:
     runs-on: self-hosted
     steps:
     - name: Cleanup
-      run: ./horizon.sh dropdb horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
+      run: . ./horizon.sh dropdb horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
