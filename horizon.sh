@@ -61,10 +61,10 @@ function usage
 	echo "    $0 zone [install_directory] [args]"
     echo "    $0 build-tests [install_directory]"
     echo "    $0 run-tests [install_directory]"
-	echo "    $0 createdb <dbname> [dbuser] [dbpassword] [dbhost]"
-	echo "    $0 importdb <dbname> [dbuser] [dbpassword] [dbhost]"
-	echo "    $0 adduser <dbname> <new_user> <new_user_password> [dbuser] [dbpassword] [dbhost]"
-    echo "    $0 dropdb <dbname> [dbuser] [dbpassword] [dbhost]"
+	echo "    $0 createdb [dbuser] [dbpassword] [dbhost] <dbname>"
+	echo "    $0 importdb [dbuser] [dbpassword] [dbhost] <dbname>"
+	echo "    $0 adduser [dbuser] [dbpassword] [dbhost] <dbname> <new_user> <new_user_password>"
+    echo "    $0 dropdb [dbuser] [dbpassword] [dbhost] <dbname>"
 }
 
 function aborterror
@@ -91,43 +91,20 @@ case "$MODE" in
         fi
         BUILD_DIRECTORY="$1"
         ;;
+    adduser)
+        if [ -z "$5" ] OR [ -z "$6" ]; then
+            usage
+        fi
+        NEWUSER="$5"
+        NEWPASS="$6"
 	createdb|importdb|dropdb|test)
-		if [ -z "$1" ]; then
+		if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
 			usage
 		fi
-		DBNAME="$1"
-		if [ -n "$2" ]; then
-			DBUSER_ARG="--user=$2"
-			DBUSER="$2"
-		fi
-		if [ -n "$3" ]; then
-			DBPASS_ARG="--password=$3"
-			DBPASS="$3"
-		fi
-		if [ -n "$4" ]; then
-			DBHOST_ARG="--host=$4"
-			DBHOST="$4"
-		fi
-		;;
-	adduser)
-		if [ -z "$1" ] OR [ -z "$2" ]; then
-			usage
-		fi
-		DBNAME="$1"
-		NEWUSER="$2"
-		NEWPASS="$3"
-		if [ -n "$4" ]; then
-			DBUSER_ARG="--user=$4"
-			DBUSER="$4"
-		fi
-		if [ -n "$5" ]; then
-			DBPASS_ARG="--password=$5"
-			DBPASS="$5"
-		fi
-		if [ -n "$6" ]; then
-			DBHOST_ARG="--host=$6"
-			DBHOST="$6"
-		fi
+        DBUSER=$1
+        DBPASS=$2
+        DBHOST=$3
+        DBNAME=$4
 		;;
     install|build-tests|run-tests)
         if [ -z "$1" ]; then
@@ -262,7 +239,7 @@ case "$MODE" in
 		;;
 	adduser)
 		console_log "Adding user $NEWUSER as $DBUSER, with access to database $DBNAME..."
-		mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="GRANT SELECT, INSERT, UPDATE, DELETE ON $DBNAME.* TO '$NEWUSER'@'$DBHOST' IDENTIFIED BY '$NEWPASS';"
+		mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="GRANT ALL ON `$DBNAME`.* TO '$NEWUSER'@'$DBHOST_ARG' IDENTIFIED BY '$NEWPASS';"
 		;;
     dropdb)
         console_log "Dropping database $DBNAME..."
