@@ -155,7 +155,7 @@ function build_horizon
 function build_tests
 {
     echo "Horizon tests build initiated, preparing..."
-    cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_INSTALL_PREFIX="build"|| aborterror "Horizon tests build has failed."
+    cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 $@ || aborterror "Horizon tests build has failed."
     echo "Initiating build..."
     cmake --build build --config Release
 }
