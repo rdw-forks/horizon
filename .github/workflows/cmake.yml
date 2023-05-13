@@ -39,9 +39,9 @@ jobs:
     - name: Run
       run: 
         files=$(find ${{github.workspace}}\src\Tests -type f -iname "*Test.cpp");
-        for f in ${files[@]};
+        for $f in ${files[@]};
         do
-          t=$(basename ${f::-4});
+          $t=$(basename ${f::-4});
           ${{github.workspace}}\build\test\Release\${t}.exe;
         done
       
