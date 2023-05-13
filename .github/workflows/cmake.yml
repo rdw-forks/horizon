@@ -14,7 +14,7 @@ env:
   MYSQL_DATABASE: horizon
 
 jobs:
-  build:
+  cluster-dependencies:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -32,32 +32,37 @@ jobs:
 
     - name : VCPKG Integrate
       run: vcpkg integrate install
-    
-    - name: Configure Step
+      
+  installation:
+    runs-on: self-hosted
+    steps:
+    - name: Install
+      run: ./horizon.sh install "build/bin/Release"
+      
+    - name: Install Database
+      run: ./horizon.sh createdb horizon ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}};
+           ./horizon.sh importdb horizon ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}};
+           ./horizon.sh adduser horizon horizon horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
+  testing:
+    runs-on: self-hosted
+    steps:
+    - name: Build
+      run: ./horizon.sh build-tests
+    - name: Run
+      run: ./horizon.sh run-tests "build\bin\Release"
+      
+  servers:
+    runs-on: self-hosted
+    steps:
+    - name: Configure Step & Build
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\horizon-bin" 
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}\build --config ${{env.BUILD_TYPE}}
-
-    - name: Install
-      run: Copy-Item ${{ github.workspace }}\db ${{ github.workspace }}\build\bin\Release -Recurse;
-           Copy-Item ${{ github.workspace }}\config ${{ github.workspace }}\build\bin\Release -Recurse;
-           Copy-Item ${{ github.workspace }}\scripts ${{ github.workspace }}\build\bin\Release -Recurse;
-           Move-Item ${{ github.workspace }}\build\bin\Release\config\auth-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\auth-server.lua;
-           Move-Item ${{ github.workspace }}\build\bin\Release\config\char-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\char-server.lua;
-           Move-Item ${{ github.workspace }}\build\bin\Release\config\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua;
-    
-    - name: Install MYSQL Database
-      run: mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "CREATE DATABASE `horizon`; GRANT ALL ON `horizon`.* TO 'horizon'@'localhost'";
-          mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} horizon < ${{github.workspace}}\sql-files\horizon.sql;
-    
+      run: ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}\build"  
+      
     - name: Run
-      working-directory: ${{ github.workspace }}\build\bin\Release
-      run: .\auth.exe --with-config="config/auth-server.lua";
-           .\char.exe --with-config="config/char-server.lua";
-           .\zone.exe --with-config="config/zone-server.lua";
-           
+      run: ./horizon.sh auth build\bin\Release --with-config="build\bin\Release\config\auth-server.lua" --test-run
+           ./horizon.sh char build\bin\Release --with-config="build\bin\Release\config\char-server.lua" --test-run
+           ./horizon.sh zone build\bin\Release --with-config="build\bin\Release\config\zone-server.lua" --test-run
+    
     - name: Cleanup
-      run: mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "DROP DATABASE `horizon`"
+      run: ./horizon.sh dropdb horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
