@@ -57,6 +57,6 @@ horizon_config = {
         user = 'horizon',
         db = 'horizon',
         pass = 'horizon',
-        port = 3306
+        port = 33060
     }
 }

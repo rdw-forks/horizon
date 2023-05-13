@@ -62,14 +62,17 @@ Server::~Server()
 
 void Server::parse_exec_args(const char *argv[], int argc)
 {
+	std::string started_with_args;
     for (int i = 1; i < argc; ++i) {
+		started_with_args.append(argv[i]).append(" ");
+
         std::string arg(argv[i]);
         std::vector<std::string> separated_args;
         boost::algorithm::split(separated_args, arg, boost::algorithm::is_any_of("="));
         
-        if (separated_args.size() == 1) {
+		if (separated_args.size() == 1) {
             std::string arg = separated_args.at(0);
-            if (arg.compare("--test-run")) {
+            if (arg.compare("--test-run") == 0) {
                 HLog(info) << "Horizon test mode intiated.";
                 general_conf().set_test_run();
             }
@@ -87,6 +90,8 @@ void Server::parse_exec_args(const char *argv[], int argc)
             }
         }
     }
+
+	HLog(info) << "Started with args:" << started_with_args;
 }
 
 #define core_config_error(setting_name, default) \
@@ -189,7 +194,8 @@ void Server::initialize_core()
 	/**
 	 * Initialize Commandline Interface
 	 */
-	initialize_command_line();
+	if (!general_conf().is_test_run())
+		initialize_command_line();
 }
 
 void Server::finalize_core()

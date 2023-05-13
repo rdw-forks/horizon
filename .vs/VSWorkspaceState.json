@@ -6,7 +6,12 @@
     ]
   },
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\Server",
+    "\\src\\Server\\Char",
+    "\\src\\Server\\Char\\Interface"
   ],
+  "SelectedNode": "\\.gitignore",
   "PreviewInSolutionExplorer": false
 }
