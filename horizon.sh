@@ -54,33 +54,22 @@ function usage
 	echo "usage:"
 	echo "    $0 start [directory] [args]"
 	echo "    $0 stop"
-	echo "    $0 build [build_directory] [args]"
-	echo "    $0 auth [args]"
-	echo "    $0 char [args]"
-	echo "    $0 zone [args]"
+	echo "    $0 build [build_directory] [vcpkg_install_dir] [vcpkg_triplet]"
+    echo "    $0 install [install_directory]"
+	echo "    $0 auth [install_directory] [args]"
+	echo "    $0 char [install_directory] [args]"
+	echo "    $0 zone [install_directory] [args]"
     echo "    $0 build-tests [install_directory]"
     echo "    $0 run-tests [install_directory]"
-	echo "    $0 inter [directory] [args]"
 	echo "    $0 createdb <dbname> [dbuser] [dbpassword] [dbhost]"
 	echo "    $0 importdb <dbname> [dbuser] [dbpassword] [dbhost]"
 	echo "    $0 adduser <dbname> <new_user> <new_user_password> [dbuser] [dbpassword] [dbhost]"
     echo "    $0 dropdb <dbname> [dbuser] [dbpassword] [dbhost]"
-	exit 1
-}
-
-function build_horizon
-{
-    echo "Horizon build initiated, preparing build directory..."
-    cmake -B "$PWD/build" $@ || aborterror "Horizon Build has failed."
-    echo "Initiating Build..."
-    cmake -B "$PWD/build" --config Release || aborterror "Horizon Build has failed."
-    echo "Build Complete."
 }
 
 function aborterror
 {
 	echo "Horizon: $@"
-	exit 1
 }
 
 function console_log
@@ -94,7 +83,14 @@ DBPASS=ragnarok
 DBHOST=localhost
 
 INSTALL_DIRECTORY=""
+BUILD_DIRECTORY=""
 case "$MODE" in
+    build)
+        if [ -z "$1" ]; then
+            usage
+        fi
+        BUILD_DIRECTORY="$1"
+        ;;
 	createdb|importdb|dropdb|test)
 		if [ -z "$1" ]; then
 			usage
@@ -133,21 +129,66 @@ case "$MODE" in
 			DBHOST="$6"
 		fi
 		;;
+    install|build-tests|run-tests)
+        if [ -z "$1" ]; then
+            usage
+        fi
+        INSTALL_DIRECTORY=$1
+        ;;
     auth|char|zone|start)
         if [ -z "$1" ]; then
             usage
         fi
         INSTALL_DIRECTORY=$1
+        ;;
 esac
 
-SERVERS=(auth char zone)
+function build_horizon
+{
+    echo "Horizon build initiated, preparing build directory..."
+    cmake -B build $@ || aborterror "Horizon Build has failed."
+    echo "Initiating Build..."
+    cmake --build build --config Release --target install || aborterror "Horizon Build has failed."
+    echo "Build Complete."
+}
+
+function build_tests
+{
+    echo "Horizon tests build initiated, preparing..."
+    cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_INSTALL_PREFIX="build"|| aborterror "Horizon tests build has failed."
+    echo "Initiating build..."
+    cmake --build build --config Release
+}
+
+function run_tests
+{
+    files=$(find src/Tests -type f -iname "*Test.cpp");
+    for f in ${files[@]};
+    do
+        t=$(basename ${f::-4});
+        ./"$INSTALL_DIRECTORY/${t}.exe";
+    done
+}
+
+function install_horizon
+{
+    echo "Horizon installation will copy all required folders to the destination installation path."
+    cp db $1 -r
+    cp scripts $1 -r 
+    cp config $1 -r
+    mv $INSTALL_DIRECTORY/config/auth-server.lua.dist $INSTALL_DIRECTORY/config/auth-server.lua
+    mv $INSTALL_DIRECTORY/config/char-server.lua.dist $INSTALL_DIRECTORY/config/char-server.lua
+    mv $INSTALL_DIRECTORY/config/zone-server.lua.dist $INSTALL_DIRECTORY/config/zone-server.lua
+}
 
 function check_compile
 {
-    if [ ! -f ./$1/$2 ]; then
+    if [ ! -f ./"$1/$2.exe" ]; then
         aborterror "$2 is not compiled... aborting."
     fi
 }
+
+SERVERS=(auth char zone)
 
 function start_server
 {
@@ -158,12 +199,11 @@ function start_server
     ###########
     # Start Server
     ###########
+    exec 2>> "$1.log"
     check_compile ${dir} ${exe}
-    serv="${exe} ${args_str}"
-    cd $dir
-    exec ./${serv}
+    exec "$3"/$1.exe ${args_str}
     echo "${name} Server has started."
-    cd ..
+
 }
 
 case "$MODE" in
@@ -203,9 +243,6 @@ case "$MODE" in
         done
         cd ..
         ;;
-    inter)
-        start_server $MODE "Inter" $@
-        ;;
     auth)
         start_server $MODE "Authentication" $@
         ;;
@@ -230,6 +267,15 @@ case "$MODE" in
 	build)
 	    build_horizon $@
 	    ;;
+    install)
+        install_horizon $@
+        ;;
+    build-tests)
+        build_tests $@
+        ;;
+    run-tests)
+        run_tests $@
+        ;;
 	*)
 	usage
 	;;
