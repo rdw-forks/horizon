@@ -26,8 +26,9 @@ jobs:
 
     - name : VCPKG Integrate
       run: vcpkg integrate install
-
+      
   testing:
+    needs: cluster-dependencies
     runs-on: self-hosted
     steps:
     - name: Checkout
@@ -44,7 +45,8 @@ jobs:
           ${{github.workspace}}\build\test\Release\${t}.exe;
         done
       
-  build-and-install:
+  build-install-and-run:
+    needs: testing
     runs-on: self-hosted
     steps:
     - name: Checkout
@@ -73,6 +75,7 @@ jobs:
            ./zone.exe --with-config="config\zone-server.lua" --test-run
       
   cleanup:
+    needs: build-install-and-run
     runs-on: self-hosted
     steps:
     - name: Cleanup
