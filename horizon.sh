@@ -264,6 +264,10 @@ case "$MODE" in
 		console_log "Adding user $NEWUSER as $DBUSER, with access to database $DBNAME..."
 		mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="GRANT SELECT, INSERT, UPDATE, DELETE ON $DBNAME.* TO '$NEWUSER'@'$DBHOST' IDENTIFIED BY '$NEWPASS';"
 		;;
+    dropdb)
+        console_log "Dropping database $DBNAME..."
+        mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="DROP DATABASE IF EXISTS `$DBNAME`;"
+        ;;
 	build)
 	    build_horizon $@
 	    ;;
