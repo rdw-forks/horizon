@@ -232,19 +232,20 @@ case "$MODE" in
         ;;
 	createdb)
 		console_log "Creating Horizon MySQL Database $DBNAME as $DBUSER..."
-		mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="CREATE DATABASE $DBNAME;" || aborterror "Unable to create database."
+		mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="CREATE DATABASE $DBNAME;" || aborterror "Unable to create database."
 		;;
 	importdb)
         console_log "Importing Horizon MySQL Tables into $DBNAME as $DBUSER..."
-		mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --database=$DBNAME < sql-files/horizon.sql || aborterror "Unable to import horizon database."
+		mysql -u $DBUSER -p$DBPASS -h $DBHOST --database=$DBNAME < sql-files/horizon.sql || aborterror "Unable to import horizon database."
 		;;
 	adduser)
 		console_log "Adding user $NEWUSER as $DBUSER, with access to database $DBNAME..."
-		mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="GRANT ALL ON `$DBNAME`.* TO '$NEWUSER'@'$DBHOST_ARG' IDENTIFIED BY '$NEWPASS';"
+        mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="CREATE USER '$NEWUSER'@'$DBHOST' IDENTIFIED BY '$NEWPASS';"
+		mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="GRANT ALL ON `$DBNAME`.* TO '$NEWUSER'@'$DBHOST' WITH GRANT OPTION;"
 		;;
     dropdb)
         console_log "Dropping database $DBNAME..."
-        mysql $DBUSER_ARG $DBPASS_ARG $DBHOST_ARG --execute="DROP DATABASE IF EXISTS `$DBNAME`;"
+        mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="DROP DATABASE IF EXISTS `$DBNAME`;"
         ;;
 	build)
 	    build_horizon $@
