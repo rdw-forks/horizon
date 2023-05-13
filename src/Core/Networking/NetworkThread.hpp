@@ -138,8 +138,6 @@ protected:
 	 */
 	void run()
 	{
-		HLog(trace) << "Network thread " << (void *) this << " is ready for managing connections.";
-
 		_update_timer.expires_from_now(boost::posix_time::milliseconds(1));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
