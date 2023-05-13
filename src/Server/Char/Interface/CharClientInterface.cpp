@@ -32,8 +32,6 @@
 #include "Server/Char/Session/CharSession.hpp"
 #include "Server/Char/Packets/TransmittedPackets.hpp"
 
-#include <date/date.h>
-
 #include <memory>
 #include <mysqlx/xdevapi.h>
 
