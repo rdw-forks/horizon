@@ -47,7 +47,7 @@ jobs:
            Move-Item ${{ github.workspace }}\build\bin\Release\config\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua;
     - name: Run
       working-directory: ${{ github.workspace }}\build\bin\Release
-      run: .\auth.exe --config="config/auth-server.lua";
-           .\char.exe --config="config/char-server.lua";
-           .\zone.exe --config="config/zone-server.lua";
+      run: .\auth.exe --with-config="config/auth-server.lua";
+           .\char.exe --with-config="config/char-server.lua";
+           .\zone.exe --with-config="config/zone-server.lua";
 
