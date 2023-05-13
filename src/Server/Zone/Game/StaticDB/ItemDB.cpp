@@ -276,10 +276,8 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 
 		entry++;
 
-		if (key.get_type() != sol::type::string) {
-			HLog(error) << "Invalid key type for entry " << entry << " in '" << file_path << "'.";
+		if (key.get_type() != sol::type::string)
 			return;
-		}
 
 		id.key_name = key.as<std::string>();
 
