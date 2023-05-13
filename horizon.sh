@@ -97,6 +97,7 @@ case "$MODE" in
         fi
         NEWUSER="$5"
         NEWPASS="$6"
+        ;&
 	createdb|importdb|dropdb|test)
 		if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
 			usage
