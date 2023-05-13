@@ -239,9 +239,9 @@ case "$MODE" in
 		mysql -u $DBUSER -p$DBPASS -h $DBHOST --database=$DBNAME < sql-files/horizon.sql || aborterror "Unable to import horizon database."
 		;;
 	adduser)
-		console_log "Adding user $NEWUSER as $DBUSER, with access to database $DBNAME..."
+		console_log "Adding user $NEWUSER with access to database $DBNAME..."
         mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="CREATE USER '$NEWUSER'@'$DBHOST' IDENTIFIED BY '$NEWPASS';"
-		mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="GRANT ALL ON `$DBNAME`.* TO '$NEWUSER'@'$DBHOST' WITH GRANT OPTION;"
+		mysql -u $DBUSER -p$DBPASS -h $DBHOST --execute="GRANT ALL ON $DBNAME.* TO '$NEWUSER'@'$DBHOST' WITH GRANT OPTION;"
 		;;
     dropdb)
         console_log "Dropping database $DBNAME..."
