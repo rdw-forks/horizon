@@ -9,6 +9,9 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  MYSQL_PASSWORD: horizon
+  MYSQL_USERNAME: horizon
+  MYSQL_DATABASE: horizon
 
 jobs:
   build:
@@ -45,9 +48,17 @@ jobs:
            Move-Item ${{ github.workspace }}\build\bin\Release\config\auth-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\auth-server.lua;
            Move-Item ${{ github.workspace }}\build\bin\Release\config\char-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\char-server.lua;
            Move-Item ${{ github.workspace }}\build\bin\Release\config\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua;
+    
+    - name: Install MYSQL Database
+      run: mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "CREATE DATABASE `horizon`";
+          mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "GRANT ALL ON `horizon` TO 'horizon'@'localhost'"
+          mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} horizon < ${{github.workspace}}\sql-files\horizon.sql
+    
     - name: Run
       working-directory: ${{ github.workspace }}\build\bin\Release
       run: .\auth.exe --with-config="config/auth-server.lua";
            .\char.exe --with-config="config/char-server.lua";
            .\zone.exe --with-config="config/zone-server.lua";
-
+           
+    - name: Cleanup
+      run: mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "DROP DATABASE `horizon`"
