@@ -56,7 +56,7 @@ jobs:
     - name: Install Database
       run: sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
            sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
-           sh ./horizon.sh adduser horizon horizon ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon;
+           sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon;
     - name: Run
       run: sh ./horizon.sh auth build\bin\Release --with-config="build\bin\Release\config\auth-server.lua" --test-run;
            sh ./horizon.sh char build\bin\Release --with-config="build\bin\Release\config\char-server.lua" --test-run;
