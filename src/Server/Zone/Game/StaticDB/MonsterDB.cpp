@@ -78,7 +78,6 @@ bool MonsterDatabase::load()
 		sol::table mob_tbl = fx();
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_internal(key, value);
-            std::cout << "Loaded entry " << total_entries << " for monster_db...\r";
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
@@ -94,7 +93,6 @@ bool MonsterDatabase::load()
 		sol::table mob_tbl = fx();
 		mob_tbl.for_each([this, &total_entries] (sol::object const &key, sol::object const &value) {
 			total_entries += load_skill_internal(key, value);
-            std::cout << "Loaded entry " << total_entries << " for monster_skill_db...\r";
 		});
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "'.";
 	} catch(const std::exception &e) {
