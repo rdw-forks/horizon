@@ -309,5 +309,5 @@ int main(int argc, const char * argv[])
 	/* Core Cleanup */
 	HLog(info) << "Server shutting down...";
 
-	return sChar->general_conf().get_shutdown_signal();
+	return 0;
 }

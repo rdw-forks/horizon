@@ -258,5 +258,5 @@ int main(int argc, const char * argv[])
 	 */
 	HLog(info) << "Server shutting down...";
 
-	return sZone->general_conf().get_shutdown_signal();
+	return 0;
 }
