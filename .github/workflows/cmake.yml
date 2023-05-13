@@ -40,15 +40,15 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config ${{env.BUILD_TYPE}}
 
     - name: Run Build
-      run: cp ${{ github.workspace }}\db ${{github.workspace}}\horizon-bin
-           cp ${{ github.workspace }}\config ${{github.workspace}}\horizon-bin 
-           cp ${{ github.workspace }}\scripts ${{github.workspace}}\horizon-bin 
-           mv ${{ github.workspace }}\auth-server.lua.dist ${{ github.workspace }}\horizon-bin\config\auth-server.lua
-           mv ${{ github.workspace }}\char-server.lua.dist ${{ github.workspace }}\horizon-bin\config\char-server.lua
-           mv ${{ github.workspace }}\zone-server.lua.dist ${{ github.workspace }}\horizon-bin\config\zone-server.lua
-           ${{ github.workspace }}\horizon-bin\auth.exe --config="config/auth-server.lua"
-           ${{ github.workspace }}\horizon-bin\char.exe --config="config/char-server.lua"
-           ${{ github.workspace }}\horizon-bin\zone.exe --config="config/zone-server.lua"
+      run: cp ${{ github.workspace }}\db ${{github.workspace}}\build\bin\Release
+           cp ${{ github.workspace }}\config ${{github.workspace}}\build\bin\Release
+           cp ${{ github.workspace }}\scripts ${{github.workspace}}\build\bin\Release 
+           mv ${{ github.workspace }}\auth-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\auth-server.lua
+           mv ${{ github.workspace }}\char-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\char-server.lua
+           mv ${{ github.workspace }}\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua
+           ${{ github.workspace }}\build\bin\Release\auth.exe --config="config/auth-server.lua"
+           ${{ github.workspace }}\build\bin\Release\char.exe --config="config/char-server.lua"
+           ${{ github.workspace }}\build\bin\Release\zone.exe --config="config/zone-server.lua"
     - name: Test
       working-directory: ${{github.workspace}}\build
       # Execute tests defined by the CMake configuration.
