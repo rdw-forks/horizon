@@ -50,8 +50,7 @@ jobs:
            Move-Item ${{ github.workspace }}\build\bin\Release\config\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua;
     
     - name: Install MYSQL Database
-      run: mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "CREATE DATABASE `horizon`";
-          mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "GRANT ALL ON `horizon` TO 'horizon'@'localhost'";
+      run: mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} -e "CREATE DATABASE `horizon`; GRANT ALL ON `horizon`.* TO 'horizon'@'localhost'";
           mysql -u ${{env.MYSQL_USERNAME}} -p${{env.MYSQL_PASSWORD}} horizon < ${{github.workspace}}\sql-files\horizon.sql;
     
     - name: Run
