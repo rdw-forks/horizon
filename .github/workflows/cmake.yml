@@ -37,7 +37,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Build
-      run: sh ./horizon.sh build-tests;
+      run: sh ./horizon.sh build-tests -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
     - name: Run
       run: sh ./horizon.sh run-tests "build\bin\Release";
   build-install-and-run:
