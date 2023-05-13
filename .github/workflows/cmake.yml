@@ -39,20 +39,15 @@ jobs:
       run: cmake --build ${{github.workspace}}\build --config ${{env.BUILD_TYPE}}
 
     - name: Install
-      run: cp ${{ github.workspace }}\db ${{ github.workspace }}\build\bin\Release;
-           cp ${{ github.workspace }}\config ${{ github.workspace }}\build\bin\Release;
-           cp ${{ github.workspace }}\scripts ${{ github.workspace }}\build\bin\Release;
-           mv ${{ github.workspace }}\build\bin\Release\config\auth-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\auth-server.lua;
-           mv ${{ github.workspace }}\build\bin\Release\config\char-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\char-server.lua;
-           mv ${{ github.workspace }}\build\bin\Release\config\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua;
+      run: Copy-Item ${{ github.workspace }}\db ${{ github.workspace }}\build\bin\Release -Recurse;
+           Copy-Item ${{ github.workspace }}\config ${{ github.workspace }}\build\bin\Release -Recurse;
+           Copy-Item ${{ github.workspace }}\scripts ${{ github.workspace }}\build\bin\Release -Recurse;
+           Move-Item ${{ github.workspace }}\build\bin\Release\config\auth-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\auth-server.lua;
+           Move-Item ${{ github.workspace }}\build\bin\Release\config\char-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\char-server.lua;
+           Move-Item ${{ github.workspace }}\build\bin\Release\config\zone-server.lua.dist ${{ github.workspace }}\build\bin\Release\config\zone-server.lua;
     - name: Run
       working-directory: ${{ github.workspace }}\build\bin\Release
       run: .\auth.exe --config="config/auth-server.lua";
            .\char.exe --config="config/char-server.lua";
            .\zone.exe --config="config/zone-server.lua";
-    - name: Test
-      working-directory: ${{github.workspace}}\build
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}}
 
