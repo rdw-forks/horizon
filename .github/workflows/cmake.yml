@@ -19,8 +19,7 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: windows-latest
-
+    runs-on: self-hosted
     steps:
     - name: VCPKG Install
       run: vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows libmysql:x64-windows mysql-connector-cpp:x64-windows
@@ -33,24 +32,41 @@ jobs:
 
   Testing:
     needs: Integrate-Dependencies
-    runs-on: windows-latest
+    runs-on: self-hosted
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    
     - name: Build
       run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
+    
     - name: Run
       run: sh ./horizon.sh run-tests "build\test\Release";
-  Build-Install-And-Run:
-    needs: Testing
-    runs-on: windows-latest
+      
+  Build-Tools:
+    needs: Integrate-Dependencies
+    runs-on: self-hosted
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      
+    - name: Build
+      run: sh ./horizon.sh build-tools
+      
+      
+  Build-Install-And-Run:
+    needs: Testing
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+   
     - name: Configure Step & Build
       run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" ;
+   
     - name: Install
       run: sh ./horizon.sh install "build/bin/Release";
+    
     - name: Install Database
       run: |
         sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
@@ -71,7 +87,7 @@ jobs:
       
   Remove-Database:
     needs: Build-Install-And-Run
-    runs-on: windows-latest
+    runs-on: self-hosted
     steps:
     - name: Cleanup
       run: sh ./horizon.sh dropdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
