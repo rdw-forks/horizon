@@ -81,6 +81,6 @@ jobs:
         sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
         sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon
       
-    - name: Run Auth
+    - name: Run Char
       working-directory: ${{github.workspace}}\build\bin\Release
-      run: ./auth.exe --with-config="config\auth-server.lua" --test-run 
+      run: ./char.exe --with-config="config\char-server.lua" --test-run 
