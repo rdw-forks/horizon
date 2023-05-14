@@ -66,4 +66,4 @@ jobs:
     runs-on: self-hosted
     steps:
     - name: Cleanup
-      run: sh ./horizon.sh dropdb horizon ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}};
+      run: sh ./horizon.sh dropdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
