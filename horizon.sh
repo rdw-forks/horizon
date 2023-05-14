@@ -61,6 +61,7 @@ function usage
 	echo "    $0 zone [install_directory] [args]"
     echo "    $0 build-tests [install_directory]"
     echo "    $0 run-tests [install_directory]"
+    echo "    $0 build-tools [install_directory]"
 	echo "    $0 createdb [dbuser] [dbpassword] [dbhost] <dbname>"
 	echo "    $0 importdb [dbuser] [dbpassword] [dbhost] <dbname>"
 	echo "    $0 adduser [dbuser] [dbpassword] [dbhost] <dbname> <new_user> <new_user_password>"
@@ -134,6 +135,14 @@ function build_tests
 {
     echo "Horizon tests build initiated, preparing..."
     cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 $@ || aborterror "Horizon tests build has failed."
+    echo "Initiating build..."
+    cmake --build build --config Release
+}
+
+function build_tools
+{
+    echo "Horizon tools build intiated, preparing..."
+    cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=0 -DWITH_TOOLS=1 $@ || aborterror "Horizon tests build has failed."
     echo "Initiating build..."
     cmake --build build --config Release
 }
@@ -258,6 +267,9 @@ case "$MODE" in
         ;;
     run-tests)
         run_tests $@
+        ;;
+    build-tools)
+        build_tools $@
         ;;
 	*)
 	usage
