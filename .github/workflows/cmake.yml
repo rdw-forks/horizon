@@ -29,7 +29,43 @@ jobs:
 
     - name : VCPKG Integrate
       run: vcpkg integrate install
+
+  Build-Libraries:
+    needs: Integrate-Dependencies
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Build
+      run: sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
       
+  Testing:
+    needs: Build-Libraries
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Build
+      run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
+    
+    - name: Run
+      run: sh ./horizon.sh run-tests "build\test\Release";
+      
+  Build-Tools:
+    needs: Testing
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Build
+      run: sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
+    
+  Build-Install-And-Run:
+    needs: [ Testing, Build-Tools, Build-Libraries ]
+    runs-on: self-hosted
+    steps:
     - name: Checkout
       uses: actions/checkout@v3
    
@@ -38,7 +74,13 @@ jobs:
    
     - name: Install
       run: sh ./horizon.sh install "build/bin/Release";
-      
+    
+    - name: Install Database
+      run: |
+        sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+        sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+    
     - name: Run Auth
       working-directory: ${{github.workspace}}\build\bin\Release
       run: ./auth.exe --with-config="config\auth-server.lua" --test-run
@@ -54,11 +96,3 @@ jobs:
     - name: Remove Database
       run: sh ./horizon.sh dropdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
       
-    - name: Check Exit Status
-      run: |
-        exit_status=$?
-        if [[ $exit_status -eq 0 ]]; then
-          echo "Database removal succeeded."
-        else
-          echo "Database removal failed with exit status $exit_status."
-        fi
