@@ -31,6 +31,10 @@
 MODE="$1"
 shift
 
+exec 1>> log.log
+exec 2>> log.log
+exec 3>> log.log
+
 function header
 {
     echo "                                                 "
@@ -54,7 +58,7 @@ function usage
 	echo "usage:"
 	echo "    $0 start [directory] [args]"
 	echo "    $0 stop"
-	echo "    $0 build [build_directory] [vcpkg_install_dir] [vcpkg_triplet]"
+	echo "    $0 build [build_directory] [args]"
     echo "    $0 install [install_directory]"
 	echo "    $0 auth [install_directory] [args]"
 	echo "    $0 char [install_directory] [args]"
@@ -94,7 +98,7 @@ case "$MODE" in
         BUILD_DIRECTORY="$1"
         ;;
     adduser)
-        if [ -z "$5" ] OR [ -z "$6" ]; then
+        if [ -z "$5" ] || [ -z "$6" ]; then
             usage
         fi
         NEWUSER="$5"
@@ -126,7 +130,7 @@ esac
 function build_horizon
 {
     echo "Horizon build initiated, preparing build directory..."
-    cmake -B build $@ || aborterror "Horizon Build has failed."
+    cmake -B $1 $@ || aborterror "Horizon Build has failed."
     echo "Initiating Build..."
     cmake --build build --config Release --target install || aborterror "Horizon Build has failed."
     echo "Build Complete."
@@ -195,7 +199,6 @@ function start_server
     ###########
     # Start Server
     ###########
-    exec 2>> "$1.log"
     check_compile ${dir} ${exe}
     exec "$3"/$1.exe ${args_str}
     echo "${name} Server has started."
