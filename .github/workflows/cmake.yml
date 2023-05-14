@@ -15,7 +15,7 @@ env:
   MYSQL_HOSTNAME: localhost
 
 jobs:
-  cluster-dependencies:
+  Integrate-Dependencies:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -31,9 +31,9 @@ jobs:
     - name : VCPKG Integrate
       run: vcpkg integrate install
 
-  testing:
-    needs: cluster-dependencies
-    runs-on: self-hosted
+  Testing:
+    needs: Integrate-Dependencies
+    runs-on: windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -41,9 +41,9 @@ jobs:
       run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
     - name: Run
       run: sh ./horizon.sh run-tests "build\test\Release";
-  build-install-and-run:
-    needs: testing
-    runs-on: self-hosted
+  Build-Install-And-Run:
+    needs: Testing
+    runs-on: windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -69,9 +69,9 @@ jobs:
       working-directory: ${{github.workspace}}\build\bin\Release
       run: ./zone.exe --with-config="config\zone-server.lua" --test-run
       
-  cleanup:
-    needs: build-install-and-run
-    runs-on: self-hosted
+  Remove-Database:
+    needs: Build-Install-And-Run
+    runs-on: windows-latest
     steps:
     - name: Cleanup
       run: sh ./horizon.sh dropdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
