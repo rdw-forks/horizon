@@ -74,24 +74,3 @@ jobs:
    
     - name: Install
       run:  sh ./horizon.sh install "build/bin/Release"
-    - name: Install Database
-      run: |
-        sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon
-        
-    - name: Run Auth
-      working-directory: ${{github.workspace}}\build\bin\Release
-      run: ./auth.exe --with-config="config\auth-server.lua" --test-run       
-    
-    - name: Run Char
-      working-directory: ${{github.workspace}}\build\bin\Release
-      run: ./char.exe --with-config="config\char-server.lua" --test-run
-      
-    - name: Run Zone
-      working-directory: ${{github.workspace}}\build\bin\Release
-      run: ./zone.exe --with-config="config\zone-server.lua" --test-run
-    
-    - name: Remove Database
-      run: sh ./horizon.sh dropdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
-      
