@@ -37,9 +37,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Build
-      run: |
-        sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        echo "Integrate Dependencies : $?"
+      run: sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+
   Tests:
     needs: Libraries
     runs-on: self-hosted
@@ -48,14 +47,10 @@ jobs:
       uses: actions/checkout@v3
     
     - name: Build
-      run: |
-        sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
-        echo "Libraries Build : $?"
+      run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
     
     - name: Run
-      run: |
-        sh ./horizon.sh run-tests "build\test\Release"
-        echo "Libraries Run : $?"
+      run: sh ./horizon.sh run-tests "build\test\Release"
       
   Tools:
     needs: Tests
@@ -65,9 +60,7 @@ jobs:
       uses: actions/checkout@v3
       
     - name: Build
-      run: |
-        sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
-        echo "Tests Build : $?"
+      run: sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
     
   Servers:
     needs: [ Tests, Tools, Libraries ]
@@ -77,28 +70,19 @@ jobs:
       uses: actions/checkout@v3
    
     - name: Configure Step & Build
-      run: |
-        sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
-        echo "Servers Configure : $?"
+      run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
    
     - name: Install
-      run: |
-        sh ./horizon.sh install "build/bin/Release"
-        echo "Servers Install : $?"
+      run:  sh ./horizon.sh install "build/bin/Release"
     - name: Install Database
       run: |
         sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        echo "Servers Create DB : $?"
         sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        echo "Servers Import DB : $?"
-        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        echo "Servers Add User : $?"
+        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon
         
     - name: Run Auth
       working-directory: ${{github.workspace}}\build\bin\Release
-      run: |
-        ./auth.exe --with-config="config\auth-server.lua" --test-run
-        echo "Run Auth : $?"        
+      run: ./auth.exe --with-config="config\auth-server.lua" --test-run       
     
     - name: Run Char
       working-directory: ${{github.workspace}}\build\bin\Release
