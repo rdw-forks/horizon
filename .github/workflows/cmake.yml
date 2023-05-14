@@ -92,10 +92,15 @@ jobs:
     - name: Run Zone
       working-directory: ${{github.workspace}}\build\bin\Release
       run: ./zone.exe --with-config="config\zone-server.lua" --test-run
-      
-  Remove-Database:
-    needs: Build-Install-And-Run
-    runs-on: self-hosted
-    steps:
-    - name: Cleanup
+    
+    - name: Remove Database
       run: sh ./horizon.sh dropdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}};
+      
+    - name: Check Exit Status
+      run: |
+        exit_status=$?
+        if [[ $exit_status -eq 0 ]]; then
+          echo "Database removal succeeded."
+        else
+          echo "Database removal failed with exit status $exit_status."
+        fi
