@@ -30,7 +30,7 @@
 #define HORIZON_AUTH_AUTHSESSION_HPP
 
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Core/Networking/Session.hpp"
+#include "Libraries/Networking/Session.hpp"
 
 #include <memory>
 

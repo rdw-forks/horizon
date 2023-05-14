@@ -32,7 +32,7 @@
 #ifndef HORIZON_ZONE_CLIENTSOCKETMGR_HPP
 #define HORIZON_ZONE_CLIENTSOCKETMGR_HPP
 
-#include "Core/Networking/AcceptSocketMgr.hpp"
+#include "Libraries/Networking/AcceptSocketMgr.hpp"
 
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"

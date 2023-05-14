@@ -30,7 +30,7 @@
 #define HORIZON_BASE_NETWORKPACKET_HPP
 
 #include "Core/Logging/Logger.hpp"
-#include "Core/Networking/Buffer/ByteBuffer.hpp"
+#include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 
 #include <memory>
 

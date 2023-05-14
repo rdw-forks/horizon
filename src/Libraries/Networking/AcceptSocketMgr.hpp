@@ -30,7 +30,7 @@
 #ifndef HORIZON_NETWORKING_ACCEPTSOCKETMGR_HPP
 #define HORIZON_NETWORKING_ACCEPTSOCKETMGR_HPP
 
-#include "Core/Networking/SocketMgr.hpp"
+#include "Libraries/Networking/SocketMgr.hpp"
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
 
 #include <mutex>

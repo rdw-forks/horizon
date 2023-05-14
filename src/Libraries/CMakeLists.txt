@@ -26,3 +26,4 @@
 ###################################################
 add_subdirectory(GRF)
 add_subdirectory(MapCache)
+add_subdirectory(Networking)

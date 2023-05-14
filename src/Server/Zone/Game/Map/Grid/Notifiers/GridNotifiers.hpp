@@ -30,7 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP
 #define HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP
 
-#include "Core/Networking/Buffer/ByteBuffer.hpp"
+#include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifierPredicates.hpp"

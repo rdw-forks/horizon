@@ -27,7 +27,6 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ###################################################
 
-add_subdirectory(Networking)
 add_subdirectory(Structures)
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})

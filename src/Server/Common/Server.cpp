@@ -30,7 +30,7 @@
 #include "Server.hpp"
 
 #include "Server/Common/CLI/CommandLineInterface.hpp"
-#include "Core/Networking/Buffer/ByteBuffer.hpp"
+#include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 #include "version.hpp"
 
 #include <readline/readline.h>

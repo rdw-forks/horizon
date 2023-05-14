@@ -30,7 +30,7 @@
 #ifndef HORIZON_SOCKET_AUTHSOCKET_HPP
 #define HORIZON_SOCKET_AUTHSOCKET_HPP
 
-#include "Core/Networking/Socket.hpp"
+#include "Libraries/Networking/Socket.hpp"
 
 #include <cstdio>
 #include <boost/asio/ip/tcp.hpp>

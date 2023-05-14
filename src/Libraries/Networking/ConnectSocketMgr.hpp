@@ -30,7 +30,7 @@
 #ifndef HORIZON_NETWORKING_CONNECTSOCKETMGR_HPP
 #define HORIZON_NETWORKING_CONNECTSOCKETMGR_HPP
 
-#include "Core/Networking/SocketMgr.hpp"
+#include "Libraries/Networking/SocketMgr.hpp"
 
 #include <shared_mutex>
 

@@ -31,9 +31,9 @@
 #define HORIZON_NETWORKING_SOCKETMGR_HPP
 
 #include "Core/Logging/Logger.hpp"
-#include "Core/Networking/AsyncAcceptor.hpp"
-#include "Core/Networking/NetworkThread.hpp"
-#include "Core/Networking/Connector.hpp"
+#include "Libraries/Networking/AsyncAcceptor.hpp"
+#include "Libraries/Networking/NetworkThread.hpp"
+#include "Libraries/Networking/Connector.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 
 #include <boost/asio.hpp>

@@ -28,7 +28,7 @@
 #ifndef HORIZON_NETWORKING_SESSION_HPP
 #define HORIZON_NETWORKING_SESSION_HPP
 
-#include "Core/Networking/Buffer/ByteBuffer.hpp"
+#include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 
 #include <memory>
 

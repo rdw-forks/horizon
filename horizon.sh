@@ -62,6 +62,7 @@ function usage
     echo "    $0 build-tests [install_directory]"
     echo "    $0 run-tests [install_directory]"
     echo "    $0 build-tools [install_directory]"
+    echo "    $0 build-only-libraries [install_directory]"
 	echo "    $0 createdb [dbuser] [dbpassword] [dbhost] <dbname>"
 	echo "    $0 importdb [dbuser] [dbpassword] [dbhost] <dbname>"
 	echo "    $0 adduser [dbuser] [dbpassword] [dbhost] <dbname> <new_user> <new_user_password>"
@@ -142,7 +143,15 @@ function build_tests
 function build_tools
 {
     echo "Horizon tools build intiated, preparing..."
-    cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=0 -DWITH_TOOLS=1 $@ || aborterror "Horizon tests build has failed."
+    cmake -B build -DWITHOUT_SERVERS=1 -DWITH_TESTS=0 -DWITH_TOOLS=1 $@ || aborterror "Horizon tools build has failed."
+    echo "Initiating build..."
+    cmake --build build --config Release
+}
+
+function build_only_libraries
+{
+    echo "Horizon building only libraries..."
+    cmake -B build -DWITHOUT_SERVERS=1 $@ || aborterror "Horizon libraries build has failed."
     echo "Initiating build..."
     cmake --build build --config Release
 }
@@ -270,6 +279,9 @@ case "$MODE" in
         ;;
     build-tools)
         build_tools $@
+        ;;
+    build-only-libraries)
+        build_only_libraries $@
         ;;
 	*)
 	usage

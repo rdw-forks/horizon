@@ -27,7 +27,7 @@
 #ifndef HORIZON_SESSION_CHARSESSION_HPP
 #define HORIZON_SESSION_CHARSESSION_HPP
 
-#include "Core/Networking/Session.hpp"
+#include "Libraries/Networking/Session.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 #include "Server/Char/Interface/CharClientInterface.hpp"

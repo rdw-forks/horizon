@@ -30,7 +30,7 @@
 #ifndef HORIZON_CHAR_CHARSOCKET_HPP
 #define HORIZON_CHAR_CHARSOCKET_HPP
 
-#include "Core/Networking/Socket.hpp"
+#include "Libraries/Networking/Socket.hpp"
 
 #include <memory>
 #include <cstdio>
