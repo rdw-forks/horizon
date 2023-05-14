@@ -30,7 +30,7 @@
 #ifndef HORIZON_ZONE_ZONESOCKET_HPP
 #define HORIZON_ZONE_ZONESOCKET_HPP
 
-#include "Core/Networking/Socket.hpp"
+#include "Libraries/Networking/Socket.hpp"
 
 using boost::asio::ip::tcp;
 

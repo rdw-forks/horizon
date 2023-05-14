@@ -31,7 +31,7 @@
 
 #ifndef HORIZON_CHAR_CLIENTSOCKETMGR_HPP
 #define HORIZON_CHAR_CLIENTSOCKETMGR_HPP
-#include "Core/Networking/AcceptSocketMgr.hpp"
+#include "Libraries/Networking/AcceptSocketMgr.hpp"
 
 #include "Server/Char/Char.hpp"
 #include "Server/Char/Socket/CharSocket.hpp"

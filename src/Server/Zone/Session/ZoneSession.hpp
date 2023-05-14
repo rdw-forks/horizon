@@ -29,7 +29,7 @@
 #ifndef HORIZON_ZONE_SESSION_ZONESESSION_HPP
 #define HORIZON_ZONE_SESSION_ZONESESSION_HPP
 
-#include "Core/Networking/Session.hpp"
+#include "Libraries/Networking/Session.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"

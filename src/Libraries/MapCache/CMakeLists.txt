@@ -44,7 +44,6 @@ target_link_libraries(mcache
 		grf
 		${ZLIB_LIBRARIES}
 		${Boost_LIBRARIES}
-		${CONFIG++_LIBRARY}
 		${LUA_LIBRARIES}
 )
 
@@ -62,7 +61,6 @@ target_include_directories(mcache
 		${PUBLIC_INCLUDES}
 		${ZLIB_INCLUDE_DIRS}
 		${Boost_INCLUDE_DIRS}
-		${CONFIG++_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
 	PRIVATE

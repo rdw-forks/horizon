@@ -31,7 +31,7 @@
 
 #ifndef HORIZON_CLIENTSOCKETMGR_HPP
 #define HORIZON_CLIENTSOCKETMGR_HPP
-#include "Core/Networking/AcceptSocketMgr.hpp"
+#include "Libraries/Networking/AcceptSocketMgr.hpp"
 
 #include "Server/Auth/Auth.hpp"
 #include "Server/Auth/Socket/AuthSocket.hpp"
