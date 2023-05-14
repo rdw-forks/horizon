@@ -52,10 +52,18 @@ jobs:
       
     - name: Build
       run: sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
-      
+    
+  Build-Libraries:
+    needs: Integrate-Dependencies
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Build
+      run: sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
       
   Build-Install-And-Run:
-    needs: Testing
+    needs: [ Testing, Build-Libraries ]
     runs-on: self-hosted
     steps:
     - name: Checkout
