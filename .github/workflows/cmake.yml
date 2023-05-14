@@ -58,9 +58,9 @@ jobs:
         sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
     - name: Run
       run: |
-        sh ./horizon.sh auth "build/bin/Release" --with-config="config\auth-server.lua" --test-run
-        sh ./horizon.sh char "build/bin/Release" --with-config="config\char-server.lua" --test-run
-        sh ./horizon.sh zone "build/bin/Release" --with-config="config\zone-server.lua" --test-run
+        sh ./horizon.sh auth "build/bin/Release" --with-config="build/bin/Release/config/auth-server.lua" --test-run
+        sh ./horizon.sh char "build/bin/Release" --with-config="build/bin/Release/config/char-server.lua" --test-run
+        sh ./horizon.sh zone "build/bin/Release" --with-config="build/bin/Release/config/zone-server.lua" --test-run
       
   cleanup:
     needs: build-install-and-run
