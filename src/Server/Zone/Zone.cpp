@@ -246,7 +246,7 @@ int main(int argc, const char * argv[])
 	 * the Zoneacter Server.
 	 */
 	if (!sZone->read_config())
-		exit(SIGTERM); // Stop process if the file can't be read.
+		exit(EXIT_FAILURE); // Stop process if the file can't be read.
 
 	/**
 	 * Initialize the Common Core
@@ -258,5 +258,5 @@ int main(int argc, const char * argv[])
 	 */
 	HLog(info) << "Server shutting down...";
 
-	return 0;
+	return EXIT_SUCCESS;
 }

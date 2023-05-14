@@ -301,7 +301,7 @@ int main(int argc, const char * argv[])
 
 	/* Read Char Configuration */
 	if (!sChar->read_config())
-		exit(SIGTERM); // Stop process if the file can't be read.
+		exit(EXIT_FAILURE); // Stop process if the file can't be read.
 
 	/* Initialize the Common Core */
 	sChar->initialize_core();
@@ -309,5 +309,5 @@ int main(int argc, const char * argv[])
 	/* Core Cleanup */
 	HLog(info) << "Server shutting down...";
 
-	return 0;
+	return EXIT_SUCCESS;
 }

@@ -194,8 +194,7 @@ void Server::initialize_core()
 	/**
 	 * Initialize Commandline Interface
 	 */
-	if (!general_conf().is_test_run())
-		initialize_command_line();
+	initialize_command_line();
 }
 
 void Server::finalize_core()
