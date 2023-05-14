@@ -30,7 +30,7 @@ jobs:
     - name : VCPKG Integrate
       run: vcpkg integrate install
 
-  Build-Libraries:
+  Libraries:
     needs: Integrate-Dependencies
     runs-on: self-hosted
     steps:
@@ -39,7 +39,7 @@ jobs:
     - name: Build
       run: sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
       
-  Testing:
+  Tests:
     needs: Build-Libraries
     runs-on: self-hosted
     steps:
@@ -52,7 +52,7 @@ jobs:
     - name: Run
       run: sh ./horizon.sh run-tests "build\test\Release";
       
-  Build-Tools:
+  Tools:
     needs: Testing
     runs-on: self-hosted
     steps:
@@ -62,8 +62,8 @@ jobs:
     - name: Build
       run: sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows;
     
-  Build-Install-And-Run:
-    needs: [ Testing, Build-Tools, Build-Libraries ]
+  Servers:
+    needs: [ Tests, Tools, Libraries ]
     runs-on: self-hosted
     steps:
     - name: Checkout
