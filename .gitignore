@@ -36,6 +36,8 @@ resources/
 \.DS_Store
 .vs/horizon/*
 .vs/slnx.sqlite
+.vs/cmake.db
+.vs/CMake Overview
 
 # Skip objects and static libraries.
 *.o
