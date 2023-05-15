@@ -130,6 +130,11 @@ public:
 	 */
 	int32_t connection_count() const { return _connections; }
 
+	/**
+	 * @brief Issues the status of network thread whether it is finalizing or not.
+	 * @return boolean finalizing of the network thread status.
+	 */
+	bool is_finalizing() { return connection_count() > 0 && _finalizing; }
 protected:
 	/**
 	 * @brief Run the I/O Service loop within this network thread.
@@ -159,11 +164,13 @@ protected:
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
 		add_new_sockets();
-
+		
+		// The following code removes all non-active from the active sockets list by shifting all 
+		// active sockets to the left and then erasing the extra
 		_active_sockets.erase(std::remove_if(_active_sockets.begin(), _active_sockets.end(),
 			[this] (std::shared_ptr<SocketType> sock)
 			{
-				if (!sock->update() || _finalizing) {
+				if (!sock->update() || is_finalizing()) {
 
 					if (sock->is_open())
 						sock->close_socket();
@@ -188,7 +195,7 @@ protected:
 	 */
 	void add_new_sockets()
 	{
-		if (_finalizing)
+		if (is_finalizing())
 			return;
 
 		std::lock_guard<std::mutex> lock(_new_socket_queue_lock);

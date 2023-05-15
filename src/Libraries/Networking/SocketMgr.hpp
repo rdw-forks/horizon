@@ -91,7 +91,7 @@ public:
 			NetworkThreadPtr thr = it->second;
 			thr->finalize();
 			// Wait for thread to finalize all sockets.
-			while (thr->connection_count() > 0)
+			while (thr->is_finalizing())
 				;
 			thr->join();
 			HLog(info) << "Finalized network thread " << (void *) thr.get();

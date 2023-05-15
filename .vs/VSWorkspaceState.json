@@ -8,10 +8,15 @@
   "ExpandedNodes": [
     "",
     "\\src",
+    "\\src\\Core",
     "\\src\\Server",
     "\\src\\Server\\Char",
-    "\\src\\Server\\Char\\Interface"
+    "\\src\\Server\\Char\\SocketMgr",
+    "\\src\\Server\\Common",
+    "\\src\\Server\\Common\\Configuration",
+    "\\src\\Server\\Zone",
+    "\\src\\Server\\Zone\\SocketMgr"
   ],
-  "SelectedNode": "\\.gitignore",
+  "SelectedNode": "\\src\\Server\\Zone\\Zone.cpp",
   "PreviewInSolutionExplorer": false
 }
