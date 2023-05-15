@@ -410,8 +410,8 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 		strncpy(c._map_name,  current_map.c_str(), MAP_NAME_LENGTH_EXT);///< 114
 #endif
 #if PACKET_VERSION >= 20100803
-		if (r[7].get<int>() != 0) {             ///< 130
-			std::chrono::system_clock::duration dn = std::chrono::system_clock::duration(r[7].get<int>());
+		if (r[6].get<int>() != 0) {             ///< 130
+			std::chrono::system_clock::duration dn = std::chrono::system_clock::duration(r[6].get<int>());
 			c._deleted_at = dn.count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		}
 		else {
@@ -564,7 +564,7 @@ int32_t HC_ACK_CHARINFO_PER_PAGE::prepare(bool empty)
 				"b.`job_id`, b.`base_level`, b.`job_level`, b.`base_experience`, b.`job_experience`, b.`zeny`, b.`strength`, "
 				"b.`agility`, b.`vitality`, b.`intelligence`, b.`dexterity`, b.`luck`, b.`maximum_hp`, b.`hp`, b.`maximum_sp`, "
 				"b.`sp`, b.`status_points`, b.`skill_points`, b.`body_state`, b.`virtue`, b.`honor`, b.`manner`, b.`hair_style_id`, "
-				"b.`hair_color_id`, b.`cloth_color_id`, b.`body_id`, b.`weapon_id`, b.`shield_id`, b.`head_top_view_id`, b.`head_mid_view_id`, "
+				"b.`hair_color_id`, b.`cloth_color_id`, b.`body_id`, b.`weapon_view_id`, b.`shield_view_id`, b.`head_top_view_id`, b.`head_mid_view_id`, "
 				"b.`head_bottom_view_id`, b.`robe_view_id` "
 				"FROM `characters` as a LEFT JOIN `character_status` as b ON a.id = b.id WHERE a.account_id = ? AND a.deleted_at = ?")
 				.bind(get_session()->get_session_data()._account_id, 0)
@@ -630,8 +630,8 @@ int32_t HC_ACK_CHARINFO_PER_PAGE::prepare(bool empty)
 			strncpy(c._map_name,  current_map.c_str(), MAP_NAME_LENGTH_EXT);///< 114
 #endif
 #if PACKET_VERSION >= 20100803
-		if (r[7].get<int>() != 0) {
-			std::chrono::system_clock::duration dn = std::chrono::system_clock::duration(r[7].get<int>());
+		if (r[6].get<int>() != 0) {
+			std::chrono::system_clock::duration dn = std::chrono::system_clock::duration(r[6].get<int>());
 			c._deleted_at = dn.count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den;
 		}
 		else {

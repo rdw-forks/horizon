@@ -62,9 +62,6 @@ public:
     void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
     void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
     void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
-
-private:
-	sol::protected_function _fn;
 };
 }
 }
