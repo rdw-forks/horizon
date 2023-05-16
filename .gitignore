@@ -38,6 +38,7 @@ resources/
 .vs/slnx.sqlite
 .vs/cmake.db
 .vs/CMake Overview
+enc_temp_folder/
 
 # Skip objects and static libraries.
 *.o
