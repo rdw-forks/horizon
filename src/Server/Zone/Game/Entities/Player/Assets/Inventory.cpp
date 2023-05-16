@@ -41,11 +41,10 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
-using namespace Horizon::Zone::Entities;
 using namespace Horizon::Zone::Entities::Traits;
 using namespace Horizon::Zone::Assets;
 
-Inventory::Inventory(std::shared_ptr<Player> player, uint32_t max_storage)
+Inventory::Inventory(std::shared_ptr<Horizon::Zone::Entities::Player> player, uint32_t max_storage)
 : _player(player), _max_storage(max_storage)
 {
 	_equipments[IT_EQPI_ACC_L].first = IT_EQPM_ACC_L;
@@ -295,8 +294,8 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 	item_entry_data data;
 	std::shared_ptr<const item_config_data> item = ItemDB->get_item_by_id(item_id);
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(player()->job_id());
-	std::shared_ptr<CurrentWeight> current_weight = player()->status()->current_weight();
-	std::shared_ptr<MaxWeight> max_weight = player()->status()->max_weight();
+	std::shared_ptr<Horizon::Zone::Traits::CurrentWeight> current_weight = player()->status()->current_weight();
+	std::shared_ptr<Horizon::Zone::Traits::MaxWeight> max_weight = player()->status()->max_weight();
 
 	if (item == nullptr)
 		return INVENTORY_ADD_INVALID;

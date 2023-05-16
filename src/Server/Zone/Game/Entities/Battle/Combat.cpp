@@ -38,7 +38,6 @@
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
 
 Combat::Combat(std::shared_ptr<Entity> entity, std::shared_ptr<Entity> target)
 : _entity(entity), _target(target), _start_time(std::time(nullptr))
@@ -52,7 +51,7 @@ Combat::~Combat()
 combat_retaliate_type Combat::weapon_attack()
 {
     if (entity()->type() == ENTITY_PLAYER) {
-        EquipmentListType const& equipments = entity()->downcast<Player>()->inventory()->equipments();
+        EquipmentListType const& equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         combat_damage dmg;
@@ -72,7 +71,7 @@ combat_retaliate_type Combat::weapon_attack()
             dmg.left_damage = batk;
         }
 
-        entity()->downcast<Player>()->get_session()->clif()->notify_damage(entity()->guid(), target()->guid(), get_sys_time(), entity()->status()->attack_motion()->total(), entity()->status()->attack_delay()->total(), dmg.right_damage, 0, 1, ZCNA3_DAMAGE, dmg.left_damage);
+        entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_damage(entity()->guid(), target()->guid(), get_sys_time(), entity()->status()->attack_motion()->total(), entity()->status()->attack_delay()->total(), dmg.right_damage, 0, 1, ZCNA3_DAMAGE, dmg.left_damage);
 
         target()->status()->current_hp()->sub_base(dmg.right_damage + dmg.left_damage);
 
@@ -118,7 +117,7 @@ int64_t Combat::calculate_misc_attack(int64_t damage)
 int64_t Combat::deduce_weapon_element_attack(int64_t damage, element_type def_ele, item_equip_location_index loc)
 {
     if (entity()->type() == ENTITY_PLAYER) {
-        EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+        EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         if (equipments[loc].second.expired())
@@ -147,7 +146,7 @@ int64_t Combat::deduce_weapon_element_attack(int64_t damage, element_type def_el
 int64_t Combat::deduce_damage_size_modifier(int64_t damage, item_equip_location_index loc)
 {
     if (entity()->type() == ENTITY_PLAYER) {
-        EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+        EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         if (equipments[loc].second.expired())

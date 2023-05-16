@@ -38,8 +38,6 @@ namespace Horizon
 namespace Zone
 {
 class Entity;
-namespace Entities
-{
 class Player;
 namespace Traits
 {	
@@ -161,7 +159,6 @@ namespace Traits
 	private:
 		std::weak_ptr<Entity> _entity;
 	};
-}
 }
 }
 }

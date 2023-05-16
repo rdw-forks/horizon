@@ -66,12 +66,12 @@ class Inventory
 {
 	typedef std::vector<std::shared_ptr<item_entry_data>> inventory_storage_type;
 public:
-	Inventory(std::shared_ptr<Entities::Player> player, uint32_t max_storage);
+	Inventory(std::shared_ptr<Horizon::Zone::Entities::Player> player, uint32_t max_storage);
 	virtual ~Inventory();
 
 //	std::shared_ptr<PacketHandler> get_packet_handler() { return _packet_handler.lock(); }
 
-	std::shared_ptr<Entities::Player> player() { return _player.lock(); }
+	std::shared_ptr<Horizon::Zone::Entities::Player> player() { return _player.lock(); }
 	inventory_addition_result_type add_item(uint32_t item_id, uint16_t amount, bool is_identified = false);
 
 	void initialize();
@@ -104,7 +104,7 @@ protected:
 	uint32_t calculate_current_equip_location_mask(std::shared_ptr<const item_config_data> item);
 private:
 	int32_t _max_storage;
-	std::weak_ptr<Entities::Player> _player;
+	std::weak_ptr<Horizon::Zone::Entities::Player> _player;
 	EquipmentListType _equipments;
 	inventory_storage_type _inventory_items, _saved_inventory_items;
 };

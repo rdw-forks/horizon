@@ -28,6 +28,7 @@
  **************************************************/
 
 #include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
+#include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
@@ -39,7 +40,7 @@
 #include "Core/Logging/Logger.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities::Traits;
+using namespace Horizon::Zone::Traits;
 
 template <class STATUS_COST_T, class STATUS_T>
 void set_new_point_cost(std::shared_ptr<Horizon::Zone::Entity> entity, STATUS_COST_T *cost_t, STATUS_T *stat)
@@ -115,7 +116,7 @@ void CurrentHP::damage(int damage)
 		sub_base(damage);
 
 	if (entity()->type() == ENTITY_PLAYER)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTHP, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTHP, total());
 }
 
 void CurrentSP::reduce(int amount)
@@ -126,7 +127,7 @@ void CurrentSP::reduce(int amount)
 		sub_base(amount);
 
 	if (entity()->type() == ENTITY_PLAYER)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTSP, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTSP, total());
 }
 
 void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
@@ -172,7 +173,7 @@ void SkillPoint::set_base(int32_t val)
 	Attribute<SkillPoint>::set_base(val);
 
 	if (entity()->type() == ENTITY_PLAYER)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SKILLPOINT, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SKILLPOINT, total());
 }
 
 int32_t MaxWeight::compute(bool notify)
@@ -185,7 +186,7 @@ int32_t MaxWeight::compute(bool notify)
 	set_base(job->max_weight + _str->get_base() * 300);
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MAX_WEIGHT, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MAX_WEIGHT, total());
 	
 	return total();
 }
@@ -195,7 +196,7 @@ void MovementSpeed::set_base(int32_t val)
 	Attribute<MovementSpeed>::set_base(val);
 
 	if (entity()->type() == ENTITY_PLAYER)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MOVEMENT_SPEED, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_MOVEMENT_SPEED, total());
 }
 
 int32_t StatusATK::compute(bool notify)
@@ -222,7 +223,7 @@ int32_t StatusATK::compute(bool notify)
 	set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_ATK, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_ATK, total());
 	
 	return total();
 }
@@ -247,7 +248,7 @@ int32_t StatusMATK::compute(bool notify)
 	set_base(int_ + (blvl / 4) + (int_ / 2) + (dex / 5) + (luk / 3));
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_MATK, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_STATUS_MATK, total());
 	
 	return total();
 }
@@ -263,7 +264,7 @@ int32_t SoftDEF::compute(bool notify)
 	set_base((vit / 2) + std::max((vit * 0.3), (std::pow(vit, 2) / 150) - 1));
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_DEF, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_DEF, total());
 	
 	return total();
 }
@@ -288,7 +289,7 @@ int32_t SoftMDEF::compute(bool notify)
 	set_base(int_ + (vit / 5) + (dex / 5) + (blvl / 4));
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_MDEF, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_SOFT_MDEF, total());
 	
 	return total();
 }
@@ -310,7 +311,7 @@ int32_t HIT::compute(bool notify)
 	set_base(175 + blvl + dex + (luk / 3));
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_HIT, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_HIT, total());
 	
 	return total();
 }
@@ -326,7 +327,7 @@ int32_t CRIT::compute(bool notify)
 	set_base(luk / 3);
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CRITICAL, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CRITICAL, total());
 	
 	return total();
 }
@@ -349,7 +350,7 @@ int32_t FLEE::compute(bool notify)
 	set_base(100 + blvl + agi + (luk / 5));
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_FLEE, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_FLEE, total());
 	
 	return total();
 }
@@ -369,7 +370,7 @@ int32_t EquipATK::compute(bool notify)
 	if (_dex != nullptr)
 		dex = _dex->total();
 
-	std::shared_ptr<Player> player = entity()->downcast<Player>();
+	std::shared_ptr<Horizon::Zone::Entities::Player> player = entity()->downcast<Horizon::Zone::Entities::Player>();
 	EquipmentListType const &equipments = player->inventory()->equipments();
 
 	std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
@@ -396,7 +397,7 @@ int32_t EquipATK::compute(bool notify)
 	set_base(_left_hand_val + _right_hand_val);
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_EQUIP_ATK, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_EQUIP_ATK, total());
 
 	return total();
 }
@@ -414,7 +415,7 @@ int32_t AttackSpeed::compute(bool notify)
 	int amotion = 0;
 
 	if (entity()->type() == ENTITY_PLAYER) {
-		EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 		std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
 		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
@@ -469,7 +470,7 @@ int32_t AttackSpeed::compute(bool notify)
  	set_base(amotion);
 
 	if (entity()->type() == ENTITY_PLAYER && notify)
-		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_ASPD, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_ASPD, total());
 
 	return total();
 }
@@ -477,7 +478,7 @@ int32_t AttackSpeed::compute(bool notify)
 int32_t AttackRange::compute(bool notify)
 {
 	if (entity()->type() == ENTITY_PLAYER) {
-		EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
 		
 		if (equipments[IT_EQPI_HAND_R].second.expired() == true)
 			return 0;
@@ -490,9 +491,9 @@ int32_t AttackRange::compute(bool notify)
 		set_base(rhw->config->attack_range);
 
 		if (notify == true)
-			entity()->downcast<Player>()->get_session()->clif()->notify_attack_range_update(total());
+			entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_attack_range_update(total());
 	} else if (entity()->type() == ENTITY_MONSTER) {
-		set_base(entity()->downcast<Monster>()->monster_config()->attack_range);
+		set_base(entity()->downcast<Horizon::Zone::Entities::Monster>()->monster_config()->attack_range);
 	}
 
 	return total();
@@ -519,7 +520,7 @@ int32_t AttackMotion::compute()
 	if (entity()->type() == ENTITY_PLAYER)
 		set_base(_attack_speed->get_base());
 	else if (entity()->type() == ENTITY_MONSTER)
-		set_base(entity()->downcast<Monster>()->monster_config()->attack_motion);
+		set_base(entity()->downcast<Horizon::Zone::Entities::Monster>()->monster_config()->attack_motion);
 
 	return total();
 }
@@ -529,7 +530,7 @@ int32_t AttackDelay::compute()
 	if (entity()->type() == ENTITY_PLAYER)
 		set_base(2 * _attack_motion->total());
 	else if (entity()->type() == ENTITY_MONSTER)
-		set_base(entity()->downcast<Monster>()->monster_config()->attack_delay);
+		set_base(entity()->downcast<Horizon::Zone::Entities::Monster>()->monster_config()->attack_delay);
 
 	return total();
 }
@@ -539,7 +540,7 @@ int32_t DamageMotion::compute()
 	if (entity()->type() == ENTITY_PLAYER)
 		set_base(800 - _agi->get_base() * 4);
 	else if (entity()->type() == ENTITY_MONSTER)
-		set_base(entity()->downcast<Monster>()->monster_config()->damage_motion);
+		set_base(entity()->downcast<Horizon::Zone::Entities::Monster>()->monster_config()->damage_motion);
 
 	return total();
 }
@@ -548,7 +549,7 @@ int32_t BaseAttack::compute()
 {
 	if (entity()->type() == ENTITY_PLAYER) {
 		bool melee = true;
-		EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
+		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = nullptr;
 
 		if (!equipments[IT_EQPI_HAND_R].second.expired()) {

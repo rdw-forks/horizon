@@ -83,7 +83,6 @@ template<> void GridPlayerNotifier::Visit<Skill>(GridRefManager<Skill> &m);
 template <class T>
 void GridViewPortUpdater::update(GridRefManager<T> &m)
 {
-    using namespace Horizon::Zone;
     using namespace Horizon::Zone::Entities;
 
     if (_entity.expired())
@@ -95,7 +94,7 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
         if (iter->source() == nullptr || iter->source()->guid() == pl->guid())
             continue;
 
-        std::shared_ptr<Entity> vp_e = iter->source()->shared_from_this();
+        std::shared_ptr<Horizon::Zone::Entity> vp_e = iter->source()->shared_from_this();
 
         if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
             pl->add_entity_to_viewport(vp_e);

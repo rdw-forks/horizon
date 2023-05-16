@@ -70,12 +70,9 @@ namespace Horizon
 {
 namespace Zone
 {
-	namespace Entities
+	namespace Traits
 	{
-		namespace Traits
-		{
-			class Status;
-		}
+		class Status;
 	}
 class Map;
 
@@ -130,8 +127,8 @@ public:
 	directions direction() const { return _facing_dir; }
 	void set_direction(directions dir) { _facing_dir = dir; }
 
-	std::shared_ptr<Entities::Traits::Status> status() { return _status; }
-	void set_status(std::shared_ptr<Entities::Traits::Status> st) { _status = st; }
+	std::shared_ptr<Horizon::Zone::Traits::Status> status() { return _status; }
+	void set_status(std::shared_ptr<Horizon::Zone::Traits::Status> st) { _status = st; }
 
 	void force_movement_stop_internal(bool stop = false) { _jump_walk_stop = stop; }
 	/**
@@ -215,7 +212,7 @@ private:
 	AStar::CoordinateList _walk_path;
     int16_t _walk_path_index{0};
 
-	std::shared_ptr<Entities::Traits::Status> _status;
+	std::shared_ptr<Horizon::Zone::Traits::Status> _status;
 
 	// General Data
 	std::string _name{""};

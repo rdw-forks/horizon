@@ -42,12 +42,13 @@ namespace Zone
 {
 struct job_config_data;
 class Entity;
-class Player;
-class NPC;
-class Skill;
-class Creature;
 namespace Entities
 {
+	class Player;
+	class NPC;
+	class Skill;
+	class Creature;
+}
 namespace Traits
 {
 class Status
@@ -56,17 +57,17 @@ public:
 	Status(std::weak_ptr<Entity> entity, entity_type type);
 	~Status() { }
 
-	bool initialize(std::shared_ptr<Creature> creature, std::shared_ptr<const monster_config_data> md);
-	bool initialize(std::shared_ptr<Player> player);
-	bool initialize(std::shared_ptr<NPC> npc);
-	bool initialize(std::shared_ptr<Skill> skill);
+	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creature, std::shared_ptr<const monster_config_data> md);
+	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player);
+	bool initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc);
+	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill);
 	
 	uint32_t get_required_statpoints(uint16_t from, uint16_t to);
 	uint32_t get_status_base(status_point_type type);
 	bool increase_status_point(status_point_type type, uint16_t amount);
 	
-	bool save(std::shared_ptr<Player> pl);
-	bool load(std::shared_ptr<Player> pl);
+	bool save(std::shared_ptr<Horizon::Zone::Entities::Player> pl);
+	bool load(std::shared_ptr<Horizon::Zone::Entities::Player> pl);
 
 	void on_equipment_changed(bool equipped, std::shared_ptr<const item_entry_data> item);
 
@@ -364,7 +365,6 @@ private:
 	std::shared_ptr<CreatureElementLevel> _creature_element_level;
 	std::shared_ptr<CreatureMode> _creature_mode;
 };
-}
 }
 }
 }

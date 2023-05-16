@@ -42,7 +42,6 @@
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
 
 ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
 : ClientInterface(s)
@@ -87,7 +86,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		.bind(current_server, account_id, auth_code)
 		.execute();
 
-	std::shared_ptr<Player> pl = std::make_shared<Player>(get_session(), account_id);
+	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), account_id);
 	
 	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
 
@@ -132,7 +131,7 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	std::shared_ptr<Player> pl = get_session()->player();
+	std::shared_ptr<Horizon::Zone::Entities::Player> pl = get_session()->player();
 	pl->map_container()->remove_player(pl);
 
 	return true;
@@ -210,7 +209,7 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	if (entity == nullptr)
 		return entry;
 	
-	std::shared_ptr<Traits::Status> status = entity->status();
+	std::shared_ptr<Horizon::Zone::Traits::Status> status = entity->status();
 
 	entry.guid = entity->guid();
 	entry.unit_type = entity->type();
@@ -256,9 +255,9 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	switch (entry.unit_type)
 	{
 		case ENTITY_PLAYER:
-			entry.character_id = entity->downcast<Player>()->character()._character_id;
+			entry.character_id = entity->downcast<Horizon::Zone::Entities::Player>()->character()._character_id;
 			entry.x_size = entry.y_size = 0;
-			entry.gender = entity->downcast<Player>()->character()._gender;
+			entry.gender = entity->downcast<Horizon::Zone::Entities::Player>()->character()._gender;
 			break;
 		case ENTITY_NPC:
 		default:
@@ -330,7 +329,7 @@ bool ZoneClientInterface::notify_initial_status()
 	if (get_session()->player() == nullptr)
 		return false;
 
-	std::shared_ptr<Traits::Status> status = get_session()->player()->status();
+	std::shared_ptr<Horizon::Zone::Traits::Status> status = get_session()->player()->status();
 
 	if (status == nullptr)
 		return false;
@@ -430,7 +429,7 @@ bool ZoneClientInterface::notify_zeny_update()
 
 bool ZoneClientInterface::increase_status_point(status_point_type type, uint8_t amount)
 {
-	std::shared_ptr<Player> pl = get_session()->player();
+	std::shared_ptr<Horizon::Zone::Entities::Player> pl = get_session()->player();
 
 	if (pl == nullptr)
 		return false;
@@ -536,7 +535,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 
 	HLog(debug) << name << " : " << message;
 
-	std::shared_ptr<Player> player = MapMgr->find_player(name);
+	std::shared_ptr<Horizon::Zone::Entities::Player> player = MapMgr->find_player(name);
 
 	ZC_ACK_WHISPER02 pkt(get_session());
 	if (player != nullptr)

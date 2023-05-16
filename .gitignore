@@ -39,6 +39,7 @@ resources/
 .vs/cmake.db
 .vs/CMake Overview
 enc_temp_folder/
+out/
 
 # Skip objects and static libraries.
 *.o

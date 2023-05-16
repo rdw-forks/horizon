@@ -60,7 +60,7 @@ Entity::~Entity()
 
 bool Entity::initialize()
 {
-	_status = std::make_shared<Entities::Traits::Status>(shared_from_this(), type());
+	_status = std::make_shared<Horizon::Zone::Traits::Status>(shared_from_this(), type());
 	_is_initialized = true;
 
 	return _is_initialized;

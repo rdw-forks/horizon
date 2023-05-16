@@ -42,8 +42,6 @@ namespace Horizon
 namespace Zone
 {
 class Entity;
-namespace Entities
-{
 class Player;
 namespace Traits
 {
@@ -904,8 +902,8 @@ namespace Traits
 	: public Attribute<EntitySize>
 	{
 	public:
-		EntitySize(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		EntitySize(std::weak_ptr<Entity> entity, int32_t size)
+		: Attribute(entity, size)
 		{ }
 		~EntitySize() { }
 	};
@@ -913,8 +911,8 @@ namespace Traits
 	class CreatureWeaponAttack
 		: public Attribute<CreatureWeaponAttack>
 	{
-		CreatureWeaponAttack(std::weak_ptr<Entity> entity)
-			: Attribute(entity)
+		CreatureWeaponAttack(std::weak_ptr<Entity> entity, int32_t val)
+			: Attribute(entity, val)
 		{ }
 		~CreatureWeaponAttack() { }
 	};
@@ -925,8 +923,8 @@ namespace Traits
 		public AttributeVariance
 	{
 	public:
-		CreatureAttackDamage(std::weak_ptr<Entity> entity)
-			: Attribute(entity),
+		CreatureAttackDamage(std::weak_ptr<Entity> entity, int32_t val)
+			: Attribute(entity, val),
 			ObservableStatus(nullptr, nullptr, nullptr),
 			AttributeVariance()
 		{ }
@@ -955,8 +953,8 @@ namespace Traits
 		public AttributeVariance
 	{
 	public:
-		CreatureMagicAttackDamage(std::weak_ptr<Entity> entity)
-			: Attribute(entity),
+		CreatureMagicAttackDamage(std::weak_ptr<Entity> entity, int32_t val)
+			: Attribute(entity, val),
 			ObservableStatus(nullptr, nullptr, nullptr),
 			AttributeVariance()
 		{ }
@@ -983,7 +981,7 @@ namespace Traits
 		: public Attribute<CreatureViewRange>
 	{
 	public:
-		CreatureViewRange(std::weak_ptr<Entity> entity) : Attribute(entity) { }
+		CreatureViewRange(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreatureViewRange() { }
 	};
 
@@ -991,7 +989,7 @@ namespace Traits
 		: public Attribute<CreatureChaseRange>
 	{
 	public:
-		CreatureChaseRange(std::weak_ptr<Entity> entity) : Attribute(entity) { }
+		CreatureChaseRange(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreatureChaseRange() { }
 	};
 
@@ -999,7 +997,7 @@ namespace Traits
 		: public Attribute<CreaturePrimaryRace>
 	{
 	public:
-		CreaturePrimaryRace(std::weak_ptr<Entity> entity) : Attribute(entity, (int32_t) MONSTER_RACE_FORMLESS) { }
+		CreaturePrimaryRace(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreaturePrimaryRace() { }
 	};
 
@@ -1007,7 +1005,7 @@ namespace Traits
 		: public Attribute<CreatureSecondaryRace>
 	{
 	public:
-		CreatureSecondaryRace(std::weak_ptr<Entity> entity) : Attribute(entity, (int32_t) MONSTER_RACE2_NONE) { }
+		CreatureSecondaryRace(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreatureSecondaryRace() { }
 	};
 
@@ -1015,7 +1013,7 @@ namespace Traits
 		: public Attribute<CreatureElement>
 	{
 	public:
-		CreatureElement(std::weak_ptr<Entity> entity) : Attribute(entity, (int32_t) ELE_NEUTRAL) { }
+		CreatureElement(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreatureElement() { }
 	};
 
@@ -1023,7 +1021,7 @@ namespace Traits
 		: public Attribute<CreatureElementLevel>
 	{
 	public:
-		CreatureElementLevel(std::weak_ptr<Entity> entity) : Attribute(entity) { }
+		CreatureElementLevel(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreatureElementLevel() { }
 	};
 
@@ -1031,10 +1029,9 @@ namespace Traits
 		: public Attribute<CreatureMode>
 	{
 	public:
-		CreatureMode(std::weak_ptr<Entity> entity) : Attribute(entity, MONSTER_MODE_MASK_NONE) { }
+		CreatureMode(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
 		~CreatureMode() { }
 	};
-}
 }
 }
 }

@@ -44,16 +44,15 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
-using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities::Traits;
+using namespace Horizon::Zone::Traits;
 
-Status::Status(std::weak_ptr<Entity> entity, entity_type type)
+Status::Status(std::weak_ptr<Horizon::Zone::Entity> entity, entity_type type)
 	: _entity(entity), _type(type)
 {
 
 }
 
-bool Status::initialize(std::shared_ptr<Player> player)
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 {
 	load(player);
 
@@ -223,22 +222,22 @@ bool Status::initialize(std::shared_ptr<Player> player)
 	base_attack()->register_observable(base_attack().get());
 	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
 
-	player->get_session()->clif()->notify_initial_status(shared_from_this());
+	player->get_session()->clif()->notify_initial_status();
 
 	return true;
 }
 
-bool Status::initialize(std::shared_ptr<NPC> npc)
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc)
 {
 	return true;
 }
 
-bool Status::initialize(std::shared_ptr<Skill> skill)
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill)
 {
 	return true;
 }
 
-bool Status::initialize(std::shared_ptr<Creature> creature, std::shared_ptr<const monster_config_data> md)
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creature, std::shared_ptr<const monster_config_data> md)
 {
 	set_movement_speed(std::make_shared<MovementSpeed>(_entity, md->move_speed));
 
@@ -249,7 +248,7 @@ bool Status::initialize(std::shared_ptr<Creature> creature, std::shared_ptr<cons
 	set_current_sp(std::make_shared<CurrentSP>(_entity, md->sp));
 	set_max_hp(std::make_shared<MaxHP>(_entity, md->hp));
 	set_max_sp(std::make_shared<MaxSP>(_entity, md->sp));
-	set_size(std::make_shared<EntitySize>(_entity, md->size));
+	set_size(std::make_shared<EntitySize>(_entity, (int) md->size));
 	set_base_appearance(std::make_shared<BaseAppearance>(_entity, md->monster_id));
 	set_hair_color(std::make_shared<HairColor>(_entity, md->view.hair_color_id));
 	set_cloth_color(std::make_shared<ClothColor>(_entity, md->view.body_color_id));
@@ -284,18 +283,18 @@ bool Status::initialize(std::shared_ptr<Creature> creature, std::shared_ptr<cons
 	set_attack_range(std::make_shared<AttackRange>(_entity));
 	attack_range()->compute(false);
 
-	set_creature_view_range(std::make_shared<CreatureViewRange>(_entity, md->view_range));
-	set_creature_chase_range(std::make_shared<CreatureChaseRange>(_entity, md->chase_range));
-	set_creature_primary_race(std::make_shared<CreaturePrimaryRace>(_entity, md->primary_race));
-	set_creature_secondary_race(std::make_shared<CreatureSecondaryRace>(_entity, md->secondary_race));
-	set_creature_element(std::make_shared<CreatureElement>(_entity, md->element));
-	set_creature_element_level(std::make_shared<CreatureElementLevel>(_entity, md->element_level));
-	set_creature_mode(std::make_shared<CreatureMode>(_entity, md->mode));
+	set_creature_view_range(std::make_shared<CreatureViewRange>(_entity, (int) md->view_range));
+	set_creature_chase_range(std::make_shared<CreatureChaseRange>(_entity, (int) md->chase_range));
+	set_creature_primary_race(std::make_shared<CreaturePrimaryRace>(_entity, (int) md->primary_race));
+	set_creature_secondary_race(std::make_shared<CreatureSecondaryRace>(_entity, (int) md->secondary_race));
+	set_creature_element(std::make_shared<CreatureElement>(_entity, (int) md->element));
+	set_creature_element_level(std::make_shared<CreatureElementLevel>(_entity, (int) md->element_level));
+	set_creature_mode(std::make_shared<CreatureMode>(_entity, (int) md->mode));
 
 	return true;
 }
 
-bool Status::load(std::shared_ptr<Player> pl)
+bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
 	try {
 		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
@@ -338,7 +337,7 @@ bool Status::load(std::shared_ptr<Player> pl)
 		set_dexterity(std::make_shared<Dexterity>(_entity, dex, 0, 0));
 		set_luck(std::make_shared<Luck>(_entity, luk, 0, 0));
 
-		set_size(std::make_shared<EntitySize>(_entity));
+		set_size(std::make_shared<EntitySize>(_entity, (int)ESZ_MEDIUM));
 
 		set_strength_cost(std::make_shared<StrengthPointCost>(_entity, get_required_statpoints(str, str + 1)));
 		set_agility_cost(std::make_shared<AgilityPointCost>(_entity, get_required_statpoints(agi, agi + 1)));
@@ -400,7 +399,7 @@ bool Status::load(std::shared_ptr<Player> pl)
 	return true;
 }
 
-bool Status::save(std::shared_ptr<Player> pl)
+bool Status::save(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
 	try {
 		sZone->get_db_connection()->sql("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
@@ -499,11 +498,11 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 	limit += get_status_base(type);
 
 #define notify_status(t, amount, result) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
+		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
 #define notify_compound_attribute(t, amount) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(t, amount)
+		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(t, amount)
 #define notify_required_attribute(t, amount) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_required_attribute_update(t, amount)
+		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_required_attribute_update(t, amount)
 	do {
 		value = get_status_base(type);
 		required_points = get_required_statpoints(value + 1, value + 2);
