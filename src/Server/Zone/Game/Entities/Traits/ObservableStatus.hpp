@@ -30,11 +30,11 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
 #define HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
 
-template <typename OBSERVABLE, typename ... OBSERVERS>
+template <typename OBSERVABLE, typename ... HAS_OBSERVERS>
 class ObservableStatus
 {
 public:
-	explicit ObservableStatus(OBSERVERS ... args)
+	explicit ObservableStatus(HAS_OBSERVERS ... args)
 	: _observers(args...)
 	{
 	}
@@ -53,13 +53,13 @@ public:
 		notify<I + 1, Tp...>(t);
 	}
 
-	inline void notify_observers() { notify<0, OBSERVERS...>(_observers); }
+	inline void notify_observers() { notify<0, HAS_OBSERVERS...>(_observers); }
 
 	void register_observable(OBSERVABLE obs) { _observable = obs; }
-	void register_observers(OBSERVERS... obs) { _observers = std::make_tuple(obs...); }
+	void register_observers(HAS_OBSERVERS... obs) { _observers = std::make_tuple(obs...); }
 
 	OBSERVABLE _observable;
-	std::tuple<OBSERVERS...> _observers;
+	std::tuple<HAS_OBSERVERS...> _observers;
 };
 
 #endif /* HORIZON_ZONE_GAME_STATUS_OBSERVABLESTATUS_HPP */

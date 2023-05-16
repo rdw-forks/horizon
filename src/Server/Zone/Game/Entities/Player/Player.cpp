@@ -115,6 +115,9 @@ void Player::initialize()
 
 	lua_manager()->initialize_player_state(lua_state());
 
+	// required for npc component definitions upon triggering
+	lua_manager()->initialize_npc_state(lua_state());
+
 	try {
 		sol::load_result fx = lua_state()->load_file("scripts/internal/on_login_event.lua");
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
@@ -364,7 +367,6 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		return false;
 
 	force_movement_stop_internal(true);
-	map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 
 	std::shared_ptr<Player> myself = downcast<Player>();
 
