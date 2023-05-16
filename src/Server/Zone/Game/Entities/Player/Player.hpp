@@ -94,7 +94,7 @@ public:
 
 	void create(int char_id, std::string account_gender, int group_id);
 
-	virtual void initialize() override;
+	bool initialize();
 
 	/**
 	 * Grid applications

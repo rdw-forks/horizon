@@ -91,7 +91,7 @@ public:
 	/**
 	 * Status
 	 */
-	void notify_initial_status(std::shared_ptr<Entities::Traits::Status> status);
+	bool notify_initial_status();
 	bool notify_appearance_update(entity_appearance_type type, int32_t value, int32_t value2);
 	bool notify_compound_attribute_update(status_point_type type, int32_t value);
 	bool notify_status_attribute_update(status_point_type type, int32_t value, bool success);

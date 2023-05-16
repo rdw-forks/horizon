@@ -194,10 +194,10 @@ bool ZoneClientInterface::notify_entity_name(uint32_t guid)
 	|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20141126) \
 	|| (CLIENT_TYPE == 'Z')
 	ZC_ACK_REQNAMEALL2 req(get_session());
-	req.deliver(guid, std::string(entity->name()).append("(" + std::to_string(guid) + ")") , "", "", "", 0);
+	req.deliver(guid, std::string(entity->name()) , "", "", "", 0);
 #else
 	ZC_ACK_REQNAMEALL req(get_session());
-	req.deliver(guid, std::string(entity->name()).append("(" + std::to_string(guid) + ")"), "", "", "");
+	req.deliver(guid, std::string(entity->name()), "", "", "");
 #endif
 	
 	return true;
@@ -240,9 +240,14 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	entry.base_level = status->base_level()->total();
 	entry.font = 1;
 
-	// @TODO Add config opting to show hp bars.
-	entry.max_hp = -1;
-	entry.hp = -1;
+	if (status->current_hp()->total() < status->max_hp()->total()) {
+		entry.max_hp = status->max_hp()->total();
+		entry.hp = status->current_hp()->total();
+	}
+	else {
+		entry.max_hp = -1;
+		entry.hp = -1;
+	}
 	
 	entry.is_boss = 0;
 	entry.body_style_id = 0;
@@ -320,10 +325,15 @@ bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Entity> 
 	return true;
 }
 
-void ZoneClientInterface::notify_initial_status(std::shared_ptr<Traits::Status> status)
+bool ZoneClientInterface::notify_initial_status()
 {
+	if (get_session()->player() == nullptr)
+		return false;
+
+	std::shared_ptr<Traits::Status> status = get_session()->player()->status();
+
 	if (status == nullptr)
-		return;
+		return false;
 
 	ZC_STATUS zcs(get_session());
 	zc_status_data data;

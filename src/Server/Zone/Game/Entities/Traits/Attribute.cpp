@@ -107,6 +107,28 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 	}
 }
 
+void CurrentHP::damage(int damage)
+{
+	if (damage >= total())
+		set_base(0);
+	else
+		sub_base(damage);
+
+	if (entity()->type() == ENTITY_PLAYER)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTHP, total());
+}
+
+void CurrentSP::reduce(int amount)
+{
+	if (amount >= total())
+		set_base(0);
+	else
+		sub_base(amount);
+
+	if (entity()->type() == ENTITY_PLAYER)
+		entity()->downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTSP, total());
+}
+
 void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 {
 	if (entity() == nullptr || blvl == nullptr)
@@ -474,6 +496,22 @@ int32_t AttackRange::compute(bool notify)
 	}
 
 	return total();
+}
+
+int32_t CreatureAttackDamage::compute()
+{
+	set_min(_blvl->total() + _str->total() + (_cw_atk->total() * 8 / 10));
+	set_max(_blvl->total() + _str->total() + (_cw_atk->total() * 12 / 10));
+
+	return std::rand() % (_max - _min) + _min;
+}
+
+int32_t CreatureMagicAttackDamage::compute()
+{
+	set_min(_blvl->total() + _int->total() + (_cw_atk->total() * 7 / 10));
+	set_max(_blvl->total() + _int->total() + (_cw_atk->total() * 13 / 10));
+
+	return std::rand() % (_max - _min) + _min;
 }
 
 int32_t AttackMotion::compute()

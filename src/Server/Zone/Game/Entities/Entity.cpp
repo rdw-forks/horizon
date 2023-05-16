@@ -58,10 +58,12 @@ Entity::~Entity()
 {
 }
 
-void Entity::initialize()
+bool Entity::initialize()
 {
-	_status = std::make_shared<Entities::Traits::Status>(shared_from_this());
+	_status = std::make_shared<Entities::Traits::Status>(shared_from_this(), type());
 	_is_initialized = true;
+
+	return _is_initialized;
 }
 
 std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e)
@@ -245,9 +247,9 @@ void Entity::notify_nearby_players_of_spawn()
 	map()->visit_in_range(map_coords(), entity_visitor);
 }
 
-void Entity::notify_nearby_players_of_movement()
+void Entity::notify_nearby_players_of_movement(bool new_entry)
 {
-	GridEntityMovementNotifier movement_notify(shared_from_this());
+	GridEntityMovementNotifier movement_notify(shared_from_this(), new_entry);
 	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);

@@ -32,6 +32,7 @@
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
@@ -50,28 +51,51 @@ Combat::~Combat()
 
 combat_retaliate_type Combat::weapon_attack()
 {
-    EquipmentListType const &equipments = entity()->downcast<Player>()->inventory()->equipments();
-    std::shared_ptr<const item_entry_data> weapon = nullptr;
+    if (entity()->type() == ENTITY_PLAYER) {
+        EquipmentListType const& equipments = entity()->downcast<Player>()->inventory()->equipments();
+        std::shared_ptr<const item_entry_data> weapon = nullptr;
 
-    combat_damage dmg;
-    
-    // Calculate element damage ratio and damage.
-    int64_t batk = entity()->status()->base_attack()->total();
+        combat_damage dmg;
 
-    if (equipments[IT_EQPI_HAND_R].second.expired() == false) {
-        batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_R);
-        batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_R);
-        dmg.right_damage = (batk << 1);
-    }
+        // Calculate element damage ratio and damage.
+        int64_t batk = entity()->status()->base_attack()->total();
 
-    if (equipments[IT_EQPI_HAND_L].second.expired() == false) {
-        batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_L);
-        batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_L);
-        dmg.left_damage = batk;
-    }
-    
-    if (entity()->type() == ENTITY_PLAYER)
+        if (equipments[IT_EQPI_HAND_R].second.expired() == false) {
+            batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_R);
+            batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_R);
+            dmg.right_damage = (batk << 1);
+        }
+
+        if (equipments[IT_EQPI_HAND_L].second.expired() == false) {
+            batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_L);
+            batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_L);
+            dmg.left_damage = batk;
+        }
+
         entity()->downcast<Player>()->get_session()->clif()->notify_damage(entity()->guid(), target()->guid(), get_sys_time(), entity()->status()->attack_motion()->total(), entity()->status()->attack_delay()->total(), dmg.right_damage, 0, 1, ZCNA3_DAMAGE, dmg.left_damage);
+
+        target()->status()->current_hp()->sub_base(dmg.right_damage + dmg.left_damage);
+
+        switch (target()->type()) {
+        case ENTITY_PLAYER:
+            break;
+        case ENTITY_NPC:
+            break;
+        case ENTITY_SKILL:
+            break;
+        case ENTITY_MONSTER:
+            target()->notify_nearby_players_of_movement(true);
+            break;
+        case ENTITY_PET:
+            break;
+        case ENTITY_HOMUNCULUS:
+            break;
+        case ENTITY_MERCENARY:
+            break;
+        case ENTITY_ELEMENTAL:
+            break;
+        }
+    }
 
     return CBT_RET_NONE;
 }

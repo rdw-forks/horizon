@@ -36,7 +36,6 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
-#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
@@ -48,7 +47,6 @@
 
 #include "version.hpp"
 
-using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
 Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid)
@@ -81,16 +79,17 @@ void Player::create(int char_id, std::string account_gender, int group_id)
 	load();
 }
 
-void Player::initialize()
+bool Player::initialize()
 {
-	Entity::initialize();
+	if (Entity::initialize() == false)
+		return false;
 
 	// Inventory.
 	_inventory = std::make_shared<Assets::Inventory>(downcast<Player>(), get_max_inventory_size());
 	_inventory->load();
 
 	// Initialize Status, after inventory is loaded to compute EquipAtk etc.
-	status()->initialize(shared_from_this());
+	status()->initialize(shared_from_this()->downcast<Player>());
 	status()->size()->set_base(ESZ_MEDIUM);
 
 	// Inventory is initialized for the player, notifying weight etc.
@@ -124,10 +123,14 @@ void Player::initialize()
 		if (!result.valid()) {
 			sol::error err = result;
 			HLog(error) << "Player::initialize: " << err.what();
+			return false;
 		}
 	} catch (sol::error &e) {
 		HLog(error) << "Player::initialize: " << e.what();
+		return false;
 	}
+
+	return true;
 }
 
 void Player::stop_movement()

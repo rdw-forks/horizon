@@ -32,6 +32,8 @@
 
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
+#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+
  // Linux
 
 namespace Horizon
@@ -40,25 +42,24 @@ namespace Zone
 {
 struct job_config_data;
 class Entity;
+class Player;
+class NPC;
+class Skill;
+class Creature;
 namespace Entities
 {
 namespace Traits
 {
-class Status : public std::enable_shared_from_this<Status>
+class Status
 {
 public:
-	Status(std::weak_ptr<Entity> entity) : _entity(entity) { }
+	Status(std::weak_ptr<Entity> entity, entity_type type);
 	~Status() { }
 
-	void initialize();
-	void initialize(std::shared_ptr<Entity> entity);
-	
-	void initialize_compound_attributes(std::shared_ptr<const job_config_data> job);
-	void initialize_observable_statuses();
-	void initialize_notifiable_statuses();
-	void initialize_combat_statuses();
-	void compute_combat_statuses(bool notify);
-	void compute_compound_attributes(bool notify);
+	bool initialize(std::shared_ptr<Creature> creature, std::shared_ptr<const monster_config_data> md);
+	bool initialize(std::shared_ptr<Player> player);
+	bool initialize(std::shared_ptr<NPC> npc);
+	bool initialize(std::shared_ptr<Skill> skill);
 	
 	uint32_t get_required_statpoints(uint16_t from, uint16_t to);
 	uint32_t get_status_base(status_point_type type);
@@ -251,8 +252,41 @@ public:
 
 	std::shared_ptr<EntitySize> size() { return _size; }
 	void set_size(std::shared_ptr<EntitySize> s) { _size = s; }
+	
+	/* Creature Status */
+	std::shared_ptr<CreatureWeaponAttack> creature_weapon_attack() { return _creature_weapon_attack; }
+	void set_creature_weapon_attack(std::shared_ptr<CreatureWeaponAttack> m) { _creature_weapon_attack = m; }
+
+	std::shared_ptr<CreatureAttackDamage> creature_attack_damage() { return _creature_attack_damage; }
+	void set_creature_attack_damage(std::shared_ptr<CreatureAttackDamage> m) { _creature_attack_damage = m; }
+
+	std::shared_ptr<CreatureMagicAttackDamage> creature_magic_attack_damage() { return _creature_magic_attack_damage; }
+	void set_creature_magic_attack_damage(std::shared_ptr<CreatureMagicAttackDamage> m) { _creature_magic_attack_damage = m; }
+
+	std::shared_ptr<CreatureViewRange> creature_view_range() { return _creature_view_range; }
+	void set_creature_view_range(std::shared_ptr<CreatureViewRange> m) { _creature_view_range = m; }
+
+	std::shared_ptr<CreatureChaseRange> creature_chase_range() { return _creature_chase_range; }
+	void set_creature_chase_range(std::shared_ptr<CreatureChaseRange> m) { _creature_chase_range = m; }
+	
+	std::shared_ptr<CreaturePrimaryRace> creature_primary_race() { return _creature_primary_race; }
+	void set_creature_primary_race(std::shared_ptr<CreaturePrimaryRace> m) { _creature_primary_race = m; }
+	
+	std::shared_ptr<CreatureSecondaryRace> creature_secondary_race() { return _creature_secondary_race; }
+	void set_creature_secondary_race(std::shared_ptr<CreatureSecondaryRace> m) { _creature_secondary_race = m; }
+	
+	std::shared_ptr<CreatureElement> creature_element() { return _creature_element; }
+	void set_creature_element(std::shared_ptr<CreatureElement> m) { _creature_element = m; }
+	
+	std::shared_ptr<CreatureElementLevel> creature_element_level() { return _creature_element_level; }
+	void set_creature_element_level(std::shared_ptr<CreatureElementLevel> m) { _creature_element_level = m; }
+	
+	std::shared_ptr<CreatureMode> creature_mode() { return _creature_mode; }
+	void set_creature_mode(std::shared_ptr<CreatureMode> m) { _creature_mode = m; }
+
 protected:
 	std::shared_ptr<Entity> entity() { return _entity.lock(); }
+	entity_type _type{ ENTITY_PLAYER };
 
 private:
 	std::weak_ptr<Entity> _entity;
@@ -318,6 +352,17 @@ private:
 	std::shared_ptr<DamageMotion> _damage_motion;
 	std::shared_ptr<BaseAttack> _base_attack;
 	std::shared_ptr<EntitySize> _size;
+	/* Creatures */
+	std::shared_ptr<CreatureWeaponAttack> _creature_weapon_attack;
+	std::shared_ptr<CreatureAttackDamage> _creature_attack_damage;
+	std::shared_ptr<CreatureMagicAttackDamage> _creature_magic_attack_damage;
+	std::shared_ptr<CreatureViewRange> _creature_view_range;
+	std::shared_ptr<CreatureChaseRange> _creature_chase_range;
+	std::shared_ptr<CreaturePrimaryRace> _creature_primary_race;
+	std::shared_ptr<CreatureSecondaryRace> _creature_secondary_race;
+	std::shared_ptr<CreatureElement> _creature_element;
+	std::shared_ptr<CreatureElementLevel> _creature_element_level;
+	std::shared_ptr<CreatureMode> _creature_mode;
 };
 }
 }

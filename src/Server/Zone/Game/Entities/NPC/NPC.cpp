@@ -57,12 +57,17 @@ NPC::~NPC()
 		remove_grid_reference();
 }
 
-void NPC::initialize()
+bool NPC::initialize()
 {
-	Entity::initialize();
+	if (Entity::initialize() == false)
+		return false;
 
-	status()->initialize();
+	if (status()->initialize(shared_from_this()->downcast<NPC>()) == false)
+		return false;
+
 	map()->ensure_grid_for_entity(this, map_coords());
+
+	return true;
 }
 
 void NPC::stop_movement()

@@ -56,17 +56,12 @@ Monster::~Monster()
 		remove_grid_reference();
 }
 
-void Monster::initialize()
+bool Monster::initialize()
 {
 	std::shared_ptr<const monster_config_data> md = _wmd_data.lock();
 
-	Entity::initialize();
-
-	status()->initialize();
-
-	status()->movement_speed()->set_base(md->move_speed);
-
-	status()->size()->set_base((int32_t) monster_config()->size);
+	if (Creature::initialize(md) == false)
+		return false;
 
 	map()->ensure_grid_for_entity(this, map_coords());
 
@@ -78,6 +73,8 @@ void Monster::initialize()
     	behavior_passive();
     	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
     });
+
+	return true;
 }
 
 void Monster::behavior_passive()

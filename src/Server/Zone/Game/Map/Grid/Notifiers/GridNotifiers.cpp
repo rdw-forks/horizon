@@ -217,7 +217,10 @@ void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
         if (src_entity->guid() == tpl->guid())
             continue;
 
-        tpl->realize_entity_movement(src_entity);
+        if (_new_entry == true)
+            tpl->realize_entity_movement_entry(src_entity);
+        else
+            tpl->realize_entity_movement(src_entity);
     }
 }
 

@@ -412,9 +412,9 @@ bool MonsterDatabase::parse_race(sol::table const &table, monster_config_data &d
 	try {
 		sol::optional<int> maybe_val = table.get<sol::optional<int>>("Race");
 		if (maybe_val)
-			data.race = (monster_primary_race_type) maybe_val.value();
+			data.primary_race = (monster_primary_race_type) maybe_val.value();
 		else
-			data.race = MONSTER_RACE_FORMLESS;
+			data.primary_race = MONSTER_RACE_FORMLESS;
 	} catch (sol::error &error) {
 		HLog(error) << "Error parsing Race for monster '" << data.sprite_name << "' - " << error.what() << ".";
 	}

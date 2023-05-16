@@ -51,7 +51,7 @@ public:
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd);
 	~Monster();
 
-	void initialize() override;
+	bool initialize();
 
 	virtual void stop_movement() override;
 	virtual void on_pathfinding_failure() override;

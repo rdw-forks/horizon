@@ -51,7 +51,7 @@ public:
 	NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, std::string const &script);
 	~NPC();
 
-	void initialize() override;
+	bool initialize();
 
     void stop_movement() override;
     void on_pathfinding_failure() override;

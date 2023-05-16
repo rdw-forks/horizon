@@ -43,6 +43,34 @@ namespace Entities
 class Player;
 namespace Traits
 {	
+	class AttributeVariance
+	{
+	public:
+		AttributeVariance() { }
+		~AttributeVariance() { }
+
+		virtual void add_min(int32_t val) { set_min(_min + val); }
+		virtual void sub_min(int32_t val) { set_min(_min - std::min(_min, val)); }
+		virtual int32_t get_min() const { return _min; }
+		
+		virtual void set_min(int32_t val)
+		{
+			_min = val;
+		}
+
+		virtual void add_max(int32_t val) { set_max(_max + val); }
+		virtual void sub_max(int32_t val) { set_max(_max - std::min(_max, val)); }
+		virtual int32_t get_max() const { return _max; }
+
+		virtual void set_max(int32_t val)
+		{
+			_max = val;
+		}
+
+	private:
+		int32_t _min{ 0 }, _max{ 0 };
+	};
+
 	template <class T>
 	class Attribute
 	{

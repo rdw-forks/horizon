@@ -88,7 +88,7 @@ public:
 	Entity(uint32_t guid, entity_type type);
 	virtual ~Entity();
 
-	virtual void initialize();
+	bool initialize();
 
 	bool is_initialized() const { return _is_initialized; }
 
@@ -173,7 +173,7 @@ public:
 	bool is_in_range_of(std::shared_ptr<Entity> entity, uint8_t range = MAX_VIEW_RANGE);
 	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
 	void notify_nearby_players_of_spawn();
-	void notify_nearby_players_of_movement();
+	void notify_nearby_players_of_movement(bool new_entry = false);
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 
 	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
