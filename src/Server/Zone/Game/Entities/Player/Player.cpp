@@ -425,7 +425,6 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 
 void Player::on_map_enter()
 {
-	force_movement_stop_internal(false);
     //get_packet_handler()->Send_ZC_MAPPROPERTY_R2(get_map());
 
 	inventory()->notify_all();

@@ -137,6 +137,7 @@ void Entity::walk()
 			// prevent further movement updates after map has changed.
 			if (_jump_walk_stop) {
 				stop_walking(true);
+				force_movement_stop_internal(false);
 				return;
 			}
 
