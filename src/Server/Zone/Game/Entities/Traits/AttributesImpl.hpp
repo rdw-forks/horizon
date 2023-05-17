@@ -911,6 +911,7 @@ namespace Traits
 	class CreatureWeaponAttack
 		: public Attribute<CreatureWeaponAttack>
 	{
+	public:
 		CreatureWeaponAttack(std::weak_ptr<Entity> entity, int32_t val)
 			: Attribute(entity, val)
 		{ }
@@ -923,8 +924,8 @@ namespace Traits
 		public AttributeVariance
 	{
 	public:
-		CreatureAttackDamage(std::weak_ptr<Entity> entity, int32_t val)
-			: Attribute(entity, val),
+		CreatureAttackDamage(std::weak_ptr<Entity> entity)
+			: Attribute(entity),
 			ObservableStatus(nullptr, nullptr, nullptr),
 			AttributeVariance()
 		{ }
@@ -941,20 +942,19 @@ namespace Traits
 		int32_t compute();
 
 	private:
-		int32_t _min{ 0 }, _max{ 0 };
 		Strength* _str{ nullptr };
 		BaseLevel* _blvl{ nullptr };
 		CreatureWeaponAttack* _cw_atk{ nullptr };
 	};
 
 	class CreatureMagicAttackDamage
-		: public Attribute<CreatureAttackDamage>,
-		public ObservableStatus<CreatureAttackDamage*, Intelligence*, BaseLevel*, CreatureWeaponAttack*>,
+		: public Attribute<CreatureMagicAttackDamage>,
+		public ObservableStatus<CreatureMagicAttackDamage*, Intelligence*, BaseLevel*, CreatureWeaponAttack*>,
 		public AttributeVariance
 	{
 	public:
-		CreatureMagicAttackDamage(std::weak_ptr<Entity> entity, int32_t val)
-			: Attribute(entity, val),
+		CreatureMagicAttackDamage(std::weak_ptr<Entity> entity)
+			: Attribute(entity),
 			ObservableStatus(nullptr, nullptr, nullptr),
 			AttributeVariance()
 		{ }
@@ -971,7 +971,6 @@ namespace Traits
 		int32_t compute();
 
 	private:
-		int32_t _min{ 0 }, _max{ 0 };
 		Intelligence* _int{ nullptr };
 		BaseLevel* _blvl{ nullptr };
 		CreatureWeaponAttack* _cw_atk{ nullptr };

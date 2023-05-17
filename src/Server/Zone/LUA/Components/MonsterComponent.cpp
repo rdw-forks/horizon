@@ -166,10 +166,9 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 			if (container == nullptr)
 				return;
 			
-			std::shared_ptr<Map> map = container->get_map(map_name);
+			std::shared_ptr<Map> map;
 
-			if (map == nullptr)
-				return;
+			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
 			std::shared_ptr<const monster_config_data> md = MonsterDB->get_monster_by_id(monster_id);
 
@@ -213,4 +212,13 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 			register_monster_spawn_info(_last_monster_spawn_id++, std::make_shared<monster_spawn_data>(spwd));
 		});
+}
+
+void MonsterComponent::deregister_single_spawned_monster(uint32_t guid) {
+	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end(); i++)
+		if ((*i).second->guid() == guid) {
+			(*i).second->finalize();
+			_monster_spawned_map.erase(i);
+			return;
+		}
 }

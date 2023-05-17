@@ -33,6 +33,7 @@
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
@@ -84,6 +85,7 @@ combat_retaliate_type Combat::weapon_attack()
             break;
         case ENTITY_MONSTER:
             target()->notify_nearby_players_of_movement(true);
+            target()->downcast<Horizon::Zone::Entities::Monster>()->on_damage_received(entity(), dmg.right_damage + dmg.left_damage);
             break;
         case ENTITY_PET:
             break;

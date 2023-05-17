@@ -52,6 +52,10 @@ Status::Status(std::weak_ptr<Horizon::Zone::Entity> entity, entity_type type)
 
 }
 
+Status::~Status()
+{
+}
+
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 {
 	load(player);
@@ -268,6 +272,33 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 	set_dexterity(std::make_shared<Dexterity>(_entity, md->stats.dex, 0, 0));
 	set_luck(std::make_shared<Luck>(_entity, md->stats.luk, 0, 0));
 
+	set_soft_def(std::make_shared<SoftDEF>(_entity));
+	soft_def()->set_vitality(vitality().get());
+	soft_def()->compute(true);
+
+	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
+	soft_mdef()->set_base_level(base_level().get());
+	soft_mdef()->set_intelligence(intelligence().get());
+	soft_mdef()->set_dexterity(dexterity().get());
+	soft_mdef()->set_vitality(vitality().get());
+	soft_mdef()->compute(true);
+
+	set_hit(std::make_shared<HIT>(_entity));
+	hit()->set_base_level(base_level().get());
+	hit()->set_dexterity(dexterity().get());
+	hit()->set_luck(luck().get());
+	hit()->compute(true);
+
+	set_crit(std::make_shared<CRIT>(_entity));
+	crit()->set_luck(luck().get());
+	crit()->compute(true);
+
+	set_flee(std::make_shared<FLEE>(_entity));
+	flee()->set_base_level(base_level().get());
+	flee()->set_agility(agility().get());
+	flee()->set_luck(luck().get());
+	flee()->compute(true);
+
 	set_attack_range(std::make_shared<AttackRange>(_entity));
 	attack_range()->compute(true);
 
@@ -282,6 +313,25 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 
 	set_attack_range(std::make_shared<AttackRange>(_entity));
 	attack_range()->compute(false);
+
+	set_creature_weapon_attack(std::make_shared<CreatureWeaponAttack>(_entity, md->attack_damage[0]));
+	set_creature_weapon_attack_magic(std::make_shared<CreatureWeaponAttack>(_entity, md->attack_damage[1]));
+	
+	set_creature_attack_damage(std::make_shared<CreatureAttackDamage>(_entity));
+	creature_attack_damage()->set_strength(strength().get());
+	creature_attack_damage()->set_base_level(base_level().get());
+	creature_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
+	creature_attack_damage()->compute();
+	creature_attack_damage()->register_observable(creature_attack_damage().get());
+	creature_attack_damage()->register_observers(strength().get(), base_level().get(), creature_weapon_attack().get());
+
+	set_creature_magic_attack_damage(std::make_shared<CreatureMagicAttackDamage>(_entity));
+	creature_magic_attack_damage()->set_intelligence(intelligence().get());
+	creature_magic_attack_damage()->set_base_level(base_level().get());
+	creature_magic_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
+	creature_magic_attack_damage()->compute();
+	creature_magic_attack_damage()->register_observable(creature_magic_attack_damage().get());
+	creature_magic_attack_damage()->register_observers(intelligence().get(), base_level().get(), creature_weapon_attack().get());
 
 	set_creature_view_range(std::make_shared<CreatureViewRange>(_entity, (int) md->view_range));
 	set_creature_chase_range(std::make_shared<CreatureChaseRange>(_entity, (int) md->chase_range));

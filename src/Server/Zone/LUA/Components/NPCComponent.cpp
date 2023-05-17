@@ -54,11 +54,10 @@ void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)
 {
 	state->set_function("NewNPC",
-		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
-			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
-
-			if (map == nullptr)
-				return std::shared_ptr<NPC>();
+		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
+			std::shared_ptr<Map> map;
+			
+			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
@@ -75,16 +74,14 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
 
 			add_npc_to_db(npc->guid(), p_nd);
-
-			return npc;
 		});
 
 	state->set_function("DupNPC",
-		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::shared_ptr<NPC> duplicate) {
-			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
+		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::shared_ptr<NPC> duplicate) {
 
-			if (map == nullptr)
-				return std::shared_ptr<NPC>();
+			std::shared_ptr<Map> map;
+			
+			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
@@ -104,16 +101,13 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
 
 			add_npc_to_db(npc->guid(), p_nd);
-
-			return npc;
 		});
 
 	state->set_function("SilentNPC",
-		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
-			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
+		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
+			std::shared_ptr<Map> map;
 
-			if (map == nullptr)
-				return std::shared_ptr<NPC>();
+			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
@@ -128,8 +122,6 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			std::shared_ptr<npc_db_data> p_nd = std::make_shared<npc_db_data>(nd);
 
 			add_npc_to_db(npc->guid(), p_nd);
-
-			return npc;
 		});
 
 	state->set_function("Warp",
@@ -138,10 +130,9 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			if (container == nullptr)
 				return;
 			
-			std::shared_ptr<Map> map = MapMgr->get_map(map_name);
+			std::shared_ptr<Map> map;
 
-			if (map == nullptr)
-				return;
+			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, script);
 			npc->initialize();

@@ -211,6 +211,9 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	
 	std::shared_ptr<Horizon::Zone::Traits::Status> status = entity->status();
 
+	if (status == nullptr)
+		return entry;
+
 	entry.guid = entity->guid();
 	entry.unit_type = entity->type();
 	entry.speed = status->movement_speed()->total();
@@ -366,6 +369,8 @@ bool ZoneClientInterface::notify_initial_status()
 	data.plus_aspd = 0;
 	
 	zcs.deliver(data);
+
+	return true;
 }
 
 bool ZoneClientInterface::notify_appearance_update(entity_appearance_type type, int32_t value, int32_t value2)

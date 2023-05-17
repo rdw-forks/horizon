@@ -65,7 +65,7 @@ namespace Traits
 			_max = val;
 		}
 
-	private:
+	protected:
 		int32_t _min{ 0 }, _max{ 0 };
 	};
 

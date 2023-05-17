@@ -55,7 +55,7 @@ class Status
 {
 public:
 	Status(std::weak_ptr<Entity> entity, entity_type type);
-	~Status() { }
+	~Status();
 
 	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creature, std::shared_ptr<const monster_config_data> md);
 	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player);
@@ -258,6 +258,9 @@ public:
 	std::shared_ptr<CreatureWeaponAttack> creature_weapon_attack() { return _creature_weapon_attack; }
 	void set_creature_weapon_attack(std::shared_ptr<CreatureWeaponAttack> m) { _creature_weapon_attack = m; }
 
+	std::shared_ptr<CreatureWeaponAttack> creature_weapon_attack_magic() { return _creature_weapon_attack_magic; }
+	void set_creature_weapon_attack_magic(std::shared_ptr<CreatureWeaponAttack> m) { _creature_weapon_attack_magic = m; }
+
 	std::shared_ptr<CreatureAttackDamage> creature_attack_damage() { return _creature_attack_damage; }
 	void set_creature_attack_damage(std::shared_ptr<CreatureAttackDamage> m) { _creature_attack_damage = m; }
 
@@ -355,6 +358,7 @@ private:
 	std::shared_ptr<EntitySize> _size;
 	/* Creatures */
 	std::shared_ptr<CreatureWeaponAttack> _creature_weapon_attack;
+	std::shared_ptr<CreatureWeaponAttack> _creature_weapon_attack_magic;
 	std::shared_ptr<CreatureAttackDamage> _creature_attack_damage;
 	std::shared_ptr<CreatureMagicAttackDamage> _creature_magic_attack_damage;
 	std::shared_ptr<CreatureViewRange> _creature_view_range;

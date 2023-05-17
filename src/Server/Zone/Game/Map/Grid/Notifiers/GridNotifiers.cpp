@@ -143,11 +143,12 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
             if (!tpl->entity_is_in_viewport(src_entity))
                 continue;
             
-            tpl->remove_entity_from_viewport(src_entity, _notif_type);
-        } else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT) {
+            tpl->remove_entity_from_viewport(src_entity, EVP_NOTIFY_OUT_OF_SIGHT);
+        }
+        else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT) {
             if (!tpl->entity_is_in_viewport(src_entity))
                 continue;
-            
+
             tpl->remove_entity_from_viewport(src_entity, _notif_type);
         }
     }

@@ -504,7 +504,7 @@ int32_t CreatureAttackDamage::compute()
 	set_min(_blvl->total() + _str->total() + (_cw_atk->total() * 8 / 10));
 	set_max(_blvl->total() + _str->total() + (_cw_atk->total() * 12 / 10));
 
-	return std::rand() % (_max - _min) + _min;
+	return std::rand() % ((_max - _min + 1) + _min);
 }
 
 int32_t CreatureMagicAttackDamage::compute()
@@ -512,7 +512,7 @@ int32_t CreatureMagicAttackDamage::compute()
 	set_min(_blvl->total() + _int->total() + (_cw_atk->total() * 7 / 10));
 	set_max(_blvl->total() + _int->total() + (_cw_atk->total() * 13 / 10));
 
-	return std::rand() % (_max - _min) + _min;
+	return std::rand() % (_max - _min + 1) + _min;
 }
 
 int32_t AttackMotion::compute()

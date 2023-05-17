@@ -330,7 +330,9 @@ bool Entity::status_effect_end(int type)
 	return true;
 }
 
-bool Entity::is_dead() { return status()->current_hp()->get_base() == 0; }
+bool Entity::is_dead() { 
+	return status()->current_hp()->get_base() == 0; 
+}
 
 bool Entity::is_attacking() { return map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0; }
 
@@ -351,6 +353,9 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 
 	map()->container()->getScheduler().Schedule(Milliseconds(0), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
 		[this, continuous, target] (TaskContext context) {
+
+			if (target == nullptr)
+				return;
 
 			Combat combat(shared_from_this(), target);
 

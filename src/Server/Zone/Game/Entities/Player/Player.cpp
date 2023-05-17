@@ -307,6 +307,8 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_
 
 	_viewport_entities.erase(std::remove_if(_viewport_entities.begin(), _viewport_entities.end(),
 		[entity] (std::weak_ptr<Entity> wp_e) {
+			if (wp_e.expired())
+				return false;
 			return wp_e.lock()->guid() == entity->guid();
 		}
 	), _viewport_entities.end());
@@ -314,8 +316,11 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_
 	get_session()->clif()->notify_viewport_remove_entity(entity, type);
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
-	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)
+	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
+		if ((*it).expired())
+			continue;
 		HLog(debug) << "Entity:" << it->lock()->name() << " " << it->lock()->guid();
+	}
 	HLog(debug) << "--------------------";
 }
 

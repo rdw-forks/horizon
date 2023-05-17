@@ -77,6 +77,15 @@ bool Monster::initialize()
 	return true;
 }
 
+void Monster::finalize()
+{
+	if (map_container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
+		map_container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+
+	if (has_valid_grid_reference())
+		remove_grid_reference();
+}
+
 void Monster::behavior_passive()
 {
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
@@ -165,3 +174,18 @@ void Monster::on_status_effect_change(std::shared_ptr<status_change_entry> sce)
 
 }
 
+void Monster::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
+{
+	if (status()->current_hp()->total() < damage) {
+		status()->current_hp()->set_base(0);
+		on_death(damage_dealer);
+		return;
+	}
+}
+
+void Monster::on_death(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+{
+	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
+
+	map_container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
+}

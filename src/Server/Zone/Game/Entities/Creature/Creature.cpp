@@ -4,7 +4,7 @@
  *      | |_| | ___  _ __ _ _______  _ __          *
  *      |  _  |/ _ \| '__| |_  / _ \| '_  \        *
  *      | | | | (_) | |  | |/ / (_) | | | |        *
- *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
+       \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
  *
@@ -33,7 +33,6 @@
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 
-
 using namespace Horizon::Zone::Entities;
 
 Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords)
@@ -44,7 +43,6 @@ Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, Ma
 
 Creature::~Creature()
 {
-	//
 }
 
 bool Creature::initialize(std::shared_ptr<const monster_config_data> md)

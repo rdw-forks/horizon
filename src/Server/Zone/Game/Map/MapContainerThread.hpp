@@ -43,6 +43,12 @@ namespace Entities
 {
 	class Player;
 }
+// Important step as when the map is not available in a given MapContainerThread, the function invoked from lua will just exit. 
+// Functions are run on all containers and not just one.
+#define MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name) \
+	if ((map = container->get_map(map_name)) == nullptr) \
+		return;
+
 class MapContainerThread : public std::enable_shared_from_this<MapContainerThread>
 {
 public:
