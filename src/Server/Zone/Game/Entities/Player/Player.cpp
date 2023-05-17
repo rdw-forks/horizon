@@ -295,8 +295,11 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	}
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
-	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++)
+	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
+		if ((*it).expired())
+			continue;
 		HLog(debug) << "Entity:" << it->lock()->name() << " " << it->lock()->guid();
+	}
 	HLog(debug) << "--------------------";
 }
 

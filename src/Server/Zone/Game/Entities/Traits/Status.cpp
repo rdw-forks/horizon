@@ -233,6 +233,18 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc)
 {
+	set_movement_speed(std::make_shared<MovementSpeed>(_entity, 100));
+	set_base_level(std::make_shared<BaseLevel>(_entity, 1));
+
+	set_current_hp(std::make_shared<CurrentHP>(_entity, 1));
+	set_current_sp(std::make_shared<CurrentSP>(_entity, 1));
+	set_max_hp(std::make_shared<MaxHP>(_entity, 1));
+	set_max_sp(std::make_shared<MaxSP>(_entity, 1));
+	set_hair_style(std::make_shared<HairStyle>(_entity, 0));
+	set_hair_color(std::make_shared<HairColor>(_entity, 0));
+	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
+	set_base_appearance(std::make_shared<BaseAppearance>(_entity, npc->job_id()));
+
 	return true;
 }
 
@@ -245,8 +257,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 {
 	set_movement_speed(std::make_shared<MovementSpeed>(_entity, md->move_speed));
 
-	set_base_level(std::make_shared<BaseLevel>(_entity, 1));
-	set_job_level(std::make_shared<JobLevel>(_entity, 1));
+	set_base_level(std::make_shared<BaseLevel>(_entity, md->level));
 
 	set_current_hp(std::make_shared<CurrentHP>(_entity, md->hp));
 	set_current_sp(std::make_shared<CurrentSP>(_entity, md->sp));
