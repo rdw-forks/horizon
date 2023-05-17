@@ -41,3 +41,5 @@ Before installing Horizon, you will need to install certain tools and applicatio
     - [TortoiseGit](https://tortoisegit.org/) (Windows)
 
 #### Read the '[How to install Horizon on Windows 11](https://github.com/horizonxyz/horizon/wiki/How-to-install-Horizon-on-Windows-11)' Guide
+
+#### Read the '[Contribution & Development Guidelines](https://projecthorizon.xyz/index.php?topic=6.0)'
