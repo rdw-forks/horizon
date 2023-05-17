@@ -28,9 +28,8 @@ Before installing Horizon, you will need to install certain tools and applicatio
   - [Boost v1.60+](https://www.boost.org/)
   - [Readline](https://tiswww.case.edu/php/chet/readline/rltop.html)
   - [Sol2](https://github.com/ThePhD/sol2)
-  - [Argon2](https://github.com/P-H-C/phc-winner-argon2)
-  - [SQLPP11](https://github.com/rbock/sqlpp11) 
-  - [SQLPP11-MYSQL](https://github.com/rbock/sqlpp11-connector-mysql)
+  - Mysql
+  - Mysql Connector C++
 
 #### Optional, useful tools
   - MySQL GUI clients
@@ -42,3 +41,5 @@ Before installing Horizon, you will need to install certain tools and applicatio
     - [TortoiseGit](https://tortoisegit.org/) (Windows)
 
 #### Read the '[How to install Horizon on Windows 11](https://github.com/horizonxyz/horizon/wiki/How-to-install-Horizon-on-Windows-11)' Guide
+
+#### Read the '[Contribution & Development Guidelines](https://projecthorizon.xyz/index.php?topic=6.0)'
