@@ -33,6 +33,7 @@
 #include "Attribute.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
  // Linux
 
@@ -41,8 +42,6 @@ namespace Horizon
 namespace Zone
 {
 class Entity;
-namespace Entities
-{
 class Player;
 namespace Traits
 {
@@ -145,6 +144,8 @@ namespace Traits
 		: Attribute(entity, base, equip, status)
 		{ }
 		~CurrentHP() { };
+
+		void damage(int damage);
 	};
 
 	class CurrentSP
@@ -155,6 +156,8 @@ namespace Traits
 		: Attribute(entity, base, equip, status)
 		{ }
 		~CurrentSP() { };
+
+		void reduce(int amount);
 	};
 
 	class StatusPoint
@@ -899,12 +902,135 @@ namespace Traits
 	: public Attribute<EntitySize>
 	{
 	public:
-		EntitySize(std::weak_ptr<Entity> entity)
-		: Attribute(entity)
+		EntitySize(std::weak_ptr<Entity> entity, int32_t size)
+		: Attribute(entity, size)
 		{ }
 		~EntitySize() { }
 	};
-}
+
+	class CreatureWeaponAttack
+		: public Attribute<CreatureWeaponAttack>
+	{
+	public:
+		CreatureWeaponAttack(std::weak_ptr<Entity> entity, int32_t val)
+			: Attribute(entity, val)
+		{ }
+		~CreatureWeaponAttack() { }
+	};
+
+	class CreatureAttackDamage
+		: public Attribute<CreatureAttackDamage>,
+		public ObservableStatus<CreatureAttackDamage*, Strength*, BaseLevel*, CreatureWeaponAttack*>,
+		public AttributeVariance
+	{
+	public:
+		CreatureAttackDamage(std::weak_ptr<Entity> entity)
+			: Attribute(entity),
+			ObservableStatus(nullptr, nullptr, nullptr),
+			AttributeVariance()
+		{ }
+		~CreatureAttackDamage() { }
+
+		void on_observable_changed(Strength*) { compute(); }
+		void on_observable_changed(BaseLevel*) { compute(); }
+		void on_observable_changed(CreatureWeaponAttack*) { compute(); }
+
+		void set_strength(Strength* str) { _str = str; }
+		void set_base_level(BaseLevel* blvl) { _blvl = blvl; }
+		void set_creature_weapon_attack(CreatureWeaponAttack* cw_atk) { _cw_atk = cw_atk; }
+
+		int32_t compute();
+
+	private:
+		Strength* _str{ nullptr };
+		BaseLevel* _blvl{ nullptr };
+		CreatureWeaponAttack* _cw_atk{ nullptr };
+	};
+
+	class CreatureMagicAttackDamage
+		: public Attribute<CreatureMagicAttackDamage>,
+		public ObservableStatus<CreatureMagicAttackDamage*, Intelligence*, BaseLevel*, CreatureWeaponAttack*>,
+		public AttributeVariance
+	{
+	public:
+		CreatureMagicAttackDamage(std::weak_ptr<Entity> entity)
+			: Attribute(entity),
+			ObservableStatus(nullptr, nullptr, nullptr),
+			AttributeVariance()
+		{ }
+		~CreatureMagicAttackDamage() { }
+
+		void on_observable_changed(Intelligence*) { compute(); }
+		void on_observable_changed(BaseLevel*) { compute(); }
+		void on_observable_changed(CreatureWeaponAttack*) { compute(); }
+
+		void set_intelligence(Intelligence* _intelligence) { _int = _intelligence; }
+		void set_base_level(BaseLevel* blvl) { _blvl = blvl; }
+		void set_creature_weapon_attack(CreatureWeaponAttack* cw_atk) { _cw_atk = cw_atk; }
+
+		int32_t compute();
+
+	private:
+		Intelligence* _int{ nullptr };
+		BaseLevel* _blvl{ nullptr };
+		CreatureWeaponAttack* _cw_atk{ nullptr };
+	};
+
+	class CreatureViewRange
+		: public Attribute<CreatureViewRange>
+	{
+	public:
+		CreatureViewRange(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreatureViewRange() { }
+	};
+
+	class CreatureChaseRange
+		: public Attribute<CreatureChaseRange>
+	{
+	public:
+		CreatureChaseRange(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreatureChaseRange() { }
+	};
+
+	class CreaturePrimaryRace
+		: public Attribute<CreaturePrimaryRace>
+	{
+	public:
+		CreaturePrimaryRace(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreaturePrimaryRace() { }
+	};
+
+	class CreatureSecondaryRace
+		: public Attribute<CreatureSecondaryRace>
+	{
+	public:
+		CreatureSecondaryRace(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreatureSecondaryRace() { }
+	};
+
+	class CreatureElement
+		: public Attribute<CreatureElement>
+	{
+	public:
+		CreatureElement(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreatureElement() { }
+	};
+
+	class CreatureElementLevel
+		: public Attribute<CreatureElementLevel>
+	{
+	public:
+		CreatureElementLevel(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreatureElementLevel() { }
+	};
+
+	class CreatureMode
+		: public Attribute<CreatureMode>
+	{
+	public:
+		CreatureMode(std::weak_ptr<Entity> entity, int32_t val) : Attribute(entity, val) { }
+		~CreatureMode() { }
+	};
 }
 }
 }

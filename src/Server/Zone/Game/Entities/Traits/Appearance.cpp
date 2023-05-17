@@ -33,11 +33,10 @@
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 
-using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities::Traits;
+using namespace Horizon::Zone::Traits;
 
 void Appearance::notify_update()
 {
 	if (get_entity() != nullptr && get_entity()->type() == ENTITY_PLAYER)
-		get_entity()->template downcast<Player>()->get_session()->clif()->notify_appearance_update(_type, get(), 0);
+		get_entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_appearance_update(_type, get(), 0);
 }

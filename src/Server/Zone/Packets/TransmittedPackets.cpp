@@ -6074,8 +6074,8 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 	buf() << _entry.y_size;
 	buf() << _entry.base_level;
 	buf() << _entry.font;
-	buf() << -1;
-	buf() << -1;
+	buf() << _entry.max_hp;
+	buf() << _entry.hp;
 	buf() << _entry.is_boss;
 	buf() << _entry.body_style_id;
 	buf().append(_entry.name, sizeof(_entry.name));

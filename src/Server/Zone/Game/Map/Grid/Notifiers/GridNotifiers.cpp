@@ -83,7 +83,6 @@ template<> void GridPlayerNotifier::Visit<Skill>(GridRefManager<Skill> &m);
 template <class T>
 void GridViewPortUpdater::update(GridRefManager<T> &m)
 {
-    using namespace Horizon::Zone;
     using namespace Horizon::Zone::Entities;
 
     if (_entity.expired())
@@ -95,7 +94,7 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
         if (iter->source() == nullptr || iter->source()->guid() == pl->guid())
             continue;
 
-        std::shared_ptr<Entity> vp_e = iter->source()->shared_from_this();
+        std::shared_ptr<Horizon::Zone::Entity> vp_e = iter->source()->shared_from_this();
 
         if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
             pl->add_entity_to_viewport(vp_e);
@@ -144,11 +143,12 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
             if (!tpl->entity_is_in_viewport(src_entity))
                 continue;
             
-            tpl->remove_entity_from_viewport(src_entity, _notif_type);
-        } else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT) {
+            tpl->remove_entity_from_viewport(src_entity, EVP_NOTIFY_OUT_OF_SIGHT);
+        }
+        else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT) {
             if (!tpl->entity_is_in_viewport(src_entity))
                 continue;
-            
+
             tpl->remove_entity_from_viewport(src_entity, _notif_type);
         }
     }
@@ -217,7 +217,10 @@ void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
         if (src_entity->guid() == tpl->guid())
             continue;
 
-        tpl->realize_entity_movement(src_entity);
+        if (_new_entry == true)
+            tpl->realize_entity_movement_entry(src_entity);
+        else
+            tpl->realize_entity_movement(src_entity);
     }
 }
 

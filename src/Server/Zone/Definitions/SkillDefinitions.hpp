@@ -347,6 +347,8 @@ struct skill_tree_config
  * that is required throughout a skill's lifecycle.
  */
 struct skill_cast_data {
+	~skill_cast_data() = delete;
+
 	int16_t skill_id{0};                                                              ///< Skill Id.
 	int16_t skill_lv{0};                                                              ///< Skill level.
 	std::shared_ptr<Horizon::Zone::Entity> source_caster{nullptr};                                   ///< Source caster's block data.

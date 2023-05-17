@@ -36,7 +36,6 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
 
 void PlayerComponent::sync_definitions(std::shared_ptr<sol::state> state)
 {
@@ -63,27 +62,27 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "add_item", &Assets::Inventory::add_item
     );
 
-    state->new_usertype<Player>("Player",
-        "guid", &Player::guid,
-        "map", &Player::map,
-        "map_coords", &Player::map_coords,
-        "get_nearby_entity", &Player::get_nearby_entity,
-        "send_npc_dialog", &Player::send_npc_dialog,
-        "send_npc_next_dialog", &Player::send_npc_next_dialog,
-        "send_npc_close_dialog", &Player::send_npc_close_dialog,
-        "send_npc_menu_list", &Player::send_npc_menu_list,
-        "move_to_map", &Player::move_to_map,
-        "inventory", &Player::inventory,
-        "message", [] (std::shared_ptr<Player> player, std::string const &message)
+    state->new_usertype<Horizon::Zone::Entities::Player>("Player",
+        "guid", &Horizon::Zone::Entities::Player::guid,
+        "map", &Horizon::Zone::Entities::Player::map,
+        "map_coords", &Horizon::Zone::Entities::Player::map_coords,
+        "get_nearby_entity", &Horizon::Zone::Entities::Player::get_nearby_entity,
+        "send_npc_dialog", &Horizon::Zone::Entities::Player::send_npc_dialog,
+        "send_npc_next_dialog", &Horizon::Zone::Entities::Player::send_npc_next_dialog,
+        "send_npc_close_dialog", &Horizon::Zone::Entities::Player::send_npc_close_dialog,
+        "send_npc_menu_list", &Horizon::Zone::Entities::Player::send_npc_menu_list,
+        "move_to_map", &Horizon::Zone::Entities::Player::move_to_map,
+        "inventory", &Horizon::Zone::Entities::Player::inventory,
+        "message", [] (std::shared_ptr<Horizon::Zone::Entities::Player> player, std::string const &message)
         {
             player->get_session()->clif()->notify_chat(message);
         },
-        "status", &Player::status,
-        "job_change", &Player::job_change,
-        "perform_action", &Player::perform_action,
-        "get_learnt_skill", &Player::get_learnt_skill,
-        "perform_skill", &Player::perform_skill,
-        "on_skill_failure", &Player::on_skill_failure
+        "status", & Horizon::Zone::Entities::Player::status,
+        "job_change", & Horizon::Zone::Entities::Player::job_change,
+        "perform_action", & Horizon::Zone::Entities::Player::perform_action,
+        "get_learnt_skill", & Horizon::Zone::Entities::Player::get_learnt_skill,
+        "perform_skill", & Horizon::Zone::Entities::Player::perform_skill,
+        "on_skill_failure", & Horizon::Zone::Entities::Player::on_skill_failure
     );
 
 }
@@ -93,11 +92,11 @@ void PlayerComponent::sync_functions(std::shared_ptr<sol::state> state)
     state->set_function("cast_entity_to_player",
                     [] (std::shared_ptr<Entity> e)
                     {
-                        return e->template downcast<Player>();
+                        return e->template downcast<Horizon::Zone::Entities::Player>();
                     });
 }
 
-void PlayerComponent::perform_command_from_player(std::shared_ptr<Player> player, std::string const &cmd)
+void PlayerComponent::perform_command_from_player(std::shared_ptr<Horizon::Zone::Entities::Player> player, std::string const &cmd)
 {
     try {
         sol::load_result fx = player->lua_state()->load_file("scripts/internal/at_command_main.lua");

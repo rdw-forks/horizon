@@ -4,7 +4,7 @@
  *      | |_| | ___  _ __ _ _______  _ __          *
  *      |  _  |/ _ \| '__| |_  / _ \| '_  \        *
  *      | | | | (_) | |  | |/ / (_) | | | |        *
- *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
+       \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
  *
@@ -30,8 +30,9 @@
 #include "Creature.hpp"
 
 #include "Server/Zone/Game/Map/Map.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 
-using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
 Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords)
@@ -42,5 +43,17 @@ Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, Ma
 
 Creature::~Creature()
 {
-	//
+}
+
+bool Creature::initialize(std::shared_ptr<const monster_config_data> md)
+{
+	if (Entity::initialize() == false)
+		return false;
+
+	if (status()->initialize(shared_from_this()->downcast<Creature>(), md) == false) {
+		HLog(error) << "Status::initialize: failed to initialize status for creature with monster id " << md->monster_id << ".";
+		return false;
+	}
+
+	return true;
 }

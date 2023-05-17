@@ -216,7 +216,8 @@ struct monster_config_data
 	short view_range{1};
 	short chase_range{1};
 	entity_size_type size{ESZ_MEDIUM};
-	monster_primary_race_type race{MONSTER_RACE_FORMLESS};
+	monster_primary_race_type primary_race{MONSTER_RACE_FORMLESS};
+	monster_secondary_race_type secondary_race{ MONSTER_RACE2_NONE };
 	element_type element{ELE_NEUTRAL};
 	int8_t element_level{0};
 	int32_t mode{0};

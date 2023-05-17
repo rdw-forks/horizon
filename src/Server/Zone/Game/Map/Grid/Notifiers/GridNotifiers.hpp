@@ -96,9 +96,10 @@ struct GridEntitySpawnNotifier
 struct GridEntityMovementNotifier
 {
 	std::weak_ptr<Horizon::Zone::Entity> _entity;
+	bool _new_entry{ false };
 
-	explicit GridEntityMovementNotifier(const std::shared_ptr<Horizon::Zone::Entity>& entity)
-	: _entity(entity)
+	explicit GridEntityMovementNotifier(const std::shared_ptr<Horizon::Zone::Entity>& entity, bool new_entry = false)
+	: _entity(entity), _new_entry(new_entry)
 	{ }
 
 	template <class T>

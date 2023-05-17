@@ -49,15 +49,16 @@ public:
     void sync_functions(std::shared_ptr<sol::state> state) { }
     void sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container);
 
-    void register_monster_spawn_info(uint32_t id, std::shared_ptr<monster_spawn_data> data) { _monster_spawn_db.insert(id, data); }
-    std::shared_ptr<monster_spawn_data> get_monster_spawn_info(uint32_t id) { return _monster_spawn_db.at(id, nullptr); }
+    void register_monster_spawn_info(uint32_t id, std::shared_ptr<monster_spawn_data> data) { _monster_spawn_db.emplace(id, data); }
+    std::shared_ptr<monster_spawn_data> get_monster_spawn_info(uint32_t id) { return _monster_spawn_db.at(id); }
 
-    void register_single_spawned_monster(uint32_t guid, std::shared_ptr<Entities::Monster> data) { _monster_spawned_map.insert(guid, data); }
-    std::shared_ptr<Entities::Monster> get_single_spawned_monster(uint32_t guid) { return _monster_spawned_map.at(guid, nullptr); }
+    void register_single_spawned_monster(uint32_t guid, std::shared_ptr<Entities::Monster> data) { _monster_spawned_map.emplace(guid, data); }
+    std::shared_ptr<Entities::Monster> get_single_spawned_monster(uint32_t guid) { return _monster_spawned_map.at(guid); }
+    void deregister_single_spawned_monster(uint32_t guid);
 
 private: 
-    LockedLookupTable<uint32_t, std::shared_ptr<monster_spawn_data>> _monster_spawn_db;
-    LockedLookupTable<uint32_t, std::shared_ptr<Entities::Monster>> _monster_spawned_map;
+    std::map<uint32_t, std::shared_ptr<monster_spawn_data>> _monster_spawn_db;
+    std::map<uint32_t, std::shared_ptr<Entities::Monster>> _monster_spawned_map;
     int32_t _last_monster_spawn_id{0};
 };
 }

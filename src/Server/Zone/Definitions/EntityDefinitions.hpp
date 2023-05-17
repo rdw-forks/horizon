@@ -39,19 +39,19 @@ enum entity_size_type
 	ESZ_MAX     = 3
 };
 
-enum entity_type : char
+enum entity_type : int
 {
-	ENTITY_PLAYER      = 0x00,
-	ENTITY_NPC         = 0x01,
-	ENTITY_ITEM        = 0x02,
-	ENTITY_SKILL       = 0x03,
-	ENTITY_UNKNOWN     = 0x04,
-	ENTITY_MONSTER     = 0x05,
-	ENTITY_EVENT       = 0x06,
-	ENTITY_PET         = 0x07,
-	ENTITY_HOMUNCULUS  = 0x08,
-	ENTITY_MERCENARY   = 0x09,
-	ENTITY_ELEMENTAL   = 0x0A,
+	ENTITY_PLAYER      =  0,
+	ENTITY_NPC         =  1,
+	ENTITY_ITEM        =  2,
+	ENTITY_SKILL       =  3,
+	ENTITY_UNKNOWN     =  4,
+	ENTITY_MONSTER     =  5,
+	ENTITY_EVENT       =  6,
+	ENTITY_PET         =  7,
+	ENTITY_HOMUNCULUS  =  8,
+	ENTITY_MERCENARY   =  9,
+	ENTITY_ELEMENTAL   = 10,
 };
 
 enum entity_type_mask

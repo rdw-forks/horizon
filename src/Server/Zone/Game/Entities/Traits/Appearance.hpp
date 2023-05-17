@@ -37,8 +37,6 @@ namespace Horizon
 namespace Zone
 {
 class Entity;
-namespace Entities
-{
 class Player;
 namespace Traits
 {
@@ -162,7 +160,6 @@ namespace Traits
 		{ }
 		~BodyStyle() { }
 	};
-}
 }
 }
 }

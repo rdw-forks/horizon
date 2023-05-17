@@ -29,52 +29,333 @@
 
 #include "Status.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
+#include "Server/Zone/Game/Entities/Creature/Creature.hpp"
+#include "Server/Zone/Game/Entities/NPC/NPC.hpp"
+#include "Server/Zone/Game/Entities/Skill/Skill.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
-using namespace Horizon::Zone::Entities::Traits;
+using namespace Horizon::Zone::Traits;
 
-void Status::initialize()
+Status::Status(std::weak_ptr<Horizon::Zone::Entity> entity, entity_type type)
+	: _entity(entity), _type(type)
 {
-	set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
 
+}
+
+Status::~Status()
+{
+}
+
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
+{
+	load(player);
+
+	std::shared_ptr<const job_config_data> job = player->job();
+
+	if (job == nullptr) {
+		HLog(error) << "Status::initialize_compound_attributes: Job was null.";
+		return false;
+	}
+
+	set_attack_range(std::make_shared<AttackRange>(_entity));
+	attack_range()->compute(true);
+
+	set_max_weight(std::make_shared<MaxWeight>(_entity, job->max_weight));
+	max_weight()->set_strength(strength().get());
+	max_weight()->compute(true);
+
+	// Calculated when inventory is synced.
+	set_current_weight(std::make_shared<CurrentWeight>(_entity, 0));
+
+	set_status_atk(std::make_shared<StatusATK>(_entity));
+	status_atk()->set_base_level(base_level().get());
+	status_atk()->set_strength(strength().get());
+	status_atk()->set_dexterity(dexterity().get());
+	status_atk()->set_luck(luck().get());
+	status_atk()->compute(true);
+
+	set_equip_atk(std::make_shared<EquipATK>(_entity));
+	equip_atk()->set_strength(strength().get());
+	equip_atk()->set_dexterity(dexterity().get());
+	equip_atk()->compute(true);
+
+	set_status_matk(std::make_shared<StatusMATK>(_entity));
+	status_matk()->set_base_level(base_level().get());
+	status_matk()->set_intelligence(intelligence().get());
+	status_matk()->set_dexterity(dexterity().get());
+	status_matk()->set_luck(luck().get());
+	status_matk()->compute(true);
+
+	set_soft_def(std::make_shared<SoftDEF>(_entity));
+	soft_def()->set_vitality(vitality().get());
+	soft_def()->compute(true);
+
+	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
+	soft_mdef()->set_base_level(base_level().get());
+	soft_mdef()->set_intelligence(intelligence().get());
+	soft_mdef()->set_dexterity(dexterity().get());
+	soft_mdef()->set_vitality(vitality().get());
+	soft_mdef()->compute(true);
+
+	set_hit(std::make_shared<HIT>(_entity));
+	hit()->set_base_level(base_level().get());
+	hit()->set_dexterity(dexterity().get());
+	hit()->set_luck(luck().get());
+	hit()->compute(true);
+
+	set_crit(std::make_shared<CRIT>(_entity));
+	crit()->set_luck(luck().get());
+	crit()->compute(true);
+
+	set_flee(std::make_shared<FLEE>(_entity));
+	flee()->set_base_level(base_level().get());
+	flee()->set_agility(agility().get());
+	flee()->set_luck(luck().get());
+	flee()->compute(true);
+
+	set_attack_speed(std::make_shared<AttackSpeed>(_entity));
+	attack_speed()->set_base_level(base_level().get());
+	attack_speed()->set_agility(agility().get());
+	attack_speed()->set_dexterity(dexterity().get());
+	attack_speed()->compute(true);
+
+	// Register Status Observables
+	strength()->register_observable(strength().get());
+	agility()->register_observable(agility().get());
+	vitality()->register_observable(vitality().get());
+	intelligence()->register_observable(intelligence().get());
+	dexterity()->register_observable(dexterity().get());
+	luck()->register_observable(luck().get());
+	base_experience()->register_observable(base_experience().get());
+	job_experience()->register_observable(job_experience().get());
+	base_level()->register_observable(base_level().get());
+	job_level()->register_observable(job_level().get());
+
+	// Register Status Observers
+	strength()->register_observers(
+		strength_cost().get(),
+		max_weight().get(),
+		status_atk().get(),
+		equip_atk().get());
+
+	agility()->register_observers(
+		agility_cost().get(),
+		flee().get(),
+		attack_speed().get());
+
+	vitality()->register_observers(
+		vitality_cost().get(),
+		soft_def().get(),
+		soft_mdef().get());
+
+	intelligence()->register_observers(
+		intelligence_cost().get(),
+		status_matk().get(),
+		soft_mdef().get());
+
+	dexterity()->register_observers(
+		dexterity_cost().get(),
+		status_atk().get(),
+		equip_atk().get(),
+		status_matk().get(),
+		soft_mdef().get(),
+		hit().get(),
+		attack_speed().get());
+
+	luck()->register_observers(
+		luck_cost().get(),
+		status_atk().get(),
+		status_matk().get(),
+		hit().get(),
+		crit().get(),
+		flee().get());
+
+	base_level()->register_observers(
+		status_point().get(),
+		next_base_experience().get(),
+		status_atk().get(),
+		status_matk().get(),
+		soft_mdef().get(),
+		hit().get(),
+		flee().get(),
+		attack_speed().get());
+
+	job_level()->register_observers(
+		skill_point().get(),
+		next_job_experience().get());
+
+	base_experience()->register_observers(base_level().get());
+
+	job_experience()->register_observers(job_level().get());
+	
+	/* Combat Status Attributes */
+	set_attack_motion(std::make_shared<AttackMotion>(_entity));
+	attack_motion()->set_attack_speed(attack_speed().get());
+	attack_motion()->set_agility(agility().get());
+	attack_motion()->register_observable(attack_motion().get());
+	attack_motion()->register_observers(attack_speed().get(), agility().get());
+	attack_motion()->compute();
+
+	set_attack_delay(std::make_shared<AttackDelay>(_entity));
+	attack_delay()->set_attack_motion(attack_motion().get());
+	attack_delay()->register_observable(attack_delay().get());
+	attack_delay()->register_observers(attack_motion().get());
+	attack_delay()->compute();
+
+	set_damage_motion(std::make_shared<DamageMotion>(_entity));
+	damage_motion()->set_agility(agility().get());
+	damage_motion()->register_observable(damage_motion().get());
+	damage_motion()->register_observers(agility().get());
+	damage_motion()->compute();
+
+	set_base_attack(std::make_shared<BaseAttack>(_entity));
+	base_attack()->set_strength(strength().get());
+	base_attack()->set_dexterity(dexterity().get());
+	base_attack()->set_luck(luck().get());
+	base_attack()->set_base_level(base_level().get());
+	base_attack()->register_observable(base_attack().get());
+	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
+
+	player->get_session()->clif()->notify_initial_status();
+
+	return true;
+}
+
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc)
+{
+	set_movement_speed(std::make_shared<MovementSpeed>(_entity, 100));
 	set_base_level(std::make_shared<BaseLevel>(_entity, 1));
-	set_job_level(std::make_shared<JobLevel>(_entity, 1));
 
 	set_current_hp(std::make_shared<CurrentHP>(_entity, 1));
 	set_current_sp(std::make_shared<CurrentSP>(_entity, 1));
 	set_max_hp(std::make_shared<MaxHP>(_entity, 1));
 	set_max_sp(std::make_shared<MaxSP>(_entity, 1));
-
-	set_size(std::make_shared<EntitySize>(_entity));
-
-	set_attack_range(std::make_shared<AttackRange>(_entity));
-
-	set_base_appearance(std::make_shared<BaseAppearance>(_entity, 0));
-	set_hair_color(std::make_shared<HairColor>(_entity, 0));
-	set_cloth_color(std::make_shared<ClothColor>(_entity, 0));
-	set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, 0));
-	set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, 0));
-	set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, 0));
 	set_hair_style(std::make_shared<HairStyle>(_entity, 0));
-	set_shield_sprite(std::make_shared<ShieldSprite>(_entity, 0));
-	set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, 0));
+	set_hair_color(std::make_shared<HairColor>(_entity, 0));
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
-	set_body_style(std::make_shared<BodyStyle>(_entity, 0));
+	set_base_appearance(std::make_shared<BaseAppearance>(_entity, npc->job_id()));
 
-	initialize_combat_statuses();
-	
-	compute_combat_statuses(false);
+	return true;
 }
 
-bool Status::load(std::shared_ptr<Player> pl)
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill)
+{
+	return true;
+}
+
+bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creature, std::shared_ptr<const monster_config_data> md)
+{
+	set_movement_speed(std::make_shared<MovementSpeed>(_entity, md->move_speed));
+
+	set_base_level(std::make_shared<BaseLevel>(_entity, md->level));
+
+	set_current_hp(std::make_shared<CurrentHP>(_entity, md->hp));
+	set_current_sp(std::make_shared<CurrentSP>(_entity, md->sp));
+	set_max_hp(std::make_shared<MaxHP>(_entity, md->hp));
+	set_max_sp(std::make_shared<MaxSP>(_entity, md->sp));
+	set_size(std::make_shared<EntitySize>(_entity, (int) md->size));
+	set_base_appearance(std::make_shared<BaseAppearance>(_entity, md->monster_id));
+	set_hair_color(std::make_shared<HairColor>(_entity, md->view.hair_color_id));
+	set_cloth_color(std::make_shared<ClothColor>(_entity, md->view.body_color_id));
+	set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, md->view.headgear_top_id));
+	set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, md->view.headgear_middle_id));
+	set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, md->view.headgear_bottom_id));
+	set_hair_style(std::make_shared<HairStyle>(_entity, md->view.hair_style_id));
+	set_shield_sprite(std::make_shared<ShieldSprite>(_entity, md->view.shield_id));
+	set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, md->view.weapon_id));
+	set_robe_sprite(std::make_shared<RobeSprite>(_entity, md->view.robe_id));
+	set_body_style(std::make_shared<BodyStyle>(_entity, md->view.body_style_id));
+
+	set_strength(std::make_shared<Strength>(_entity, md->stats.str));
+	set_agility(std::make_shared<Agility>(_entity, md->stats.agi, 0, 0));
+	set_vitality(std::make_shared<Vitality>(_entity, md->stats.vit, 0, 0));
+	set_intelligence(std::make_shared<Intelligence>(_entity, md->stats.int_, 0, 0));
+	set_dexterity(std::make_shared<Dexterity>(_entity, md->stats.dex, 0, 0));
+	set_luck(std::make_shared<Luck>(_entity, md->stats.luk, 0, 0));
+
+	set_soft_def(std::make_shared<SoftDEF>(_entity));
+	soft_def()->set_vitality(vitality().get());
+	soft_def()->compute(true);
+
+	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
+	soft_mdef()->set_base_level(base_level().get());
+	soft_mdef()->set_intelligence(intelligence().get());
+	soft_mdef()->set_dexterity(dexterity().get());
+	soft_mdef()->set_vitality(vitality().get());
+	soft_mdef()->compute(true);
+
+	set_hit(std::make_shared<HIT>(_entity));
+	hit()->set_base_level(base_level().get());
+	hit()->set_dexterity(dexterity().get());
+	hit()->set_luck(luck().get());
+	hit()->compute(true);
+
+	set_crit(std::make_shared<CRIT>(_entity));
+	crit()->set_luck(luck().get());
+	crit()->compute(true);
+
+	set_flee(std::make_shared<FLEE>(_entity));
+	flee()->set_base_level(base_level().get());
+	flee()->set_agility(agility().get());
+	flee()->set_luck(luck().get());
+	flee()->compute(true);
+
+	set_attack_range(std::make_shared<AttackRange>(_entity));
+	attack_range()->compute(true);
+
+	set_attack_motion(std::make_shared<AttackMotion>(_entity));
+	attack_motion()->compute();
+
+	set_attack_delay(std::make_shared<AttackDelay>(_entity));
+	attack_delay()->compute();
+
+	set_damage_motion(std::make_shared<DamageMotion>(_entity));
+	damage_motion()->compute();
+
+	set_attack_range(std::make_shared<AttackRange>(_entity));
+	attack_range()->compute(false);
+
+	set_creature_weapon_attack(std::make_shared<CreatureWeaponAttack>(_entity, md->attack_damage[0]));
+	set_creature_weapon_attack_magic(std::make_shared<CreatureWeaponAttack>(_entity, md->attack_damage[1]));
+	
+	set_creature_attack_damage(std::make_shared<CreatureAttackDamage>(_entity));
+	creature_attack_damage()->set_strength(strength().get());
+	creature_attack_damage()->set_base_level(base_level().get());
+	creature_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
+	creature_attack_damage()->compute();
+	creature_attack_damage()->register_observable(creature_attack_damage().get());
+	creature_attack_damage()->register_observers(strength().get(), base_level().get(), creature_weapon_attack().get());
+
+	set_creature_magic_attack_damage(std::make_shared<CreatureMagicAttackDamage>(_entity));
+	creature_magic_attack_damage()->set_intelligence(intelligence().get());
+	creature_magic_attack_damage()->set_base_level(base_level().get());
+	creature_magic_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
+	creature_magic_attack_damage()->compute();
+	creature_magic_attack_damage()->register_observable(creature_magic_attack_damage().get());
+	creature_magic_attack_damage()->register_observers(intelligence().get(), base_level().get(), creature_weapon_attack().get());
+
+	set_creature_view_range(std::make_shared<CreatureViewRange>(_entity, (int) md->view_range));
+	set_creature_chase_range(std::make_shared<CreatureChaseRange>(_entity, (int) md->chase_range));
+	set_creature_primary_race(std::make_shared<CreaturePrimaryRace>(_entity, (int) md->primary_race));
+	set_creature_secondary_race(std::make_shared<CreatureSecondaryRace>(_entity, (int) md->secondary_race));
+	set_creature_element(std::make_shared<CreatureElement>(_entity, (int) md->element));
+	set_creature_element_level(std::make_shared<CreatureElementLevel>(_entity, (int) md->element_level));
+	set_creature_mode(std::make_shared<CreatureMode>(_entity, (int) md->mode));
+
+	return true;
+}
+
+bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
 	try {
 		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
@@ -117,7 +398,7 @@ bool Status::load(std::shared_ptr<Player> pl)
 		set_dexterity(std::make_shared<Dexterity>(_entity, dex, 0, 0));
 		set_luck(std::make_shared<Luck>(_entity, luk, 0, 0));
 
-		set_size(std::make_shared<EntitySize>(_entity));
+		set_size(std::make_shared<EntitySize>(_entity, (int)ESZ_MEDIUM));
 
 		set_strength_cost(std::make_shared<StrengthPointCost>(_entity, get_required_statpoints(str, str + 1)));
 		set_agility_cost(std::make_shared<AgilityPointCost>(_entity, get_required_statpoints(agi, agi + 1)));
@@ -179,7 +460,7 @@ bool Status::load(std::shared_ptr<Player> pl)
 	return true;
 }
 
-bool Status::save(std::shared_ptr<Player> pl)
+bool Status::save(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
 	try {
 		sZone->get_db_connection()->sql("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
@@ -226,217 +507,6 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 	attack_motion()->on_equipment_changed();
 	attack_delay()->on_equipment_changed();
 	damage_motion()->on_equipment_changed();
-}
-
-void Status::initialize(std::shared_ptr<Entity> entity)
-{
-	std::shared_ptr<Player> pl = entity->template downcast<Player>();
-	
-	load(pl);
-
-	initialize_compound_attributes(pl->job());
-
-	initialize_observable_statuses();
-
-	initialize_combat_statuses();
-
-	compute_compound_attributes(false);
-
-	compute_combat_statuses(true);
-
-	pl->get_session()->clif()->notify_initial_status(shared_from_this());
-
-	// Notify remaining statuses not sent in initial status notification.
-	max_weight()->compute(true);
-}
-
-void Status::initialize_compound_attributes(std::shared_ptr<const job_config_data> job)
-{
-	std::shared_ptr<StatusATK> status_atk;
-	std::shared_ptr<EquipATK> equip_atk;
-	std::shared_ptr<StatusMATK> status_matk;
-	std::shared_ptr<SoftDEF> soft_def;
-	std::shared_ptr<SoftMDEF> soft_mdef;
-	std::shared_ptr<HIT> hit;
-	std::shared_ptr<CRIT> crit;
-	std::shared_ptr<FLEE> flee;
-	std::shared_ptr<AttackSpeed> aspd;
-	std::shared_ptr<MaxWeight> max_weight;
-
-	set_attack_range(std::make_shared<AttackRange>(_entity));
-
-	set_max_weight(max_weight = std::make_shared<MaxWeight>(_entity, job->max_weight));
-	max_weight->set_strength(strength().get());
-
-	// Calculated when inventory is synced.
-	set_current_weight(std::make_shared<CurrentWeight>(_entity, 0));
-
-	set_status_atk(status_atk = std::make_shared<StatusATK>(_entity));
-	status_atk->set_base_level(base_level().get());
-	status_atk->set_strength(strength().get());
-	status_atk->set_dexterity(dexterity().get());
-	status_atk->set_luck(luck().get());
-
-	set_equip_atk(equip_atk = std::make_shared<EquipATK>(_entity));
-	equip_atk->set_strength(strength().get());
-	equip_atk->set_dexterity(dexterity().get());
-
-	set_status_matk(status_matk = std::make_shared<StatusMATK>(_entity));
-	status_matk->set_base_level(base_level().get());
-	status_matk->set_intelligence(intelligence().get());
-	status_matk->set_dexterity(dexterity().get());
-	status_matk->set_luck(luck().get());
-
-	set_soft_def(soft_def = std::make_shared<SoftDEF>(_entity));
-	soft_def->set_vitality(vitality().get());
-
-	set_soft_mdef(soft_mdef = std::make_shared<SoftMDEF>(_entity));
-	soft_mdef->set_base_level(base_level().get());
-	soft_mdef->set_intelligence(intelligence().get());
-	soft_mdef->set_dexterity(dexterity().get());
-	soft_mdef->set_vitality(vitality().get());
-
-	set_hit(hit = std::make_shared<HIT>(_entity));
-	hit->set_base_level(base_level().get());
-	hit->set_dexterity(dexterity().get());
-	hit->set_luck(luck().get());
-
-	set_crit(crit = std::make_shared<CRIT>(_entity));
-	crit->set_luck(luck().get());
-
-	set_flee(flee = std::make_shared<FLEE>(_entity));
-	flee->set_base_level(base_level().get());
-	flee->set_agility(agility().get());
-	flee->set_luck(luck().get());
-
-	set_attack_speed(aspd = std::make_shared<AttackSpeed>(_entity));
-	aspd->set_base_level(base_level().get());
-	aspd->set_agility(agility().get());
-	aspd->set_dexterity(dexterity().get());
-}
-
-//! @brief Registers status observers for observable statuses.
-void Status::initialize_observable_statuses()
-{
-	// Register Status Observables
-	strength()->register_observable(strength().get());
-	agility()->register_observable(agility().get());
-	vitality()->register_observable(vitality().get());
-	intelligence()->register_observable(intelligence().get());
-	dexterity()->register_observable(dexterity().get());
-	luck()->register_observable(luck().get());
-	base_experience()->register_observable(base_experience().get());
-	job_experience()->register_observable(job_experience().get());
-	base_level()->register_observable(base_level().get());
-	job_level()->register_observable(job_level().get());
-
-	// Register Status Observers
-	strength()->register_observers(
-		strength_cost().get(),
-		max_weight().get(),
-		status_atk().get(),
-		equip_atk().get());
-
-	agility()->register_observers(
-		agility_cost().get(),
-		flee().get(),
-		attack_speed().get());
-
-	vitality()->register_observers(
-		vitality_cost().get(),
-		soft_def().get(),
-		soft_mdef().get());
-
-	intelligence()->register_observers(
-		intelligence_cost().get(),
-		status_matk().get(),
-		soft_mdef().get());
-
-	dexterity()->register_observers(
-		dexterity_cost().get(),
-		status_atk().get(),
-		equip_atk().get(),
-		status_matk().get(),
-		soft_mdef().get(),
-		hit().get(),
-		attack_speed().get());
-
-	luck()->register_observers(
-		luck_cost().get(),
-		status_atk().get(),
-		status_matk().get(),
-		hit().get(),
-		crit().get(),
-		flee().get());
-
-	base_level()->register_observers(
-		status_point().get(),
-		next_base_experience().get(),
-		status_atk().get(), 
-		status_matk().get(), 
-		soft_mdef().get(), 
-		hit().get(), 
-		flee().get(), 
-		attack_speed().get());
-
-	job_level()->register_observers(
-		skill_point().get(), 
-		next_job_experience().get());
-
-	base_experience()->register_observers(base_level().get());
-
-	job_experience()->register_observers(job_level().get());
-}
-
-void Status::initialize_combat_statuses()
-{
-	std::shared_ptr<AttackMotion> amotion = nullptr;
-	std::shared_ptr<AttackDelay> adelay = nullptr;
-	std::shared_ptr<DamageMotion> dmotion = nullptr;
-	std::shared_ptr<BaseAttack> batk = nullptr;
-
-	set_attack_motion(amotion = std::make_shared<AttackMotion>(_entity));
-	amotion->set_attack_speed(attack_speed().get());
-	amotion->set_agility(agility().get());
-
-	set_attack_delay(adelay = std::make_shared<AttackDelay>(_entity));
-	adelay->set_attack_motion(attack_motion().get());
-
-	set_damage_motion(dmotion = std::make_shared<DamageMotion>(_entity));
-	dmotion->set_agility(agility().get());
-
-	set_base_attack(batk = std::make_shared<BaseAttack>(_entity));
-	batk->set_strength(strength().get());
-	batk->set_dexterity(dexterity().get());
-	batk->set_luck(luck().get());
-	batk->set_base_level(base_level().get());
-
-	attack_motion()->register_observers(attack_speed().get(), agility().get());
-	attack_delay()->register_observers(attack_motion().get());
-	damage_motion()->register_observers(agility().get());
-	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
-}
-
-void Status::compute_combat_statuses(bool notify)
-{
-	attack_motion()->compute();
-	attack_delay()->compute();
-	damage_motion()->compute();
-	attack_range()->compute(notify);
-}
-
-void Status::compute_compound_attributes(bool notify)
-{	
-	max_weight()->compute(notify);
-	status_atk()->compute(notify);
-	equip_atk()->compute(notify);
-	status_matk()->compute(notify);
-	soft_def()->compute(notify);
-	soft_mdef()->compute(notify);
-	hit()->compute(notify);
-	crit()->compute(notify);
-	flee()->compute(notify);
-	attack_speed()->compute(notify);
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)
@@ -489,11 +559,11 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 	limit += get_status_base(type);
 
 #define notify_status(t, amount, result) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
+		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
 #define notify_compound_attribute(t, amount) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_compound_attribute_update(t, amount)
+		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(t, amount)
 #define notify_required_attribute(t, amount) \
-		entity()->template downcast<Player>()->get_session()->clif()->notify_required_attribute_update(t, amount)
+		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_required_attribute_update(t, amount)
 	do {
 		value = get_status_base(type);
 		required_points = get_required_statpoints(value + 1, value + 2);

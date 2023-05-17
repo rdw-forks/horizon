@@ -58,10 +58,12 @@ Entity::~Entity()
 {
 }
 
-void Entity::initialize()
+bool Entity::initialize()
 {
-	_status = std::make_shared<Entities::Traits::Status>(shared_from_this());
+	_status = std::make_shared<Horizon::Zone::Traits::Status>(shared_from_this(), type());
 	_is_initialized = true;
+
+	return _is_initialized;
 }
 
 std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e)
@@ -245,9 +247,9 @@ void Entity::notify_nearby_players_of_spawn()
 	map()->visit_in_range(map_coords(), entity_visitor);
 }
 
-void Entity::notify_nearby_players_of_movement()
+void Entity::notify_nearby_players_of_movement(bool new_entry)
 {
-	GridEntityMovementNotifier movement_notify(shared_from_this());
+	GridEntityMovementNotifier movement_notify(shared_from_this(), new_entry);
 	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);
@@ -328,7 +330,9 @@ bool Entity::status_effect_end(int type)
 	return true;
 }
 
-bool Entity::is_dead() { return status()->current_hp()->get_base() == 0; }
+bool Entity::is_dead() { 
+	return status()->current_hp()->get_base() == 0; 
+}
 
 bool Entity::is_attacking() { return map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0; }
 
@@ -349,6 +353,9 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 
 	map()->container()->getScheduler().Schedule(Milliseconds(0), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
 		[this, continuous, target] (TaskContext context) {
+
+			if (target == nullptr)
+				return;
 
 			Combat combat(shared_from_this(), target);
 
