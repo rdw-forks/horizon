@@ -1,0 +1,89 @@
+name: CMake
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  MYSQL_PASSWORD: horizon
+  MYSQL_USERNAME: root
+  MYSQL_DATABASE: horizon
+  MYSQL_HOSTNAME: localhost
+
+jobs:
+  Integrate-Dependencies:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: self-hosted
+    steps:
+    - name: VCPKG Install
+      run: vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows libmysql:x64-windows mysql-connector-cpp:x64-windows
+    
+    - name: VCPKG Install Boost
+      run: vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows
+
+    - name : VCPKG Integrate
+      run: vcpkg integrate install
+
+  Libraries:
+    needs: Integrate-Dependencies
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Build
+      run: sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+
+  Tests:
+    needs: Libraries
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Build
+      run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
+    
+    - name: Run
+      run: sh ./horizon.sh run-tests "build\test\Release"
+      
+  Tools:
+    needs: Tests
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Build
+      run: sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
+    
+  Servers:
+    needs: [ Tests, Tools, Libraries ]
+    runs-on: self-hosted
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+   
+    - name: Configure Step & Build
+      run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
+
+    - name: Install
+      run:  sh ./horizon.sh install "build/bin/Release"
+      
+    - name: Install Database
+      run: |
+        sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+        sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
+        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon
+      
+    - name: Run Auth
+      working-directory: ${{github.workspace}}\build\bin\Release
+      run: |
+        ./auth.exe --with-config="config\auth-server.lua" --test-run 
+        ./char.exe --with-config="config\char-server.lua" --test-run
+        ./zone.exe --with-config="config\zone-server.lua" --test-run 
