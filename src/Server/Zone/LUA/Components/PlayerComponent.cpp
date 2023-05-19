@@ -63,10 +63,7 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
     );
 
     state->new_usertype<Horizon::Zone::Entities::Player>("Player",
-        "guid", &Horizon::Zone::Entities::Player::guid,
-        "map", &Horizon::Zone::Entities::Player::map,
-        "map_coords", &Horizon::Zone::Entities::Player::map_coords,
-        "get_nearby_entity", &Horizon::Zone::Entities::Player::get_nearby_entity,
+        "entity", [](std::shared_ptr<Horizon::Zone::Entities::Player> player) { return player->shared_from_this(); },
         "send_npc_dialog", &Horizon::Zone::Entities::Player::send_npc_dialog,
         "send_npc_next_dialog", &Horizon::Zone::Entities::Player::send_npc_next_dialog,
         "send_npc_close_dialog", &Horizon::Zone::Entities::Player::send_npc_close_dialog,
@@ -77,7 +74,6 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
         {
             player->get_session()->clif()->notify_chat(message);
         },
-        "status", & Horizon::Zone::Entities::Player::status,
         "job_change", & Horizon::Zone::Entities::Player::job_change,
         "perform_action", & Horizon::Zone::Entities::Player::perform_action,
         "get_learnt_skill", & Horizon::Zone::Entities::Player::get_learnt_skill,

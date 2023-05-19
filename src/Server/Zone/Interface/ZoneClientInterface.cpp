@@ -422,7 +422,15 @@ bool ZoneClientInterface::notify_attack_range_update(int32_t value)
 // 0x0acb
 bool ZoneClientInterface::notify_experience_update(status_point_type type, int32_t value)
 {
+
+#if CLIENT_TYPE == 'Z' || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20170906) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20170830)
+	ZC_LONGLONGPAR_CHANGE pkt(get_session());
+#else
 	notify_compound_attribute_update(type, value);
+#endif
+	pkt.deliver(type, value);
 	return true;
 }
 

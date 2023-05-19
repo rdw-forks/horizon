@@ -7574,6 +7574,26 @@ ByteBuffer &ZC_PAR_CHANGE::serialize()
 }
 
 /**
+ * ZC_LONGLONGPAR_CHANGE
+ */
+void ZC_LONGLONGPAR_CHANGE::deliver(status_point_type type, int64_t value)
+{
+	_type = type;
+	_value = value;
+
+	serialize();
+	transmit();
+}
+
+ByteBuffer& ZC_LONGLONGPAR_CHANGE::serialize()
+{
+	buf() << _packet_id;
+	buf() << (int16_t) _type;
+	buf() << _value;
+	return buf();
+}
+
+/**
  * ZC_CART_EQUIPMENT_ITEMLIST2
  */
 void ZC_CART_EQUIPMENT_ITEMLIST2::deliver() { }

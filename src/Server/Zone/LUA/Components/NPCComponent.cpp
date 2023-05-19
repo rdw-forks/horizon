@@ -42,7 +42,7 @@ void NPCComponent::sync_definitions(std::shared_ptr<sol::state> state)
 void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
 	state->new_usertype<NPC>("NPC",
-		"guid", &NPC::guid,
+		"entity", [](std::shared_ptr<Horizon::Zone::Entities::NPC> npc) { return npc->shared_from_this(); },
 		"name", &NPC::name,
 		"map_coords", &NPC::map_coords,
 		"get_nearby_entity", &NPC::get_nearby_entity,
@@ -53,6 +53,12 @@ void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 
 void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)
 {
+	state->set_function("cast_entity_to_npc",
+		[](std::shared_ptr<Entity> e)
+		{
+			return e->template downcast<Horizon::Zone::Entities::NPC>();
+		});
+
 	state->set_function("NewNPC",
 		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
 			std::shared_ptr<Map> map;

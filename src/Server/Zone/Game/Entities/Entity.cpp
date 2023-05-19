@@ -323,9 +323,9 @@ bool Entity::status_effect_end(int type)
 		return false;
 	}
 
-	get_status_effects().erase(it);
-
 	on_status_effect_end(it->second);
+
+	get_status_effects().erase(it);
 
 	return true;
 }

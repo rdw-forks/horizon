@@ -433,7 +433,6 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-
     state->new_usertype<Horizon::Zone::Traits::Status>("Status",
         "strength", &Horizon::Zone::Traits::Status::strength,
         "agility", &Horizon::Zone::Traits::Status::agility,
@@ -609,7 +608,6 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"force_movement_stop_internal", &Entity::force_movement_stop_internal,
 		"map", &Entity::map,
 		"type", &Entity::type,
-		"status", &Entity::status,
 		"map_coords", &Entity::map_coords,
 		"grid_coords", &Entity::grid_coords,
 		"is_in_range_of", &Entity::is_in_range_of,

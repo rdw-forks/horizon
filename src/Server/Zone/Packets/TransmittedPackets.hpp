@@ -14515,6 +14515,33 @@ public:
 };
 
 enum {
+#if CLIENT_TYPE == 'Z' || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20170906) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20170830)
+	ID_ZC_LONGLONGPAR_CHANGE = 0x0acb
+#endif
+};
+/**
+ * @brief Main object for the aegis packet: ZC_LONGLONGPAR_CHANGE
+ *
+ */
+class ZC_LONGLONGPAR_CHANGE : public Base::NetworkPacketTransmitter<ZoneSession>
+{
+public:
+	ZC_LONGLONGPAR_CHANGE(std::shared_ptr<ZoneSession> s)
+		: NetworkPacketTransmitter<ZoneSession>(ID_ZC_LONGLONGPAR_CHANGE, s)
+	{}
+	virtual ~ZC_LONGLONGPAR_CHANGE() {}
+
+	void deliver(status_point_type type, int64_t value);
+	ByteBuffer& serialize();
+
+	/* Structure */
+	status_point_type _type;
+	int64_t _value;
+};
+
+enum {
 #if PACKET_VERSION >= 20081112 || \
 	PACKET_VERSION >= 20081111 || \
 	PACKET_VERSION >= 0

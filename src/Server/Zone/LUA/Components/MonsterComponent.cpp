@@ -135,7 +135,8 @@ void MonsterComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-	state->new_usertype<Monster>("Monster", 
+	state->new_usertype<Monster>("Monster",
+		"entity", [](std::shared_ptr<Horizon::Zone::Entities::Monster> monster) { return monster->shared_from_this(); },
 		"stop_movement", &Monster::stop_movement,
 		"on_pathfinding_failure", &Monster::on_pathfinding_failure,
 		"on_movement_begin", &Monster::on_movement_begin,

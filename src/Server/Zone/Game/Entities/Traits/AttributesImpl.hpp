@@ -87,11 +87,7 @@ namespace Traits
 		{ }
 		~BaseLevel() { };
 
-		void set_base(int32_t val) override
-		{
-			Attribute::set_base(val);
-			this->notify_observers();
-		}
+		void set_base(int32_t val) override;
 
 		void on_observable_changed(BaseExperience *wbexp);
 	};
@@ -107,11 +103,7 @@ namespace Traits
 		{ }
 		~JobLevel() { };
 
-		void set_base(int32_t val) override
-		{
-			Attribute::set_base(val);
-			this->notify_observers();
-		}
+		void set_base(int32_t val) override;
 
 		void on_observable_changed(JobExperience *wjexp);
 	};
@@ -377,11 +369,7 @@ namespace Traits
 		{ }
 		~BaseExperience() { };
 
-		void set_base(int32_t val) override
-		{
-			Attribute::set_base(val);
-			this->notify_observers();
-		}
+		void set_base(int32_t val) override;
 	};
 
 	class JobExperience
@@ -395,11 +383,7 @@ namespace Traits
 		{ }
 		~JobExperience() { };
 
-		void set_base(int32_t val) override
-		{
-			Attribute::set_base(val);
-			this->notify_observers();
-		}
+		void set_base(int32_t val) override;
 	};
 
 	class Zeny
@@ -471,6 +455,8 @@ namespace Traits
 		{ }
 		~NextBaseExperience() { };
 
+		void set_base(int32_t val) override;
+
 		void on_observable_changed(BaseLevel *blvl);
 	};
 
@@ -482,6 +468,8 @@ namespace Traits
 		: Attribute(entity, base, 0, 0)
 		{ }
 		~NextJobExperience() { };
+
+		void set_base(int32_t val) override;
 
 		void on_observable_changed(JobLevel *jlvl);
 	};

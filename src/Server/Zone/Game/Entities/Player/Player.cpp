@@ -117,6 +117,9 @@ bool Player::initialize()
 	// required for npc component definitions upon triggering
 	lua_manager()->initialize_npc_state(lua_state());
 
+	// required for triggering monster components upon monster kill events etc.
+	lua_manager()->initialize_monster_state(lua_state());
+
 	try {
 		sol::load_result fx = lua_state()->load_file("scripts/internal/on_login_event.lua");
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);

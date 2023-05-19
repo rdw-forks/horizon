@@ -83,6 +83,16 @@ void LuckPointCost::on_observable_changed(Luck *luk)
 	set_new_point_cost(entity(), this, luk);
 }
 
+void BaseLevel::set_base(int32_t val)
+{
+	Attribute::set_base(val);
+	this->notify_observers();
+
+	if (entity()->type() == ENTITY_PLAYER) {
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_BASELEVEL, val);
+	}
+}
+
 void BaseLevel::on_observable_changed(BaseExperience *bexp)
 {
 	if (entity() == nullptr || bexp == nullptr)
@@ -97,6 +107,16 @@ void BaseLevel::on_observable_changed(BaseExperience *bexp)
 	}
 }
 
+void JobLevel::set_base(int32_t val)
+{
+	Attribute::set_base(val);
+	this->notify_observers();
+
+	if (entity()->type() == ENTITY_PLAYER) {
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_JOBLEVEL, val);
+	}
+}
+
 void JobLevel::on_observable_changed(JobExperience *jexp)
 {
 	if (entity() == nullptr || jexp == nullptr)
@@ -105,6 +125,26 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 	if (jexp->get_base() == entity()->status()->next_job_experience()->get_base()) {
 		add_base(1);
 		jexp->set_base(0);
+	}
+}
+
+void BaseExperience::set_base(int32_t val)
+{
+	Attribute::set_base(val);
+	this->notify_observers();
+
+	if (entity()->type() == ENTITY_PLAYER) {
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_experience_update(STATUS_BASEEXP, val);
+	}
+}
+
+void JobExperience::set_base(int32_t val)
+{
+	Attribute::set_base(val);
+	this->notify_observers();
+
+	if (entity()->type() == ENTITY_PLAYER) {
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_experience_update(STATUS_JOBEXP, val);
 	}
 }
 
@@ -130,6 +170,16 @@ void CurrentSP::reduce(int amount)
 		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENTSP, total());
 }
 
+
+void NextBaseExperience::set_base(int32_t val)
+{
+	Attribute::set_base(val);
+
+	if (entity()->type() == ENTITY_PLAYER) {
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_experience_update(STATUS_NEXTBASEEXP, val);
+	}
+}
+
 void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 {
 	if (entity() == nullptr || blvl == nullptr)
@@ -139,6 +189,15 @@ void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
 	set_base(bexpg->exp[blvl->get_base() - 1]);
+}
+
+void NextJobExperience::set_base(int32_t val)
+{
+	Attribute::set_base(val);
+
+	if (entity()->type() == ENTITY_PLAYER) {
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_experience_update(STATUS_NEXTJOBEXP, val);
+	}
 }
 
 void NextJobExperience::on_observable_changed(JobLevel *jlvl)

@@ -178,14 +178,47 @@ void Monster::on_damage_received(std::shared_ptr<Entity> damage_dealer, int dama
 {
 	if (status()->current_hp()->total() < damage) {
 		status()->current_hp()->set_base(0);
-		on_death(damage_dealer);
+		on_killed(damage_dealer);
 		return;
 	}
 }
 
-void Monster::on_death(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
 {
+	std::shared_ptr<const monster_config_data> md = _wmd_data.lock();
+
+	if (md == nullptr)
+		return false;
+
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
 	map_container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
+
+	switch (killer->type())
+	{
+	case ENTITY_PLAYER:
+	{
+		std::shared_ptr<Player> player = killer->downcast<Player>();
+
+		try {
+			sol::load_result fx = player->lua_state()->load_file("scripts/internal/on_monster_killed.lua");
+			sol::protected_function_result result = fx(player, shared_from_this()->downcast<Monster>(), with_drops, with_exp);
+			if (!result.valid()) {
+				sol::error err = result;
+				HLog(error) << "Monster::on_killed: " << err.what();
+				return false;
+			}
+		}
+		catch (sol::error& e) {
+			HLog(error) << "Monster::on_killed: " << e.what();
+			return false;
+		}
+	}
+		break;
+	default:
+		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << guid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
+		break;
+	}
+
+	return true;
 }

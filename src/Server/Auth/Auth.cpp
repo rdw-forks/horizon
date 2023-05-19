@@ -283,7 +283,7 @@ int main(int argc, const char * argv[])
 	 * the Horizon Server.
 	 */
 	if (!sAuth->read_config())
-		exit(EXIT_FAILURE); // Stop process if the file can't be read.
+		exit(1); // Stop process if the file can't be read.
 
 	/**
 	 * Initialize the Common Core
@@ -295,5 +295,5 @@ int main(int argc, const char * argv[])
 	 */
 	HLog(info) << "Server shutting down...";
 
-	return EXIT_SUCCESS;
+	return 0;
 }
