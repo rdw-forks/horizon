@@ -2,6 +2,7 @@
 
 
 # The Horizon Project
+![https://i.ibb.co/D92qCTZ/Screenshot-2023-05-28-060532.png](https://i.ibb.co/D92qCTZ/Screenshot-2023-05-28-060532.png)]
 ![https://i.imgur.com/Nnkkyjf.png](https://i.imgur.com/Nnkkyjf.png)
 Horizon is a free software project (authored by [@sagunkho](https://gitlab.com/sagunkho) aka [@Smokexyz](https://gitlab.com/Smokexyz)), a Massively Multiplayer Online Role-Playing Game (MMORPG) server package. Certain static database files and client packet information were converted from [HerculesWS](https://github.com/HerculesWS/Hercules) into a suitable format for our project.
 
