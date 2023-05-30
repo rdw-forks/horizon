@@ -28,26 +28,26 @@
 #ifndef HORIZON_COMMON_SAKRAY_PACKET_LENGTH_TABLE
 #define HORIZON_COMMON_SAKRAY_PACKET_LENGTH_TABLE
 
-#include "Server\/Zone\/Packets\/HandlerPackets.hpp"
-#include "Server\/Zone\/Packets\/TransmitterPackets.hpp"
+#include "Server/Common/Packets/HandledPackets.hpp"
+#include "Server/Common/Packets/TransmittedPackets.hpp"
 
 namespace Horizon
 {
-namespace Zone
+namespace Common
 {
-	typedef std::shared_ptr<Base::NetworkPacketHandler<ZoneSession>> HPacketStructPtrType;
-	typedef std::shared_ptr<Base::NetworkPacketTransmitter<ZoneSession>> TPacketStructPtrType;
+	typedef std::shared_ptr<Base::NetworkPacketHandler<CommonSession>> HPacketStructPtrType;
+	typedef std::shared_ptr<Base::NetworkPacketTransmitter<CommonSession>> TPacketStructPtrType;
 	typedef std::pair<int16_t, HPacketStructPtrType> HPacketTablePairType;
 	typedef std::pair<int16_t, TPacketStructPtrType> TPacketTablePairType;
 /**
  * @brief Auto-generated with a python generator tool authored by Sephus (sagunxp@gmail.com).
  */
 class PacketLengthTable
-{{
+{
 public:
-	PacketLengthTable(std::shared_ptr<ZoneSession> s)
+	PacketLengthTable(std::shared_ptr<CommonSession> s)
 	: _session(s)
-	{{
+	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 		ADD_HPKT(0x01c6, 4, CS_REQ_ENCRYPTION);
@@ -60,7 +60,7 @@ public:
 
 	~PacketLengthTable() { }
 
-	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
+	std::shared_ptr<CommonSession> get_session() { return _session.lock(); }
 
 	HPacketTablePairType get_hpacket_info(uint16_t packet_id) { return _hpacket_length_table.at(packet_id); }
 	TPacketTablePairType get_tpacket_info(uint16_t packet_id) { return _tpacket_length_table.at(packet_id); }
@@ -68,7 +68,7 @@ public:
 protected:
 	LockedLookupTable<uint16_t, HPacketTablePairType> _hpacket_length_table;
 	LockedLookupTable<uint16_t, TPacketTablePairType> _tpacket_length_table;
-	std::weak_ptr<ZoneSession> _session;
+	std::weak_ptr<CommonSession> _session;
 
 };
 }

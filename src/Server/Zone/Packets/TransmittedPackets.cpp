@@ -82,33 +82,79 @@ ByteBuffer &ZC_ACK_ADDITEM_TO_CART::serialize()
 /**
  * ZC_ACK_ADD_EXCHANGE_ITEM
  */
-void ZC_ACK_ADD_EXCHANGE_ITEM::deliver() {}
+void ZC_ACK_ADD_EXCHANGE_ITEM::deliver(int inventory_index, zc_ack_exchange_item_result_type result) 
+{
+	_inventory_index = inventory_index;
+	_result = (int8_t) result;
+}
+
 ByteBuffer &ZC_ACK_ADD_EXCHANGE_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_BAN_GUILD
  */
-void ZC_ACK_BAN_GUILD::deliver() {}
+void ZC_ACK_BAN_GUILD::deliver(std::string name, std::string reason, std::string account_name) 
+{
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	std::strncpy(_reason, reason.c_str(), MAX_GUILD_LEAVE_REASON_STR_LENGTH);
+	std::strncpy(_account_name, account_name.c_str(), MAX_USERNAME_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_BAN_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_reason, MAX_GUILD_LEAVE_REASON_STR_LENGTH);
+	buf().append(_account_name, MAX_USERNAME_LENGTH);
 	return buf();
 }
 /**
  * ZC_ACK_CHANGE_GUILD_POSITIONINFO
  */
-void ZC_ACK_CHANGE_GUILD_POSITIONINFO::deliver() {}
+void ZC_ACK_CHANGE_GUILD_POSITIONINFO::deliver(std::vector<s_zcack_change_guild_positioninfo> info) 
+{
+	_packet_length = 4 + sizeof(s_zcack_change_guild_positioninfo) * info.size();
+	_info = info;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_CHANGE_GUILD_POSITIONINFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto i : _info) {
+		buf() << i.position_id;
+		buf() << i.mode;
+		buf() << i.ranking;
+		buf() << i.pay_rate;
+		buf().append(i.position_name, MAX_GUILD_POSITION_NAME_LENGTH);
+	}
 	return buf();
 }
 /**
  * ZC_ACK_CREATE_CHATROOM
  */
-void ZC_ACK_CREATE_CHATROOM::deliver() {}
+void ZC_ACK_CREATE_CHATROOM::deliver(zcack_create_chatroom_result_type result)
+{
+	_result = (int8_t)result;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_CREATE_CHATROOM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -130,9 +176,17 @@ ByteBuffer &ZC_ACK_DISORGANIZE_GUILD::serialize()
 /**
  * ZC_ACK_DISORGANIZE_GUILD_RESULT
  */
-void ZC_ACK_DISORGANIZE_GUILD_RESULT::deliver() {}
+void ZC_ACK_DISORGANIZE_GUILD_RESULT::deliver(zc_ack_disorganizeguild_result result) 
+{
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_DISORGANIZE_GUILD_RESULT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -146,9 +200,22 @@ ByteBuffer &ZC_ACK_EXCHANGE_ITEM::serialize()
 /**
  * ZC_ACK_EXCHANGE_ITEM2
  */
-void ZC_ACK_EXCHANGE_ITEM2::deliver() {}
+void ZC_ACK_EXCHANGE_ITEM2::deliver(zc_ack_exchange_item_result_type type, int char_id, int base_level)
+{ 
+	_result = type;
+	_char_id = char_id;
+	_base_level = base_level;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_EXCHANGE_ITEM2::serialize()
 {
+	buf() >> _packet_id;
+	buf() >> _result;
+	buf() >> _char_id;
+	buf() >> _base_level;
 	return buf();
 }
 /**
@@ -170,9 +237,17 @@ ByteBuffer &ZC_ACK_GUILD_MEMBER_INFO::serialize()
 /**
  * ZC_ACK_GUILD_MENUINTERFACE
  */
-void ZC_ACK_GUILD_MENUINTERFACE::deliver() {}
+void ZC_ACK_GUILD_MENUINTERFACE::deliver(int options) 
+{
+	_options = options;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_GUILD_MENUINTERFACE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _options;
 	return buf();
 }
 /**
@@ -210,17 +285,35 @@ ByteBuffer &ZC_ACK_ITEMREPAIR::serialize()
 /**
  * ZC_ACK_LEAVE_GUILD
  */
-void ZC_ACK_LEAVE_GUILD::deliver() {}
+void ZC_ACK_LEAVE_GUILD::deliver(std::string name, std::string reason) 
+{
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	std::strncpy(_reason, reason.c_str(), MAX_GUILD_LEAVE_REASON_STR_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_LEAVE_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_reason, MAX_GUILD_LEAVE_REASON_STR_LENGTH);
 	return buf();
 }
 /**
  * ZC_ACK_MAKE_GROUP
  */
-void ZC_ACK_MAKE_GROUP::deliver() {}
+void ZC_ACK_MAKE_GROUP::deliver(zcack_makegroup_result_type result)
+{
+	_result = result;
+	serialize();
+}
+
 ByteBuffer &ZC_ACK_MAKE_GROUP::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -258,9 +351,27 @@ ByteBuffer &ZC_ACK_REQNAME::serialize()
 /**
  * ZC_ACK_REQNAMEALL
  */
-void ZC_ACK_REQNAMEALL::deliver() {}
+void ZC_ACK_REQNAMEALL::deliver(int32_t guid, std::string name, std::string party_name, std::string guild_name, std::string position_name)
+{
+	_guid = guid;
+	strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	strncpy(_party_name, party_name.c_str(), MAX_UNIT_NAME_LENGTH);
+	strncpy(_guild_name, guild_name.c_str(), MAX_UNIT_NAME_LENGTH);
+	strncpy(_position_name, position_name.c_str(), MAX_UNIT_NAME_LENGTH);
+	
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQNAMEALL::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_party_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_guild_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_position_name, MAX_UNIT_NAME_LENGTH);
+	
 	return buf();
 }
 /**
@@ -274,57 +385,133 @@ ByteBuffer &ZC_ACK_REQNAME_BYGID::serialize()
 /**
  * ZC_ACK_REQ_ALLY_GUILD
  */
-void ZC_ACK_REQ_ALLY_GUILD::deliver() {}
+void ZC_ACK_REQ_ALLY_GUILD::deliver(zc_ack_req_ally_guild_response_type response)
+{
+	_response = (int8_t)response;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQ_ALLY_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _response;
 	return buf();
 }
 /**
  * ZC_ACK_REQ_CHANGE_MEMBERS
  */
-void ZC_ACK_REQ_CHANGE_MEMBERS::deliver() {}
+void ZC_ACK_REQ_CHANGE_MEMBERS::deliver(std::vector<s_zcack_reqchange_members> members)
+{
+	_packet_length = 4 + sizeof(s_zcack_reqchange_members) * members.size();
+	_members = members;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQ_CHANGE_MEMBERS::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto m : _members) {
+		buf() << m.account_id;
+		buf() << m.char_id;
+		buf() << m.position_id;
+	}
 	return buf();
 }
 /**
  * ZC_ACK_REQ_DISCONNECT
  */
-void ZC_ACK_REQ_DISCONNECT::deliver() {}
+void ZC_ACK_REQ_DISCONNECT::deliver(bool wait)
+{
+	_waiting = wait ? 1 : 0;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQ_DISCONNECT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _waiting;
 	return buf();
 }
 /**
  * ZC_ACK_REQ_HOSTILE_GUILD
  */
-void ZC_ACK_REQ_HOSTILE_GUILD::deliver() {}
+void ZC_ACK_REQ_HOSTILE_GUILD::deliver(zc_ack_req_hostile_guild_response_type response) 
+{
+	_result = (int8_t)response;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQ_HOSTILE_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_REQ_JOIN_GROUP
  */
-void ZC_ACK_REQ_JOIN_GROUP::deliver() {}
+void ZC_ACK_REQ_JOIN_GROUP::deliver(std::string name, zcparty_joinreqack_result_type result) 
+{
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	_result = (int8_t)result;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQ_JOIN_GROUP::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_REQ_JOIN_GUILD
  */
-void ZC_ACK_REQ_JOIN_GUILD::deliver() {}
+void ZC_ACK_REQ_JOIN_GUILD::deliver(zc_ack_req_join_guild_type response) 
+{
+	_response = (int8_t)response;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQ_JOIN_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _response;
 	return buf();
 }
 /**
  * ZC_ACK_TOUSESKILL
  */
-void ZC_ACK_TOUSESKILL::deliver() {}
+void ZC_ACK_TOUSESKILL::deliver(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause)
+{
+	_skill_id = skill_id;
+	_message_type = message_type;
+	_item_id = item_id;
+	_flag = 0;
+	_cause = (int8_t) cause;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_TOUSESKILL::serialize()
 {
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _message_type;
+	buf() << _item_id;
+	buf() << _flag;
+	buf() << _cause;
 	return buf();
 }
 /**
@@ -338,17 +525,62 @@ ByteBuffer &ZC_ACK_WHISPER::serialize()
 /**
  * ZC_ACTION_FAILURE
  */
-void ZC_ACTION_FAILURE::deliver() {}
+void ZC_ACTION_FAILURE::deliver(int16_t message_type)
+{
+	_message_type = message_type;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACTION_FAILURE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _message_type;
 	return buf();
 }
 /**
  * ZC_ADD_EXCHANGE_ITEM
  */
-void ZC_ADD_EXCHANGE_ITEM::deliver() {}
+void ZC_ADD_EXCHANGE_ITEM::deliver(s_zc_add_exchange_item item)
+{
+	_item = item;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ADD_EXCHANGE_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _item.item_id;
+	buf() << _item.item_type;
+	buf() << _item.amount;
+	buf() << _item.identified;
+	buf() << _item.damaged;
+	buf() << _item.refine;
+	for (int i = 0; i < MAX_ITEM_SLOTS; i++)
+		buf() << _item.cards.item_id[i];
+#if PACKET_VERSION >= 20150226
+	for (int i = 0; i < MAX_ITEM_OPTIONS; i++) {
+		buf() << _item.option_data[i].index;
+		buf() << _item.option_data[i].value;
+		buf() << _item.option_data[i].param;
+	}
+#endif
+
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20161102) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20161026) || \
+	(CILENT_TYPE == 'Z')
+	buf() << _item.location;
+	buf() << _item.look;
+#endif  // PACKETVER_MAIN_NUM >= 20161102 || PACKETVER_RE_NUM >= 20161026 || defined(PACKETVER_ZERO)
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20200916) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20200723) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20221024)
+	buf() << _item.refine;
+	buf() << _item.grade;
+#endif  // PACKETVER_MAIN_NUM >= 20200916 || PACKETVER_RE_NUM >= 20200723 || PACKETVER_ZERO_NUM >= 20221024
+
 	return buf();
 }
 /**
@@ -394,9 +626,36 @@ ByteBuffer &ZC_ADD_ITEM_TO_STORE2::serialize()
 /**
  * ZC_ADD_MEMBER_TO_GROUP
  */
-void ZC_ADD_MEMBER_TO_GROUP::deliver() {}
+void ZC_ADD_MEMBER_TO_GROUP::deliver(s_zc_add_member_to_group member) 
+{
+	_member = member;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ADD_MEMBER_TO_GROUP::serialize()
 {
+	buf() << _packet_id;
+	buf() << _member._account_id;
+#if PACKET_VERSION >= 20171207
+	buf() << _member._char_id;
+#endif
+	buf() << _member.leader;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20170524) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20170502) || \
+	(CLIENT_TYPE == 'Z')
+	buf() << _member.class_;
+	buf() << _member.base_level;
+#endif
+	buf() << _member.x;
+	buf() << _member.y;
+	buf() << _member.offline;
+	buf().append(_member.party_name, MAX_PARTY_NAME_LENGTH);
+	buf().append(_member.player_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_member.map_name, MAP_NAME_LENGTH_EXT);
+	buf() << _member.share_pickup;
+	buf() << _member.share_loot;
 	return buf();
 }
 /**
@@ -434,9 +693,18 @@ ByteBuffer &ZC_ATTACK_FAILURE_FOR_DISTANCE::serialize()
 /**
  * ZC_ATTACK_RANGE
  */
-void ZC_ATTACK_RANGE::deliver() {}
+void ZC_ATTACK_RANGE::deliver(int16_t range)
+{
+	_range = range;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ATTACK_RANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _range;
 	return buf();
 }
 /**
@@ -458,9 +726,22 @@ ByteBuffer &ZC_AUTOSPELLLIST::serialize()
 /**
  * ZC_BAN_LIST
  */
-void ZC_BAN_LIST::deliver() {}
+void ZC_BAN_LIST::deliver(std::vector<s_zc_ban_list> list)
+{
+	_packet_length = 4 + sizeof(s_zc_ban_list) * list.size();
+	_list = list;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_BAN_LIST::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto l : _list) {
+		buf().append(l.name, MAX_UNIT_NAME_LENGTH);
+		buf().append(l.reason, MAX_GUILD_LEAVE_REASON_STR_LENGTH);
+	}
 	return buf();
 }
 /**
@@ -490,9 +771,15 @@ ByteBuffer &ZC_BROADCAST2::serialize()
 /**
  * ZC_CANCEL_EXCHANGE_ITEM
  */
-void ZC_CANCEL_EXCHANGE_ITEM::deliver() {}
+void ZC_CANCEL_EXCHANGE_ITEM::deliver() 
+{
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_CANCEL_EXCHANGE_ITEM::serialize()
 {
+	buf() << _packet_id;
 	return buf();
 }
 /**
@@ -538,9 +825,28 @@ ByteBuffer &ZC_CHANGESTATE_PET::serialize()
 /**
  * ZC_CHANGE_CHATROOM
  */
-void ZC_CHANGE_CHATROOM::deliver() {}
+void ZC_CHANGE_CHATROOM::deliver(int owner_id, int chat_id, int limit, int users, zc_change_chatroom_type type, std::string title)
+{
+	_packet_length = 17 + title.length();
+	_owner_id = owner_id;
+	_chat_id = chat_id;
+	_limit = limit;
+	_users = users;
+	_type = (int8_t)type;
+	std::strncpy(_title, title.c_str(), CHATROOM_TITLE_SIZE);
+	
+}
+
 ByteBuffer &ZC_CHANGE_CHATROOM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _owner_id;
+	buf() << _chat_id;
+	buf() << _limit;
+	buf() << _users;
+	buf() << _type;
+	buf().append(_title, CHATROOM_TITLE_SIZE);
 	return buf();
 }
 /**
@@ -554,17 +860,38 @@ ByteBuffer &ZC_CHANGE_DIRECTION::serialize()
 /**
  * ZC_CHANGE_GUILD
  */
-void ZC_CHANGE_GUILD::deliver() {}
+void ZC_CHANGE_GUILD::deliver(int account_id, int guild_id, int16_t emblem_id)
+{
+	_account_id = account_id;
+	_guild_id = guild_id;
+	_emblem_id = emblem_id;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_CHANGE_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf() << _guild_id;
+	buf() << _emblem_id;
 	return buf();
 }
 /**
  * ZC_CLOSE_DIALOG
  */
-void ZC_CLOSE_DIALOG::deliver() {}
+void ZC_CLOSE_DIALOG::deliver(int32_t guid)
+{
+	_guid = guid;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_CLOSE_DIALOG::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
 	return buf();
 }
 /**
@@ -594,9 +921,17 @@ ByteBuffer &ZC_COMPASS::serialize()
 /**
  * ZC_CONCLUDE_EXCHANGE_ITEM
  */
-void ZC_CONCLUDE_EXCHANGE_ITEM::deliver() {}
+void ZC_CONCLUDE_EXCHANGE_ITEM::deliver(zc_conclude_exchange_item_type type)
+{
+	_type = (int8_t) type;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_CONCLUDE_EXCHANGE_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
 	return buf();
 }
 /**
@@ -666,17 +1001,36 @@ ByteBuffer &ZC_DELETE_MEMBER_FROM_GROUP::serialize()
 /**
  * ZC_DELETE_RELATED_GUILD
  */
-void ZC_DELETE_RELATED_GUILD::deliver() {}
+void ZC_DELETE_RELATED_GUILD::deliver(int guild_id, int relation)
+{ 
+	_guild_id = guild_id;
+	_relation = relation;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_DELETE_RELATED_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guild_id;
+	buf() << _relation;
 	return buf();
 }
 /**
  * ZC_DESTROY_ROOM
  */
-void ZC_DESTROY_ROOM::deliver() {}
+void ZC_DESTROY_ROOM::deliver(int chat_id)
+{
+	_chat_id = chat_id;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_DESTROY_ROOM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _chat_id;
 	return buf();
 }
 /**
@@ -722,9 +1076,31 @@ ByteBuffer &ZC_EMOTION::serialize()
 /**
  * ZC_ENTER_ROOM
  */
-void ZC_ENTER_ROOM::deliver() {}
+void ZC_ENTER_ROOM::deliver(int chat_id, std::vector<chatroom_user> users) 
+{
+	_chat_id = chat_id;
+	_users = users;
+
+	_packet_length = 8;
+	
+	for (auto u : _users)
+		_packet_length += sizeof(u._type) + MAX_UNIT_NAME_LENGTH;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ENTER_ROOM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _chat_id;
+
+	for (auto u : _users) {
+		buf() << u._type;
+		buf().append(u.name, MAX_UNIT_NAME_LENGTH);
+	}
+
 	return buf();
 }
 /**
@@ -738,25 +1114,47 @@ ByteBuffer &ZC_EQUIPMENT_ITEMLIST::serialize()
 /**
  * ZC_EQUIP_ARROW
  */
-void ZC_EQUIP_ARROW::deliver() {}
+void ZC_EQUIP_ARROW::deliver(int16_t inventory_index)
+{
+	_index = inventory_index;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_EQUIP_ARROW::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
 	return buf();
 }
 /**
  * ZC_EXCHANGEITEM_UNDO
  */
-void ZC_EXCHANGEITEM_UNDO::deliver() {}
+void ZC_EXCHANGEITEM_UNDO::deliver() 
+{
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_EXCHANGEITEM_UNDO::serialize()
 {
+	buf() << _packet_id;
 	return buf();
 }
 /**
  * ZC_EXEC_EXCHANGE_ITEM
  */
-void ZC_EXEC_EXCHANGE_ITEM::deliver() {}
+void ZC_EXEC_EXCHANGE_ITEM::deliver(zc_exec_exchange_item_result_type result) 
+{
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_EXEC_EXCHANGE_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -794,17 +1192,56 @@ ByteBuffer &ZC_GROUPINFO_CHANGE::serialize()
 /**
  * ZC_GROUP_LIST
  */
-void ZC_GROUP_LIST::deliver() {}
+void ZC_GROUP_LIST::deliver(std::string party_name, std::vector<s_members> members) 
+{
+	std::strncpy(_party_name, party_name.c_str(), MAX_PARTY_NAME_LENGTH);
+
+	_members = members;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GROUP_LIST::serialize()
 {
+	buf() << _packet_id;
+	buf() << 28 + (sizeof(struct s_members) * _members.size());
+	buf().append(_party_name, MAX_PARTY_NAME_LENGTH);
+	for (int i = 0; i < _members.size(); i++) {
+		buf() << _members[i].account_id;
+#if PACKET_VERSION >= 20171207
+		buf() << _members[i].char_id;
+#endif
+		buf().append(_members[i].player_name, MAX_UNIT_NAME_LENGTH);
+		buf().append(_members[i].map_name, MAP_NAME_LENGTH_EXT);
+		buf() << _members[i].leader;
+		buf() << _members[i].offline;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20170524) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20170502) || \
+	(CLIENT_TYPE == 'Z')
+		buf() << _members[i].class_;
+		buf() << _members[i].base_level;
+#endif
+	}
 	return buf();
 }
 /**
  * ZC_GUILD_CHAT
  */
-void ZC_GUILD_CHAT::deliver() {}
+void ZC_GUILD_CHAT::deliver(std::string message) 
+{
+	_packet_length = 4 + message.length();
+	std::strncpy(_message, message.c_str(), MAX_CHAT_STR_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GUILD_CHAT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf().append(_message, MAX_CHAT_STR_LENGTH);
 	return buf();
 }
 /**
@@ -818,17 +1255,61 @@ ByteBuffer &ZC_GUILD_EMBLEM_IMG::serialize()
 /**
  * ZC_GUILD_INFO
  */
-void ZC_GUILD_INFO::deliver() {}
+void ZC_GUILD_INFO::deliver(s_zc_guild_info s)
+{
+	_s = s;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GUILD_INFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _s.guild_id;
+	buf() << _s.level;
+	buf() << _s.member_num;
+	buf() << _s.member_max;
+	buf() << _s.exp;
+	buf() << _s.max_exp;
+	buf() << _s.points;
+	buf() << _s.honor;
+	buf() << _s.virtue;
+	buf() << _s.emblem_id;
+	buf().append(_s.name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_s.master_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_s.managed_castle, MAP_NAME_LENGTH_EXT);
+
 	return buf();
 }
 /**
  * ZC_GUILD_INFO2
  */
-void ZC_GUILD_INFO2::deliver() {}
+void ZC_GUILD_INFO2::deliver(s_zc_guild_info2 s) 
+{
+	_s = s;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GUILD_INFO2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _s.guild_id;
+	buf() << _s.level;
+	buf() << _s.member_num;
+	buf() << _s.member_max;
+	buf() << _s.exp;
+	buf() << _s.max_exp;
+	buf() << _s.points;
+	buf() << _s.honor;
+	buf() << _s.virtue;
+	buf() << _s.emblem_id;
+	buf().append(_s. name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_s. master_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_s. managed_castle, MAP_NAME_LENGTH_EXT);
+	buf() << _s.zeny;
 	return buf();
 }
 /**
@@ -842,17 +1323,49 @@ ByteBuffer &ZC_GUILD_MEMBER_MAP_CHANGE::serialize()
 /**
  * ZC_GUILD_NOTICE
  */
-void ZC_GUILD_NOTICE::deliver() {}
+void ZC_GUILD_NOTICE::deliver(std::string subject, std::string notice)
+{
+	std::strncpy(_subject, subject.c_str(), MAX_GUILD_SUBJECT_STR_LENGTH);
+	std::strncpy(_notice, notice.c_str(), MAX_GUILD_NOTICE_STR_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GUILD_NOTICE::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_subject, MAX_GUILD_SUBJECT_STR_LENGTH);
+	buf().append(_notice, MAX_GUILD_NOTICE_STR_LENGTH);
 	return buf();
 }
 /**
  * ZC_GUILD_SKILLINFO
  */
-void ZC_GUILD_SKILLINFO::deliver() {}
+void ZC_GUILD_SKILLINFO::deliver(int skill_points, std::vector<s_zc_guild_skillinfo> skillinfo)
+{
+	_packet_length = 6 + sizeof(s_zc_guild_skillinfo) * skillinfo.size();
+	_skill_points = skill_points;
+	_skillinfo = skillinfo;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GUILD_SKILLINFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _skill_points;
+	for (auto s : _skillinfo) {
+		buf() << s.skill_id;
+		buf() << s.type;
+		buf() << s.level;
+		buf() << s.sp_cost;
+		buf() << s.attack_range;
+		buf().append(s.skill_name, MAX_SKILL_NAME_LENGTH);
+		buf() << s.upgradeable;
+	}
 	return buf();
 }
 /**
@@ -930,17 +1443,58 @@ ByteBuffer &ZC_ITEM_PICKUP_ACK::serialize()
 /**
  * ZC_ITEM_THROW_ACK
  */
-void ZC_ITEM_THROW_ACK::deliver() {}
+void ZC_ITEM_THROW_ACK::deliver(int16_t inventory_index, int16_t amount)
+{
+	_inventory_index = inventory_index;
+	_amount = amount;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ITEM_THROW_ACK::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _amount;
 	return buf();
 }
 /**
  * ZC_LONGPAR_CHANGE
  */
-void ZC_LONGPAR_CHANGE::deliver() {}
+void ZC_LONGPAR_CHANGE::deliver(status_point_type type, int16_t value)
+{
+	_type = type;
+	_value = value;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_LONGPAR_CHANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << (int16_t) _type;
+	buf() << _value;
+	return buf();
+}
+/**
+ * ZC_LONGLONGPAR_CHANGE
+ */
+void ZC_LONGLONGPAR_CHANGE::deliver(status_point_type type, int64_t value)
+{
+	_type = type;
+	_value = value;
+
+	serialize();
+	transmit();
+}
+
+ByteBuffer& ZC_LONGLONGPAR_CHANGE::serialize()
+{
+	buf() << _packet_id;
+	buf() << (int16_t) _type;
+	buf() << _value;
 	return buf();
 }
 /**
@@ -962,9 +1516,33 @@ ByteBuffer &ZC_MAKINGARROW_LIST::serialize()
 /**
  * ZC_MEMBERMGR_INFO
  */
-void ZC_MEMBERMGR_INFO::deliver() {}
+void ZC_MEMBERMGR_INFO::deliver(std::vector<s_zc_membermgr_info_member> s) 
+{ 
+	_packet_length = 4 + (sizeof(s_zc_membermgr_info_member) * s.size());
+	_members = s;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_MEMBERMGR_INFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto s : _members) {
+		buf() << s.account_id;
+		buf() << s.character_id;
+		buf() << s.hair_style_id;
+		buf() << s.hair_color_id;
+		buf() << s.gender;
+		buf() << s.job;
+		buf() << s.level;
+		buf() << s.contribution_exp;
+		buf() << s.current_state;
+		buf() << s.position_id;
+		buf() << s.last_login;
+		buf().append(s.name, MAX_UNIT_NAME_LENGTH);
+	}
 	return buf();
 }
 /**
@@ -994,9 +1572,22 @@ ByteBuffer &ZC_MEMBER_NEWENTRY::serialize()
 /**
  * ZC_MENU_LIST
  */
-void ZC_MENU_LIST::deliver() {}
+void ZC_MENU_LIST::deliver(int32_t guid, std::string const &menu)
+{
+	_menu_items = menu;
+	_packet_length = menu.size() + 8;
+	_guid = guid;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_MENU_LIST::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _guid;
+	buf().append(_menu_items.c_str(), _menu_items.size());
 	return buf();
 }
 /**
@@ -1018,9 +1609,22 @@ ByteBuffer &ZC_MONSTER_TALK::serialize()
 /**
  * ZC_MSG_STATE_CHANGE
  */
-void ZC_MSG_STATE_CHANGE::deliver() {}
+void ZC_MSG_STATE_CHANGE::deliver(int16_t status_index, int32_t guid, int8_t state)
+{
+	_status_index = status_index;
+	_guid = guid;
+	_state = state;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_MSG_STATE_CHANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _status_index;
+	buf() << _guid;
+	buf() << _state;
 	return buf();
 }
 /**
@@ -1050,9 +1654,24 @@ ByteBuffer &ZC_MVP_GETTING_SPECIAL_EXP::serialize()
 /**
  * ZC_MYGUILD_BASIC_INFO
  */
-void ZC_MYGUILD_BASIC_INFO::deliver() {}
+void ZC_MYGUILD_BASIC_INFO::deliver(std::vector<s_related_guild_info> s)
+{ 
+	_packet_length = 4 + (sizeof(struct s_related_guild_info) * s.size());
+	_rg_infos = s;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_MYGUILD_BASIC_INFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto r : _rg_infos) {
+		buf() << r.relation;
+		buf() << r.guild_id;
+		buf().append(r.guild_name, MAX_GUILD_NAME_LENGTH);
+	}
 	return buf();
 }
 /**
@@ -1074,9 +1693,22 @@ ByteBuffer &ZC_NORMAL_ITEMLIST2::serialize()
 /**
  * ZC_NOTIFY_ACT
  */
-void ZC_NOTIFY_ACT::deliver() {}
+void ZC_NOTIFY_ACT::deliver(int8_t action) 
+{
+	_action_type = action;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_ACT::serialize()
 {
+	buf() << _packet_id;
+	buf() << get_session()->player()->guid();
+	buf().append(_unused_bytes, 20);
+	buf() << _action_type;
+	buf().append(_unused_bytes2, 2);
+
 	return buf();
 }
 /**
@@ -1106,9 +1738,23 @@ ByteBuffer &ZC_NOTIFY_CARTITEM_COUNTINFO::serialize()
 /**
  * ZC_NOTIFY_CHAT
  */
-void ZC_NOTIFY_CHAT::deliver() {}
+void ZC_NOTIFY_CHAT::deliver(int32_t guid, std::string message)
+{
+	_guid = guid;
+	_packet_length = 8 + message.size();
+	_message = message;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_CHAT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _guid;
+	buf().append(_message.c_str(), _message.size());
+	
 	return buf();
 }
 /**
@@ -1194,9 +1840,22 @@ ByteBuffer &ZC_NOTIFY_MAPPROPERTY2::serialize()
 /**
  * ZC_NOTIFY_MOVE
  */
-void ZC_NOTIFY_MOVE::deliver() {}
+void ZC_NOTIFY_MOVE::deliver(int32_t guid, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
+{
+	_guid = guid;
+	_timestamp = (int32_t) get_sys_time();
+	PackPosition((int8_t *) _packed_pos, from_x, from_y, to_x, to_y, 8, 8);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_MOVE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf().append(_packed_pos, sizeof(_packed_pos));
+	buf() << _timestamp;
 	return buf();
 }
 /**
@@ -1234,17 +1893,40 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY2::serialize()
 /**
  * ZC_NOTIFY_PLAYERCHAT
  */
-void ZC_NOTIFY_PLAYERCHAT::deliver() {}
+void ZC_NOTIFY_PLAYERCHAT::deliver(std::string &message)
+{
+	_message = message;
+	_packet_length = 4 + message.size();
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_PLAYERCHAT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf().append(_message.c_str(), _message.size());
 	return buf();
 }
+
 /**
  * ZC_NOTIFY_PLAYERMOVE
  */
-void ZC_NOTIFY_PLAYERMOVE::deliver() {}
+void ZC_NOTIFY_PLAYERMOVE::deliver(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
+{
+	PackPosition(_packed_pos, from_x, from_y, to_x, to_y, 8, 8);
+	_timestamp = (int32_t) get_sys_time();
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_PLAYERMOVE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _timestamp;
+	buf().append((char *) _packed_pos, sizeof(_packed_pos));
 	return buf();
 }
 /**
@@ -1330,9 +2012,17 @@ ByteBuffer &ZC_NOTIFY_STOREITEM_COUNTINFO::serialize()
 /**
  * ZC_NOTIFY_TIME
  */
-void ZC_NOTIFY_TIME::deliver() {}
+void ZC_NOTIFY_TIME::deliver() 
+{
+	_timestamp = (int32_t) get_sys_time();
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_TIME::serialize()
 {
+	buf() << _packet_id;
+	buf() << _timestamp;
 	return buf();
 }
 /**
@@ -1354,9 +2044,20 @@ ByteBuffer &ZC_NOTIFY_UPDATEPLAYER::serialize()
 /**
  * ZC_NOTIFY_VANISH
  */
-void ZC_NOTIFY_VANISH::deliver() {}
+void ZC_NOTIFY_VANISH::deliver(int32_t guid, entity_viewport_notification_type type)
+{
+	_guid = guid;
+	_type = (int8_t) type;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_VANISH::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _type;
 	return buf();
 }
 /**
@@ -1370,9 +2071,28 @@ ByteBuffer &ZC_NPCACK_ENABLE::serialize()
 /**
  * ZC_NPCACK_MAPMOVE
  */
-void ZC_NPCACK_MAPMOVE::deliver() {}
+void ZC_NPCACK_MAPMOVE::deliver(std::string map_name, int16_t x, int16_t y)
+{
+	if (map_name.size() + 4 > MAP_NAME_LENGTH_EXT) {
+		HLog(error) << "Copying '.gat' to map name " << map_name << " would exceed length.";
+		return;
+	}
+
+	map_name.append(".gat");
+	strncpy(_map_name, map_name.c_str(), MAP_NAME_LENGTH_EXT);
+	_x = x;
+	_y = y;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NPCACK_MAPMOVE::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_map_name, MAP_NAME_LENGTH_EXT);
+	buf() << _x;
+	buf() << _y;
 	return buf();
 }
 /**
@@ -1426,9 +2146,20 @@ ByteBuffer &ZC_OTHER_GUILD_LIST::serialize()
 /**
  * ZC_PAR_CHANGE
  */
-void ZC_PAR_CHANGE::deliver() {}
+void ZC_PAR_CHANGE::deliver(status_point_type type, int16_t value)
+{
+	_type = type;
+	_value = value;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_PAR_CHANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << (int16_t) _type;
+	buf() << _value;
 	return buf();
 }
 /**
@@ -1514,17 +2245,46 @@ ByteBuffer &ZC_PET_ACT::serialize()
 /**
  * ZC_POSITION_ID_NAME_INFO
  */
-void ZC_POSITION_ID_NAME_INFO::deliver() {}
+void ZC_POSITION_ID_NAME_INFO::deliver(std::vector<s_zc_position_id_name_info> info)
+{
+	_packet_length = 4 + (sizeof(s_zc_position_id_name_info) * info.size());
+	_info = info;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_POSITION_ID_NAME_INFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto i : _info) {
+		buf() << i.position_id;
+		buf().append(i.position_name, MAX_GUILD_POSITION_NAME_LENGTH);
+	}
 	return buf();
 }
 /**
  * ZC_POSITION_INFO
  */
-void ZC_POSITION_INFO::deliver() {}
+void ZC_POSITION_INFO::deliver(std::vector<s_zc_position_info> info) 
+{
+	_packet_length = 4 + (sizeof(s_zc_position_info) * info.size());
+	_info = info;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_POSITION_INFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	for (auto i : _info) {
+		buf() << i.position_id;
+		buf() << i.mode;
+		buf() << i.ranking;
+		buf() << i.pay_rate;
+	}
 	return buf();
 }
 /**
@@ -1546,17 +2306,36 @@ ByteBuffer &ZC_RECOVERY::serialize()
 /**
  * ZC_REFUSE_ENTER
  */
-void ZC_REFUSE_ENTER::deliver() {}
+void ZC_REFUSE_ENTER::deliver(zc_server_reject_type error)
+{
+	_error = error;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_REFUSE_ENTER::serialize()
 {
+	buf() << _packet_id;
+	buf() << (int8_t) _error;
 	return buf();
 }
 /**
  * ZC_REFUSE_ENTER_ROOM
  */
-void ZC_REFUSE_ENTER_ROOM::deliver() {}
+void ZC_REFUSE_ENTER_ROOM::deliver(chat_join_fail_type type)
+{
+	_result = (int8_t) type;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_REFUSE_ENTER_ROOM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
+
 	return buf();
 }
 /**
@@ -1594,9 +2373,20 @@ ByteBuffer &ZC_REQ_ADD_FRIENDS::serialize()
 /**
  * ZC_REQ_ALLY_GUILD
  */
-void ZC_REQ_ALLY_GUILD::deliver() {}
+void ZC_REQ_ALLY_GUILD::deliver(int inviter_account_id, std::string guild_name) 
+{ 
+	_inviter_account_id = inviter_account_id;
+	std::strncpy(_guild_name, guild_name.c_str(), MAX_GUILD_NAME_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_REQ_ALLY_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inviter_account_id;
+	buf().append(_guild_name, MAX_GUILD_NAME_LENGTH);
 	return buf();
 }
 /**
@@ -1642,17 +2432,40 @@ ByteBuffer &ZC_REQ_ITEM_EXPLANATION_ACK::serialize()
 /**
  * ZC_REQ_JOIN_GROUP
  */
-void ZC_REQ_JOIN_GROUP::deliver() {}
+void ZC_REQ_JOIN_GROUP::deliver(int party_id, std::string party_name)
+{
+	_party_id = party_id;
+	std::strncpy(_party_name, party_name.c_str(), MAX_PARTY_NAME_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_REQ_JOIN_GROUP::serialize()
 {
+	buf() << _packet_id;
+	buf() << _party_id;
+	buf().append(_party_name, MAX_PARTY_NAME_LENGTH);
+
 	return buf();
 }
 /**
  * ZC_REQ_JOIN_GUILD
  */
-void ZC_REQ_JOIN_GUILD::deliver() {}
+void ZC_REQ_JOIN_GUILD::deliver(int guild_id, std::string guild_name)
+{
+	_guild_id = guild_id;
+	std::strncpy(_guild_name, guild_name.c_str(), MAX_GUILD_NAME_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_REQ_JOIN_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guild_id;
+	buf().append(_guild_name, MAX_GUILD_NAME_LENGTH);
 	return buf();
 }
 /**
@@ -1674,17 +2487,34 @@ ByteBuffer &ZC_REQ_WEAR_EQUIP_ACK::serialize()
 /**
  * ZC_RESTART_ACK
  */
-void ZC_RESTART_ACK::deliver() {}
+void ZC_RESTART_ACK::deliver(int8_t type)
+{
+	_type = type;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_RESTART_ACK::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
 	return buf();
 }
 /**
  * ZC_RESULT_MAKE_GUILD
  */
-void ZC_RESULT_MAKE_GUILD::deliver() {}
+void ZC_RESULT_MAKE_GUILD::deliver(zc_result_make_guild_type result) 
+{ 
+	_result = (int8_t)result;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_RESULT_MAKE_GUILD::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -1698,17 +2528,51 @@ ByteBuffer &ZC_RESURRECTION::serialize()
 /**
  * ZC_ROLE_CHANGE
  */
-void ZC_ROLE_CHANGE::deliver() {}
+void ZC_ROLE_CHANGE::deliver(int role, std::string name) 
+{
+	_role = role;
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ROLE_CHANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _role;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+
 	return buf();
 }
 /**
  * ZC_ROOM_NEWENTRY
  */
-void ZC_ROOM_NEWENTRY::deliver() {}
+void ZC_ROOM_NEWENTRY::deliver(int owner_id, int char_id, int limit, int users, int type, std::string title)
+{
+	_owner_id = owner_id;
+	_char_id = char_id;
+	_limit = limit;
+	_users = users;
+	_type = type;
+	std::strncpy(_title, title.c_str(), CHATROOM_TITLE_SIZE);
+	_packet_length = 17 + title.length();
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ROOM_NEWENTRY::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _owner_id;
+	buf() << _char_id;
+	buf() << _limit;
+	buf() << _users;
+	buf() << _type;
+	buf().append(_title, CHATROOM_TITLE_SIZE);
+
 	return buf();
 }
 /**
@@ -1770,17 +2634,71 @@ ByteBuffer &ZC_SHOW_IMAGE2::serialize()
 /**
  * ZC_SKILLINFO_LIST
  */
-void ZC_SKILLINFO_LIST::deliver() {}
+void ZC_SKILLINFO_LIST::deliver(const std::vector<zc_skill_info_data> &skills)
+{
+	_packet_length = 4;
+
+	for (auto s : skills) {
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+		_packet_length += 15;
+#else
+		_packet_length += 37;
+#endif
+	}
+
+	_skills = skills;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_SKILLINFO_LIST::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+
+	for (auto s : _skills) {
+		buf() << s.skill_id;
+		buf() << s.skill_type;
+		buf() << s.level;
+		buf() << s.sp_cost;
+		buf() << s.range;
+#if (CLIENT_VERSION == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20190918)
+		buf() << s.upgradeable;
+		buf() << s.level2;
+#else
+		buf().append(s.name, MAX_SKILL_NAME_LENGTH);
+		buf() << s.upgradeable;
+#endif
+	}
+
 	return buf();
 }
 /**
  * ZC_SKILLINFO_UPDATE
  */
-void ZC_SKILLINFO_UPDATE::deliver() {}
+void ZC_SKILLINFO_UPDATE::deliver(int16_t skill_id, int16_t skill_level, int16_t sp_cost, int16_t range, bool upgradeable)
+{
+	_skill_id = skill_id;
+	_skill_level = skill_level;
+	_sp_cost = sp_cost;
+	_range = range;
+	_upgradeable = upgradeable ? 1 : 0;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_SKILLINFO_UPDATE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _skill_level;
+	buf() << _sp_cost;
+	buf() << _range;
+	buf() << _upgradeable;
 	return buf();
 }
 /**
@@ -1850,9 +2768,24 @@ ByteBuffer &ZC_SPRITE_CHANGE::serialize()
 /**
  * ZC_SPRITE_CHANGE2
  */
-void ZC_SPRITE_CHANGE2::deliver() {}
+void ZC_SPRITE_CHANGE2::deliver(int32_t guid, entity_appearance_type look_type, int32_t value, int32_t value2)
+{
+	_guid = guid;
+	_look_type = (int8_t) look_type;
+	_value = value;
+	_value2 = value2;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_SPRITE_CHANGE2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _look_type;
+	buf() << _value;
+	buf() << _value2;
 	return buf();
 }
 /**
@@ -1898,33 +2831,104 @@ ByteBuffer &ZC_STATE_CHANGE::serialize()
 /**
  * ZC_STATUS
  */
-void ZC_STATUS::deliver() {}
+void ZC_STATUS::deliver(struct zc_status_data &data)
+{ 
+	_data = data;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_STATUS::serialize()
 {
+	buf() << _packet_id;
+	buf() << _data.status_points;
+	buf() << _data.strength;
+	buf() << _data.strength_req_stats;
+	buf() << _data.agility;
+	buf() << _data.agility_req_stats;
+	buf() << _data.vitality;
+	buf() << _data.vitality_req_stats;
+	buf() << _data.intelligence;
+	buf() << _data.intelligence_req_stats;
+	buf() << _data.dexterity;
+	buf() << _data.dexterity_req_stats;
+	buf() << _data.luck;
+	buf() << _data.luck_req_stats;
+	buf() << _data.status_atk;
+	buf() << _data.equip_atk;
+	buf() << _data.equip_matk;
+	buf() << _data.status_matk;
+	buf() << _data.soft_def;
+	buf() << _data.hard_def;
+	buf() << _data.soft_mdef;
+	buf() << _data.hard_mdef;
+	buf() << _data.hit;
+	buf() << _data.flee;
+	buf() << _data.perfect_dodge;
+	buf() << _data.critical;
+	buf() << _data.attack_speed;
+	buf() << _data.plus_aspd; // always 0 apparently.
 	return buf();
 }
 /**
  * ZC_STATUS_CHANGE
  */
-void ZC_STATUS_CHANGE::deliver() {}
+void ZC_STATUS_CHANGE::deliver(status_point_type type, int8_t value)
+{
+	_type = type;
+	_value = value;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_STATUS_CHANGE::serialize()
 {
+	buf() << _packet_id;
+	buf() << (int16_t) _type;
+	buf() << _value;
 	return buf();
 }
 /**
  * ZC_STATUS_CHANGE_ACK
  */
-void ZC_STATUS_CHANGE_ACK::deliver() {}
+void ZC_STATUS_CHANGE_ACK::deliver(status_point_type type, int8_t amount, bool success)
+{
+	_type = (int16_t) type;
+	_success = success ? 1 : 0;
+	_amount = amount;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_STATUS_CHANGE_ACK::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
+	buf() << _success;
+	buf() << _amount;
 	return buf();
 }
 /**
  * ZC_STOPMOVE
  */
-void ZC_STOPMOVE::deliver() {}
+void ZC_STOPMOVE::deliver(int32_t guid, int16_t x, int16_t y)
+{
+	_guid = guid;
+	_x = x;
+	_y = y;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_STOPMOVE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _x;
+	buf() << _y;
 	return buf();
 }
 /**
@@ -1986,25 +2990,92 @@ ByteBuffer &ZC_TRYCAPTURE_MONSTER::serialize()
 /**
  * ZC_UPDATE_CHARSTAT
  */
-void ZC_UPDATE_CHARSTAT::deliver() {}
+void ZC_UPDATE_CHARSTAT::deliver(int account_id, int char_id, zc_update_charstat_status_type status)
+{
+	_account_id = account_id;
+	_char_id = char_id;
+	_status = (int)status;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_UPDATE_CHARSTAT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf() << _char_id;
+	buf() << _status;
 	return buf();
 }
 /**
  * ZC_UPDATE_CHARSTAT2
  */
-void ZC_UPDATE_CHARSTAT2::deliver() {}
+void ZC_UPDATE_CHARSTAT2::deliver(int account_id, int char_id, zc_update_charstat_status_type status, int16_t gender, int16_t hair_style_id, int16_t hair_color_id)
+{
+	_account_id = account_id;
+	_char_id = char_id;
+	_status = (int)status;
+	_gender = gender;
+	_hair_style_id = hair_style_id;
+	_hair_color_id = hair_color_id;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_UPDATE_CHARSTAT2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf() << _char_id;
+	buf() << _status;
+	buf() << _gender;
+	buf() << _hair_style_id;
+	buf() << _hair_color_id;
 	return buf();
 }
 /**
  * ZC_UPDATE_GDID
  */
-void ZC_UPDATE_GDID::deliver() {}
+void ZC_UPDATE_GDID::deliver(int guild_id, int emblem_id, int mode, int is_master, std::string guild_name)
+{
+	_guild_id = guild_id;
+	_emblem_id = emblem_id;
+	_mode = mode;
+	_is_master = is_master;
+	std::strncpy(_guild_name, guild_name.c_str(), MAX_GUILD_NAME_LENGTH);
+	serialize();
+	transmit();
+}
+
+#if (CLIENT_VERSION == 'M' && PACKET_VERSION >= 20220216) || (CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20221024)
+void ZC_UPDATE_GDID::deliver(int guild_id, int emblem_id, int mode, int is_master, std::string guild_name, int master_char_id)
+{
+	_guild_id = guild_id;
+	_emblem_id = emblem_id;
+	_mode = mode;
+	_is_master = is_master;
+	std::strncpy(_guild_name, guild_name.c_str(), MAX_GUILD_NAME_LENGTH);
+	_master_char_id = master_char_id;
+	serialize();
+	transmit();
+}
+#endif
+
 ByteBuffer &ZC_UPDATE_GDID::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guild_id;
+	buf() << _emblem_id;
+	buf() << _mode;
+	buf() << _is_master;
+	buf() << _inter_sid;
+	buf().append(_guild_name, MAX_GUILD_NAME_LENGTH);
+#if (CLIENT_VERSION == 'M' && PACKET_VERSION >= 20220216) || (CLIENT_VERSION == 'Z' && PACKET_VERSION >= 20221024)
+	buf() << _master_char_id;
+#endif
+
 	return buf();
 }
 /**
@@ -2034,17 +3105,47 @@ ByteBuffer &ZC_USESKILL_ACK::serialize()
 /**
  * ZC_USE_ITEM_ACK
  */
-void ZC_USE_ITEM_ACK::deliver() {}
+void ZC_USE_ITEM_ACK::deliver(int16_t index, int16_t amount, bool success)
+{
+	_index = index;
+	_amount = amount;
+	_success = success;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_USE_ITEM_ACK::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
+	buf() << _amount;
+	buf() << _success;
 	return buf();
 }
 /**
  * ZC_USE_ITEM_ACK2
  */
-void ZC_USE_ITEM_ACK2::deliver() {}
+void ZC_USE_ITEM_ACK2::deliver(int16_t index, int16_t item_id, int32_t target_guid, int16_t amount, bool success)
+{
+	_index = index;
+	_item_id = item_id;
+	_target_guid = target_guid;
+	_amount = amount;
+	_success = success;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_USE_ITEM_ACK2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
+	buf() << _item_id;
+	buf() << _target_guid;
+	buf() << _amount;
+	buf() << _success;
 	return buf();
 }
 /**
@@ -2058,9 +3159,17 @@ ByteBuffer &ZC_USE_SKILL::serialize()
 /**
  * ZC_WAIT_DIALOG
  */
-void ZC_WAIT_DIALOG::deliver() {}
+void ZC_WAIT_DIALOG::deliver(int32_t guid)
+{
+	_guid = guid;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_WAIT_DIALOG::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
 	return buf();
 }
 /**
@@ -2074,9 +3183,27 @@ ByteBuffer &ZC_WARPLIST::serialize()
 /**
  * ZC_WHISPER
  */
-void ZC_WHISPER::deliver() {}
+void ZC_WHISPER::deliver(std::string name, std::string message, bool is_admin)
+{
+	strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	_message = new char[message.size()];
+	strncpy(_message, message.c_str(), message.size());
+	_is_admin = (int32_t) is_admin;
+	_packet_length = 8 + MAX_UNIT_NAME_LENGTH + message.size();
+
+	serialize();
+	transmit();
+	
+	delete[] _message;
+}
+
 ByteBuffer &ZC_WHISPER::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf() << _is_admin;
+	buf().append(_message, _packet_length - 8 - MAX_UNIT_NAME_LENGTH);
 	return buf();
 }
 /**
@@ -2498,9 +3625,18 @@ ByteBuffer &ZC_GANGSI_RANK::serialize()
 /**
  * ZC_AID
  */
-void ZC_AID::deliver() {}
+void ZC_AID::deliver(int32_t aid)
+{
+	_account_id = aid;
+	
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_AID::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
 	return buf();
 }
 /**
@@ -2762,25 +3898,55 @@ ByteBuffer &ZC_FORMATSTRING_MSG::serialize()
 /**
  * ZC_PARTY_CONFIG
  */
-void ZC_PARTY_CONFIG::deliver() {}
+void ZC_PARTY_CONFIG::deliver(zc_party_config_type config)
+{
+	_config = (int8_t)config;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_PARTY_CONFIG::serialize()
 {
+	buf() << _packet_id;
+	buf() << _config;
 	return buf();
 }
 /**
  * ZC_PARTY_JOIN_REQ
  */
-void ZC_PARTY_JOIN_REQ::deliver() {}
+void ZC_PARTY_JOIN_REQ::deliver(int party_id, std::string party_name) 
+{
+	_party_id = party_id;
+	std::strncpy(_party_name, party_name.c_str(), MAX_PARTY_NAME_LENGTH);
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_PARTY_JOIN_REQ::serialize()
 {
+	buf() << _packet_id;
+	buf() << _party_id;
+	buf().append(_party_name, MAX_PARTY_NAME_LENGTH);
 	return buf();
 }
 /**
  * ZC_PARTY_JOIN_REQ_ACK
  */
-void ZC_PARTY_JOIN_REQ_ACK::deliver() {}
+void ZC_PARTY_JOIN_REQ_ACK::deliver(std::string name, zcparty_joinreqack_result_type result)
+{
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	_result = (int) result;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_PARTY_JOIN_REQ_ACK::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf() << _result;
 	return buf();
 }
 /**
@@ -2890,9 +4056,18 @@ ByteBuffer &ZC_ITEM_PICKUP_ACK3::serialize()
 /**
  * ZC_NOTIFY_BIND_ON_EQUIP
  */
-void ZC_NOTIFY_BIND_ON_EQUIP::deliver() {}
+void ZC_NOTIFY_BIND_ON_EQUIP::deliver(int16_t index)
+{
+	_index = index;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_BIND_ON_EQUIP::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
 	return buf();
 }
 /**
@@ -2986,9 +4161,23 @@ ByteBuffer &ZC_NOTIFY_ACT2::serialize()
 /**
  * ZC_ACCEPT_ENTER2
  */
-void ZC_ACCEPT_ENTER2::deliver() {}
+void ZC_ACCEPT_ENTER2::deliver(int16_t x, int16_t y, int16_t dir, int16_t font)
+{
+	PackPosition((int8_t *) _packed_pos, x, y, dir);
+	_start_time = (int32_t) get_sys_time();
+	_x_size = _y_size = 5;
+	_font = font;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACCEPT_ENTER2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _start_time;
+	buf().append(_packed_pos, sizeof(_packed_pos));
+	buf() << _x_size << _y_size << _font;
 	return buf();
 }
 /**
@@ -3122,17 +4311,45 @@ ByteBuffer &ZC_PARTY_RECRUIT_CANCEL_VOLUNTEER_TO_PM::serialize()
 /**
  * ZC_ACK_TAKEOFF_EQUIP_V5
  */
-void ZC_ACK_TAKEOFF_EQUIP_V5::deliver() {}
+void ZC_ACK_TAKEOFF_EQUIP_V5::deliver(int16_t inventory_index, int32_t equip_location_mask, item_unequip_result_type result) 
+{
+	_inventory_index = inventory_index;
+	_equip_location_mask = equip_location_mask;
+	_result = (int8_t) result;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_TAKEOFF_EQUIP_V5::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _equip_location_mask;
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_WEAR_EQUIP_V5
  */
-void ZC_ACK_WEAR_EQUIP_V5::deliver() {}
+void ZC_ACK_WEAR_EQUIP_V5::deliver(int16_t inventory_index, int32_t location, int16_t look, int8_t result)
+{
+	_inventory_index = inventory_index;
+	_equip_location = location;
+	_look = look;
+	_result = result;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_WEAR_EQUIP_V5::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _equip_location;
+	buf() << _look;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -3170,9 +4387,40 @@ ByteBuffer &ZC_INVENTORY_ITEMLIST_EQUIP_V5::serialize()
 /**
  * ZC_INVENTORY_ITEMLIST_NORMAL_V5
  */
-void ZC_INVENTORY_ITEMLIST_NORMAL_V5::deliver() {}
+void ZC_INVENTORY_ITEMLIST_NORMAL_V5::deliver(std::vector<std::shared_ptr<const item_entry_data>> const &items)
+{
+	_items = items;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_INVENTORY_ITEMLIST_NORMAL_V5::serialize()
 {
+	int size = 4;
+	
+	buf() << _packet_id;
+	buf() << (int16_t) ((_items.size() * 24) + 4);
+
+	for (auto it = _items.begin(); it != _items.end(); it++) {
+		std::shared_ptr<const item_entry_data> id = *it;
+		uint8_t config = 0;
+
+		buf() << id->inventory_index;
+		buf() << ((uint16_t) id->item_id);
+		buf() << ((uint8_t) id->type);
+		buf() << id->amount;
+		buf() << id->current_equip_location_mask; // 11
+
+		for (int i = 0; i < MAX_ITEM_SLOTS; i++)
+			buf() << (uint16_t) id->slot_item_id[i]; // 4 * 2
+
+		buf() << id->hire_expire_date; // 23
+
+		config |= id->info.is_identified;
+		config |= id->info.is_favorite << 1;
+		buf() << config; // 24
+	}
+
 	return buf();
 }
 /**
@@ -3202,9 +4450,19 @@ ByteBuffer &ZC_STORE_ITEMLIST_NORMAL_V5::serialize()
 /**
  * ZC_MAPPROPERTY_R2
  */
-void ZC_MAPPROPERTY_R2::deliver() {}
+void ZC_MAPPROPERTY_R2::deliver(zc_map_properties p) 
+{
+	memcpy(&_p, &p, sizeof(int32_t));
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_MAPPROPERTY_R2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
+	buf() << _p;
 	return buf();
 }
 /**
@@ -3474,9 +4732,19 @@ ByteBuffer &ZC_NOTIFY_STANDENTRY10::serialize()
 /**
  * ZC_ACK_WHISPER02
  */
-void ZC_ACK_WHISPER02::deliver() {}
+void ZC_ACK_WHISPER02::deliver(zc_whisper_result_type result, int32_t recipient_char_id)
+{
+	_result = (int8_t) result;
+	_recipient_char_id = recipient_char_id;	
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_WHISPER02::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
+	buf() << _recipient_char_id;
 	return buf();
 }
 /**
@@ -3578,25 +4846,178 @@ ByteBuffer &ZC_ADD_QUEST_EX::serialize()
 /**
  * ZC_NOTIFY_MOVEENTRY11
  */
-void ZC_NOTIFY_MOVEENTRY11::deliver() {}
+void ZC_NOTIFY_MOVEENTRY11::deliver(entity_viewport_entry entry)
+{
+	_entry = entry;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 {
+	char packed_pos[6]{0};
+	
+	_entry.move_start_time = (int32_t) get_sys_time();
+	
+	buf() << _packet_id;
+	buf() << (int16_t) 110;
+	buf() << (int8_t) _entry.unit_type;
+	buf() << _entry.guid;
+	buf() << _entry.character_id;
+	buf() << _entry.speed;
+	buf() << _entry.body_state;
+	buf() << _entry.health_state;
+	buf() << _entry.effect_state;
+	buf() << _entry.job_id;
+	buf() << _entry.hair_style_id;
+	buf() << _entry.weapon_id;
+	buf() << _entry.headgear_bottom_id;
+	buf() << _entry.move_start_time;
+	buf() << _entry.headgear_top_id;
+	buf() << _entry.headgear_mid_id;
+	buf() << _entry.hair_color_id;
+	buf() << _entry.cloth_color_id;
+	buf() << (int16_t) _entry.head_direction;
+	buf() << _entry.robe_id;
+	buf() << _entry.guild_id;
+	buf() << _entry.guild_emblem_version;
+	buf() << _entry.honor;
+	buf() << _entry.virtue;
+	buf() << _entry.in_pk_mode;
+	buf() << _entry.gender;
+	PackPosition((int8_t *) packed_pos, _entry.current_x, _entry.current_y, _entry.to_x, _entry.to_y, 8, 8);
+	buf().append(packed_pos, sizeof(packed_pos));
+	buf() << _entry.x_size;
+	buf() << _entry.y_size;
+	buf() << _entry.base_level;
+	buf() << _entry.font;
+	buf() << _entry.max_hp;
+	buf() << _entry.hp;
+	buf() << _entry.is_boss;
+	buf() << _entry.body_style_id;
+	buf().append(_entry.name, sizeof(_entry.name));
+	
 	return buf();
 }
 /**
  * ZC_NOTIFY_NEWENTRY11
  */
-void ZC_NOTIFY_NEWENTRY11::deliver() {}
+void ZC_NOTIFY_NEWENTRY11::deliver(entity_viewport_entry entry)
+{
+	_entry = entry;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 {
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	_packet_length = 107;
+#else
+	_packet_length = 103;
+#endif
+
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << (int8_t) _entry.unit_type;
+	buf() << _entry.guid;
+	buf() << _entry.character_id;
+	buf() << _entry.speed;
+	buf() << _entry.body_state;
+	buf() << _entry.health_state;
+	buf() << _entry.effect_state;
+	buf() << _entry.job_id;
+	buf() << _entry.hair_style_id;
+	buf() << _entry.weapon_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << _entry.shield_id;
+#endif
+	buf() << _entry.headgear_bottom_id;
+	buf() << _entry.headgear_top_id;
+	buf() << _entry.headgear_mid_id;
+	buf() << _entry.hair_color_id;
+	buf() << _entry.cloth_color_id;
+	buf() << (int16_t)_entry.head_direction;
+	buf() << _entry.robe_id;
+	buf() << _entry.guild_id;
+	buf() << _entry.guild_emblem_version;
+	buf() << _entry.honor;
+	buf() << _entry.virtue;
+	buf() << _entry.in_pk_mode;
+	buf() << _entry.gender;
+
+	char packed_pos[3]{0};
+	PackPosition((int8_t *) packed_pos, _entry.current_x, _entry.current_y, _entry.current_dir);
+
+	buf().append(packed_pos, sizeof(packed_pos));
+	buf() << _entry.x_size;
+	buf() << _entry.y_size;
+	buf() << _entry.base_level;
+	buf() << _entry.font;
+	buf() << _entry.max_hp;
+	buf() << _entry.hp;
+	buf() << _entry.is_boss;
+	buf() << _entry.body_style_id;
+	buf().append(_entry.name, MAX_UNIT_NAME_LENGTH);
+
 	return buf();
 }
 /**
  * ZC_NOTIFY_STANDENTRY11
  */
-void ZC_NOTIFY_STANDENTRY11::deliver() {}
+void ZC_NOTIFY_STANDENTRY11::deliver(entity_viewport_entry entry)
+{
+	_entry = entry;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_STANDENTRY11::serialize()
 {
+	char packed_pos[3]{0};
+	
+	buf() << _packet_id;
+	buf() << (int16_t) 104;
+	buf() << (int8_t) _entry.unit_type;
+	buf() << _entry.guid;
+	buf() << _entry.character_id;
+	buf() << _entry.speed;
+	buf() << _entry.body_state;
+	buf() <<_entry.health_state;
+	buf() << _entry.effect_state;
+	buf() << _entry.job_id;
+	buf() << _entry.hair_style_id;
+	buf() << _entry.weapon_id;
+	buf() << _entry.headgear_bottom_id;
+	buf() << _entry.headgear_top_id;
+	buf() << _entry.headgear_mid_id;
+	buf() << _entry.hair_color_id;
+	buf() << _entry.cloth_color_id;
+	buf() << (int16_t) _entry.head_direction;
+	buf() << _entry.robe_id;
+	buf() << _entry.guild_id;
+	buf() << _entry.guild_emblem_version;
+	buf() << _entry.honor;
+	buf() << _entry.virtue;
+	buf() << _entry.in_pk_mode;
+	buf() << _entry.gender;
+	PackPosition((int8_t *) packed_pos, _entry.current_x, _entry.current_y, _entry.current_dir);
+	buf().append(packed_pos, sizeof(packed_pos));
+	buf() << _entry.x_size;
+	buf() << _entry.y_size;
+	buf() << (int8_t) _entry.posture;
+	buf() << _entry.base_level;
+	buf() << _entry.font;
+	buf() << _entry.max_hp;
+	buf() << _entry.hp;
+	buf() << _entry.is_boss;
+	buf() << _entry.body_style_id;
+	buf().append(_entry.name, sizeof(_entry.name));
+	
 	return buf();
 }
 /**
@@ -3658,9 +5079,48 @@ ByteBuffer &ZC_BATTLEFIELD_NOTIFY_HP2::serialize()
 /**
  * ZC_INVENTORY_ITEMLIST_EQUIP_V6
  */
-void ZC_INVENTORY_ITEMLIST_EQUIP_V6::deliver() {}
+void ZC_INVENTORY_ITEMLIST_EQUIP_V6::deliver(std::vector<std::shared_ptr<const item_entry_data>> const &items)
+{
+	_items = items;
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_INVENTORY_ITEMLIST_EQUIP_V6::serialize()
 {
+	buf() << _packet_id;
+	buf() << (int16_t) ((57 * _items.size()) + 4);
+
+	for (auto it = _items.begin(); it != _items.end(); it++) {
+		std::shared_ptr<const item_entry_data> id = *it;
+		uint8_t config = 0;
+		buf() << id->inventory_index; // 2
+		buf() << (int16_t) id->item_id; // 4
+		buf() << (int8_t) id->type; // 5
+		buf() << id->actual_equip_location_mask; // 9
+		buf() << id->current_equip_location_mask; // 13
+		buf() << id->refine_level; //14
+		for (int i = 0; i < MAX_ITEM_SLOTS; i++) // 14 + 8 = 22
+			buf() << (int16_t) id->slot_item_id[i];
+		buf() << id->hire_expire_date; // 26
+		buf() << (int16_t) id->bind_type; // 28
+		buf() << id->sprite_id; // 30
+
+		buf() << id->option_count; // 31
+
+		for (int i = 0; i < MAX_ITEM_OPTIONS; i++) {
+			buf() << id->option_data[i].index;
+			buf() << id->option_data[i].value;
+			buf() << id->option_data[i].param;
+		} // 31 + 25 = 56
+
+		config |= id->info.is_identified;
+		config |= id->info.is_broken << 1;
+		config |= id->info.is_favorite << 2;
+
+		buf() << config; // 57
+	}
+
 	return buf();
 }
 /**
@@ -3818,9 +5278,20 @@ ByteBuffer &ZC_ALL_QUEST_LIST4::serialize()
 /**
  * ZC_GUILD_POSITION
  */
-void ZC_GUILD_POSITION::deliver() {}
+void ZC_GUILD_POSITION::deliver(int account_id, std::string position)
+{
+	_account_id = account_id;
+	std::strncpy(_position, position.c_str(), MAX_GUILD_POSITION_NAME_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_GUILD_POSITION::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf().append(_position, MAX_GUILD_POSITION_NAME_LENGTH);
 	return buf();
 }
 /**
@@ -3962,9 +5433,29 @@ ByteBuffer &ZC_ACK_CHANGE_TITLE::serialize()
 /**
  * ZC_ACK_REQNAMEALL2
  */
-void ZC_ACK_REQNAMEALL2::deliver() {}
+void ZC_ACK_REQNAMEALL2::deliver(int32_t guid, std::string name, std::string party_name, std::string guild_name, std::string position_name, int32_t title_id)
+{
+	_guid = guid;
+	strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	strncpy(_party_name, party_name.c_str(), MAX_UNIT_NAME_LENGTH);
+	strncpy(_guild_name, guild_name.c_str(), MAX_UNIT_NAME_LENGTH);
+	strncpy(_position_name, position_name.c_str(), MAX_UNIT_NAME_LENGTH);
+	_title_id = title_id;
+	
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_REQNAMEALL2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_party_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_guild_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_position_name, MAX_UNIT_NAME_LENGTH);
+	buf() << _title_id;
+	
 	return buf();
 }
 /**
@@ -4026,9 +5517,43 @@ ByteBuffer &ZC_HP_INFO_TINY::serialize()
 /**
  * ZC_ITEM_PICKUP_ACK_V7
  */
-void ZC_ITEM_PICKUP_ACK_V7::deliver() {}
+void ZC_ITEM_PICKUP_ACK_V7::deliver(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
+{
+	_id = id;
+	_amount = amount;
+	_result = result;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ITEM_PICKUP_ACK_V7::serialize()
 {
+	buf() << _packet_id;
+	buf() << _id.inventory_index;
+	buf() << _amount;
+	buf() << (int16_t) _id.item_id;
+	buf() << (int8_t) (_id.info.is_identified ? 1 : 0);
+	buf() << (int8_t) (_id.info.is_broken ? 1 : 0 );
+	buf() << _id.refine_level;
+
+	for (int i = 0; i < MAX_ITEM_SLOTS; i++)
+		buf() << (int16_t) _id.slot_item_id[i];
+
+	buf() << _id.actual_equip_location_mask;
+	buf() << (int8_t) _id.type;
+	buf() << (int8_t) _result;
+	buf() << _id.hire_expire_date;
+	buf() << (int16_t) _id.bind_type;
+
+	for (int i = 0; i < MAX_ITEM_OPTIONS; i++) {
+		buf() << _id.option_data[i].index;
+		buf() << _id.option_data[i].value;
+		buf() << _id.option_data[i].param;
+	}
+
+	buf() << (int8_t) (_id.info.is_favorite ? 1 : 0);
+	buf() << _id.sprite_id;
 	return buf();
 }
 /**
@@ -4186,9 +5711,20 @@ ByteBuffer &ZC_REFINE_OPEN_WINDOW::serialize()
 /**
  * ZC_INVENTORY_MOVE_FAILED
  */
-void ZC_INVENTORY_MOVE_FAILED::deliver() {}
+void ZC_INVENTORY_MOVE_FAILED::deliver(int16_t index, int16_t silent)
+{
+	_index = index;
+	_silent = silent;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_INVENTORY_MOVE_FAILED::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
+	buf() << _silent;
 	return buf();
 }
 /**
@@ -4202,9 +5738,22 @@ ByteBuffer &ZC_ITEM_PREVIEW::serialize()
 /**
  * ZC_PARTY_MEMBER_JOB_LEVEL
  */
-void ZC_PARTY_MEMBER_JOB_LEVEL::deliver() {}
+void ZC_PARTY_MEMBER_JOB_LEVEL::deliver(int account_id, int job_id, int level)
+{
+	_account_id = account_id;
+	_job_id = job_id;
+	_level = level;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_PARTY_MEMBER_JOB_LEVEL::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf() << _job_id;
+	buf() << _level;
 	return buf();
 }
 /**
@@ -4322,9 +5871,31 @@ ByteBuffer &ZC_SKILLINFO_DELETE::serialize()
 /**
  * ZC_MSG_STATE_CHANGE2
  */
-void ZC_MSG_STATE_CHANGE2::deliver() {}
+void ZC_MSG_STATE_CHANGE2::deliver(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3) 
+{
+	_index = si_type;
+	_guid = guid;
+	_state = state;
+	_time_remaining = time_remaining;
+	_val1 = val1;
+	_val2 = val2;
+	_val3 = val3;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_MSG_STATE_CHANGE2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _index;
+	buf() << _guid;
+	buf() << _state;
+	buf() << _time_remaining;
+	buf() << _val1;
+	buf() << _val2;
+	buf() << _val3;
+
 	return buf();
 }
 /**
@@ -4562,9 +6133,22 @@ ByteBuffer &ZC_NOTIFY_STANDENTRY5::serialize()
 /**
  * ZC_DELETE_ITEM_FROM_BODY
  */
-void ZC_DELETE_ITEM_FROM_BODY::deliver() {}
+void ZC_DELETE_ITEM_FROM_BODY::deliver(int16_t index, int16_t amount, item_deletion_reason_type reason)
+{
+	_index = index;
+	_amount = amount;
+	_reason = reason;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_DELETE_ITEM_FROM_BODY::serialize()
 {
+	buf() << _packet_id;
+	buf() << (int16_t) _reason;
+	buf() << _index;
+	buf() << _amount;
 	return buf();
 }
 /**
@@ -4858,9 +6442,20 @@ ByteBuffer &ZC_SEARCH_STORE_INFO_FAILED::serialize()
 /**
  * ZC_ACK_BAN_GUILD_SSO
  */
-void ZC_ACK_BAN_GUILD_SSO::deliver() {}
+void ZC_ACK_BAN_GUILD_SSO::deliver(std::string name, std::string reason) 
+{
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	std::strncpy(_reason, reason.c_str(), MAX_GUILD_LEAVE_REASON_STR_LENGTH);
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_ACK_BAN_GUILD_SSO::serialize()
 {
+	buf() << _packet_id;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
+	buf().append(_reason, MAX_GUILD_LEAVE_REASON_STR_LENGTH);
 	return buf();
 }
 /**
@@ -5322,9 +6917,36 @@ ByteBuffer &ZC_ACK_SCHEDULER_CASHITEM::serialize()
 /**
  * ZC_NOTIFY_ACT3
  */
-void ZC_NOTIFY_ACT3::deliver() {}
+void ZC_NOTIFY_ACT3::deliver(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage) 
+{
+	_guid = guid;
+	_target_guid = target_guid; 
+	_start_time = start_time;
+	_delay_skill = delay_skill;
+	_delay_damage = delay_damage;
+	_damage = damage;
+	_is_sp_damaged = is_sp_damaged;
+	_number_of_hits = number_of_hits;
+	_action_type = action_type;
+	_left_damage = left_damage; 
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_ACT3::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _target_guid;
+	buf() << _start_time;
+	buf() << _delay_skill;
+	buf() << _delay_damage;
+	buf() << _damage;
+	buf() << _is_sp_damaged;
+	buf() << _number_of_hits;
+	buf() << _action_type;
+	buf() << _left_damage;
 	return buf();
 }
 /**
@@ -5394,7 +7016,8 @@ ByteBuffer &ZC_SAY_DIALOG2::serialize()
 /**
  * ZC_WAIT_DIALOG2
  */
-void ZC_WAIT_DIALOG2::deliver() {}
+void ZC_WAIT_DIALOG2::deliver() { }
+
 ByteBuffer &ZC_WAIT_DIALOG2::serialize()
 {
 	return buf();

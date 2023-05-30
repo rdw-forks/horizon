@@ -26,6 +26,8 @@
  **************************************************/
 
 #include "HandledPackets.hpp"
+#include "Server/Auth/Auth.hpp"
+#include "Server/Auth/Interface/AuthClientInterface.hpp"
 #include "Server/Auth/Session/AuthSession.hpp"
 
 using namespace Horizon::Auth;
@@ -43,8 +45,21 @@ void CA_EXE_HASHCHECK::deserialize(ByteBuffer &buf) {}
 /**
  * CA_LOGIN
  */
-void CA_LOGIN::handle(ByteBuffer &&buf) {}
-void CA_LOGIN::deserialize(ByteBuffer &buf) {}
+void CA_LOGIN::handle(ByteBuffer&& buf)
+{
+    deserialize(buf);
+
+    get_session()->clif()->process_login(_username, _password, _version, _client_type);
+}
+
+void CA_LOGIN::deserialize(ByteBuffer& buf)
+{
+    buf >> _packet_id;
+    buf >> _version;
+    buf.read(_username, sizeof(_username));
+    buf.read(_password, sizeof(_password));
+    buf >> _client_type;
+}
 /**
  * CA_LOGIN2
  */

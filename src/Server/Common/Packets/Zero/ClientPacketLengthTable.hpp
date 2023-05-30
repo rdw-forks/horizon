@@ -28,10 +28,7 @@
 #ifndef HORIZON_COMMON_CLIENT_PACKET_LENGTH_TABLE
 #define HORIZON_COMMON_CLIENT_PACKET_LENGTH_TABLE
 
-
-#include "Default.hpp"
-
-
+#include "PacketLengthTable.hpp"
 
 namespace Horizon
 {
@@ -43,7 +40,7 @@ namespace Common
 class ClientPacketLengthTable : public PacketLengthTable
 {
 public:
-	ClientPacketLengthTable(std::shared_ptr<ZoneSession> s)
+	ClientPacketLengthTable(std::shared_ptr<CommonSession> s)
 	: PacketLengthTable(s)
 	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))

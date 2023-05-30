@@ -38,31 +38,33 @@ namespace Common
 class CommonSession;
 enum {
 #if CLIENT_TYPE == 'A' &&  \
-	PACKET_VERSION == 20080624
+	PACKET_VERSION >= 20080624
 ID_AHC_GAME_GUARD = 0x03dd
 #elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20080624
+	PACKET_VERSION >= 20080624
 ID_AHC_GAME_GUARD = 0x03dd
 #elif CLIENT_TYPE == 'R' &&  \
 	PACKET_VERSION >= 20080000
 ID_AHC_GAME_GUARD = 0x03dd
 #elif CLIENT_TYPE == 'S' &&  \
-	PACKET_VERSION == 20080624
+	PACKET_VERSION >= 20080624
 ID_AHC_GAME_GUARD = 0x03dd
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_AHC_GAME_GUARD = 0x03dd
+#else
+ID_AHC_GAME_GUARD = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: AHC_GAME_GUARD
  *
  */ 
-class AHC_GAME_GUARD : public Base::NetworkPacketTransmitter<ZoneSession>
+class AHC_GAME_GUARD : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	AHC_GAME_GUARD(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_AHC_GAME_GUARD, s)
+	AHC_GAME_GUARD(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_AHC_GAME_GUARD, s)
 	{}
 	virtual ~AHC_GAME_GUARD() {}
 
@@ -74,31 +76,33 @@ public:
 
 enum {
 #if CLIENT_TYPE == 'A' &&  \
-	PACKET_VERSION == 20080624
+	PACKET_VERSION >= 20080624
 ID_CAH_ACK_GAME_GUARD = 0x03de
 #elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20080624
+	PACKET_VERSION >= 20080624
 ID_CAH_ACK_GAME_GUARD = 0x03de
 #elif CLIENT_TYPE == 'R' &&  \
 	PACKET_VERSION >= 20080000
 ID_CAH_ACK_GAME_GUARD = 0x03de
 #elif CLIENT_TYPE == 'S' &&  \
-	PACKET_VERSION == 20080624
+	PACKET_VERSION >= 20080624
 ID_CAH_ACK_GAME_GUARD = 0x03de
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_CAH_ACK_GAME_GUARD = 0x03de
+#else
+ID_CAH_ACK_GAME_GUARD = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: CAH_ACK_GAME_GUARD
  *
  */ 
-class CAH_ACK_GAME_GUARD : public Base::NetworkPacketTransmitter<ZoneSession>
+class CAH_ACK_GAME_GUARD : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	CAH_ACK_GAME_GUARD(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_CAH_ACK_GAME_GUARD, s)
+	CAH_ACK_GAME_GUARD(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_CAH_ACK_GAME_GUARD, s)
 	{}
 	virtual ~CAH_ACK_GAME_GUARD() {}
 
@@ -124,17 +128,19 @@ ID_SC_ACK_ENCRYPTION = 0x01c7
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_ACK_ENCRYPTION = 0x01c7
+#else
+ID_SC_ACK_ENCRYPTION = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_ACK_ENCRYPTION
  *
  */ 
-class SC_ACK_ENCRYPTION : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_ACK_ENCRYPTION : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_ACK_ENCRYPTION(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_ACK_ENCRYPTION, s)
+	SC_ACK_ENCRYPTION(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_ACK_ENCRYPTION, s)
 	{}
 	virtual ~SC_ACK_ENCRYPTION() {}
 
@@ -160,17 +166,19 @@ ID_SC_BILLING_INFO = 0x01b5
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_BILLING_INFO = 0x01b5
+#else
+ID_SC_BILLING_INFO = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_BILLING_INFO
  *
  */ 
-class SC_BILLING_INFO : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_BILLING_INFO : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_BILLING_INFO(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_BILLING_INFO, s)
+	SC_BILLING_INFO(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_BILLING_INFO, s)
 	{}
 	virtual ~SC_BILLING_INFO() {}
 
@@ -182,25 +190,27 @@ public:
 
 enum {
 #if CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20130605
+	PACKET_VERSION >= 20130605
 ID_SC_LOGIN_ANSWER = 0x09c6
 #elif CLIENT_TYPE == 'R' &&  \
-	PACKET_VERSION == 20130605
+	PACKET_VERSION >= 20130605
 ID_SC_LOGIN_ANSWER = 0x09c6
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_LOGIN_ANSWER = 0x09c6
+#else
+ID_SC_LOGIN_ANSWER = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_LOGIN_ANSWER
  *
  */ 
-class SC_LOGIN_ANSWER : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_LOGIN_ANSWER : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_LOGIN_ANSWER(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_LOGIN_ANSWER, s)
+	SC_LOGIN_ANSWER(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_LOGIN_ANSWER, s)
 	{}
 	virtual ~SC_LOGIN_ANSWER() {}
 
@@ -212,25 +222,27 @@ public:
 
 enum {
 #if CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20131030
+	PACKET_VERSION >= 20131030
 ID_SC_LOGIN_ANSWER_WITH_ID = 0x09e0
 #elif CLIENT_TYPE == 'R' &&  \
-	PACKET_VERSION == 20131030
+	PACKET_VERSION >= 20131030
 ID_SC_LOGIN_ANSWER_WITH_ID = 0x09e0
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_LOGIN_ANSWER_WITH_ID = 0x09e0
+#else
+ID_SC_LOGIN_ANSWER_WITH_ID = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_LOGIN_ANSWER_WITH_ID
  *
  */ 
-class SC_LOGIN_ANSWER_WITH_ID : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_LOGIN_ANSWER_WITH_ID : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_LOGIN_ANSWER_WITH_ID(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_LOGIN_ANSWER_WITH_ID, s)
+	SC_LOGIN_ANSWER_WITH_ID(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_LOGIN_ANSWER_WITH_ID, s)
 	{}
 	virtual ~SC_LOGIN_ANSWER_WITH_ID() {}
 
@@ -242,25 +254,27 @@ public:
 
 enum {
 #if CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20130612
+	PACKET_VERSION >= 20130612
 ID_SC_LOGIN_ERROR = 0x09c7
 #elif CLIENT_TYPE == 'R' &&  \
-	PACKET_VERSION == 20130612
+	PACKET_VERSION >= 20130612
 ID_SC_LOGIN_ERROR = 0x09c7
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_LOGIN_ERROR = 0x09c7
+#else
+ID_SC_LOGIN_ERROR = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_LOGIN_ERROR
  *
  */ 
-class SC_LOGIN_ERROR : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_LOGIN_ERROR : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_LOGIN_ERROR(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_LOGIN_ERROR, s)
+	SC_LOGIN_ERROR(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_LOGIN_ERROR, s)
 	{}
 	virtual ~SC_LOGIN_ERROR() {}
 
@@ -286,17 +300,19 @@ ID_SC_NOTIFY_BAN = 0x0081
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_NOTIFY_BAN = 0x0081
+#else
+ID_SC_NOTIFY_BAN = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_NOTIFY_BAN
  *
  */ 
-class SC_NOTIFY_BAN : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_NOTIFY_BAN : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_NOTIFY_BAN(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_NOTIFY_BAN, s)
+	SC_NOTIFY_BAN(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_NOTIFY_BAN, s)
 	{}
 	virtual ~SC_NOTIFY_BAN() {}
 
@@ -308,25 +324,27 @@ public:
 
 enum {
 #if CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20130612
+	PACKET_VERSION >= 20130612
 ID_SC_SOCT = 0x09c9
 #elif CLIENT_TYPE == 'R' &&  \
-	PACKET_VERSION == 20130612
+	PACKET_VERSION >= 20130612
 ID_SC_SOCT = 0x09c9
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_SC_SOCT = 0x09c9
+#else
+ID_SC_SOCT = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: SC_SOCT
  *
  */ 
-class SC_SOCT : public Base::NetworkPacketTransmitter<ZoneSession>
+class SC_SOCT : public Base::NetworkPacketTransmitter<CommonSession>
 {
 public:
-	SC_SOCT(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketTransmitter<ZoneSession>(ID_SC_SOCT, s)
+	SC_SOCT(std::shared_ptr<CommonSession> s)
+	: NetworkPacketTransmitter<CommonSession>(ID_SC_SOCT, s)
 	{}
 	virtual ~SC_SOCT() {}
 
@@ -336,6 +354,6 @@ public:
 /* Structure */
 };
 
-}
- /* namespace Common */}
- /* namespace Horizon */
+} /* namespace Common
+ */} /* namespace Horizon */
+#endif /* HORIZON_COMMON_TRANSMITTED_PACKETS_HPP */

@@ -38,25 +38,27 @@ namespace Common
 class CommonSession;
 enum {
 #if CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION == 20130605
+	PACKET_VERSION >= 20130605
 ID_CS_LOGIN_QUERY = 0x09c5
 #elif CLIENT_TYPE == 'R' &&  \
-	PACKET_VERSION == 20130605
+	PACKET_VERSION >= 20130605
 ID_CS_LOGIN_QUERY = 0x09c5
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_CS_LOGIN_QUERY = 0x09c5
+#else
+ID_CS_LOGIN_QUERY = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: CS_LOGIN_QUERY
  *
  */ 
-class CS_LOGIN_QUERY : public Base::NetworkPacketHandler<ZoneSession>
+class CS_LOGIN_QUERY : public Base::NetworkPacketHandler<CommonSession>
 {
 public:
-	CS_LOGIN_QUERY(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketHandler<ZoneSession>(ID_CS_LOGIN_QUERY, s)
+	CS_LOGIN_QUERY(std::shared_ptr<CommonSession> s)
+	: NetworkPacketHandler<CommonSession>(ID_CS_LOGIN_QUERY, s)
 	{}
 	virtual ~CS_LOGIN_QUERY() {}
 
@@ -82,17 +84,19 @@ ID_CS_REQ_ENCRYPTION = 0x01c6
 #elif CLIENT_TYPE == 'Z' &&  \
 	PACKET_VERSION >= 20170000
 ID_CS_REQ_ENCRYPTION = 0x01c6
+#else
+ID_CS_REQ_ENCRYPTION = 0x0000 // Disabled
 #endif
 };
 /**
  * @brief Main object for the aegis packet: CS_REQ_ENCRYPTION
  *
  */ 
-class CS_REQ_ENCRYPTION : public Base::NetworkPacketHandler<ZoneSession>
+class CS_REQ_ENCRYPTION : public Base::NetworkPacketHandler<CommonSession>
 {
 public:
-	CS_REQ_ENCRYPTION(std::shared_ptr<ZoneSession> s)
-	: NetworkPacketHandler<ZoneSession>(ID_CS_REQ_ENCRYPTION, s)
+	CS_REQ_ENCRYPTION(std::shared_ptr<CommonSession> s)
+	: NetworkPacketHandler<CommonSession>(ID_CS_REQ_ENCRYPTION, s)
 	{}
 	virtual ~CS_REQ_ENCRYPTION() {}
 
@@ -102,6 +106,6 @@ public:
 /* Structure */
 };
 
-}
- /* namespace Common */}
- /* namespace Horizon */
+} /* namespace Common */
+} /* namespace Horizon */
+#endif /* HORIZON_COMMON_TRANSMITTED_PACKETS_HPP */

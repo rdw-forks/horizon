@@ -28,10 +28,7 @@
 #ifndef HORIZON_AUTH_CLIENT_PACKET_LENGTH_TABLE
 #define HORIZON_AUTH_CLIENT_PACKET_LENGTH_TABLE
 
-
-#include "Default.hpp"
-
-
+#include "PacketLengthTable.hpp"
 
 namespace Horizon
 {
@@ -43,19 +40,21 @@ namespace Auth
 class ClientPacketLengthTable : public PacketLengthTable
 {
 public:
-	ClientPacketLengthTable(std::shared_ptr<ZoneSession> s)
+	ClientPacketLengthTable(std::shared_ptr<AuthSession> s)
 	: PacketLengthTable(s)
 	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 // Packet Version 20171113: 1 Packets
-#elif PACKET_VERSION == 20171113
+#if PACKET_VERSION >= 20171113
 		ADD_HPKT(0x0acf, 68, CA_LOGIN_OTP);
+#endif
 // Packet Version 20171123: 1 Packets
-#elif PACKET_VERSION == 20171123
+#if PACKET_VERSION >= 20171123
 		ADD_TPKT(0x0ae3, -1, AC_LOGIN_OTP);
+#endif
 // Packet Version 20180627: 1 Packets
-#elif PACKET_VERSION == 20180627
+#if PACKET_VERSION >= 20180627
 		ADD_TPKT(0x0b02, 26, AC_REFUSE_LOGIN4);
 #endif
 #undef ADD_TPKT

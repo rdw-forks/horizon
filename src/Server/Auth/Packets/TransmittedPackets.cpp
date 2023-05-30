@@ -28,17 +28,72 @@
 #include "TransmittedPackets.hpp"
 #include "Server/Auth/Session/AuthSession.hpp"
 #include "Utility/Utility.hpp"
+#include "Server/Auth/Auth.hpp"
 
 using namespace Horizon::Auth;
 
 /**
  * AC_ACCEPT_LOGIN
  */
-void AC_ACCEPT_LOGIN::deliver() {}
-ByteBuffer &AC_ACCEPT_LOGIN::serialize()
+void AC_ACCEPT_LOGIN::deliver(int32_t auth_code, uint32_t aid, uint32_t user_level, uint8_t sex)
 {
+	_al.packet_len = 2 + sizeof(struct s_ac_accept_login) + (sizeof(s_ac_char_server_list) * sAuth->get_auth_config().get_char_servers().size());
+	_al.auth_code = auth_code;
+	_al.aid = aid;
+	_al.user_level = user_level;
+	_al.last_login_ip = 0;
+	memset(_al.last_login_time, '\0', sizeof(_al.last_login_time));
+	_al.sex = sex;
+
+	for (auth_config_type::char_server c : sAuth->get_auth_config().get_char_servers()) {
+		s_ac_char_server_list sc;
+		sc.ip = inet_addr(c._host.c_str());
+		sc.port = c._port;
+		strncpy(sc.name, c._name.c_str(), sizeof(sc.name));
+		sc.usercount = 10;
+		sc.is_new = c._is_new;
+		sc.type = c._type;
+		_c.push_back(sc);
+	}
+
+	serialize();
+	transmit();
+}
+
+ByteBuffer& AC_ACCEPT_LOGIN::serialize()
+{
+	buf() << _packet_id;
+	buf() << _al.packet_len;
+	buf() << _al.auth_code;
+	buf() << _al.aid;
+	buf() << _al.user_level;
+	buf() << _al.last_login_ip; // not used anymore
+	memset(_al.last_login_time, '\0', sizeof(_al.last_login_time));
+	buf().append(_al.last_login_time, sizeof(_al.last_login_time)); // not used anymore
+	buf() << _al.sex;
+
+#if PACKET_VERSION >= 20170315
+	buf().append(_al.twitter_auth_token, sizeof(_al.twitter_auth_token));
+	buf() << _al.twitter_flag;
+#endif
+
+	for (s_ac_char_server_list sc : _c) {
+		buf() << sc.ip;
+		buf() << sc.port;
+		buf().append(sc.name, sizeof(sc.name));
+		buf() << sc.usercount;
+		buf() << sc.is_new;
+		buf() << sc.type;
+#if PACKET_VERSION >= 20170315
+		buf().append(sc.unknown2, sizeof(sc.unknown2));
+#endif
+	}
+
+	HLog(debug) << "Serialized AC_ACCEPT_LOGIN of size " << _al.packet_len << ". Buffer:" << buf().to_string();
+
 	return buf();
 }
+
 /**
  * AC_ACK_HASH
  */
@@ -66,9 +121,23 @@ ByteBuffer &AC_NOTIFY_ERROR::serialize()
 /**
  * AC_REFUSE_LOGIN
  */
-void AC_REFUSE_LOGIN::deliver() {}
-ByteBuffer &AC_REFUSE_LOGIN::serialize()
+void AC_REFUSE_LOGIN::deliver(login_error_codes error_code, char* block_date, std::size_t bd_size)
 {
+	_error_code = (uint8_t)error_code;
+
+	if (bd_size <= sizeof(_block_date))
+		strncpy(_block_date, block_date, bd_size);
+
+	serialize();
+
+	transmit();
+}
+
+ByteBuffer& AC_REFUSE_LOGIN::serialize()
+{
+	buf() << _packet_id;
+	buf() << _error_code;
+	buf().append(_block_date, sizeof(_block_date));
 	return buf();
 }
 /**

@@ -28,10 +28,7 @@
 #ifndef HORIZON_CHAR_CLIENT_PACKET_LENGTH_TABLE
 #define HORIZON_CHAR_CLIENT_PACKET_LENGTH_TABLE
 
-
-#include "Default.hpp"
-
-
+#include "PacketLengthTable.hpp"
 
 namespace Horizon
 {
@@ -43,24 +40,26 @@ namespace Char
 class ClientPacketLengthTable : public PacketLengthTable
 {
 public:
-	ClientPacketLengthTable(std::shared_ptr<ZoneSession> s)
+	ClientPacketLengthTable(std::shared_ptr<CharSession> s)
 	: PacketLengthTable(s)
 	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 // Packet Version 20050628: 1 Packets
-#if PACKET_VERSION == 20050628
+#if PACKET_VERSION >= 20050628
 		ADD_TPKT(0x023e, 4, HC_REQUEST_CHARACTER_PASSWORD);
+#endif
 // Packet Version 20061030: 6 Packets
-#elif PACKET_VERSION == 20061030
+#if PACKET_VERSION >= 20061030
 		ADD_HPKT(0x028f, 6, CH_REQ_CHANGE_CHARNAME);
 		ADD_HPKT(0x028d, 34, CH_REQ_IS_VALID_CHARNAME);
 		ADD_HPKT(0x028c, 46, CH_SELECT_CHAR_GOINGTOBEUSED);
 		ADD_TPKT(0x0290, 4, HC_ACK_CHANGE_CHARNAME);
 		ADD_TPKT(0x028e, 4, HC_ACK_IS_VALID_CHARNAME);
 		ADD_TPKT(0x028b, -1, HC_CHARNOTBEENSELECTED);
+#endif
 // Packet Version 20070821: 1 Packets
-#elif PACKET_VERSION == 20070821
+#if PACKET_VERSION >= 20070821
 		ADD_TPKT(0x02ca, 3, HC_REFUSE_SELECTCHAR);
 #endif
 #undef ADD_TPKT

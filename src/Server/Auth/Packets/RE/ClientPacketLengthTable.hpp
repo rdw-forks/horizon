@@ -28,10 +28,7 @@
 #ifndef HORIZON_AUTH_CLIENT_PACKET_LENGTH_TABLE
 #define HORIZON_AUTH_CLIENT_PACKET_LENGTH_TABLE
 
-
-#include "Default.hpp"
-
-
+#include "PacketLengthTable.hpp"
 
 namespace Horizon
 {
@@ -43,69 +40,86 @@ namespace Auth
 class ClientPacketLengthTable : public PacketLengthTable
 {
 public:
-	ClientPacketLengthTable(std::shared_ptr<ZoneSession> s)
+	ClientPacketLengthTable(std::shared_ptr<AuthSession> s)
 	: PacketLengthTable(s)
 	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 // Packet Version 20090701: 1 Packets
-#if PACKET_VERSION == 20090701
+#if PACKET_VERSION >= 20090701
 		ADD_TPKT(0x0276, -1, AC_ACCEPT_LOGIN2);
+#endif
 // Packet Version 20100413: 3 Packets
-#elif PACKET_VERSION == 20100413
+#if PACKET_VERSION >= 20100413
 		ADD_TPKT(0x0823, -1, AC_OTP_AUTH_ACK);
 		ADD_TPKT(0x0821, 2, AC_OTP_USER);
 		ADD_HPKT(0x0822, 9, CA_OTP_AUTH_REQ);
+#endif
 // Packet Version 20100601: 2 Packets
-#elif PACKET_VERSION == 20100601
+#if PACKET_VERSION >= 20100601
 		ADD_TPKT(0x0826, 4, AC_SSO_LOGIN_ACK);
 		ADD_HPKT(0x0825, -1, CA_SSO_LOGIN_REQ);
+#endif
 // Packet Version 20100615: 1 Packets
-#elif PACKET_VERSION == 20100615
+#if PACKET_VERSION >= 20100615
 		ADD_TPKT(0x083e, 26, AC_REFUSE_LOGIN2);
+#endif
 // Packet Version 20101228: 1 Packets
-#elif PACKET_VERSION == 20101228
+#if PACKET_VERSION >= 20101228
 		ADD_TPKT(0x08b2, -1, AC_REALNAME_AUTH);
+#endif
 // Packet Version 20110726: 1 Packets
-#elif PACKET_VERSION == 20110726
+#if PACKET_VERSION >= 20110726
 		ADD_HPKT(0x08cc, 109, CA_LOGIN5);
+#endif
 // Packet Version 20111025: 1 Packets
-#elif PACKET_VERSION == 20111025
+#if PACKET_VERSION >= 20111025
 		ADD_TPKT(0x08e4, 6, AC_SHUTDOWN_INFO);
+#endif
 // Packet Version 20120626: 1 Packets
-#elif PACKET_VERSION == 20120626
+#if PACKET_VERSION >= 20120626
 		ADD_TPKT(0x0986, 10, AC_SHUTDOWN_NOTIFY);
+#endif
 // Packet Version 20120702: 1 Packets
-#elif PACKET_VERSION == 20120702
+#if PACKET_VERSION >= 20120702
 		ADD_HPKT(0x0987, 63, CA_LOGIN6);
+#endif
 // Packet Version 20120716: 2 Packets
-#elif PACKET_VERSION == 20120716
+#if PACKET_VERSION >= 20120716
 		ADD_TPKT(0x098b, 2, AC_REQ_NEW_USER);
 		ADD_HPKT(0x098c, 4, CA_ACK_NEW_USER);
+#endif
 // Packet Version 20130130: 2 Packets
-#elif PACKET_VERSION == 20130130
+#if PACKET_VERSION >= 20130130
 		ADD_TPKT(0x09a2, 6, AC_REQ_MOBILE_OTP);
 		ADD_HPKT(0x09a3, -1, CA_ACK_MOBILE_OTP);
+#endif
 // Packet Version 20130220: 1 Packets
-#elif PACKET_VERSION == 20130220
+#if PACKET_VERSION >= 20130220
 		ADD_TPKT(0x09a5, 7, AC_REFUSE_LOGIN3);
+#endif
 // Packet Version 20130605: 1 Packets
-#elif PACKET_VERSION == 20130605
+#if PACKET_VERSION >= 20130605
 		ADD_HPKT(0x09c8, -1, CA_LOGIN_OTP);
+#endif
 // Packet Version 20170228: 1 Packets
-#elif PACKET_VERSION == 20170228
+#if PACKET_VERSION >= 20170228
 		ADD_TPKT(0x0ac4, -1, AC_ACCEPT_LOGIN);
+#endif
 // Packet Version 20170614: 1 Packets
-#elif PACKET_VERSION == 20170614
+#if PACKET_VERSION >= 20170614
 		ADD_HPKT(0x0ad0, 11, CA_OTP_CODE);
+#endif
 // Packet Version 20171115: 1 Packets
-#elif PACKET_VERSION == 20171115
+#if PACKET_VERSION >= 20171115
 		ADD_HPKT(0x0acf, 68, CA_LOGIN_OTP);
+#endif
 // Packet Version 20171213: 1 Packets
-#elif PACKET_VERSION == 20171213
+#if PACKET_VERSION >= 20171213
 		ADD_TPKT(0x0ae3, -1, AC_LOGIN_OTP);
+#endif
 // Packet Version 20180704: 1 Packets
-#elif PACKET_VERSION == 20180704
+#if PACKET_VERSION >= 20180704
 		ADD_TPKT(0x0b02, 26, AC_REFUSE_LOGIN4);
 #endif
 #undef ADD_TPKT

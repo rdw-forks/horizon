@@ -28,8 +28,9 @@
 #ifndef HORIZON_ZONE_RAGEXE_PACKET_LENGTH_TABLE
 #define HORIZON_ZONE_RAGEXE_PACKET_LENGTH_TABLE
 
-#include "Server\/Zone\/Packets\/HandlerPackets.hpp"
-#include "Server\/Zone\/Packets\/TransmitterPackets.hpp"
+#include "Core/Multithreading/LockedLookupTable.hpp"
+#include "Server/Zone/Packets/HandledPackets.hpp"
+#include "Server/Zone/Packets/TransmittedPackets.hpp"
 
 namespace Horizon
 {
@@ -43,11 +44,11 @@ namespace Zone
  * @brief Auto-generated with a python generator tool authored by Sephus (sagunxp@gmail.com).
  */
 class PacketLengthTable
-{{
+{
 public:
 	PacketLengthTable(std::shared_ptr<ZoneSession> s)
 	: _session(s)
-	{{
+	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 		ADD_HPKT(0x00e6, 3, CZ_ACK_EXCHANGE_ITEM);

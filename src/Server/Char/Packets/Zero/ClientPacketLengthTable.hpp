@@ -28,10 +28,7 @@
 #ifndef HORIZON_CHAR_CLIENT_PACKET_LENGTH_TABLE
 #define HORIZON_CHAR_CLIENT_PACKET_LENGTH_TABLE
 
-
-#include "Default.hpp"
-
-
+#include "PacketLengthTable.hpp"
 
 namespace Horizon
 {
@@ -43,13 +40,13 @@ namespace Char
 class ClientPacketLengthTable : public PacketLengthTable
 {
 public:
-	ClientPacketLengthTable(std::shared_ptr<ZoneSession> s)
+	ClientPacketLengthTable(std::shared_ptr<CharSession> s)
 	: PacketLengthTable(s)
 	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 // Packet Version 20171220: 1 Packets
-#if PACKET_VERSION == 20171220
+#if PACKET_VERSION >= 20171220
 		ADD_TPKT(0x0ae9, 64, HC_SECOND_PASSWD_LOGIN);
 #endif
 #undef ADD_TPKT

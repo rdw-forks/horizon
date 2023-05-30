@@ -28,10 +28,7 @@
 #ifndef HORIZON_AUTH_CLIENT_PACKET_LENGTH_TABLE
 #define HORIZON_AUTH_CLIENT_PACKET_LENGTH_TABLE
 
-
-#include "Default.hpp"
-
-
+#include "PacketLengthTable.hpp"
 
 namespace Horizon
 {
@@ -43,20 +40,22 @@ namespace Auth
 class ClientPacketLengthTable : public PacketLengthTable
 {
 public:
-	ClientPacketLengthTable(std::shared_ptr<ZoneSession> s)
+	ClientPacketLengthTable(std::shared_ptr<AuthSession> s)
 	: PacketLengthTable(s)
 	{
 #define ADD_HPKT(i, j, k) _hpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 #define ADD_TPKT(i, j, k) _tpacket_length_table.insert(i, std::make_pair(j, std::make_shared<k>(s)))
 // Packet Version 20050628: 1 Packets
-#if PACKET_VERSION == 20050628
+#if PACKET_VERSION >= 20050628
 		ADD_TPKT(0x023d, 6, AC_EVENT_RESULT);
+#endif
 // Packet Version 20050912: 2 Packets
-#elif PACKET_VERSION == 20050912
+#if PACKET_VERSION >= 20050912
 		ADD_TPKT(0x0259, 3, AC_ACK_GAME_GUARD);
 		ADD_HPKT(0x0258, 2, CA_REQ_GAME_GUARD_CHECK);
+#endif
 // Packet Version 20060109: 16 Packets
-#elif PACKET_VERSION == 20060109
+#if PACKET_VERSION >= 20060109
 		ADD_TPKT(0x026a, 4, AC_ACK_EKEY_FAIL_AUTHREFUSE);
 		ADD_TPKT(0x026b, 4, AC_ACK_EKEY_FAIL_INPUTEKEY);
 		ADD_TPKT(0x026d, 4, AC_ACK_EKEY_FAIL_NEEDCARDPASS);
@@ -73,23 +72,29 @@ public:
 		ADD_HPKT(0x0266, 30, CA_ACK_LOGIN_CARDPASS);
 		ADD_HPKT(0x0265, 20, CA_ACK_LOGIN_NEWEKEY);
 		ADD_HPKT(0x0264, 20, CA_ACK_LOGIN_OLDEKEY);
+#endif
 // Packet Version 20060126: 1 Packets
-#elif PACKET_VERSION == 20060126
+#if PACKET_VERSION >= 20060126
 		ADD_HPKT(0x0271, 40, CA_ACK_LOGIN_ACCOUNT_INFO);
+#endif
 // Packet Version 20060424: 1 Packets
-#elif PACKET_VERSION == 20060424
+#if PACKET_VERSION >= 20060424
 		ADD_HPKT(0x0277, 84, CA_LOGIN_PCBANG);
+#endif
 // Packet Version 20060626: 1 Packets
-#elif PACKET_VERSION == 20060626
+#if PACKET_VERSION >= 20060626
 		ADD_HPKT(0x027c, 60, CA_LOGIN4);
+#endif
 // Packet Version 20060821: 1 Packets
-#elif PACKET_VERSION == 20060821
+#if PACKET_VERSION >= 20060821
 		ADD_HPKT(0x027f, 8, CA_CLIENT_TYPE);
+#endif
 // Packet Version 20070227: 1 Packets
-#elif PACKET_VERSION == 20070227
+#if PACKET_VERSION >= 20070227
 		ADD_TPKT(0x02ad, 8, AC_REQUEST_SECOND_PASSWORD);
+#endif
 // Packet Version 20070514: 1 Packets
-#elif PACKET_VERSION == 20070514
+#if PACKET_VERSION >= 20070514
 		ADD_HPKT(0x02b0, 85, CA_LOGIN_HAN);
 #endif
 #undef ADD_TPKT
