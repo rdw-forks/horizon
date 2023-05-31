@@ -6778,6 +6778,11 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	uint32_t _account_id{ 0 };
+	uint32_t _char_id{ 0 };
+	uint32_t _auth_code{ 0 };
+	uint32_t _client_time{ 0 };
+	uint8_t _gender{ 0 };
 };
 
 enum {

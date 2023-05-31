@@ -173,3 +173,10 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 
 	return true;
 }
+
+bool AuthClientInterface::client_login_otp_response()
+{
+	AC_LOGIN_OTP pkt(get_session());
+	pkt.deliver();
+	return true;
+}

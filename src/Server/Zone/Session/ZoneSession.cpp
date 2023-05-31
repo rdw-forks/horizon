@@ -53,8 +53,13 @@ ZoneSession::~ZoneSession()
  */
 void ZoneSession::initialize()
 {
-	_pkt_tbl = std::make_unique<ClientPacketLengthTable>(shared_from_this());
-	_clif = std::make_unique<ZoneClientInterface>(shared_from_this());
+	try {
+		_pkt_tbl = std::make_unique<ClientPacketLengthTable>(shared_from_this());
+		_clif = std::make_unique<ZoneClientInterface>(shared_from_this());
+	}
+	catch (std::exception& error) {
+		HLog(error) << "ZoneSession::initialize: " << error.what();
+	}
 }
 
 void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)

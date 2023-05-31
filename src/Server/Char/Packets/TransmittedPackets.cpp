@@ -230,10 +230,10 @@ void HC_ACCEPT_MAKECHAR::deliver(uint32_t char_id, uint32_t start_zeny, std::str
 	_c._walk_speed = DEFAULT_MOVEMENT_SPEED;
 	_c._job_id = job_class;
 	_c._hair_view_id = hair_style;
-	strncpy(_c._name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	std::strncpy(_c._name, name.c_str(), MAX_UNIT_NAME_LENGTH);
 	_c._char_slot = slot;
 #if (PACKET_VERSION >= 20100720 && PACKET_VERSION <= 20100727) || PACKET_VERSION >= 20100803
-	strncpy(_c._map_name, map_name.c_str(), MAP_NAME_LENGTH_EXT);///< len: 16
+	std::strncpy(_c._map_name, map_name.c_str(), MAP_NAME_LENGTH_EXT);///< len: 16
 #endif
 #if PACKET_VERSION >= 20141016
 	_c._gender = gender;                   ///< 146 0: Female, 1: Male, 99: Account-based.

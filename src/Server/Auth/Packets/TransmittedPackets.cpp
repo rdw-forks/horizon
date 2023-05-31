@@ -359,9 +359,23 @@ ByteBuffer &AC_REFUSE_LOGIN3::serialize()
 /**
  * AC_LOGIN_OTP
  */
-void AC_LOGIN_OTP::deliver() {}
+void AC_LOGIN_OTP::deliver() 
+{
+	_packet_length = 28 + 6;
+	_loginFlag = 0; // normal login
+	std::strncpy(_loginFlag2, "S1000", 20);
+	std::strncpy(_token, "token", 6);
+
+	serialize();
+	transmit();
+}
 ByteBuffer &AC_LOGIN_OTP::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _loginFlag;
+	buf().append(_loginFlag2, 20);
+	buf().append(_token, 6);
 	return buf();
 }
 /**

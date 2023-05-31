@@ -41,7 +41,7 @@
 #elif CLIENT_TYPE == 'Z'
 #include "Server/Auth/Packets/Zero/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'M'
-#include "Server/Auth/Packets/Main/ClientPacketLengthTable.hpp"
+#include "Server/Auth/Packets/Ragexe/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'A'
 #include "Server/Auth/Packets/AD/ClientPacketLengthTable.hpp"
 #endif

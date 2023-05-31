@@ -158,8 +158,15 @@ void CA_ACK_MOBILE_OTP::deserialize(ByteBuffer &buf) {}
 /**
  * CA_LOGIN_OTP
  */
-void CA_LOGIN_OTP::handle(ByteBuffer &&buf) {}
-void CA_LOGIN_OTP::deserialize(ByteBuffer &buf) {}
+void CA_LOGIN_OTP::handle(ByteBuffer &&buf) 
+{
+    deserialize(buf);
+    get_session()->clif()->client_login_otp_response();
+}
+void CA_LOGIN_OTP::deserialize(ByteBuffer &buf) 
+{
+    buf >> _packet_id;
+}
 /**
  * CA_OTP_CODE
  */

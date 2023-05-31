@@ -43,7 +43,7 @@
 #elif CLIENT_TYPE == 'Z'
 #include "Server/Char/Packets/Zero/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'M'
-#include "Server/Char/Packets/Main/ClientPacketLengthTable.hpp"
+#include "Server/Char/Packets/Ragexe/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'A'
 #include "Server/Char/Packets/AD/ClientPacketLengthTable.hpp"
 #endif
