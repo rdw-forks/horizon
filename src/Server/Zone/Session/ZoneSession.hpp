@@ -38,7 +38,7 @@
 #if CLIENT_TYPE == 'R'
 #include "Server/Zone/Packets/RE/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'M'
-#include "Server/Zone/Packets/Main/ClientPacketLengthTable.hpp"
+#include "Server/Zone/Packets/Ragexe/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'S'
 #include "Server/Zone/Packets/Sakray/ClientPacketLengthTable.hpp"
 #elif CLIENT_TYPE == 'Z'

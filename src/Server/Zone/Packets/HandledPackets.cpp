@@ -1684,8 +1684,20 @@ void CZ_CLOSE_WINDOW::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_ENTER2
  */
-void CZ_ENTER2::handle(ByteBuffer &&buf) {}
-void CZ_ENTER2::deserialize(ByteBuffer &buf) {}
+void CZ_ENTER2::handle(ByteBuffer&& buf)
+{
+	deserialize(buf);
+	get_session()->clif()->login(_account_id, _char_id, _auth_code, _client_time, _gender);
+}
+void CZ_ENTER2::deserialize(ByteBuffer& buf)
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+	buf >> _char_id;
+	buf >> _auth_code;
+	buf >> _client_time;
+	buf >> _gender;
+}
 /**
  * CZ_ITEMLISTWIN_RES
  */

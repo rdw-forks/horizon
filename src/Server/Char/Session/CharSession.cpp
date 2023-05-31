@@ -72,6 +72,11 @@ void CharSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 				packet_len = p.first;
 			}
 
+			if (packet_id == 0x0000) {
+				HLog(warning) << "Server tried to send a disabled packet... ignoring.";
+				return;
+			}
+
 			if (packet_len != _buffer.active_length()) {
 				HLog(warning) << "Packet 0x" << std::hex << packet_id << " has length len " << std::dec << packet_len << " but buffer has " << _buffer.active_length() << " bytes... ignoring.";
 				return;

@@ -43,6 +43,7 @@ public:
 	~AuthClientInterface();
 	
 	bool process_login(std::string username, std::string hash, uint16_t version, uint16_t client_type);
+	bool client_login_otp_response();
 };
 }
 }

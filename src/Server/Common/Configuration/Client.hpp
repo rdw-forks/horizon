@@ -69,15 +69,23 @@ struct s_hc_character_list_data {
 	uint32_t _virtue{ 0 };                  ///< 44
 	uint32_t _honor{ 0 };                   ///< 48
 	uint16_t _status_points{ 0 };           ///< 50
-#if PACKET_VERSION > 20081217
+#if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20200000
+	uint64_t _hp{ 1 };                      ///< 54
+	uint64_t _maximum_hp{ 1 };              ///< 58
+#elif PACKET_VERSION > 20081217
 	uint32_t _hp{ 1 };                      ///< 54
 	uint32_t _maximum_hp{ 1 };              ///< 58
 #else
 	uint16_t _hp{ 1 };
 	uint16_t _maximum_hp{ 1 };
 #endif
+#if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20200000
+	uint64_t _sp{ 1 };                      ///< 60
+	uint64_t _maximum_sp{ 1 };              ///< 62
+#else
 	uint16_t _sp{ 1 };                      ///< 60
 	uint16_t _maximum_sp{ 1 };              ///< 62
+#endif
 	uint16_t _walk_speed{ DEFAULT_MOVEMENT_SPEED }; ///< 64
 	uint16_t _job_id{ 0 };                  ///< 66
 	uint16_t _hair_view_id{ 0 };            ///< 68

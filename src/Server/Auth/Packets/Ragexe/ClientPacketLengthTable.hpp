@@ -183,8 +183,10 @@ public:
 		ADD_HPKT(0x0acf, 68, CA_LOGIN_OTP);
 #endif
 // Packet Version 20171213: 1 Packets
-#if PACKET_VERSION >= 20171213
-		ADD_TPKT(0x0ae3, -1, AC_LOGIN_OTP);
+#if PACKET_VERSION >= 20190000
+	ADD_TPKT(0x0ad1, -1, AC_LOGIN_OTP);
+#elif PACKET_VERSION >= 20171213
+	ADD_TPKT(0x0ae3, -1, AC_LOGIN_OTP);
 #endif
 // Packet Version 20180704: 1 Packets
 #if PACKET_VERSION >= 20180704
