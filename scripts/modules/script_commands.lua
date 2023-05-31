@@ -15,9 +15,9 @@ end
 
 function script_commands:init(player, npc)
 	self.player = player
-	self.player_guid = player:guid()
+	self.player_guid = player:entity():guid()
 	self.npc = npc
-	self.npc_guid = npc:guid()
+	self.npc_guid = npc:entity():guid()
 end
 
 function script_commands:mes(m)
