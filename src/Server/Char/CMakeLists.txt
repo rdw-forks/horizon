@@ -70,7 +70,6 @@ set_target_properties(char
 	LINK_FLAGS "-pagezero_size 10000 -image_base 100000000"
 	)
 endif()
-
 target_include_directories(char
 	PUBLIC
 		${Boost_INCLUDE_DIRS}
