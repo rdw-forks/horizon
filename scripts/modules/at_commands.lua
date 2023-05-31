@@ -102,9 +102,9 @@ local function iteminfo(player, args)
 end
 
 local function change_base_level_cmd(player, args)
-	local blvl = player:status():base_level()
-	local bexp = player:status():base_experience()
-	local nbexp = player:status():next_base_experience()
+	local blvl = player:entity():status():base_level()
+	local bexp = player:entity():status():base_experience()
+	local nbexp = player:entity():status():next_base_experience()
 	local amount = tonumber(args[2])
 	if amount == nil or amount == 0 then
 		player:message("Usage: @blvl <amount>")
@@ -166,7 +166,7 @@ end
 
 function at_commands:init(player, cmd)
 	self.player = player
-	self.player_guid = player:guid()
+	self.player_guid = player:entity():guid()
 	self.cmd = cmd
 	self.cmd_args = explode(" ", cmd)
 end

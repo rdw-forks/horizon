@@ -30,6 +30,7 @@
 add_subdirectory(Game)
 add_subdirectory(Packets)
 add_subdirectory(LUA)
+add_subdirectory(Interface)
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PRIVATE_SOURCES
@@ -57,6 +58,7 @@ add_executable(zone
 	${PACKET_HEADERS}
 	${GAME_SOURCES}
 	${LUA_SOURCES}
+	${INTERFACE_SOURCES}
 )
 
 target_precompile_headers(zone
