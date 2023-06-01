@@ -564,5 +564,10 @@ enum cz_req_delete_related_guild_relation_type
 	CZ_REQDELETE_RELATEDGUILD_RELATION_ENEMY = 1
 };
 
+enum cz_ack_req_add_friends_result_type
+{
+	CZ_ACKREQ_ADDFRIENDS_REJECTED = 0,
+	CZ_ACKREQ_ADDFRIENDS_ACCEPTED = 1
+};
 
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

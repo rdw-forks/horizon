@@ -63,6 +63,7 @@ public:
 	UI::Trade &trade() { return _trade; }
 	UI::Party &party() { return _party; }
 	UI::Guild& guild() { return _guild; }
+	UI::Friend& friend() { return _friend; }
 
 	bool login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender);
 	bool restart(uint8_t type);
@@ -171,6 +172,7 @@ protected:
 	UI::Trade _trade;
 	UI::Party _party;
 	UI::Guild _guild;
+	UI::Friend _friend;
 };
 }
 }

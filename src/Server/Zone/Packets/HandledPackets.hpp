@@ -297,6 +297,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _inviter_account_id{ 0 };
+	int _inviter_char_id{ 0 };
+	int _result{ 0 };
 };
 
 enum {

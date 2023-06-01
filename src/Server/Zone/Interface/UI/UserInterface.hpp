@@ -27,8 +27,8 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_UI_GUILD_HPP
-#define HORIZON_ZONE_UI_GUILD_HPP
+#ifndef HORIZON_ZONE_USER_INTERFACE_HPP
+#define HORIZON_ZONE_USER_INTERFACE_HPP
 
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 
@@ -39,6 +39,37 @@ namespace Zone
 class ZoneSession;
 namespace UI
 {
+class Chatroom
+{
+public:
+	Chatroom(std::shared_ptr<ZoneSession> session);
+	~Chatroom();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	void create_chatroom(int limit, int _public, std::string password, std::string title);
+	void role_change(int role, std::string name);
+	void add_member(int chat_id, std::string password);
+	void expel_member(std::string name);
+	void leave();
+	void change_properties(int limit, int type, std::string password, std::string title);
+
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
+class Friend
+{
+public:
+	Friend(std::shared_ptr<ZoneSession> session);
+	~Friend();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	void request(int inviter_account_id, int inviter_char_id, cz_ack_req_add_friends_result_type result);
+
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
 class Guild
 {
 public:
@@ -68,8 +99,51 @@ public:
 private:
 	std::weak_ptr<ZoneSession> _session;
 };
+class Party
+{
+public:
+	Party(std::shared_ptr<ZoneSession> session);
+	~Party();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	void create(std::string name, int item_pickup_rule, int item_share_rule);
+	void invite(int account_id);
+	void invite(std::string name);
+	void invite_response(int party_id, enum party_invite_response_type response);
+	void leave();
+	void expel_member(int account_id, std::string name);
+	void change_properties(int exp_share_rule, int item_pickup_rule, int item_share_rule);
+	void send_message(int packet_length, std::string message);
+	void change_leader(int account_id);
+
+	/* Nofity */
+	void notify_created(zcack_makegroup_result_type result);
+
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
+class Trade
+{
+public:
+	Trade(std::shared_ptr<ZoneSession> session);
+	~Trade();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	void request(int account_id);
+	void response(int result);
+	void add_zeny(int zeny);
+	void add_item(int inventory_index, int amount);
+	void lock();
+	void cancel();
+	void commit();
+
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
 }
 }
 }
 
-#endif /* HORIZON_ZONE_UI_GUILD_HPP */
+#endif /* HORIZON_ZONE_USER_INTERFACE_HPP */

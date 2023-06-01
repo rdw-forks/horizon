@@ -191,8 +191,18 @@ void CZ_ACK_EXCHANGE_ITEM::deserialize(ByteBuffer &buf)
 /**
  * CZ_ACK_REQ_ADD_FRIENDS
  */
-void CZ_ACK_REQ_ADD_FRIENDS::handle(ByteBuffer &&buf) {}
-void CZ_ACK_REQ_ADD_FRIENDS::deserialize(ByteBuffer &buf) {}
+void CZ_ACK_REQ_ADD_FRIENDS::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->friend().request(_inviter_account_id, _inviter_char_id, _result == 0 ? CZ_ACKREQ_ADDFRIENDS_REJECTED : CZ_ACKREQ_ADDFRIENDS_ACCEPTED);
+}
+void CZ_ACK_REQ_ADD_FRIENDS::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inviter_account_id;
+	buf >> _inviter_char_id;
+	buf >> _result;
+}
 /**
  * CZ_ACK_SELECT_DEALTYPE
  */
