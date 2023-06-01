@@ -34353,6 +34353,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_lv{ 0 };
+	int16_t _skill_id{ 0 };
+	int _target_id{ 0 };
 };
 
 enum {
@@ -34871,6 +34874,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_lv{ 0 };
+	int16_t _skill_id{ 0 };
+	int _target_id{ 0 };
 };
 
 enum {
@@ -35204,6 +35210,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_lv{ 0 };
+	int16_t _skill_id{ 0 };
+	int16_t _pos_x{ 0 };
+	int16_t _pos_y{ 0 };
 };
 
 enum {
@@ -35731,6 +35741,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_lv{ 0 };
+	int16_t _skill_id{ 0 };
+	int16_t _pos_x{ 0 };
+	int16_t _pos_y{ 0 };
 };
 
 enum {
@@ -36011,6 +36025,11 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_lv{ 0 };
+	int16_t _skill_id{ 0 };
+	int16_t _pos_x{ 0 };
+	int16_t _pos_y{ 0 };
+	char _contents[MAX_TALKBOX_CONTENT_SIZE];
 };
 
 enum {
@@ -36259,6 +36278,11 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _skill_lv{ 0 };
+	int16_t _skill_id{ 0 };
+	int16_t _pos_x{ 0 };
+	int16_t _pos_y{ 0 };
+	char _contents[MAX_TALKBOX_CONTENT_SIZE];
 };
 
 enum {

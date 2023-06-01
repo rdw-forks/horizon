@@ -40,6 +40,8 @@
 #define CHATROOM_TITLE_SIZE 36 + 1
 #define CHATROOM_PASS_SIZE 8 + 1
 
+#define MAX_TALKBOX_CONTENT_SIZE 80
+
 enum grid_notifier_type
 {
     GRID_NOTIFY_AREA,               // area
