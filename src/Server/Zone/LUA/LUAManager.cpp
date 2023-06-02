@@ -36,6 +36,7 @@
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
@@ -108,8 +109,8 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	_entity_component->sync_functions(state);
 
 	std::vector<std::string> _loadable_files = {
-		"scripts/utils/strutils.lua",
-		"db/definitions/constants.lua"
+		sZone->config().get_script_root_path().string().append("utils/strutils.lua"),
+		sZone->config().get_static_db_path().string().append("definitions/constants.lua")
 	};
 
 	for (auto &file : _loadable_files) {
@@ -192,7 +193,7 @@ void LUAManager::finalize()
 
 void LUAManager::load_scripts()
 {
-	std::string file_path = "scripts/include.lua";
+	std::string file_path = sZone->config().get_script_root_path().string().append("include.lua");
 
 	try {
 		_lua_state->script_file(file_path);
@@ -202,7 +203,7 @@ void LUAManager::load_scripts()
 		int count = 0;
 		scripts.for_each([this, &count, &file_path](sol::object const &/*key*/, sol::object const& value) {
 			std::string script_file = value.as<std::string>();
-			sol::protected_function fn = _lua_state->load_file(script_file);
+			sol::protected_function fn = _lua_state->load_file(sZone->config().get_script_root_path().string().append(script_file));
 			sol::protected_function_result result = fn();
 			if (!result.valid()) {
 				sol::error error = result;
@@ -218,7 +219,7 @@ void LUAManager::load_scripts()
 }
 void LUAManager::load_constants()
 {
-	std::string file_path = "db/definitions/constants.lua";
+	std::string file_path = sZone->config().get_static_db_path().string().append("definitions/constants.lua");
 
 	try {
 		_lua_state->script_file(file_path);

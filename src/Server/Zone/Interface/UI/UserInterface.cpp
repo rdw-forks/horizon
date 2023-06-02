@@ -31,8 +31,59 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 
 
+Horizon::Zone::UI::Auction::Auction(std::shared_ptr <Horizon::Zone::ZoneSession> session)
+: _session(session)
+{
+
+}
+
+Horizon::Zone::UI::Auction::~Auction()
+{
+
+}
+
+void Horizon::Zone::UI::Auction::add(int now_money, int max_money, int16_t delete_hour)
+{
+    
+}
+
+void Horizon::Zone::UI::Auction::add_cancel(int auction_id)
+{
+    
+}
+
+void Horizon::Zone::UI::Auction::add_item(int inventory_index, int amount)
+{
+    
+}
+
+void Horizon::Zone::UI::Auction::buy(int auction_id, int money)
+{
+    
+}
+
+void Horizon::Zone::UI::Auction::create(cz_auction_create_type type)
+{
+
+}
+
+void Horizon::Zone::UI::Auction::search_item(cz_auction_search_type search_type, int auction_id, std::string search_text, int page_number)
+{
+
+}
+
+void Horizon::Zone::UI::Auction::own_information(cz_auction_reqmyinfo_type type)
+{
+
+}
+
+void Horizon::Zone::UI::Auction::stop(int auction_id)
+{
+    
+}
+
 Horizon::Zone::UI::Chatroom::Chatroom(std::shared_ptr <Horizon::Zone::ZoneSession> session)
-    : _session(session)
+: _session(session)
 {
 
 }
@@ -83,9 +134,19 @@ Horizon::Zone::UI::Friend::~Friend()
 
 }
 
-void Horizon::Zone::UI::Friend::request(int inviter_account_id, int inviter_char_id, int response)
+void Horizon::Zone::UI::Friend::request(int inviter_account_id, int inviter_char_id, cz_ack_req_add_friends_result_type result)
 {
-    
+
+}
+
+void Horizon::Zone::UI::Friend::add(std::string name)
+{
+
+}
+
+void Horizon::Zone::UI::Friend::remove(int account_id, int char_id)
+{
+
 }
 
 Horizon::Zone::UI::Guild::Guild(std::shared_ptr<ZoneSession> session)
@@ -186,6 +247,41 @@ void Horizon::Zone::UI::Guild::add_opposition(int account_id)
 }
 
 void Horizon::Zone::UI::Guild::disband(std::string key)
+{
+
+}
+
+/**
+ * Clan 
+ */
+Horizon::Zone::UI::Clan::Clan(std::shared_ptr<ZoneSession> session)
+: _session(session)
+{
+
+}
+
+Horizon::Zone::UI::Clan::~Clan()
+{
+
+}
+
+void Horizon::Zone::UI::Clan::message(std::string name)
+{
+
+}
+
+
+Horizon::Zone::UI::Mail::Mail(std::shared_ptr<ZoneSession> session)
+{
+
+}
+
+Horizon::Zone::UI::Mail::~Mail()
+{
+
+}
+
+void Horizon::Zone::UI::Mail::check_receiver_name(std::string name)
 {
 
 }
@@ -299,6 +395,20 @@ void Horizon::Zone::UI::Trade::cancel()
 }
 
 void Horizon::Zone::UI::Trade::commit()
+{
+
+}
+
+Horizon::Zone::UI::Quest::Quest(std::shared_ptr<ZoneSession> session)
+{
+
+}
+Horizon::Zone::UI::Quest::~Quest()
+{
+
+}
+
+void Horizon::Zone::UI::Quest::update_status(int quest_id, cz_active_quest_type type)
 {
 
 }
