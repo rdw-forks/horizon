@@ -4,7 +4,7 @@
  *      | |_| | ___  _ __ _ _______  _ __          *
  *      |  _  |/ _ \| '__| |_  / _ \| '_  \        *
  *      | | | | (_) | |  | |/ / (_) | | | |        *
-       \_| |_/\___/|_|  |_/___\___/|_| |_|        *
+	   \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
  *
@@ -27,7 +27,66 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#include "Guild.hpp"
+#include "UserInterface.hpp"
+#include "Server/Zone/Session/ZoneSession.hpp"
+
+
+Horizon::Zone::UI::Chatroom::Chatroom(std::shared_ptr <Horizon::Zone::ZoneSession> session)
+    : _session(session)
+{
+
+}
+
+Horizon::Zone::UI::Chatroom::~Chatroom()
+{
+
+}
+
+void Horizon::Zone::UI::Chatroom::create_chatroom(int limit, int _public, std::string password, std::string title)
+{
+
+}
+
+void Horizon::Zone::UI::Chatroom::role_change(int role, std::string name)
+{
+
+}
+
+void Horizon::Zone::UI::Chatroom::add_member(int chat_id, std::string password)
+{
+
+}
+
+void Horizon::Zone::UI::Chatroom::expel_member(std::string name)
+{
+
+}
+
+void Horizon::Zone::UI::Chatroom::leave()
+{
+
+}
+
+void Horizon::Zone::UI::Chatroom::change_properties(int limit, int type, std::string password, std::string title)
+{
+
+}
+
+Horizon::Zone::UI::Friend::Friend(std::shared_ptr<ZoneSession> session)
+    : _session(session)
+{
+
+}
+
+Horizon::Zone::UI::Friend::~Friend()
+{
+
+}
+
+void Horizon::Zone::UI::Friend::request(int inviter_account_id, int inviter_char_id, int response)
+{
+    
+}
 
 Horizon::Zone::UI::Guild::Guild(std::shared_ptr<ZoneSession> session)
     : _session(session)
@@ -127,6 +186,119 @@ void Horizon::Zone::UI::Guild::add_opposition(int account_id)
 }
 
 void Horizon::Zone::UI::Guild::disband(std::string key)
+{
+
+}
+
+Horizon::Zone::UI::Party::Party(std::shared_ptr<Horizon::Zone::ZoneSession> session)
+{
+
+}
+
+Horizon::Zone::UI::Party::~Party()
+{
+
+}
+
+void Horizon::Zone::UI::Party::create(std::string name, int item_share_rule, int item_pickup_rule)
+{
+
+}
+
+void Horizon::Zone::UI::Party::invite(int account_id)
+{
+
+}
+
+void Horizon::Zone::UI::Party::invite(std::string name)
+{
+
+}
+
+void Horizon::Zone::UI::Party::invite_response(int party_id, enum party_invite_response_type response)
+{
+
+}
+
+void Horizon::Zone::UI::Party::leave()
+{
+
+}
+
+void Horizon::Zone::UI::Party::expel_member(int account_id, std::string name)
+{
+
+}
+
+void Horizon::Zone::UI::Party::change_properties(int exp_share_rule, int item_pickup_rule, int item_share_rule)
+{
+
+}
+
+void Horizon::Zone::UI::Party::send_message(int packet_length, std::string message)
+{
+
+}
+
+void Horizon::Zone::UI::Party::change_leader(int account_id)
+{
+
+}
+
+/* Notify */
+void Horizon::Zone::UI::Party::notify_created(zcack_makegroup_result_type result)
+{
+
+}
+
+Horizon::Zone::UI::Trade::Trade(std::shared_ptr<ZoneSession> s)
+	: _session(s)
+{
+
+}
+
+Horizon::Zone::UI::Trade::~Trade()
+{
+
+}
+
+void Horizon::Zone::UI::Trade::request(int account_id)
+{
+
+}
+
+void Horizon::Zone::UI::Trade::response(int result)
+{
+	switch (result)
+	{
+	case 3: // accepted
+	case 4: // rejected
+	default:
+		break;
+	}
+}
+
+void Horizon::Zone::UI::Trade::add_zeny(int zeny)
+{
+
+}
+
+void Horizon::Zone::UI::Trade::add_item(int inventory_index, int amount)
+{
+
+}
+
+void Horizon::Zone::UI::Trade::lock()
+{
+
+}
+
+void Horizon::Zone::UI::Trade::cancel()
+{
+
+}
+
+void Horizon::Zone::UI::Trade::commit()
 {
 
 }

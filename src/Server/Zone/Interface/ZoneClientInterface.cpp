@@ -44,7 +44,7 @@
 using namespace Horizon::Zone;
 
 ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
-: ClientInterface(s), _chat_room(s), _trade(s), _party(s), _guild(s)
+: ClientInterface(s), _chat_room(s), _trade(s), _party(s), _guild(s), _friend(s)
 {
 	
 }
@@ -758,6 +758,15 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 	return true;
 }
 
+void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
+{
+}
+void ZoneClientInterface::use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y)
+{
+}
+void ZoneClientInterface::use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents)
+{
+}
 void ZoneClientInterface::action_request(int32_t target_guid, player_action_type action)
 {
 	bool continuous = false;
