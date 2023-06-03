@@ -7,27 +7,21 @@
       "project": "CMakeLists.txt",
       "projectTarget": "char.exe (bin\\char.exe)",
       "name": "char.exe (bin\\char.exe)",
-      "args": [
-        "--with-config=config/char-server.lua"
-      ]
+      "args": [ "--with-config=config/char-server.lua" ]
     },
     {
       "type": "default",
       "project": "CMakeLists.txt",
       "projectTarget": "auth.exe (bin\\auth.exe)",
       "name": "auth.exe (bin\\auth.exe)",
-      "args": [
-        "--with-config=config/auth-server.lua"
-      ]
+      "args": [ "--with-config=config/auth-server.lua" ]
     },
     {
       "type": "default",
       "project": "CMakeLists.txt",
       "projectTarget": "zone.exe (bin\\zone.exe)",
       "name": "zone.exe (bin\\zone.exe)",
-      "args": [
-        "--with-config=config/zone-server.lua"
-      ]
+        "args": ["--with-config=config/zone-server.lua"]
     }
   ]
 }

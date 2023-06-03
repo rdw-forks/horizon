@@ -1,0 +1,75 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "Debug",
+            "displayName": "Visual Studio Community 2022 Debug - amd64",
+            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-windows"
+            }
+        },
+        {
+            "name": "Release",
+            "description": "Visual Studio Community 2022 Release - amd64",
+            "displayName": "",
+            "inherits": [
+                "Debug"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "Tests",
+            "displayName": "Visual Studio Community 2022 Debug - amd64 (Tests)",
+            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
+                "WITH_TESTS": true,
+                "WITHOUT_SERVERS": true
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "Debug",
+            "displayName": "Visual Studio Community 2022 Release - amd64 - Debug",
+            "configurePreset": "Debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Release",
+            "displayName": "Visual Studio Community 2022 Release - amd64 - Release",
+            "configurePreset": "Release",
+            "configuration": "Release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "Tests",
+            "description": "Tests",
+            "displayName": "Tests",
+            "configurePreset": "Tests",
+            "configuration": "Debug"
+        }
+    ]
+}
