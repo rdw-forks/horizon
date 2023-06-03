@@ -34,6 +34,7 @@
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 
@@ -95,7 +96,7 @@ void PlayerComponent::sync_functions(std::shared_ptr<sol::state> state)
 void PlayerComponent::perform_command_from_player(std::shared_ptr<Horizon::Zone::Entities::Player> player, std::string const &cmd)
 {
     try {
-        sol::load_result fx = player->lua_state()->load_file("scripts/internal/at_command_main.lua");
+        sol::load_result fx = player->lua_state()->load_file(sZone->config().get_script_root_path().string().append("internal/at_command_main.lua"));
         sol::protected_function_result result = fx(player, cmd);
         if (!result.valid()) {
             sol::error err = result;

@@ -32,6 +32,10 @@
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 
+// All definitions pertaining to client UI are placed here. Most
+// configurations regarding client UI limitations and minimum or maximim values of
+// client UI features are defined here.
+
 #define MAX_GUILD_SUBJECT_STR_LENGTH 60
 #define MAX_GUILD_NOTICE_STR_LENGTH 120
 #define MAX_GUILD_LEAVE_REASON_STR_LENGTH 40
@@ -41,6 +45,13 @@
 #define CHATROOM_PASS_SIZE 8 + 1
 
 #define MAX_TALKBOX_CONTENT_SIZE 80
+#define MAX_STORAGE_PASSWORD_LENGTH 16
+
+#define MAX_AUCTION_SEARCH_TEXT_LENGTH 24
+
+#define MAX_INPUT_STR_LENGTH 70 + 1
+
+#define MAX_ITEM_CREATE_CMD_INPUT_LENGTH 24
 
 enum grid_notifier_type
 {
@@ -572,4 +583,74 @@ enum cz_ack_req_add_friends_result_type
 	CZ_ACKREQ_ADDFRIENDS_ACCEPTED = 1
 };
 
+enum cz_ack_select_dealtype
+{
+	CZ_ACKSELECT_DEALTYPE_BUY = 0,
+	CZ_ACKSELECT_DEALTYPE_SELL = 1
+};
+
+enum cz_active_quest_type
+{
+	CZ_ACTIVE_QUEST_INACTIVE = 0,
+	CZ_ACTIVE_QUEST_ACTIVE = 1
+};
+
+enum cz_agree_starplace_type
+{
+	CZ_AGREESTARPLACE_SUN = 0,
+	CZ_AGREESTARPLACE_MOON = 1,
+	CZ_AGREESTARPLACE_STAR = 2
+};
+
+enum cz_auction_create_type
+{
+	CZ_AUCTIONCREATE_CREATE = 0,
+	CZ_AUCTIONCREATE_CANCEL = 1
+};
+
+enum cz_auction_search_type
+{
+	CZ_AUCTIONSEARCH_ARMOR = 0,
+	CZ_AUCTIONSEARCH_WEAPON = 1,
+	CZ_AUCTIONSEARCH_CARD = 2,
+	CZ_AUCTIONSEARCH_MISC = 3,
+	CZ_AUCTIONSEARCH_NAME = 4,
+	CZ_AUCTIONSEARCH_AUCTIONID = 5
+};
+
+enum cz_auction_reqmyinfo_type
+{
+	CZ_AUCTION_REQMYINFO_SELL = 0,
+	CZ_AUCTION_REQMYINFO_BUY = 1
+};
+
+enum cz_command_mercenary_command_type
+{
+	CZ_COMMANDMER_COMMAND_HOMINFO = 0,
+	CZ_COMMANDMER_COMMAND_FEED = 1,
+	CZ_COMMANDMER_COMMAND_DELETE = 2
+};
+
+enum cz_command_pet_type
+{
+	CZ_COMMAND_PET_INFO = 0,
+	CZ_COMMAND_PET_FEED = 1,
+	CZ_COMMAND_PET_PERFORMANCE = 2,
+	CZ_COMMAND_PET_RETURNTOEGG = 3,
+	CZ_COMMAND_PET_UNEQUIPACCESSORY = 4
+};
+
+enum cz_config_type
+{
+	CZ_CONFIG_OPEN_EQUIPMENT_WINDOW = 0,
+	CZ_CONFIG_CALL                  = 1,
+	CZ_CONFIG_PET_AUTOFEED          = 2,
+	CZ_CONFIG_HOMUNCULUS_AUTOFEED   = 3
+};
+
+enum cz_join_baby_reply_type
+{
+	CZ_JOINBABY_REJECTED = 0,
+	CZ_JOINBABY_ACCEPTED = 1
+};
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

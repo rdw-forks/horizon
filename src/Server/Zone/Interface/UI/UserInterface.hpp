@@ -39,6 +39,26 @@ namespace Zone
 class ZoneSession;
 namespace UI
 {
+class Auction
+{
+public:
+    Auction(std::shared_ptr<ZoneSession> session);
+    ~Auction();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+    void add(int now_money, int max_money, int16_t delete_hour);
+    void add_cancel(int auction_id);
+    void add_item(int inventory_index, int amount);
+    void buy(int auction_id, int money);
+    void create(cz_auction_create_type type);
+    void search_item(cz_auction_search_type search_type, int auction_id, std::string search_text, int page_number);
+    void own_information(cz_auction_reqmyinfo_type type);
+    void stop(int auction_id);
+	
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
 class Chatroom
 {
 public:
@@ -66,6 +86,8 @@ public:
 	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
 
 	void request(int inviter_account_id, int inviter_char_id, cz_ack_req_add_friends_result_type result);
+    void add(std::string name);
+	void remove(int account_id, int char_id);
 
 private:
 	std::weak_ptr<ZoneSession> _session;
@@ -98,6 +120,32 @@ public:
 
 private:
 	std::weak_ptr<ZoneSession> _session;
+};
+
+class Clan
+{
+public:
+	Clan(std::shared_ptr<ZoneSession> session);
+	~Clan();
+
+    void message(std::string message);
+    
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
+
+class Mail
+{
+public:
+    Mail(std::shared_ptr<ZoneSession> session);
+    ~Mail();
+
+    std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+    void check_receiver_name(std::string name);
+
+private:
+    std::weak_ptr<ZoneSession> _session;
 };
 class Party
 {
@@ -139,6 +187,18 @@ public:
 	void cancel();
 	void commit();
 
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
+class Quest
+{
+public:
+    Quest(std::shared_ptr<ZoneSession> session);
+    ~Quest();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+    void update_status(int quest_id, cz_active_quest_type type);
 private:
 	std::weak_ptr<ZoneSession> _session;
 };

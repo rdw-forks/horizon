@@ -119,9 +119,8 @@ void ZoneSession::perform_cleanup()
 	if (player() != nullptr) {
 
 		player()->set_logged_in(false);
-		player()->notify_nearby_players_of_existence(EVP_NOTIFY_LOGGED_OUT);
-		player()->remove_grid_reference();
 		player()->save();
+		player()->remove_grid_reference();
 		player()->map_container()->remove_player(player());
 	}
 }
