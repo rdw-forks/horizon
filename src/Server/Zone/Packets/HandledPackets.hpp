@@ -346,15 +346,20 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _guid{ 0 };
+	int8_t _type{ 0 };
 };
 
 enum {
 #if CLIENT_TYPE == 'A' &&  \
 	PACKET_VERSION >= 20050608
 ID_CZ_ACK_STORE_PASSWORD = 0x023b
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20120712
-ID_CZ_ACK_STORE_PASSWORD = 0x0893
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION >= 20220000 \
+	|| (PACKET_VERSION >= 20210000 && PACKET_VERSION < 20220000) \
+	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
+	|| PACKET_VERSION >= 20130116)
+ID_CZ_ACK_STORE_PASSWORD = 0x095a
 #elif CLIENT_TYPE == 'M' && ( \
 	PACKET_VERSION == 20190821 \
 	|| PACKET_VERSION == 20190807 \
@@ -600,20 +605,17 @@ ID_CZ_ACK_STORE_PASSWORD = 0x0893
 	|| (PACKET_VERSION >= 20060000 && PACKET_VERSION < 20070000) \
 	|| PACKET_VERSION >= 20050608)
 ID_CZ_ACK_STORE_PASSWORD = 0x023b
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20120926
-ID_CZ_ACK_STORE_PASSWORD = 0x0942
 #elif CLIENT_TYPE == 'M' && ( \
 	PACKET_VERSION == 20131108 \
 	|| PACKET_VERSION == 20131107 \
 	|| PACKET_VERSION == 20130107)
 ID_CZ_ACK_STORE_PASSWORD = 0x0436
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION >= 20220000 \
-	|| (PACKET_VERSION >= 20210000 && PACKET_VERSION < 20220000) \
-	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
-	|| PACKET_VERSION >= 20130116)
-ID_CZ_ACK_STORE_PASSWORD = 0x095a
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20120926
+ID_CZ_ACK_STORE_PASSWORD = 0x0942
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20120712
+ID_CZ_ACK_STORE_PASSWORD = 0x0893
 #elif CLIENT_TYPE == 'M' && ( \
 	PACKET_VERSION == 20140613 \
 	|| PACKET_VERSION == 20140612)
@@ -1010,6 +1012,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
+	char _storage_password[MAX_STORAGE_PASSWORD_LENGTH];
+	char _new_password[MAX_STORAGE_PASSWORD_LENGTH];
 };
 
 enum {
@@ -1056,6 +1061,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _quest_id{ 0 };
+	int8_t _active{ 0 };
 };
 
 enum {
@@ -1809,6 +1816,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -1929,6 +1937,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int8_t _type{ 0 };
 };
 
 enum {
@@ -2261,6 +2270,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _now_money{ 0 };
+	int _max_money{ 0 };
+	int16_t _delete_hour{ 0 };
 };
 
 enum {
@@ -2307,6 +2319,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _auction_id{ 0 };
 };
 
 enum {
@@ -2353,6 +2366,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -2399,6 +2414,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _auction_id{ 0 };
+	int _money{ 0 };
 };
 
 enum {
@@ -2445,6 +2462,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
 };
 
 enum {
@@ -2491,6 +2509,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _search_type{ 0 };
+	int _auction_id{ 0 };
+	char _search_text[MAX_AUCTION_SEARCH_TEXT_LENGTH];
+	int16_t _page_number{ 0 };
 };
 
 enum {
@@ -2537,6 +2559,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
 };
 
 enum {
@@ -2583,6 +2606,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _auction_id{ 0 };
 };
 
 enum {
@@ -2629,6 +2653,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	char _message[MAX_CHAT_STR_LENGTH];
 };
 
 enum {
@@ -2850,6 +2876,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	char _message[MAX_CHAT_STR_LENGTH]{ 0 };
 };
 
 enum {
@@ -3415,6 +3443,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _head_direction{ 0 };
+	int8_t _body_direction{ 0 };
 };
 
 enum {
@@ -3890,6 +3920,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _head_direction{ 0 };
+	int8_t _body_direction{ 0 };
 };
 
 enum {
@@ -3936,6 +3968,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _effect_state{ 0 };
 };
 
 enum {
@@ -4073,6 +4106,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _x;
+	int16_t _y;
+	int16_t _walkable;
 };
 
 enum {
@@ -4113,6 +4149,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -4159,6 +4196,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _npc_guid{ 0 };
+	int8_t _choice{ 0 };
 };
 
 enum {
@@ -4228,6 +4267,12 @@ ID_CZ_CHOPOKGI = 0x0000 // Disabled
 /**
  * @brief Main object for the aegis packet: CZ_CHOPOKGI
  *
+ * Note: This packet is caused by 7 lines of any text, followed by
+ *       the prayer and an another line of any text. The prayer is
+ *       defined by lines 790~793 in data\msgstringtable.txt
+ *       "Dear angel, can you hear my voice?"
+ *       "I am" (space separated player name) "Super Novice~"
+ *       "Help me out~ Please~ T_T"
  */ 
 class CZ_CHOPOKGI : public Base::NetworkPacketHandler<ZoneSession>
 {
@@ -4281,6 +4326,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	char _message[MAX_CHAT_STR_LENGTH]{ 0 };
 };
 
 enum {
@@ -4324,6 +4371,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _version{ 0 };
 };
 
 enum {
@@ -4410,6 +4458,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _npc_guid{ 0 };
 };
 
 enum {
@@ -5400,6 +5449,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
+	int8_t _command{ 0 };
 };
 
 enum {
@@ -5446,6 +5497,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int8_t _command{ 0 };
 };
 
 enum {
@@ -5575,6 +5627,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _type{ 0 };
+	int _setting{ 0 };
 };
 
 enum {
@@ -5806,6 +5860,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
+	int _char_id{ 0 };
 };
 
 enum {
@@ -5898,6 +5954,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -5990,106 +6047,47 @@ enum {
 #if CLIENT_TYPE == 'A' &&  \
 	PACKET_VERSION >= 20041129
 ID_CZ_ENTER = 0x0072
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20030000
-ID_CZ_ENTER = 0x0072
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20120712
-ID_CZ_ENTER = 0x08a8
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20120926
-ID_CZ_ENTER = 0x0819
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20130107
-ID_CZ_ENTER = 0x0940
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20130116
-ID_CZ_ENTER = 0x092d
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20131108 \
-	|| PACKET_VERSION == 20131107)
-ID_CZ_ENTER = 0x08a2
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20140613 \
-	|| PACKET_VERSION == 20140612)
-ID_CZ_ENTER = 0x0958
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20140814
-ID_CZ_ENTER = 0x0802
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20141016
-ID_CZ_ENTER = 0x086e
 #elif CLIENT_TYPE == 'M' && ( \
 	PACKET_VERSION >= 20220000 \
 	|| (PACKET_VERSION >= 20210000 && PACKET_VERSION < 20220000) \
 	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
-	|| PACKET_VERSION >= 20150130 \
-	|| PACKET_VERSION >= 20150129)
+	|| PACKET_VERSION == 20150130 \
+	|| PACKET_VERSION == 20150129)
 ID_CZ_ENTER = 0x0944
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20150226
-ID_CZ_ENTER = 0x096a
 #elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20151022 \
-	|| PACKET_VERSION == 20150702)
-ID_CZ_ENTER = 0x023b
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20160318 \
-	|| PACKET_VERSION == 20151029 \
-	|| PACKET_VERSION == 20150812)
-ID_CZ_ENTER = 0x022d
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20160526
-ID_CZ_ENTER = 0x086a
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20160609
-ID_CZ_ENTER = 0x0437
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20160630
-ID_CZ_ENTER = 0x0881
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20161103
-ID_CZ_ENTER = 0x0946
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20180131
-ID_CZ_ENTER = 0x0888
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20180309
-ID_CZ_ENTER = 0x07e4
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20190821 \
-	|| PACKET_VERSION == 20190807 \
-	|| PACKET_VERSION == 20190802 \
-	|| PACKET_VERSION == 20190731 \
-	|| PACKET_VERSION == 20190724 \
-	|| PACKET_VERSION == 20190717 \
-	|| PACKET_VERSION == 20190703 \
-	|| PACKET_VERSION == 20190605 \
-	|| PACKET_VERSION == 20190530 \
-	|| PACKET_VERSION == 20190523 \
-	|| PACKET_VERSION == 20190522 \
-	|| PACKET_VERSION == 20190508 \
-	|| PACKET_VERSION == 20190418 \
-	|| PACKET_VERSION == 20190417 \
-	|| PACKET_VERSION == 20190327 \
-	|| PACKET_VERSION == 20190322 \
-	|| PACKET_VERSION == 20190320 \
-	|| PACKET_VERSION == 20190313 \
-	|| PACKET_VERSION == 20190306 \
-	|| PACKET_VERSION == 20190228 \
-	|| PACKET_VERSION == 20190123 \
-	|| PACKET_VERSION == 20190116 \
-	|| PACKET_VERSION == 20181226 \
-	|| PACKET_VERSION == 20181219 \
-	|| PACKET_VERSION == 20181212 \
-	|| PACKET_VERSION == 20181205 \
-	|| PACKET_VERSION == 20181128 \
-	|| PACKET_VERSION == 20181114 \
-	|| PACKET_VERSION == 20181107 \
-	|| PACKET_VERSION == 20181024 \
-	|| PACKET_VERSION == 20180919 \
-	|| PACKET_VERSION == 20180831 \
-	|| PACKET_VERSION == 20180822 \
+	PACKET_VERSION >= 20190821 \
+	|| PACKET_VERSION >= 20190807 \
+	|| PACKET_VERSION >= 20190802 \
+	|| PACKET_VERSION >= 20190731 \
+	|| PACKET_VERSION >= 20190724 \
+	|| PACKET_VERSION >= 20190717 \
+	|| PACKET_VERSION >= 20190703 \
+	|| PACKET_VERSION >= 20190605 \
+	|| PACKET_VERSION >= 20190530 \
+	|| PACKET_VERSION >= 20190523 \
+	|| PACKET_VERSION >= 20190522 \
+	|| PACKET_VERSION >= 20190508 \
+	|| PACKET_VERSION >= 20190418 \
+	|| PACKET_VERSION >= 20190417 \
+	|| PACKET_VERSION >= 20190327 \
+	|| PACKET_VERSION >= 20190322 \
+	|| PACKET_VERSION >= 20190320 \
+	|| PACKET_VERSION >= 20190313 \
+	|| PACKET_VERSION >= 20190306 \
+	|| PACKET_VERSION >= 20190228 \
+	|| PACKET_VERSION >= 20190123 \
+	|| PACKET_VERSION >= 20190116 \
+	|| PACKET_VERSION >= 20181226 \
+	|| PACKET_VERSION >= 20181219 \
+	|| PACKET_VERSION >= 20181212 \
+	|| PACKET_VERSION >= 20181205 \
+	|| PACKET_VERSION >= 20181128 \
+	|| PACKET_VERSION >= 20181114 \
+	|| PACKET_VERSION >= 20181107 \
+	|| PACKET_VERSION >= 20181024 \
+	|| PACKET_VERSION >= 20180919 \
+	|| PACKET_VERSION >= 20180831 \
+	|| PACKET_VERSION >= 20180822 \
 	|| PACKET_VERSION >= 20180808 \
 	|| PACKET_VERSION >= 20180718 \
 	|| PACKET_VERSION >= 20180704 \
@@ -6104,8 +6102,67 @@ ID_CZ_ENTER = 0x07e4
 	|| PACKET_VERSION >= 20180404 \
 	|| PACKET_VERSION >= 20180328 \
 	|| PACKET_VERSION >= 20180321 \
-	|| PACKET_VERSION >= 20150618)
+	|| PACKET_VERSION == 20150618)
 ID_CZ_ENTER = 0x0436
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20180309
+ID_CZ_ENTER = 0x07e4
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20180131
+ID_CZ_ENTER = 0x0888
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20161103
+ID_CZ_ENTER = 0x0946
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20160630
+ID_CZ_ENTER = 0x0881
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20160609
+ID_CZ_ENTER = 0x0437
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20160526
+ID_CZ_ENTER = 0x086a
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20150226
+ID_CZ_ENTER = 0x096a
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION == 20151022 \
+	|| PACKET_VERSION == 20150702)
+ID_CZ_ENTER = 0x023b
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION == 20160318 \
+	|| PACKET_VERSION == 20151029 \
+	|| PACKET_VERSION == 20150812)
+ID_CZ_ENTER = 0x022d
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20141016
+ID_CZ_ENTER = 0x086e
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20140814
+ID_CZ_ENTER = 0x0802
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION == 20140613 \
+	|| PACKET_VERSION == 20140612)
+ID_CZ_ENTER = 0x0958
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION == 20131108 \
+	|| PACKET_VERSION == 20131107)
+ID_CZ_ENTER = 0x08a2
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20130116
+ID_CZ_ENTER = 0x092d
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20130107
+ID_CZ_ENTER = 0x0940
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20120926
+ID_CZ_ENTER = 0x0819
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20120712
+ID_CZ_ENTER = 0x08a8
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20030000
+ID_CZ_ENTER = 0x0072
 #elif CLIENT_TYPE == 'R' &&  \
 	PACKET_VERSION >= 20080000
 ID_CZ_ENTER = 0x0072
@@ -6832,6 +6889,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -8376,6 +8434,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _npc_guid{ 0 };
+	int _value{ 0 };
 };
 
 enum {
@@ -8422,6 +8482,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _npc_guid{ 0 };
+	char _value[MAX_INPUT_STR_LENGTH];
 };
 
 enum {
@@ -9416,6 +9479,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _create[MAX_ITEM_CREATE_CMD_INPUT_LENGTH]{ 0 };
 };
 
 enum {
@@ -9456,23 +9520,27 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _create[MAX_ITEM_CREATE_CMD_INPUT_LENGTH]{ 0 };
 };
 
 enum {
 #if CLIENT_TYPE == 'A' &&  \
 	PACKET_VERSION >= 20041129
 ID_CZ_ITEM_PICKUP = 0x009f
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20030000
-ID_CZ_ITEM_PICKUP = 0x009f
 #elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20160609 \
-	|| PACKET_VERSION == 20160526 \
-	|| PACKET_VERSION >= 20120712)
-ID_CZ_ITEM_PICKUP = 0x0899
-#elif CLIENT_TYPE == 'M' &&  \
-	PACKET_VERSION >= 20120926
-ID_CZ_ITEM_PICKUP = 0x0923
+	PACKET_VERSION == 20150130 \
+	|| PACKET_VERSION == 20150129)
+ID_CZ_ITEM_PICKUP = 0x08ab
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION == 20140613 \
+	|| PACKET_VERSION == 20140612)
+ID_CZ_ITEM_PICKUP = 0x0878
+#elif CLIENT_TYPE == 'M' && ( \
+	PACKET_VERSION >= 20220000 \
+	|| (PACKET_VERSION >= 20210000 && PACKET_VERSION < 20220000) \
+	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
+	|| PACKET_VERSION >= 20130116)
+ID_CZ_ITEM_PICKUP = 0x094c
 #elif CLIENT_TYPE == 'M' && ( \
 	PACKET_VERSION == 20160318 \
 	|| PACKET_VERSION == 20151029 \
@@ -9481,27 +9549,24 @@ ID_CZ_ITEM_PICKUP = 0x0923
 	|| PACKET_VERSION >= 20141016 \
 	|| PACKET_VERSION >= 20130107)
 ID_CZ_ITEM_PICKUP = 0x07e4
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20120926
+ID_CZ_ITEM_PICKUP = 0x0923
 #elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION >= 20220000 \
-	|| (PACKET_VERSION >= 20210000 && PACKET_VERSION < 20220000) \
-	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
-	|| PACKET_VERSION >= 20130116)
-ID_CZ_ITEM_PICKUP = 0x094c
+	PACKET_VERSION == 20160609 \
+	|| PACKET_VERSION == 20160526 \
+	|| PACKET_VERSION >= 20120712)
+ID_CZ_ITEM_PICKUP = 0x0899
+#elif CLIENT_TYPE == 'M' &&  \
+	PACKET_VERSION >= 20030000
+ID_CZ_ITEM_PICKUP = 0x009f
 #elif CLIENT_TYPE == 'M' && ( \
 	PACKET_VERSION == 20131108 \
 	|| PACKET_VERSION == 20131107)
 ID_CZ_ITEM_PICKUP = 0x093b
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20140613 \
-	|| PACKET_VERSION == 20140612)
-ID_CZ_ITEM_PICKUP = 0x0878
 #elif CLIENT_TYPE == 'M' &&  \
 	PACKET_VERSION >= 20140814
 ID_CZ_ITEM_PICKUP = 0x08a3
-#elif CLIENT_TYPE == 'M' && ( \
-	PACKET_VERSION == 20150130 \
-	|| PACKET_VERSION == 20150129)
-ID_CZ_ITEM_PICKUP = 0x08ab
 #elif CLIENT_TYPE == 'M' &&  \
 	PACKET_VERSION >= 20150226
 ID_CZ_ITEM_PICKUP = 0x0817
@@ -9748,6 +9813,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _guid{ 0 };
 };
 
 enum {
@@ -10279,6 +10345,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _guid{ 0 };
 };
 
 enum {
@@ -10655,6 +10722,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int16_t _amount{ 0 };
 };
 
 enum {
@@ -11162,6 +11231,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int16_t _amount{ 0 };
 };
 
 enum {
@@ -11208,6 +11279,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
+	int _character_id{ 0 };
+	int _response{ 0 };
 };
 
 enum {

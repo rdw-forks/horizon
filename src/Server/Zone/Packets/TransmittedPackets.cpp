@@ -5214,9 +5214,24 @@ ByteBuffer &ZC_CHECK_RECEIVE_CHARACTER_NAME::serialize()
 /**
  * ZC_ACCEPT_ENTER3
  */
-void ZC_ACCEPT_ENTER3::deliver() {}
+void ZC_ACCEPT_ENTER3::deliver(int16_t x, int16_t y, int16_t dir, int16_t font, entity_gender_types gender)
+{
+	PackPosition((int8_t *) _packed_pos, x, y, dir);
+	_start_time = (int32_t) get_sys_time();
+	_x_size = _y_size = 5;
+	_font = font;
+	_gender = (int) gender;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACCEPT_ENTER3::serialize()
 {
+	buf() << _packet_id;
+	buf() << _start_time;
+	buf().append(_packed_pos, sizeof(_packed_pos));
+	buf() << _x_size << _y_size << _font;
+	buf() << _gender;
 	return buf();
 }
 /**

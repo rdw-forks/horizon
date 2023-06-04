@@ -44,7 +44,8 @@
 using namespace Horizon::Zone;
 
 ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
-: ClientInterface(s), _chat_room(s), _trade(s), _party(s), _guild(s), _friend(s)
+: ClientInterface(s), _chat_room(s), _trade(s), _party(s), _guild(s), _friend(s), _quest(s), 
+  _auction(s), _mail(s), _clan(s)
 {
 	
 }
@@ -91,9 +92,9 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
 
 	ZC_AID zc_aid(get_session());
-	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
-	
 	zc_aid.deliver(pl->guid());
+	
+	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
 	zc_ae2.deliver(pl->map_coords().x(), pl->map_coords().y(), DIR_SOUTH, pl->character()._font); // edit third argument to saved font.
 	
 	get_session()->set_player(pl);
@@ -457,7 +458,17 @@ bool ZoneClientInterface::increase_status_point(status_point_type type, uint8_t 
 	return true;
 }
 
+void ZoneClientInterface::register_baby(int account_id, int character_id, cz_join_baby_reply_type response)
+{
+
+}
+
 void ZoneClientInterface::npc_contact(int32_t guid)
+{
+
+}
+
+void ZoneClientInterface::npc_close(int32_t npc_guid)
 {
 
 }
@@ -484,6 +495,43 @@ void ZoneClientInterface::notify_npc_menu_list(uint32_t npc_guid, std::string co
 {
 	ZC_MENU_LIST pkt(get_session());
 	pkt.deliver(npc_guid, menu);
+}
+
+void ZoneClientInterface::npc_select_deal_type(int guid, cz_ack_select_dealtype deal_type)
+{
+
+}
+
+void ZoneClientInterface::npc_select_menu(int guid, int choice)
+{
+
+}
+
+void ZoneClientInterface::npc_input(int guid, int value)
+{
+
+}
+
+void ZoneClientInterface::npc_input(int guid, std::string value)
+{
+
+}
+
+void ZoneClientInterface::broadcast(std::string message)
+{
+
+}
+
+/**
+ * Storage
+ */
+void ZoneClientInterface::storage_check_password(std::string password)
+{
+
+}
+void ZoneClientInterface::storage_change_password(std::string password, std::string new_password)
+{
+
 }
 
 bool ZoneClientInterface::notify_move_to_map(std::string map_name, int16_t x, int16_t y)
@@ -579,6 +627,16 @@ void ZoneClientInterface::equip_item(int16_t inventory_index, int16_t equip_loca
 void ZoneClientInterface::unequip_item(int16_t inventory_index)
 {
 	get_session()->player()->inventory()->unequip_item(inventory_index);
+}
+
+void ZoneClientInterface::pickup_item(int guid)
+{
+
+}
+
+void ZoneClientInterface::throw_item(int16_t inventory_index, int16_t amount)
+{
+
 }
 
 bool ZoneClientInterface::notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
@@ -847,13 +905,130 @@ bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_tim
 	return true;
 }
 
+/**
+ * Class Specific 
+ */
 
+void ZoneClientInterface::star_gladiator_feel_save(cz_agree_starplace_type type)
+{
 
+}
 
+void ZoneClientInterface::novice_explosion_spirits()
+{
 
+}
 
+void ZoneClientInterface::novice_doridori()
+{
 
+}
 
+/**
+ * Ranking 
+ */
+void ZoneClientInterface::ranking_alchemist()
+{
 
+}
+void ZoneClientInterface::ranking_blacksmith()
+{
 
+}
+/**
+ * Battleground 
+ */
+void ZoneClientInterface::message(std::string message)
+{
 
+}
+
+void ZoneClientInterface::blocking_play_cancel()
+{
+
+}
+
+void ZoneClientInterface::client_version(int version)
+{
+
+}
+
+void ZoneClientInterface::change_direction(int head_direction, int body_direction)
+{
+
+}
+
+void ZoneClientInterface::change_effect_state(int effect_state)
+{
+
+}
+
+void ZoneClientInterface::change_map_type(int x, int y, bool walkable)
+{
+
+}
+
+void ZoneClientInterface::bargain_sale_tool_close()
+{
+
+}
+
+void ZoneClientInterface::searchstore_close()
+{
+
+}
+
+void ZoneClientInterface::command_mercenary(int type, cz_command_mercenary_command_type command)
+{
+
+}
+
+void ZoneClientInterface::auto_revive()
+{
+	
+}
+
+void ZoneClientInterface::command_pet(cz_command_pet_type command)
+{
+
+}
+
+void ZoneClientInterface::view_equipment(int account_id)
+{
+	
+}
+
+void ZoneClientInterface::set_config(cz_config_type config, bool setting)
+{
+	switch(config)
+	{
+	case CZ_CONFIG_OPEN_EQUIPMENT_WINDOW:
+		break;
+	case CZ_CONFIG_CALL:
+		break;
+	case CZ_CONFIG_PET_AUTOFEED:
+		break;
+	case CZ_CONFIG_HOMUNCULUS_AUTOFEED:
+		break;
+	default:
+		break;
+	}
+}
+
+/**
+ * Administration
+ */
+void ZoneClientInterface::disconnect_all_players()
+{
+
+}
+
+void ZoneClientInterface::disconnect_account(int account_id)
+{
+
+}
+
+void ZoneClientInterface::create(std::string create)
+{
+
+}

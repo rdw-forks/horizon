@@ -37,6 +37,7 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone::Entities;
 
@@ -93,7 +94,7 @@ void Monster::behavior_passive()
 		&& !is_walking()
 		&& was_spotted_once()) {
 	    try {
-	        sol::load_result fx = lua_manager()->lua_state()->load_file("scripts/monsters/functionalities/walking_passive.lua");
+	        sol::load_result fx = lua_manager()->lua_state()->load_file(sZone->config().get_script_root_path().string().append("/monsters/functionalities/walking_passive.lua"));
 	        sol::protected_function_result result = fx(shared_from_this());
 	        if (!result.valid()) {
 	            sol::error err = result;
@@ -201,7 +202,7 @@ bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 		std::shared_ptr<Player> player = killer->downcast<Player>();
 
 		try {
-			sol::load_result fx = player->lua_state()->load_file("scripts/internal/on_monster_killed.lua");
+			sol::load_result fx = player->lua_state()->load_file(sZone->config().get_script_root_path().string().append("internal/on_monster_killed.lua"));
 			sol::protected_function_result result = fx(player, shared_from_this()->downcast<Monster>(), with_drops, with_exp);
 			if (!result.valid()) {
 				sol::error err = result;

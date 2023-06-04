@@ -35,10 +35,7 @@
 #include "Server/Common/Interfaces/ClientInterface.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
-#include "Server/Zone/Interface/UI/Chatroom/Chatroom.hpp"
-#include "Server/Zone/Interface/UI/Trade/Trade.hpp"
-#include "Server/Zone/Interface/UI/Party/Party.hpp"
-#include "Server/Zone/Interface/UI/Guild/Guild.hpp"
+#include "Server/Zone/Interface/UI/UserInterface.hpp"
 
 namespace Horizon
 {
@@ -62,8 +59,12 @@ public:
 	UI::Chatroom &chatroom() { return _chat_room; }
 	UI::Trade &trade() { return _trade; }
 	UI::Party &party() { return _party; }
-	UI::Guild& guild() { return _guild; }
-	UI::Friend& friend() { return _friend; }
+	UI::Guild &guild() { return _guild; }
+	UI::Friend &friend_() { return _friend; }
+	UI::Quest &quest() { return _quest; }
+	UI::Auction &auction() { return _auction; }
+	UI::Mail &mail() { return _mail; }
+	UI::Clan &clan() { return _clan; }
 
 	bool login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender);
 	bool restart(uint8_t type);
@@ -90,13 +91,18 @@ public:
 	/**
 	 * NPC
 	 */
-	void npc_contact(int32_t guid);
+	void npc_contact(int32_t npc_guid);
+	void npc_close(int32_t npc_guid);
 	void notify_npc_dialog(uint32_t npc_guid, std::string dialog);
 	void notify_npc_next_dialog(uint32_t npc_guid);
 	void notify_npc_close_dialog(uint32_t npc_guid);
 	void notify_npc_menu_list(uint32_t npc_guid, std::string const &menu);
 	uint32_t get_npc_contact_guid() { return _npc_contact_guid; }
 	void set_npc_contact_guid(uint32_t guid) { _npc_contact_guid = guid; }
+	void npc_select_deal_type(int guid, cz_ack_select_dealtype deal_type);
+	void npc_select_menu(int guid, int choice);
+	void npc_input(int guid, int value);
+	void npc_input(int guid, std::string value);
 	
 	/**
 	 * Status
@@ -111,6 +117,7 @@ public:
 	bool notify_experience_update(status_point_type type, int32_t value);
 	bool notify_zeny_update();
 	bool increase_status_point(status_point_type type, uint8_t amount);
+	void register_baby(int account_id, int character_id, cz_join_baby_reply_type response);
 	/**
 	 * Map
 	 */
@@ -130,7 +137,9 @@ public:
 	 */
 	void use_item(int16_t inventory_index, int32_t guid);
 	void equip_item(int16_t inventory_index, int16_t equip_location_mask);
+	void pickup_item(int guid);
 	void unequip_item(int16_t inventory_index);
+	void throw_item(int16_t inventory_index, int16_t amount);
 	bool notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result);
 	bool notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items);
 	bool notify_equipment_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items);
@@ -169,6 +178,54 @@ public:
 	 */
 	bool notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage);
 
+	/**
+	 * Storage
+	 */
+	void storage_check_password(std::string password);
+	void storage_change_password(std::string password, std::string new_password);
+
+	/**
+	 * Class Specific 
+	 */
+	void star_gladiator_feel_save(cz_agree_starplace_type type);
+	void novice_explosion_spirits(); // Chopokgi.
+	void novice_doridori(); // DoriDori
+
+	/**
+	 * Ranking 
+	 */
+	void ranking_alchemist();
+	void ranking_blacksmith();
+	void ranking_pk();
+
+	/**
+	 * Battlegrounds 
+	 */
+	void message(std::string message);
+
+	void blocking_play_cancel();
+	void client_version(int version);
+	void broadcast(std::string message);
+	void change_direction(int head_direction, int body_direction);
+	void change_effect_state(int effect_state);
+	void change_map_type(int x, int y, bool walkable);
+	void bargain_sale_tool_close();
+	void searchstore_close();
+
+	void command_mercenary(int type, cz_command_mercenary_command_type command);
+	void auto_revive();
+	void command_pet(cz_command_pet_type command);
+	void set_config(cz_config_type config, bool setting);
+
+	void view_equipment(int account_id);
+	
+	/**
+	 * Administration
+	 */
+	void disconnect_all_players();
+	void disconnect_account(int account_id);
+	void create(std::string create);
+
 protected:
 	uint32_t _npc_contact_guid{0};
 	UI::Chatroom _chat_room;
@@ -176,6 +233,10 @@ protected:
 	UI::Party _party;
 	UI::Guild _guild;
 	UI::Friend _friend;
+	UI::Quest _quest;
+	UI::Auction _auction;
+	UI::Mail _mail;
+	UI::Clan _clan;
 };
 }
 }

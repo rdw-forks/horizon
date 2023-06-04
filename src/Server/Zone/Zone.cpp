@@ -86,6 +86,8 @@ bool ZoneServer::read_config()
 	config().set_mapcache_path(tbl.get_or("map_cache_file_path", std::string("db/maps.dat")));
 	HLog(info) << "Mapcache file name is set to " << config().get_mapcache_path() << ", it will be read while initializing maps.";
 
+	config().set_script_root_path(tbl.get_or("script_root_path", std::string("scripts/")));
+	HLog(info) << "Script root path is set to " << config().get_script_root_path() << ", it will be used for all scripting references.";
 //	config().set_entity_save_interval(tbl.get_or("entity_save_interval", 180000));
 //	HLog(info) << "Entity data will be saved to the database every " << duration_cast<minutes>(std::chrono::milliseconds(config().get_entity_save_interval())).count() << " minutes and " << duration_cast<seconds>(std::chrono::milliseconds(config().get_entity_save_interval())).count() << " seconds.";
 	

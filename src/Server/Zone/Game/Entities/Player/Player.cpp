@@ -121,7 +121,7 @@ bool Player::initialize()
 	lua_manager()->initialize_monster_state(lua_state());
 
 	try {
-		sol::load_result fx = lua_state()->load_file("scripts/internal/on_login_event.lua");
+		sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string().append("internal/on_login_event.lua"));
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
 		if (!result.valid()) {
 			sol::error err = result;
