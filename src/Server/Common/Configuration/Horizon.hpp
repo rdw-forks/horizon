@@ -40,10 +40,10 @@
  * Zero = 'Z'
  * Sakray = 'S'
  */
-#define CLIENT_TYPE 'R'
+#define CLIENT_TYPE 'M'
 
 /* Packet Version */
-#define PACKET_VERSION 20180620
+#define PACKET_VERSION 20190530
 
 #define MAX_LEVEL 175
 #define MAX_STATUS_POINTS 130
