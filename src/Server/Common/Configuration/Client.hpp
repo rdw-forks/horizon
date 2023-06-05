@@ -69,7 +69,7 @@ struct s_hc_character_list_data {
 	uint32_t _virtue{ 0 };                  ///< 44
 	uint32_t _honor{ 0 };                   ///< 48
 	uint16_t _status_points{ 0 };           ///< 50
-#if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20200000
+#if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20201007
 	uint64_t _hp{ 1 };                      ///< 54
 	uint64_t _maximum_hp{ 1 };              ///< 58
 #elif PACKET_VERSION > 20081217
@@ -79,7 +79,7 @@ struct s_hc_character_list_data {
 	uint16_t _hp{ 1 };
 	uint16_t _maximum_hp{ 1 };
 #endif
-#if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20200000
+#if CLIENT_TYPE == 'M' && PACKET_VERSION >= 20201007
 	uint64_t _sp{ 1 };                      ///< 60
 	uint64_t _maximum_sp{ 1 };              ///< 62
 #else

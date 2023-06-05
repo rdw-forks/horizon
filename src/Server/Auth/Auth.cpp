@@ -137,7 +137,7 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	
 	boost::algorithm::split(separated_args, cmd, boost::algorithm::is_any_of(" "));
 
-	if (separated_args.size() < 3) {
+	if (separated_args.size() < 6) {
 		HLog(error) << "create-account command requires at least 5 arguments.";
 		HLog(error) << help_str;
 		return false;

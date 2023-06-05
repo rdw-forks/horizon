@@ -52,6 +52,8 @@
 
 #define MAX_ITEM_CREATE_CMD_INPUT_LENGTH 24
 
+#define MAX_TALKBOX_CONTENT_SIZE 80
+
 enum grid_notifier_type
 {
     GRID_NOTIFY_AREA,               // area

@@ -185,18 +185,46 @@ void CZ_REQ_WEAPONREFINE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_USE_SKILL
  */
-void CZ_USE_SKILL::handle(ByteBuffer &&buf) {}
-void CZ_USE_SKILL::deserialize(ByteBuffer &buf) {}
+void CZ_USE_SKILL::handle(ByteBuffer &&buf) {
+	deserialize(buf);
+	get_session()->clif()->use_skill_on_target(_skill_lv, _skill_id, _target_id); 
+}
+void CZ_USE_SKILL::deserialize(ByteBuffer &buf) {
+	buf >> _packet_id;
+	buf >> _skill_lv;
+	buf >> _skill_id;
+	buf >> _target_id;
+}
 /**
  * CZ_USE_SKILL_TOGROUND
  */
-void CZ_USE_SKILL_TOGROUND::handle(ByteBuffer &&buf) {}
-void CZ_USE_SKILL_TOGROUND::deserialize(ByteBuffer &buf) {}
+void CZ_USE_SKILL_TOGROUND::handle(ByteBuffer &&buf) {
+	deserialize(buf);
+	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y); 	
+}
+void CZ_USE_SKILL_TOGROUND::deserialize(ByteBuffer &buf) {
+	buf >> _packet_id;
+	buf >> _skill_lv;
+	buf >> _skill_id;
+	buf >> _pos_x;	
+	buf >> _pos_y;	
+}
 /**
  * CZ_USE_SKILL_TOGROUND_WITHTALKBOX
  */
-void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::handle(ByteBuffer &&buf) {}
-void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::deserialize(ByteBuffer &buf) {}
+void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::handle(ByteBuffer &&buf)
+{
+	deserialize(buf);
+	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y, _contents);
+}
+void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::deserialize(ByteBuffer &buf)
+{
+	buf >> _packet_id;
+	buf >> _skill_lv;
+	buf >> _skill_id;
+	buf >> _pos_x;	
+	buf >> _pos_y;
+	buf.read(_contents, MAX_TALKBOX_CONTENT_SIZE);
 /**
  * CZ_ACK_EXCHANGE_ITEM
  */
@@ -1971,8 +1999,18 @@ void CZ_REQUEST_TIME2::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_USE_SKILL_TOGROUND2
  */
-void CZ_USE_SKILL_TOGROUND2::handle(ByteBuffer &&buf) {}
-void CZ_USE_SKILL_TOGROUND2::deserialize(ByteBuffer &buf) {}
+void CZ_USE_SKILL_TOGROUND2::handle(ByteBuffer &&buf) {
+	deserialize(buf);
+	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y); 	
+}
+void CZ_USE_SKILL_TOGROUND2::deserialize(ByteBuffer &buf)
+{
+	buf >> _packet_id;
+	buf >> _skill_lv;
+	buf >> _skill_id;
+	buf >> _pos_x;	
+	buf >> _pos_y;	
+}
 /**
  * CZ_IRMAIL_LIST
  */
@@ -1997,8 +2035,20 @@ void CZ_REQUEST_MOVE2::deserialize(ByteBuffer &buf)
 /**
  * CZ_USE_SKILL_TOGROUND_WITHTALKBOX2
  */
-void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::handle(ByteBuffer &&buf) {}
-void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::deserialize(ByteBuffer &buf) {}
+void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::handle(ByteBuffer &&buf)
+{
+	deserialize(buf);
+	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y, _contents);
+}
+void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::deserialize(ByteBuffer &buf)
+{
+	buf >> _packet_id;
+	buf >> _skill_lv;
+	buf >> _skill_id;
+	buf >> _pos_x;	
+	buf >> _pos_y;
+	buf.read(_contents, MAX_TALKBOX_CONTENT_SIZE);
+}
 /**
  * CZ_REQNAME2
  */
@@ -2132,8 +2182,17 @@ void CZ_REQUEST_ACT2::deserialize(ByteBuffer &buf)
 /**
  * CZ_USE_SKILL2
  */
-void CZ_USE_SKILL2::handle(ByteBuffer &&buf) {}
-void CZ_USE_SKILL2::deserialize(ByteBuffer &buf) {}
+void CZ_USE_SKILL2::handle(ByteBuffer &&buf) {
+	deserialize(buf);
+	get_session()->clif()->use_skill_on_target(_skill_lv, _skill_id, _target_id); 
+}
+void CZ_USE_SKILL2::deserialize(ByteBuffer &buf)
+{
+	buf >> _packet_id;
+	buf >> _skill_lv;
+	buf >> _skill_id;
+	buf >> _target_id;
+}
 /**
  * CZ_REQ_WEAR_EQUIP_V5
  */

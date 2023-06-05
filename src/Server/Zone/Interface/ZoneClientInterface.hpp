@@ -159,6 +159,9 @@ public:
 	void upgrade_skill_level(int16_t skill_id);
 	bool notify_learnt_skill_list();
 	bool notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause);
+	void use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid);
+	void use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y);
+	void use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents);
 
 	/* UI Requests */
 	void action_request(int32_t target_guid, player_action_type action);
