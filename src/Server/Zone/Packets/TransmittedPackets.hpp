@@ -14534,10 +14534,16 @@ public:
 	{}
 	virtual ~ZC_ACCEPT_ENTER3() {}
 
-	void deliver();
+	void deliver(int16_t x, int16_t y, int16_t dir, int16_t font, entity_gender_types gender);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _start_time{0};
+	char _packed_pos[3]{0};
+	int8_t _x_size{0};
+	int8_t _y_size{0};
+	int16_t _font{0};
+	int8_t _gender{0};
 };
 
 enum {

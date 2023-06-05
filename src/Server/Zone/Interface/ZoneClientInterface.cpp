@@ -92,9 +92,9 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
 
 	ZC_AID zc_aid(get_session());
-	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
-	
 	zc_aid.deliver(pl->guid());
+	
+	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
 	zc_ae2.deliver(pl->map_coords().x(), pl->map_coords().y(), DIR_SOUTH, pl->character()._font); // edit third argument to saved font.
 	
 	get_session()->set_player(pl);

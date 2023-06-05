@@ -326,7 +326,6 @@ void Horizon::Zone::UI::Mail::return_(int mail_id, std::string receiver_name)
 
 }
 
-
 Horizon::Zone::UI::Party::Party(std::shared_ptr<Horizon::Zone::ZoneSession> session)
 {
 

@@ -137,12 +137,12 @@ private:
 class Mail
 {
 public:
-    Mail(std::shared_ptr<ZoneSession> session);
-    ~Mail();
+  Mail(std::shared_ptr<ZoneSession> session);
+  ~Mail();
 
-    std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+  std::shared_ptr<ZoneSession> session() { return _session.lock(); }
 
-    void check_receiver_name(std::string name);
+  void check_receiver_name(std::string name);
 	void add_item(int inventory_index, int amount);
 	void delete_(int mail_id);
 	void retrieve_attachment(int mail_id);

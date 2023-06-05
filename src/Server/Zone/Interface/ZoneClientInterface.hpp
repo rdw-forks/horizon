@@ -311,6 +311,7 @@ public:
 	 * Private Airship
 	 */
 	void private_airship_request(std::string map_name, int item_id);
+  
 protected:
 	uint32_t _npc_contact_guid{0};
 	UI::Chatroom _chat_room;
