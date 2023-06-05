@@ -59,6 +59,7 @@ public:
 	UI::Chatroom &chatroom() { return _chat_room; }
 	UI::Trade &trade() { return _trade; }
 	UI::Party &party() { return _party; }
+	UI::PartyBooking &party_booking() { return _party_booking; }
 	UI::Guild &guild() { return _guild; }
 	UI::Friend &friend_() { return _friend; }
 	UI::Quest &quest() { return _quest; }
@@ -76,7 +77,26 @@ public:
 	bool notify_time();
 	bool notify_entity_name(uint32_t guid);
 	bool stop_attack();
-	
+
+	/**
+	 * Character
+	 */
+	void request_name_by_char_id(int char_id);
+	void invite_baby(int account_id);
+	void pvpinfo(int character_id, int account_id);
+	/**
+	 * Ranking 
+	 */
+	void ranking(cz_req_ranking_type type);
+	void ranking_alchemist();
+	void ranking_blacksmith();
+	void ranking_pk();
+	/**
+	 * Config
+	*/
+	void set_config(cz_config_type config, bool setting);
+	void view_equipment(int account_id);
+
 	/* Movement & Viewport*/
 	bool notify_player_movement(MapCoords from, MapCoords to);
 	bool notify_movement_stop(int32_t guid, int16_t x, int16_t y);
@@ -91,6 +111,8 @@ public:
 	/**
 	 * NPC
 	 */
+	void npc_weapon_refine(int32_t inventory_index);
+	void npc_next_dialog(int32_t npc_guid);
 	void npc_contact(int32_t npc_guid);
 	void npc_close(int32_t npc_guid);
 	void notify_npc_dialog(uint32_t npc_guid, std::string dialog);
@@ -103,6 +125,11 @@ public:
 	void npc_select_menu(int guid, int choice);
 	void npc_input(int guid, int value);
 	void npc_input(int guid, std::string value);
+	void npc_purchase_items(std::vector<cz_pc_purchase_itemlist> items);
+	void npc_sell_items(std::vector<cz_pc_sell_itemlist> items);
+	void vending_purchase_items(int account_id, std::vector<cz_pc_purchase_itemlist> items);
+	void vending_purchase_items(int account_id, int unique_id, std::vector<cz_pc_purchase_itemlist> items);
+	void progress_bar_completed();
 	
 	/**
 	 * Status
@@ -118,6 +145,7 @@ public:
 	bool notify_zeny_update();
 	bool increase_status_point(status_point_type type, uint8_t amount);
 	void register_baby(int account_id, int character_id, cz_join_baby_reply_type response);
+	void auto_revive();
 	/**
 	 * Map
 	 */
@@ -140,6 +168,15 @@ public:
 	void pickup_item(int guid);
 	void unequip_item(int16_t inventory_index);
 	void throw_item(int16_t inventory_index, int16_t amount);
+	void move_item_from_inventory_to_cart(int16_t inventory_index, int amount);
+	void move_item_from_inventory_to_storage(int16_t inventory_index, int amount);
+	void move_item_from_cart_to_inventory(int16_t inventory_index, int amount);
+	void move_item_from_cart_to_storage(int16_t inventory_index, int amount);
+	void move_item_from_storage_to_inventory(int16_t inventory_index, int amount);
+	void move_item_from_storage_to_cart(int16_t inventory_index, int amount);
+	void display_item_card_composition(int card_index, int equip_index = 0);
+	void repair_item(int inventory_index, int item_id, int refine, int card1, int card2, int card3, int card4);
+	void identify_item(int inventory_index);
 	bool notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result);
 	bool notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items);
 	bool notify_equipment_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items);
@@ -170,6 +207,7 @@ public:
 	/**
 	 * Status
 	 */
+	void setting_effects(int setting);
 	bool notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3);
 	bool notify_status_change_end(int16_t status_index, int32_t guid, int8_t state);
 
@@ -185,18 +223,35 @@ public:
 	void storage_change_password(std::string password, std::string new_password);
 
 	/**
+	 * Vending
+	 */
+	void open_vend_shop(int account_id);
+	void close_vending();
+	void open_buying_store(int account_id);
+	void close_buying_store();
+	void start_vending(std::string shop_name, std::vector<cz_req_openstore_itemlist> items);
+	void start_buying_store(std::string store_name, int zeny_limit, std::vector<cz_req_open_buying_store_itemlist> items);
+	void sell_to_buying_store(int account_id, int store_id, std::vector<cz_req_trade_buying_store_itemlist> items);
+
+	/**
+	 * Misc
+	 */
+	void emotion(int type);
+	void user_count();
+	void ignore_list();
+
+	/**
 	 * Class Specific 
 	 */
 	void star_gladiator_feel_save(cz_agree_starplace_type type);
 	void novice_explosion_spirits(); // Chopokgi.
 	void novice_doridori(); // DoriDori
-
-	/**
-	 * Ranking 
-	 */
-	void ranking_alchemist();
-	void ranking_blacksmith();
-	void ranking_pk();
+	void remember_warppoint();
+	void produce_item(int item_id, std::vector<int16_t> material_ids);
+	void remove_cart();
+	void change_cart(int16_t num);
+	void make_arrow(int16_t item_id);
+	void make_item(cz_req_makingitem_type type, int16_t item_id);
 
 	/**
 	 * Battlegrounds 
@@ -206,18 +261,25 @@ public:
 	void blocking_play_cancel();
 	void client_version(int version);
 	void broadcast(std::string message);
+	void broadcast_local(std::string message);
 	void change_direction(int head_direction, int body_direction);
 	void change_effect_state(int effect_state);
 	void change_map_type(int x, int y, bool walkable);
 	void bargain_sale_tool_close();
 	void searchstore_close();
 
+	/**
+	 * Pet
+	 */
 	void command_mercenary(int type, cz_command_mercenary_command_type command);
-	void auto_revive();
 	void command_pet(cz_command_pet_type command);
-	void set_config(cz_config_type config, bool setting);
-
-	void view_equipment(int account_id);
+	void pet_act_emotion(cz_pet_act_emotion_type emotion);
+	void pet_evolve(int evolved_pet_egg_id, std::vector<cz_pet_evolution_itemlist> items);
+	void rename_homunculus(std::string name);
+	void rename_pet(std::string name);
+	void request_action(int guid, int target_id, int action);
+	void move_homunculus_to_coordinates(int guid, int x, int y, int dir);
+	void move_homunculus_to_master(int guid);
 	
 	/**
 	 * Administration
@@ -225,7 +287,30 @@ public:
 	void disconnect_all_players();
 	void disconnect_account(int account_id);
 	void create(std::string create);
+	void move_to_map(std::string map_name, int16_t x, int16_t y);
+	void recall(std::string username);
+	void recall(int account_id);
+	void summon(std::string char_name);
+	void warp_to(int account_id);
+	void request_username(int account_id);
+	void adjust_manner_by_name(std::string name);
+	void give_manner_point(int account_id, cz_req_give_manner_point_type type, int value);
+	void check_status(std::string name);
 
+	/**
+	 * Instancing 
+	 */
+	void memorial_dungeon_command(cz_memorial_dungeon_command_type command);
+
+	/**
+	 * Cash Point Store 
+	 */
+	void cash_point_purchase(int kafra_points, std::vector<cz_pc_buy_cash_point_item> items);
+
+	/*
+	 * Private Airship
+	 */
+	void private_airship_request(std::string map_name, int item_id);
 protected:
 	uint32_t _npc_contact_guid{0};
 	UI::Chatroom _chat_room;
@@ -237,6 +322,7 @@ protected:
 	UI::Auction _auction;
 	UI::Mail _mail;
 	UI::Clan _clan;
+	UI::PartyBooking _party_booking;
 };
 }
 }

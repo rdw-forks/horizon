@@ -41,7 +41,6 @@
 #define MAX_PINCODE_STRING_LENGTH 5
 #define MAX_EMAIL_LENGTH 40
 #define MAX_IP_ADDRESS_STR_LENGTH 16
-#define MAX_CHAT_STR_LENGTH 255 + 1
 // For Map Names, which the client considers to be 16 in length including the .gat extension.
 #define MAP_NAME_LENGTH (11 + 1)
 #define MAP_NAME_LENGTH_EXT (MAP_NAME_LENGTH + 4)

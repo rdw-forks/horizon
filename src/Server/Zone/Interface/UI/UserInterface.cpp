@@ -286,6 +286,47 @@ void Horizon::Zone::UI::Mail::check_receiver_name(std::string name)
 
 }
 
+void Horizon::Zone::UI::Mail::add_item(int inventory_index, int amount)
+{
+
+}
+
+void Horizon::Zone::UI::Mail::delete_(int mail_id)
+{
+
+}
+
+void Horizon::Zone::UI::Mail::retrieve_attachment(int mail_id)
+{
+
+}
+
+void Horizon::Zone::UI::Mail::list()
+{
+
+}
+
+void Horizon::Zone::UI::Mail::open(int mail_id)
+{
+
+}
+
+void Horizon::Zone::UI::Mail::reset(cz_mail_reset_item_type reset)
+{
+
+}
+
+void Horizon::Zone::UI::Mail::send(std::string recipient, std::string title, std::string body)
+{
+
+}
+
+void Horizon::Zone::UI::Mail::return_(int mail_id, std::string receiver_name)
+{
+
+}
+
+
 Horizon::Zone::UI::Party::Party(std::shared_ptr<Horizon::Zone::ZoneSession> session)
 {
 
@@ -341,8 +382,43 @@ void Horizon::Zone::UI::Party::change_leader(int account_id)
 
 }
 
+void Horizon::Zone::UI::Party::refuse_invite(bool refuse)
+{
+	
+}
+
 /* Notify */
 void Horizon::Zone::UI::Party::notify_created(zcack_makegroup_result_type result)
+{
+
+}
+
+Horizon::Zone::UI::PartyBooking::PartyBooking(std::shared_ptr<Horizon::Zone::ZoneSession> session)
+{
+
+}
+
+Horizon::Zone::UI::PartyBooking::~PartyBooking()
+{
+
+}
+
+void Horizon::Zone::UI::PartyBooking::delete_()
+{
+
+}
+
+void Horizon::Zone::UI::PartyBooking::search(int level, int map_id, int job, int last_index, int result_count)
+{
+
+}
+
+void Horizon::Zone::UI::PartyBooking::register_(int level, int map_id, std::vector<int> jobs)
+{
+
+}
+
+void Horizon::Zone::UI::PartyBooking::update(std::vector<int> jobs)
 {
 
 }

@@ -12256,7 +12256,7 @@ ID_CZ_LESSEFFECT = 0x0000 // Disabled
 };
 /**
  * @brief Main object for the aegis packet: CZ_LESSEFFECT
- *
+ * Notification of the state of client command /effect.
  */ 
 class CZ_LESSEFFECT : public Base::NetworkPacketHandler<ZoneSession>
 {
@@ -12270,6 +12270,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _setting{ 0 };
 };
 
 enum {
@@ -12316,6 +12317,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	char _message[MAX_CHAT_STR_LENGTH];
 };
 
 enum {
@@ -12642,6 +12645,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -12688,6 +12693,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _mail_id{ 0 };
 };
 
 enum {
@@ -12734,6 +12740,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _mail_id{ 0 };
 };
 
 enum {
@@ -12826,6 +12833,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _mail_id{ 0 };
 };
 
 enum {
@@ -12872,6 +12880,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
 };
 
 enum {
@@ -12918,6 +12927,11 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length { 0 };
+	char _recipient[MAX_UNIT_NAME_LENGTH];
+	char _title[MAX_MAIL_TITLE_LENGTH];
+	int8_t _body_length{ 0 };
+	char _body[MAX_MAIL_BODY_LENGTH];
 };
 
 enum {
@@ -13060,6 +13074,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _command{ 0 };
 };
 
 enum {
@@ -13198,6 +13213,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _map_name[MAP_NAME_LENGTH_EXT]{ 0 };
+	int16_t _x{ 0 };
+	int16_t _y{ 0 };
 };
 
 enum {
@@ -13244,6 +13262,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -13571,6 +13591,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14103,6 +14125,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14149,6 +14173,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14189,6 +14215,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14235,6 +14263,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14275,6 +14305,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14315,6 +14347,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -14613,6 +14647,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -15120,6 +15156,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -15166,6 +15204,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -16470,6 +16510,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _level{ 0 };
+	int16_t _map_id{ 0 };
+	int16_t _jobs[MAX_PARTY_BOOKING_JOBS];
 };
 
 enum {
@@ -16510,6 +16553,11 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _level{ 0 };
+	int16_t _map_id{ 0 };
+	int16_t _job{ 0 };
+	int _last_index{ 0 };
+	int16_t _result_count{ 0 };
 };
 
 enum {
@@ -16550,6 +16598,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _jobs[MAX_PARTY_BOOKING_JOBS];
 };
 
 enum {
@@ -16596,6 +16645,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int8_t _refuse_invite{ 0 };
 };
 
 enum {
@@ -17495,6 +17545,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _kafra_points{ 0 };
+	int16_t _count{ 0 };
+	std::vector<cz_pc_buy_cash_point_item> _items;
 };
 
 enum {
@@ -17541,6 +17595,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length;
+	std::vector<cz_pc_purchase_itemlist> _items;
 };
 
 enum {
@@ -17587,6 +17643,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _account_id{ 0 };
+	std::vector<cz_pc_purchase_itemlist> _items{ 0 };
 };
 
 enum {
@@ -17627,6 +17686,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _account_id{ 0 };
+	int _unique_id{ 0 };
+	std::vector<cz_pc_purchase_itemlist> _items{ 0 };
 };
 
 enum {
@@ -17673,6 +17736,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	std::vector<cz_pc_sell_itemlist> _items;
+
 };
 
 enum {
@@ -17765,6 +17831,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _emotion{ 0 };
 };
 
 enum {
@@ -17805,6 +17872,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int16_t _evolved_pet_egg_id{ 0 };
+	std::vector<cz_pet_evolution_itemlist> _items;
 };
 
 enum {
@@ -17931,6 +18001,14 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _map_name[MAP_NAME_LENGTH_EXT];
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	int _item_id{ 0 };
+#else
+	int16_t _item_id{ 0 };
+#endif
 };
 
 enum {
@@ -18097,6 +18175,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _account_name[MAX_USERNAME_LENGTH];
 };
 
 enum {
@@ -18143,6 +18222,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -18183,6 +18263,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -18571,6 +18652,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -18617,6 +18699,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -18663,6 +18746,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -18835,6 +18919,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _item_id{ 0 };
+	int16_t _material_id[3]{ 0 };
 };
 
 enum {
@@ -19897,6 +19983,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _char_id{ 0 };
 };
 
 enum {
@@ -20429,6 +20516,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _char_id{ 0 };
 };
 
 enum {
@@ -21259,7 +21347,7 @@ ID_CZ_REQUEST_ACTNPC = 0x0000 // Disabled
 };
 /**
  * @brief Main object for the aegis packet: CZ_REQUEST_ACTNPC
- *
+ * Request to do an action with homunculus/mercenary
  */ 
 class CZ_REQUEST_ACTNPC : public Base::NetworkPacketHandler<ZoneSession>
 {
@@ -21273,6 +21361,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _guid{ 0 };
+	int _target_id{ 0 };
+	int8_t _action{ 0 };
 };
 
 enum {
@@ -22261,6 +22352,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _guid{ 0 };
+	uint16_t _x, _y;
+	uint8_t _dir;
 };
 
 enum {
@@ -22307,6 +22401,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _guid{ 0 };
 };
 
 enum {
@@ -23362,6 +23457,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	uint32_t _timestamp{0};
 };
 
 enum {
@@ -23444,6 +23540,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -23983,6 +24080,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -24155,6 +24253,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _cart_num;
 };
 
 enum {
@@ -24698,6 +24797,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -25840,6 +25940,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int8_t _type;
 };
 
 enum {
@@ -26236,6 +26337,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -26282,6 +26384,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id;
+	int8_t _type;
+	int16_t _value;
 };
 
 enum {
@@ -26714,6 +26819,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _card_index{ 0 };
+	int16_t _equip_index{ 0 };
 };
 
 enum {
@@ -26760,6 +26867,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _card_index{ 0 };
 };
 
 enum {
@@ -26806,6 +26914,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
 };
 
 enum {
@@ -26852,6 +26961,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int16_t _item_id{ 0 };
+	int8_t _refine{ 0 };
+	int16_t _card_id[MAX_ITEM_SLOTS]{ 0 };
 };
 
 enum {
@@ -26975,6 +27088,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _account_id{ 0 };
 };
 
 enum {
@@ -27298,6 +27412,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _mail_id{ 0 };
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -27392,6 +27508,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _item_id{ 0 };
 };
 
 enum {
@@ -27438,6 +27555,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
+	int16_t _item_id{ 0 };
 };
 
 enum {
@@ -27601,6 +27720,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _npc_guid{ 0 };
 };
 
 enum {
@@ -27641,6 +27761,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
 };
 
 enum {
@@ -27687,6 +27808,9 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	char _shop_name[MAX_VENDING_SHOP_NAME_LENGTH]{ 0 };
+	std::vector<cz_req_openstore_itemlist> _items;
 };
 
 enum {
@@ -27733,6 +27857,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	char _shop_name[MAX_VENDING_SHOP_NAME_LENGTH]{ 0 };
+	int8_t _result{ 0 };
+	std::vector<cz_req_openstore_itemlist> _items;
 };
 
 enum {
@@ -28465,6 +28593,11 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _zeny_limit{ 0 };
+	int8_t _result{ 0 };
+	char _store_name[MAX_VENDING_SHOP_NAME_LENGTH];
+	std::vector<cz_req_open_buying_store_itemlist> _items;
 };
 
 enum {
@@ -28825,6 +28958,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _character_id{ 0 };
+	int _account_id{ 0 };
 };
 
 enum {
@@ -28939,6 +29074,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _type{ 0 };
 };
 
 enum {
@@ -29417,6 +29553,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH];
 };
 
 enum {
@@ -29463,6 +29600,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	char _name[MAX_UNIT_NAME_LENGTH]{ 0 };
 };
 
 enum {
@@ -30358,6 +30496,10 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _account_id{ 0 };
+	int _store_id{ 0 };
+	std::vector<cz_req_trade_buying_store_itemlist> _items;
 };
 
 enum {
@@ -30487,6 +30629,7 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	int _inventory_index{ 0 };
 };
 
 enum {
