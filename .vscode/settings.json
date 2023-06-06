@@ -94,5 +94,6 @@
         "*.ipp": "cpp",
         "shared_mutex": "cpp"
     },
-    "cmake.useCMakePresets": "auto"
+    "cmake.useCMakePresets": "auto",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
