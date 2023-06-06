@@ -14443,10 +14443,15 @@ public:
 	{}
 	virtual ~ZC_ACCEPT_ENTER() {}
 
-	void deliver();
+	void deliver(int16_t x, int16_t y, int16_t dir);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _start_time{ 0 };
+	char _packed_pos[3]{0};
+	int8_t _x_size{0};
+	int8_t _y_size{0};
+
 };
 
 enum {
@@ -14626,10 +14631,15 @@ public:
 	{}
 	virtual ~ZC_ACH_UPDATE() {}
 
-	void deliver();
+	void deliver(int total_points, int rank, int current_rank_points, int next_rank_points, zc_ach_update_list_info info);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _total_points{ 0 };
+	int16_t _rank{ 0 };
+	int _current_rank_points{ 0 };
+	int _next_rank_points{ 0 };
+	struct zc_ach_update_list_info _info;
 };
 
 enum {
@@ -14672,10 +14682,12 @@ public:
 	{}
 	virtual ~ZC_ACK_ACCOUNTNAME() {}
 
-	void deliver();
+	void deliver(int account_id, std::string account_name);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _account_id{ 0 };
+	char _account_name[MAX_USERNAME_LENGTH];
 };
 
 enum {
@@ -14812,10 +14824,11 @@ public:
 	{}
 	virtual ~ZC_ACK_ADD_ITEM_RODEX() {}
 
-	void deliver();
+	void deliver(zc_ack_add_item_rodex info);
 	ByteBuffer &serialize();
 
 /* Structure */
+	zc_ack_add_item_rodex _info;
 };
 
 enum {
@@ -14935,10 +14948,12 @@ public:
 	{}
 	virtual ~ZC_ACK_AUCTION_ADD_ITEM() {}
 
-	void deliver();
+	void deliver(int inventory_index, zc_ack_auction_add_item_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -15474,10 +15489,11 @@ public:
 	{}
 	virtual ~ZC_ACK_CLOSE_ROULETTE() {}
 
-	void deliver();
+	void deliver(int result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -15647,10 +15663,11 @@ public:
 	{}
 	virtual ~ZC_ACK_DISCONNECT_CHARACTER() {}
 
-	void deliver();
+	void deliver(zc_ack_disconnect_character_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int8_t _result;
 };
 
 enum {
@@ -15866,10 +15883,11 @@ public:
 	{}
 	virtual ~ZC_ACK_EXCHANGE_ITEM() {}
 
-	void deliver();
+	void deliver(zc_ack_exchange_item_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int8_t result;
 };
 
 enum {
@@ -16001,10 +16019,11 @@ public:
 	{}
 	virtual ~ZC_ACK_GIVE_MANNER_POINT() {}
 
-	void deliver();
+	void deliver(zc_ack_give_manner_point_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _result{ 0 };
 };
 
 enum {
@@ -16300,10 +16319,13 @@ public:
 	{}
 	virtual ~ZC_ACK_ITEMCOMPOSITION() {}
 
-	void deliver();
+	void deliver(int16_t item_inventory_index, int16_t card_inventory_index, zc_ack_item_composition_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _item_inventory_index{ 0 };
+	int16_t _card_inventory_index{ 0 };
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -16346,10 +16368,12 @@ public:
 	{}
 	virtual ~ZC_ACK_ITEMIDENTIFY() {}
 
-	void deliver();
+	void deliver(int inventory_index, zc_ack_item_identify_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int8_t result{ 0 };
 };
 
 enum {
@@ -16386,10 +16410,15 @@ public:
 	{}
 	virtual ~ZC_ACK_ITEMLIST_BUYING_STORE() {}
 
-	void deliver();
+	void deliver(int account_id, int store_id, int zeny_limit, std::vector<zc_ack_itemlist_buying_store> items);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+	int _account_id{ 0 };
+	int _store_id{ 0 };
+	int _zeny_limit{ 0 };
+	std::vector<zc_ack_itemlist_buying_store> _items;
 };
 
 enum {
@@ -16432,10 +16461,13 @@ public:
 	{}
 	virtual ~ZC_ACK_ITEMREFINING() {}
 
-	void deliver();
+	void deliver(zc_ack_itemrefining_result_type result, int16_t inventory_index, int16_t refine_lv);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _result{ 0 };
+	int16_t _inventory_index{ 0 };
+	int16_t _refine_lv{ 0 };
 };
 
 enum {
@@ -16478,10 +16510,12 @@ public:
 	{}
 	virtual ~ZC_ACK_ITEMREPAIR() {}
 
-	void deliver();
+	void deliver(int inventory_index, zc_ack_itemrepair_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _inventory_index{ 0 };
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -16612,10 +16646,12 @@ public:
 	{}
 	virtual ~ZC_ACK_MAIL_ADD_ITEM() {}
 
-	void deliver();
+	void deliver(int16_t inventory_index, zc_ack_mail_add_item_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t inventory_index{ 0 };
+	int8_t result{ 0 };
 };
 
 enum {
@@ -16658,10 +16694,12 @@ public:
 	{}
 	virtual ~ZC_ACK_MAIL_DELETE() {}
 
-	void deliver();
+	void deliver(int mail_id, zc_ack_mail_delete_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _mail_id{ 0 };
+	int16_t _result{ 0 };
 };
 
 enum {
@@ -16704,10 +16742,12 @@ public:
 	{}
 	virtual ~ZC_ACK_MAIL_RETURN() {}
 
-	void deliver();
+	void deliver(int mail_id, zc_ack_mail_return_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _mail_id{ 0 };
+	int16_t _result{ 0 };
 };
 
 enum {
@@ -16791,10 +16831,12 @@ public:
 	{}
 	virtual ~ZC_ACK_MERGE_ITEM() {}
 
-	void deliver();
+	void deliver(int inventory_index, int amount, zc_ack_merge_item_reason_type reason);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _inventory_index, _amount;
+	int8_t _reason;
 };
 
 enum {
@@ -16831,10 +16873,11 @@ public:
 	{}
 	virtual ~ZC_ACK_OPENSTORE2() {}
 
-	void deliver();
+	void deliver(zc_ack_openstore2_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -17180,10 +17223,15 @@ public:
 	{}
 	virtual ~ZC_ACK_PVPPOINT() {}
 
-	void deliver();
+	void deliver(int char_id, int account_id, int win_point, int lose_point, int point);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _char_id{ 0 };
+	int _account_id{ 0 };
+	int _win_point{ 0 };
+	int _lose_point{ 0 };
+	int _point{ 0 };
 };
 
 enum {
@@ -17303,10 +17351,13 @@ public:
 	{}
 	virtual ~ZC_ACK_RANKING() {}
 
-	void deliver();
+	void deliver(cz_req_ranking_type ranking_type, std::vector<ranking_info> info, int ranking_points);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t ranking_type{ 0 };
+	struct ranking_info info[MAX_RANKING_LIST];
+	int _ranking_points{ 0 };
 };
 
 enum {

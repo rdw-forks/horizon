@@ -31,6 +31,9 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 
 
+/**
+ * Auction 
+ */
 Horizon::Zone::UI::Auction::Auction(std::shared_ptr <Horizon::Zone::ZoneSession> session)
 : _session(session)
 {
@@ -82,6 +85,15 @@ void Horizon::Zone::UI::Auction::stop(int auction_id)
     
 }
 
+bool Horizon::Zone::UI::Auction::notify_add_item(int inventory_index, zc_ack_auction_add_item_result_type result)
+{
+	ZC_ACK_AUCTION_ADD_ITEM pkt(get_session());
+	pkt.deliver(inventory_index, result);
+}
+
+/**
+ * Chatroom 
+ */
 Horizon::Zone::UI::Chatroom::Chatroom(std::shared_ptr <Horizon::Zone::ZoneSession> session)
 : _session(session)
 {
@@ -123,6 +135,9 @@ void Horizon::Zone::UI::Chatroom::change_properties(int limit, int type, std::st
 
 }
 
+/**
+ * Friend 
+ */
 Horizon::Zone::UI::Friend::Friend(std::shared_ptr<ZoneSession> session)
     : _session(session)
 {
@@ -149,6 +164,9 @@ void Horizon::Zone::UI::Friend::remove(int account_id, int char_id)
 
 }
 
+/**
+ * Guild 
+ */
 Horizon::Zone::UI::Guild::Guild(std::shared_ptr<ZoneSession> session)
     : _session(session)
 {
@@ -251,6 +269,19 @@ void Horizon::Zone::UI::Guild::disband(std::string key)
 
 }
 
+
+bool Horizon::Zone::UI::Guild::notify_expel_member(std::string char_name, std::string reason, std::string account_name)
+{
+	ZC_ACK_BAN_GUILD pkt(get_session());
+	pkt.deliver(char_name, reason, account_name);
+	return true;
+}
+bool Horizon::Zone::UI::Guild::notify_expel_member(std::string char_name, std::string reason)
+{
+	ZC_ACK_BAN_GUILD_SSO pkt(get_session());
+	pkt.deliver(char_name, reason);
+	return true;
+}
 /**
  * Clan 
  */
@@ -270,7 +301,17 @@ void Horizon::Zone::UI::Clan::message(std::string name)
 
 }
 
+bool Horizon::Zone::UI::Clan::notify_leave()
+{
+	ZC_ACK_CLAN_LEAVE(get_session())
+	pkt.deliver();
+	return true;
+}
 
+
+/**
+ * Mail
+ */
 Horizon::Zone::UI::Mail::Mail(std::shared_ptr<ZoneSession> session)
 {
 
@@ -326,6 +367,27 @@ void Horizon::Zone::UI::Mail::return_(int mail_id, std::string receiver_name)
 
 }
 
+bool Horizon::Zone::UI::Mail::notify_add_item(int inventory_index, zc_ack_mail_add_item_result_type result)
+{
+	ZC_ACK_MAIL_ADD_ITEM pkt(get_session());
+	pkt.deliver(inventory_index, result);
+	return true;
+}
+bool Horizon::Zone::UI::Mail::notify_delete(int mail_id, zc_ack_mail_delete_result_type result)
+{
+	ZC_ACK_MAIL_DELETE pkt(get_session());
+	pkt.deliver(mail_id, result);
+	return true;
+}
+bool Horizon::Zone::UI::Mail::notify_return(int mail_id, zc_ack_mail_return_result_type result)
+{
+	ZC_ACK_MAIL_RETURN pkt(get_session());
+	pkt.deliver(mail_id, result);
+	return true;
+}
+/**
+ * Party
+ */
 Horizon::Zone::UI::Party::Party(std::shared_ptr<Horizon::Zone::ZoneSession> session)
 {
 
@@ -392,6 +454,9 @@ void Horizon::Zone::UI::Party::notify_created(zcack_makegroup_result_type result
 
 }
 
+/**
+ * PartyBooking
+ */
 Horizon::Zone::UI::PartyBooking::PartyBooking(std::shared_ptr<Horizon::Zone::ZoneSession> session)
 {
 
@@ -422,6 +487,49 @@ void Horizon::Zone::UI::PartyBooking::update(std::vector<int> jobs)
 
 }
 
+/**
+ * RODEx
+ */
+Horizon::Zone::UI::RODEx::RODEx(std::shared_ptr<ZoneSession> s)
+	: _session(s)
+{
+
+}
+
+Horizon::Zone::UI::RODEx::~RODEx()
+{
+
+}
+
+void Horizon::Zone::UI::RODEx::notify_add_item(zc_ack_notify_add_item_rodex info)
+{
+	ZC_ACK_ADD_ITEM_RODEX pkt(get_session());
+	pkt.deliver(info);
+}
+
+/**
+ * Roulette
+ */
+Horizon::Zone::UI::Roulette::Roulette(std::shared_ptr<ZoneSession> s)
+	: _session(s)
+{
+
+}
+
+Horizon::Zone::UI::Roulette::~Roulette()
+{
+
+}
+
+void Horizon::Zone::UI::Roulette::notify_close()
+{
+	ZC_ACK_CLOSE_ROULETTE pkt(get_session());
+	pkt.deliver(0);
+}
+
+/**
+ * Trade
+ */
 Horizon::Zone::UI::Trade::Trade(std::shared_ptr<ZoneSession> s)
 	: _session(s)
 {
@@ -474,6 +582,23 @@ void Horizon::Zone::UI::Trade::commit()
 
 }
 
+bool Horizon::Zone::UI::Trade::notify_response(zc_ack_exchange_item_result_type result)
+{
+	ZC_ACK_EXCHANGE_ITEM pkt(get_session());
+	pkt.deliver(result);
+	return true;
+}
+
+bool Horizon::Zone::UI::Trade::notify_response(zc_ack_exchange_item_result_type result, int char_id, int base_level)
+{
+	ZC_ACK_EXCHANGE_ITEM2 pkt(get_session());
+	pkt.deliver(result, char_id, base_level);
+	return true;
+}
+
+/**
+ * Quest
+ */
 Horizon::Zone::UI::Quest::Quest(std::shared_ptr<ZoneSession> session)
 {
 

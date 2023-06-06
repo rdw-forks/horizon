@@ -55,6 +55,8 @@ public:
     void search_item(cz_auction_search_type search_type, int auction_id, std::string search_text, int page_number);
     void own_information(cz_auction_reqmyinfo_type type);
     void stop(int auction_id);
+
+	bool notify_add_item(int inventory_index, zc_ack_auction_add_item_result_type result);
 	
 private:
 	std::weak_ptr<ZoneSession> _session;
@@ -118,6 +120,8 @@ public:
 	void add_opposition(int account_id);
 	void disband(std::string key);
 
+	bool notify_expel_member(std::string char_name, std::string reason, std::string account_name);
+	bool notify_expel_member(std::string char_name, std::string reason);
 private:
 	std::weak_ptr<ZoneSession> _session;
 };
@@ -129,6 +133,7 @@ public:
 	~Clan();
 
     void message(std::string message);
+	bool notify_leave();
     
 private:
 	std::weak_ptr<ZoneSession> _session;
@@ -137,12 +142,12 @@ private:
 class Mail
 {
 public:
-  Mail(std::shared_ptr<ZoneSession> session);
-  ~Mail();
+	Mail(std::shared_ptr<ZoneSession> session);
+	~Mail();
 
-  std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
 
-  void check_receiver_name(std::string name);
+	void check_receiver_name(std::string name);
 	void add_item(int inventory_index, int amount);
 	void delete_(int mail_id);
 	void retrieve_attachment(int mail_id);
@@ -152,8 +157,11 @@ public:
 	void send(std::string recipient, std::string title, std::string body);
 	void return_(int mail_id, std::string receiver_name);
 
+	bool notify_add_item(int inventory_index, zc_ack_mail_add_item_result_type result);
+	bool notify_delete(int mail_id, zc_ack_mail_delete_result_type result);
+	bool notify_return(int mail_id, zc_ack_mail_return_result_type result);
 private:
-    std::weak_ptr<ZoneSession> _session;
+	std::weak_ptr<ZoneSession> _session;
 };
 class Party
 {
@@ -197,6 +205,32 @@ public:
 private:
 	std::weak_ptr<ZoneSession> _session;
 };
+class RODEx
+{
+public:
+	RODEx(std::shared_ptr<ZoneSession> session);
+	~RODEx();
+	
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	bool notify_add_item(zc_ack_add_item_rodex info);
+	
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
+class Roulette
+{
+public:
+	Roulette(std::shared_ptr<ZoneSession> session);
+	~Roulette();
+	
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	bool notify_close();
+	
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
 class Trade
 {
 public:
@@ -212,6 +246,9 @@ public:
 	void lock();
 	void cancel();
 	void commit();
+
+	bool notify_response(zc_ack_exchange_item_result_type result);
+	bool notify_response(zc_ack_exchange_item_result_type result, int char_id, int base_level);
 
 private:
 	std::weak_ptr<ZoneSession> _session;
