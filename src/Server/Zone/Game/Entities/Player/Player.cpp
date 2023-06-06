@@ -437,6 +437,27 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 	status()->on_equipment_changed(false, item);
 }
 
+void Player::notify_map_properties()
+{
+	zc_map_properties mp;
+
+	// TODO: Should not be responsibility of player to do that. Working on it.
+	mp.pvp = 0;
+	mp.gvg = 0;
+	mp.siege = 0;
+	mp.no_effects = 0;
+	mp.party_pvp = 0;
+	mp.pvp_kill_counter = 0;
+	mp.disallow_party = 0;
+	mp.battleground = 0;
+	mp.no_costume = 0;
+	mp.allow_carts = 1;
+	mp.stargladiator_miracles = 0;
+	mp.spare_bits = 0;
+
+	get_session()->clif()->notify_map_properties(mp);
+}
+
 void Player::on_map_enter()
 {
     //get_packet_handler()->Send_ZC_MAPPROPERTY_R2(get_map());
@@ -447,6 +468,7 @@ void Player::on_map_enter()
 	get_viewport_entities().clear();
 
 	update_viewport();
+	notify_map_properties();
 
 	notify_nearby_players_of_spawn();
 

@@ -1144,7 +1144,9 @@ void ZoneClientInterface::message(std::string message)
 
 void ZoneClientInterface::blocking_play_cancel()
 {
-
+	ZC_ALT_PING pkt(get_session());
+	pkt.deliver();
+	// TODO: should also send ZC_SPECIALPOPUP for clients >= 20221005 based on mapflag.
 }
 
 void ZoneClientInterface::client_version(int version)

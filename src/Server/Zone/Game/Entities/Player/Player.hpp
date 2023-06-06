@@ -114,6 +114,7 @@ public:
 
 	void notify_in_area(ByteBuffer &buf, grid_notifier_type type, uint16_t range = MAX_VIEW_RANGE);
 	bool move_to_map(std::shared_ptr<Map> map, MapCoords coords = { 0, 0 });
+	void notify_map_properties();
 	void on_map_enter();
 
 	void stop_movement() override;
