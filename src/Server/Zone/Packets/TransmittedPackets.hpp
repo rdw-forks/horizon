@@ -30110,20 +30110,6 @@ ID_ZC_MAPPROPERTY_R2 = 0x099b
 ID_ZC_MAPPROPERTY_R2 = 0x0000 // Disabled
 #endif
 };
-struct zc_map_properties {
-	unsigned pvp : 1;
-	unsigned gvg : 1;
-	unsigned siege : 1;
-	unsigned no_effects : 1;
-	unsigned party_pvp : 1;
-	unsigned pvp_kill_counter : 1;
-	unsigned disallow_party : 1;
-	unsigned battleground : 1;
-	unsigned no_costume : 1;
-	unsigned allow_carts : 1;
-	unsigned stargladiator_miracles : 1;
-	unsigned spare_bits : 21;
-};
 /**
  * @brief Main object for the aegis packet: ZC_MAPPROPERTY_R2
  *
