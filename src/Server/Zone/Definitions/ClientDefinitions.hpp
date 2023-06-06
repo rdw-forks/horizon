@@ -44,6 +44,15 @@
 #define CHATROOM_TITLE_SIZE 36 + 1
 #define CHATROOM_PASS_SIZE 8 + 1
 
+#define MAX_STORAGE_PASSWORD_LENGTH 16
+
+#define MAX_AUCTION_SEARCH_TEXT_LENGTH 24
+
+#define MAX_INPUT_STR_LENGTH 70 + 1
+#define MAX_CHAT_STR_LENGTH 255 + 1
+
+#define MAX_ITEM_CREATE_CMD_INPUT_LENGTH 24
+
 #define MAX_TALKBOX_CONTENT_SIZE 80
 #define MAX_STORAGE_PASSWORD_LENGTH 16
 
@@ -52,6 +61,14 @@
 #define MAX_INPUT_STR_LENGTH 70 + 1
 
 #define MAX_ITEM_CREATE_CMD_INPUT_LENGTH 24
+
+#define MAX_MAIL_INBOX_SIZE 30
+#define MAX_MAIL_TITLE_LENGTH 40
+#define MAX_MAIL_BODY_LENGTH 200
+
+#define MAX_PARTY_BOOKING_JOBS 6
+
+#define MAX_VENDING_SHOP_NAME_LENGTH 80
 
 enum grid_notifier_type
 {
@@ -652,5 +669,68 @@ enum cz_join_baby_reply_type
 {
 	CZ_JOINBABY_REJECTED = 0,
 	CZ_JOINBABY_ACCEPTED = 1
+};
+
+enum cz_mail_reset_item_type
+{
+	CZ_MAILRESETITEM_ALL = 0,
+	CZ_MAILRESETITEM_ITEM = 1,
+	CZ_MAILRESETITEM_ZENY = 2
+};
+
+enum cz_memorial_dungeon_command_type
+{
+	CZ_MEMORIALDUNGEONCOMMAND_FORCEDESTROY = 0
+};
+
+#pragma pack(push, 1)
+struct cz_pc_buy_cash_point_item { int16_t amount{ 0 }; int16_t item_id{ 0 }; };
+struct cz_pc_purchase_itemlist { int16_t amount{ 0 }; int16_t item_id{ 0 }; };
+struct cz_pc_sell_itemlist { int16_t inventory_index{ 0 }; int16_t amount{ 0 }; };
+struct cz_pet_evolution_itemlist { int16_t inventory_index{ 0 }; int16_t amount{ 0 }; };
+struct cz_req_openstore_itemlist { int16_t inventory_index{ 0 }; int16_t amount{ 0 }; int price{ 0 }; };
+struct cz_req_open_buying_store_itemlist { int16_t item_id{ 0 }; int16_t amount{ 0 }; int price{ 0 }; };
+struct cz_req_trade_buying_store_itemlist { int16_t inventory_index{ 0 }; int item_id{ 0 }; int amount{ 0 }; };
+#pragma pack(pop)
+
+enum cz_pet_act_emotion_type
+{
+	CZ_PET_ACT_FEEDING = 0,
+	CZ_PET_ACT_HUNTING = 1,
+	CZ_PET_ACT_DANGER = 2,
+	CZ_PET_ACT_DEAD = 3,
+	CZ_PET_ACT_NORMAL = 4,
+	CZ_PET_ACT_SPECIAL_PERFORMANCE = 5,
+	CZ_PET_ACT_LEVEL_UP = 6,
+	CZ_PET_ACT_PERFORMANCE_1 = 7,
+	CZ_PET_ACT_PERFORMANCE_2 = 8, 
+	CZ_PET_ACT_PERFORMANCE_3 = 9,
+	CZ_PET_ACT_LOGIN_GREETING = 10
+};
+
+enum cz_req_give_manner_point_type
+{
+	CZ_REQGIVEMANNERPOINT_POSITIVE = 0,
+	CZ_REQGIVEMANNERPOINT_NEGATIVE = 1,
+	CZ_REQGIVEMANNERPOINT_SELFMUTE = 2
+};
+
+enum cz_req_makingitem_type
+{
+	CZ_REQMAKINGITEM_COOKING = 1,
+	CZ_REQMAKINGITEM_ARROW = 2,
+	CZ_REQMAKINGITEM_ELEMENTAL = 3,
+	CZ_REQMAKINGITEM_GN_MIX_COOKING = 4,
+	CZ_REQMAKINGITEM_GN_MAKEBOMB = 5,
+	CZ_REQMAKINGITEM_GN_S_PHARMACY = 6
+};
+
+enum cz_req_ranking_type
+{
+	CZ_REQRANKING_UNKNOWN    = -1,
+	CZ_REQRANKING_BLACKSMITH = 0,
+	CZ_REQRANKING_ALCHEMIST  = 1,
+	CZ_REQRANKING_TAEKWON    = 2,
+	CZ_REQRANKING_PK         = 3
 };
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

@@ -137,12 +137,20 @@ private:
 class Mail
 {
 public:
-    Mail(std::shared_ptr<ZoneSession> session);
-    ~Mail();
+  Mail(std::shared_ptr<ZoneSession> session);
+  ~Mail();
 
-    std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+  std::shared_ptr<ZoneSession> session() { return _session.lock(); }
 
-    void check_receiver_name(std::string name);
+  void check_receiver_name(std::string name);
+	void add_item(int inventory_index, int amount);
+	void delete_(int mail_id);
+	void retrieve_attachment(int mail_id);
+	void list();
+	void open(int mail_id);
+	void reset(cz_mail_reset_item_type reset);
+	void send(std::string recipient, std::string title, std::string body);
+	void return_(int mail_id, std::string receiver_name);
 
 private:
     std::weak_ptr<ZoneSession> _session;
@@ -164,9 +172,27 @@ public:
 	void change_properties(int exp_share_rule, int item_pickup_rule, int item_share_rule);
 	void send_message(int packet_length, std::string message);
 	void change_leader(int account_id);
+	void refuse_invite(bool refuse);
 
-	/* Nofity */
+	/* Notify */
 	void notify_created(zcack_makegroup_result_type result);
+
+private:
+	std::weak_ptr<ZoneSession> _session;
+};
+
+class PartyBooking
+{
+public:
+	PartyBooking(std::shared_ptr<ZoneSession> session);
+	~PartyBooking();
+
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+
+	void delete_();
+	void register_(int level, int map_id, std::vector<int> jobs);
+	void search(int level, int map_id, int job, int last_index, int result_count);
+	void update(std::vector<int> jobs);
 
 private:
 	std::weak_ptr<ZoneSession> _session;

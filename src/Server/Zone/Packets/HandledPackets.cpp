@@ -92,8 +92,18 @@ void CZ_ITEM_THROW::deserialize(ByteBuffer &buf)
 /**
  * CZ_MOVE_ITEM_FROM_STORE_TO_BODY
  */
-void CZ_MOVE_ITEM_FROM_STORE_TO_BODY::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_STORE_TO_BODY::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_STORE_TO_BODY::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_storage_to_inventory(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_STORE_TO_BODY::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_REQNAME
  */
@@ -111,8 +121,16 @@ void CZ_REQNAME::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQNAME_BYGID
  */
-void CZ_REQNAME_BYGID::handle(ByteBuffer &&buf) {}
-void CZ_REQNAME_BYGID::deserialize(ByteBuffer &buf) {}
+void CZ_REQNAME_BYGID::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->request_name_by_char_id(_char_id);
+}
+void CZ_REQNAME_BYGID::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _char_id;
+}
 /**
  * CZ_REQUEST_ACT
  */
@@ -180,8 +198,16 @@ void CZ_REQUEST_TIME::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_WEAPONREFINE
  */
-void CZ_REQ_WEAPONREFINE::handle(ByteBuffer &&buf) {}
-void CZ_REQ_WEAPONREFINE::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_WEAPONREFINE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->npc_weapon_refine(_inventory_index);
+}
+void CZ_REQ_WEAPONREFINE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+}
 /**
  * CZ_USE_SKILL
  */
@@ -229,7 +255,7 @@ void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::deserialize(ByteBuffer &buf)
 /**
  * CZ_ACK_EXCHANGE_ITEM
  */
-void CZ_ACK_EXCHANGE_ITEM::handle(ByteBuffer &&buf)\
+void CZ_ACK_EXCHANGE_ITEM::handle(ByteBuffer &&buf)
 {
 	deserialize(buf);
 	get_session()->clif()->trade().response(_result);
@@ -732,28 +758,77 @@ void CZ_MONSTER_TALK::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_MOVETO_MAP
  */
-void CZ_MOVETO_MAP::handle(ByteBuffer &&buf) {}
-void CZ_MOVETO_MAP::deserialize(ByteBuffer &buf) {}
+void CZ_MOVETO_MAP::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->move_to_map(_map_name, _x, _y);
+}
+void CZ_MOVETO_MAP::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_map_name, MAP_NAME_LENGTH_EXT);
+	buf >> _x >> _y;
+}
 /**
  * CZ_MOVE_ITEM_FROM_BODY_TO_CART
  */
-void CZ_MOVE_ITEM_FROM_BODY_TO_CART::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_BODY_TO_CART::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_BODY_TO_CART::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_inventory_to_cart(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_BODY_TO_CART::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_MOVE_ITEM_FROM_CART_TO_BODY
  */
-void CZ_MOVE_ITEM_FROM_CART_TO_BODY::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_CART_TO_BODY::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_CART_TO_BODY::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_cart_to_inventory(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_CART_TO_BODY::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_MOVE_ITEM_FROM_CART_TO_STORE
  */
-void CZ_MOVE_ITEM_FROM_CART_TO_STORE::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_CART_TO_STORE::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_CART_TO_STORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_cart_to_storage(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_CART_TO_STORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_MOVE_ITEM_FROM_STORE_TO_CART
  */
-void CZ_MOVE_ITEM_FROM_STORE_TO_CART::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_STORE_TO_CART::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_STORE_TO_CART::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_storage_to_cart(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_STORE_TO_CART::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_NOTIFY_ACTORINIT
  */
@@ -767,18 +842,61 @@ void CZ_NOTIFY_ACTORINIT::deserialize(ByteBuffer &buf) { }
 /**
  * CZ_PC_PURCHASE_ITEMLIST
  */
-void CZ_PC_PURCHASE_ITEMLIST::handle(ByteBuffer &&buf) {}
-void CZ_PC_PURCHASE_ITEMLIST::deserialize(ByteBuffer &buf) {}
+void CZ_PC_PURCHASE_ITEMLIST::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->npc_purchase_items(_items);
+}
+void CZ_PC_PURCHASE_ITEMLIST::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	for (int i = 0; i < ((_packet_length - 4) / sizeof(cz_pc_purchase_itemlist)); i++) {
+		cz_pc_purchase_itemlist item;
+		buf >> item.amount;
+		buf >> item.item_id;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_PC_PURCHASE_ITEMLIST_FROMMC
  */
-void CZ_PC_PURCHASE_ITEMLIST_FROMMC::handle(ByteBuffer &&buf) {}
-void CZ_PC_PURCHASE_ITEMLIST_FROMMC::deserialize(ByteBuffer &buf) {}
+void CZ_PC_PURCHASE_ITEMLIST_FROMMC::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->vending_purchase_items(_account_id, _items);
+}
+void CZ_PC_PURCHASE_ITEMLIST_FROMMC::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf >> _account_id;
+	for (int i = 0; i < ((_packet_length - 8) / sizeof(cz_pc_purchase_itemlist)); i++) {
+		cz_pc_purchase_itemlist item;
+		buf >> item.amount;
+		buf >> item.item_id;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_PC_SELL_ITEMLIST
  */
-void CZ_PC_SELL_ITEMLIST::handle(ByteBuffer &&buf) {}
-void CZ_PC_SELL_ITEMLIST::deserialize(ByteBuffer &buf) {}
+void CZ_PC_SELL_ITEMLIST::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->npc_sell_items(_items);
+}
+void CZ_PC_SELL_ITEMLIST::deserialize(ByteBuffer &buf)
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	for (int i = 0; i < ((_packet_length - 4) / sizeof(cz_pc_sell_itemlist)); i++) {
+		cz_pc_sell_itemlist item;
+		buf >> item.inventory_index;
+		buf >> item.amount;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_PETEGG_INFO
  */
@@ -787,8 +905,16 @@ void CZ_PETEGG_INFO::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PET_ACT
  */
-void CZ_PET_ACT::handle(ByteBuffer &&buf) {}
-void CZ_PET_ACT::deserialize(ByteBuffer &buf) {}
+void CZ_PET_ACT::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->pet_act_emotion((cz_pet_act_emotion_type) _emotion);
+}
+void CZ_PET_ACT::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _emotion;
+}
 /**
  * CZ_PKMODE_CHANGE
  */
@@ -797,13 +923,29 @@ void CZ_PKMODE_CHANGE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_RECALL
  */
-void CZ_RECALL::handle(ByteBuffer &&buf) {}
-void CZ_RECALL::deserialize(ByteBuffer &buf) {}
+void CZ_RECALL::handle(ByteBuffer &&buf) 
+{ 
+	deserialize(buf);
+	get_session()->clif()->recall(_account_name);
+}
+void CZ_RECALL::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_account_name, MAX_USERNAME_LENGTH);
+}
 /**
  * CZ_RECALL_GID
  */
-void CZ_RECALL_GID::handle(ByteBuffer &&buf) {}
-void CZ_RECALL_GID::deserialize(ByteBuffer &buf) {}
+void CZ_RECALL_GID::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->summon(_name);
+}
+void CZ_RECALL_GID::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_name, MAX_UNIT_NAME_LENGTH);
+}
 /**
  * CZ_REGISTER_GUILD_EMBLEM_IMG
  */
@@ -845,7 +987,7 @@ void CZ_REG_CHANGE_GUILD_POSITIONINFO::deserialize(ByteBuffer &buf)
 /**
  * CZ_REMEMBER_WARPPOINT
  */
-void CZ_REMEMBER_WARPPOINT::handle(ByteBuffer &&buf) {}
+void CZ_REMEMBER_WARPPOINT::handle(ByteBuffer &&buf) { get_session()->clif()->remember_warppoint(); }
 void CZ_REMEMBER_WARPPOINT::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REMOVE_AID
@@ -855,13 +997,34 @@ void CZ_REMOVE_AID::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_RENAME_PET
  */
-void CZ_RENAME_PET::handle(ByteBuffer &&buf) {}
-void CZ_RENAME_PET::deserialize(ByteBuffer &buf) {}
+void CZ_RENAME_PET::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->rename_pet(_name);
+}
+void CZ_RENAME_PET::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_name, MAX_UNIT_NAME_LENGTH);
+}
 /**
  * CZ_REQMAKINGITEM
  */
-void CZ_REQMAKINGITEM::handle(ByteBuffer &&buf) {}
-void CZ_REQMAKINGITEM::deserialize(ByteBuffer &buf) {}
+void CZ_REQMAKINGITEM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	std::vector<int16_t> items;
+	for (int i = 0; i < 3; i++)
+		items.push_back(_material_id[i]);
+	get_session()->clif()->produce_item(_item_id, items);
+}
+void CZ_REQMAKINGITEM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _item_id;
+	for (int i = 0; i < 3; i++)
+		buf >> _material_id[i];
+}
 /**
  * CZ_REQUEST_CHAT_PARTY
  */
@@ -885,8 +1048,16 @@ void CZ_REQUEST_QUIT::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_ACCOUNTNAME
  */
-void CZ_REQ_ACCOUNTNAME::handle(ByteBuffer &&buf) {}
-void CZ_REQ_ACCOUNTNAME::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_ACCOUNTNAME::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->request_username(_account_id);
+}
+void CZ_REQ_ACCOUNTNAME::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+}
 /**
  * CZ_REQ_ALLY_GUILD
  */
@@ -923,18 +1094,34 @@ void CZ_REQ_BAN_GUILD::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_BUY_FROMMC
  */
-void CZ_REQ_BUY_FROMMC::handle(ByteBuffer &&buf) {}
-void CZ_REQ_BUY_FROMMC::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_BUY_FROMMC::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->open_vend_shop(_account_id);
+}
+void CZ_REQ_BUY_FROMMC::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id; 
+}
 /**
  * CZ_REQ_CARTOFF
  */
-void CZ_REQ_CARTOFF::handle(ByteBuffer &&buf) {}
+void CZ_REQ_CARTOFF::handle(ByteBuffer &&buf) { get_session()->clif()->remove_cart(); }
 void CZ_REQ_CARTOFF::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_CHANGECART
  */
-void CZ_REQ_CHANGECART::handle(ByteBuffer &&buf) {}
-void CZ_REQ_CHANGECART::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_CHANGECART::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->change_cart(_cart_num);
+}
+void CZ_REQ_CHANGECART::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _cart_num;
+}
 /**
  * CZ_REQ_CHANGE_MEMBERPOS
  */
@@ -960,7 +1147,7 @@ void CZ_REQ_CHANGE_MEMBERPOS::deserialize(ByteBuffer& buf)
 /**
  * CZ_REQ_CLOSESTORE
  */
-void CZ_REQ_CLOSESTORE::handle(ByteBuffer &&buf) {}
+void CZ_REQ_CLOSESTORE::handle(ByteBuffer &&buf) { get_session()->clif()->close_vending(); }
 void CZ_REQ_CLOSESTORE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_DELETE_RELATED_GUILD
@@ -1008,8 +1195,16 @@ void CZ_REQ_DISORGANIZE_GUILD::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_EMOTION
  */
-void CZ_REQ_EMOTION::handle(ByteBuffer &&buf) {}
-void CZ_REQ_EMOTION::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_EMOTION::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->emotion(_type);
+}
+void CZ_REQ_EMOTION::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _type;
+}
 /**
  * CZ_REQ_ENTER_ROOM
  */
@@ -1071,8 +1266,18 @@ void CZ_REQ_EXPEL_MEMBER::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_GIVE_MANNER_POINT
  */
-void CZ_REQ_GIVE_MANNER_POINT::handle(ByteBuffer &&buf) {}
-void CZ_REQ_GIVE_MANNER_POINT::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_GIVE_MANNER_POINT::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->give_manner_point(_account_id, (cz_req_give_manner_point_type) _type, _value);
+}
+void CZ_REQ_GIVE_MANNER_POINT::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+	buf >> _type;
+	buf >> _value;
+}
 /**
  * CZ_REQ_GUILD_EMBLEM_IMG
  */
@@ -1128,28 +1333,74 @@ void CZ_REQ_HOSTILE_GUILD::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_ITEMCOMPOSITION
  */
-void CZ_REQ_ITEMCOMPOSITION::handle(ByteBuffer &&buf) {}
-void CZ_REQ_ITEMCOMPOSITION::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_ITEMCOMPOSITION::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->display_item_card_composition(_card_index, _equip_index);
+}
+void CZ_REQ_ITEMCOMPOSITION::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _card_index;
+	buf >> _equip_index;
+}
 /**
  * CZ_REQ_ITEMCOMPOSITION_LIST
  */
-void CZ_REQ_ITEMCOMPOSITION_LIST::handle(ByteBuffer &&buf) {}
-void CZ_REQ_ITEMCOMPOSITION_LIST::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_ITEMCOMPOSITION_LIST::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->display_item_card_composition(_card_index);
+}
+void CZ_REQ_ITEMCOMPOSITION_LIST::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _card_index;
+}
 /**
  * CZ_REQ_ITEMIDENTIFY
  */
-void CZ_REQ_ITEMIDENTIFY::handle(ByteBuffer &&buf) {}
-void CZ_REQ_ITEMIDENTIFY::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_ITEMIDENTIFY::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->identify_item(_inventory_index);
+}
+void CZ_REQ_ITEMIDENTIFY::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+}
 /**
  * CZ_REQ_ITEMREPAIR
  */
-void CZ_REQ_ITEMREPAIR::handle(ByteBuffer &&buf) {}
-void CZ_REQ_ITEMREPAIR::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_ITEMREPAIR::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->repair_item(_inventory_index, _item_id, _refine, _card_id[0], _card_id[1], _card_id[2], _card_id[3]);
+}
+void CZ_REQ_ITEMREPAIR::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _item_id;
+	buf >> _refine;
+	for (int i = 0; i < MAX_ITEM_SLOTS; i++)
+		buf >> _card_id[i];
+}
+
 /**
  * CZ_REQ_JOIN_BABY
  */
-void CZ_REQ_JOIN_BABY::handle(ByteBuffer &&buf) {}
-void CZ_REQ_JOIN_BABY::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_JOIN_BABY::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->invite_baby(_account_id);
+}
+void CZ_REQ_JOIN_BABY::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+}
 /**
  * CZ_REQ_JOIN_COUPLE
  */
@@ -1188,7 +1439,7 @@ void CZ_REQ_JOIN_GUILD::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_LEAVE_GROUP
  */
-void CZ_REQ_LEAVE_GROUP::handle(ByteBuffer &&buf) {}
+void CZ_REQ_LEAVE_GROUP::handle(ByteBuffer &&buf) { get_session()->clif()->party().leave(); }
 void CZ_REQ_LEAVE_GROUP::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_LEAVE_GUILD
@@ -1225,23 +1476,74 @@ void CZ_REQ_MAKE_GUILD::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_MAKINGARROW
  */
-void CZ_REQ_MAKINGARROW::handle(ByteBuffer &&buf) {}
-void CZ_REQ_MAKINGARROW::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_MAKINGARROW::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->make_arrow(_item_id);
+}
+void CZ_REQ_MAKINGARROW::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _item_id;
+}
 /**
  * CZ_REQ_NEXT_SCRIPT
  */
-void CZ_REQ_NEXT_SCRIPT::handle(ByteBuffer &&buf) {}
-void CZ_REQ_NEXT_SCRIPT::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_NEXT_SCRIPT::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->npc_next_dialog(_npc_guid);
+}
+void CZ_REQ_NEXT_SCRIPT::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _npc_guid;
+}
 /**
  * CZ_REQ_OPENSTORE
  */
-void CZ_REQ_OPENSTORE::handle(ByteBuffer &&buf) {}
-void CZ_REQ_OPENSTORE::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_OPENSTORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->start_vending(_shop_name, _items);
+}
+void CZ_REQ_OPENSTORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf.read(_shop_name, MAX_VENDING_SHOP_NAME_LENGTH);
+	for (int i = 0; i < ((_packet_length - 84) / sizeof(struct cz_req_openstore_itemlist)); i++) {
+		cz_req_openstore_itemlist item;
+		buf >> item.inventory_index;
+		buf >> item.amount;
+		buf >> item.price;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_REQ_OPENSTORE2
  */
-void CZ_REQ_OPENSTORE2::handle(ByteBuffer &&buf) {}
-void CZ_REQ_OPENSTORE2::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_OPENSTORE2::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	if ((int) _result)
+		get_session()->clif()->start_vending(_shop_name, _items);
+}
+
+void CZ_REQ_OPENSTORE2::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf.read(_shop_name, MAX_VENDING_SHOP_NAME_LENGTH);
+	buf >> _result;
+	for (int i = 0; i < ((_packet_length - 85) / sizeof(struct cz_req_openstore_itemlist)); i++) {
+		cz_req_openstore_itemlist item;
+		buf >> item.inventory_index;
+		buf >> item.amount;
+		buf >> item.price;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_REQ_OPEN_MEMBER_INFO
  */
@@ -1289,7 +1591,7 @@ void CZ_REQ_TAKEOFF_EQUIP::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_USER_COUNT
  */
-void CZ_REQ_USER_COUNT::handle(ByteBuffer &&buf) {}
+void CZ_REQ_USER_COUNT::handle(ByteBuffer &&buf) { get_session()->clif()->user_count(); }
 void CZ_REQ_USER_COUNT::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_WEAR_EQUIP
@@ -1309,7 +1611,7 @@ void CZ_REQ_WEAR_EQUIP::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_WHISPER_LIST
  */
-void CZ_REQ_WHISPER_LIST::handle(ByteBuffer &&buf) {}
+void CZ_REQ_WHISPER_LIST::handle(ByteBuffer &&buf) { get_session()->clif()->ignore_list(); }
 void CZ_REQ_WHISPER_LIST::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_RESET
@@ -1435,8 +1737,18 @@ void CZ_INPUT_EDITDLGSTR::deserialize(ByteBuffer &buf)
 /**
  * CZ_LOCALBROADCAST
  */
-void CZ_LOCALBROADCAST::handle(ByteBuffer &&buf) {}
-void CZ_LOCALBROADCAST::deserialize(ByteBuffer &buf) {}
+void CZ_LOCALBROADCAST::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->broadcast_local(_message);
+}
+void CZ_LOCALBROADCAST::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf.read(_message, _packet_length - 4);
+}
+
 /**
  * CZ_REQMAKINGHOMUN
  */
@@ -1445,18 +1757,43 @@ void CZ_REQMAKINGHOMUN::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_PVPPOINT
  */
-void CZ_REQ_PVPPOINT::handle(ByteBuffer &&buf) {}
-void CZ_REQ_PVPPOINT::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_PVPPOINT::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->pvpinfo(_character_id, _account_id);
+}
+void CZ_REQ_PVPPOINT::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _character_id;
+	buf >> _account_id;
+}
 /**
  * CZ_REQ_GIVE_MANNER_BYNAME
  */
-void CZ_REQ_GIVE_MANNER_BYNAME::handle(ByteBuffer &&buf) {}
-void CZ_REQ_GIVE_MANNER_BYNAME::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_GIVE_MANNER_BYNAME::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->adjust_manner_by_name(_name);
+}
+void CZ_REQ_GIVE_MANNER_BYNAME::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_name, MAX_UNIT_NAME_LENGTH);
+}
 /**
  * CZ_REQ_STATUS_GM
  */
-void CZ_REQ_STATUS_GM::handle(ByteBuffer &&buf) {}
-void CZ_REQ_STATUS_GM::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_STATUS_GM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->check_status(_name);
+}
+void CZ_REQ_STATUS_GM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_name, MAX_UNIT_NAME_LENGTH);
+}
 /**
  * CZ_ALCHEMIST_RANK
  */
@@ -1481,13 +1818,30 @@ void CZ_BLACKSMITH_RANK::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_LESSEFFECT
  */
-void CZ_LESSEFFECT::handle(ByteBuffer &&buf) {}
-void CZ_LESSEFFECT::deserialize(ByteBuffer &buf) {}
+void CZ_LESSEFFECT::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->setting_effects(_setting);
+}
+void CZ_LESSEFFECT::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _setting;
+}
 /**
  * CZ_REQ_MAKINGITEM
  */
-void CZ_REQ_MAKINGITEM::handle(ByteBuffer &&buf) {}
-void CZ_REQ_MAKINGITEM::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_MAKINGITEM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->make_item((cz_req_makingitem_type) _type, _item_id);
+}
+void CZ_REQ_MAKINGITEM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _type;
+	buf >> _item_id;
+}
 /**
  * CZ_AUCTION_ADD_ITEM
  */
@@ -1532,33 +1886,74 @@ void CZ_AUCTION_CREATE::deserialize(ByteBuffer &buf)
 /**
  * CZ_MAIL_ADD_ITEM
  */
-void CZ_MAIL_ADD_ITEM::handle(ByteBuffer &&buf) {}
-void CZ_MAIL_ADD_ITEM::deserialize(ByteBuffer &buf) {}
+void CZ_MAIL_ADD_ITEM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().add_item(_inventory_index, _amount);
+}
+void CZ_MAIL_ADD_ITEM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_MAIL_DELETE
  */
-void CZ_MAIL_DELETE::handle(ByteBuffer &&buf) {}
-void CZ_MAIL_DELETE::deserialize(ByteBuffer &buf) {}
+void CZ_MAIL_DELETE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().delete_(_mail_id);
+}
+void CZ_MAIL_DELETE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _mail_id;
+}
 /**
  * CZ_MAIL_GET_ITEM
  */
-void CZ_MAIL_GET_ITEM::handle(ByteBuffer &&buf) {}
-void CZ_MAIL_GET_ITEM::deserialize(ByteBuffer &buf) {}
+void CZ_MAIL_GET_ITEM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().retrieve_attachment(_mail_id);
+}
+void CZ_MAIL_GET_ITEM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _mail_id;
+}
 /**
  * CZ_MAIL_GET_LIST
  */
-void CZ_MAIL_GET_LIST::handle(ByteBuffer &&buf) {}
+void CZ_MAIL_GET_LIST::handle(ByteBuffer &&buf) { get_session()->clif()->mail().list(); }
 void CZ_MAIL_GET_LIST::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_MAIL_OPEN
  */
-void CZ_MAIL_OPEN::handle(ByteBuffer &&buf) {}
-void CZ_MAIL_OPEN::deserialize(ByteBuffer &buf) {}
+void CZ_MAIL_OPEN::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().open(_mail_id);
+}
+void CZ_MAIL_OPEN::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _mail_id;
+}
 /**
  * CZ_MAIL_RESET_ITEM
  */
-void CZ_MAIL_RESET_ITEM::handle(ByteBuffer &&buf) {}
-void CZ_MAIL_RESET_ITEM::deserialize(ByteBuffer &buf) {}
+void CZ_MAIL_RESET_ITEM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().reset((cz_mail_reset_item_type) _type);
+}
+void CZ_MAIL_RESET_ITEM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _type;
+}
 /**
  * CZ_TAEKWON_RANK
  */
@@ -1586,22 +1981,50 @@ void CZ_COMMAND_MER::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQUEST_ACTNPC
  */
-void CZ_REQUEST_ACTNPC::handle(ByteBuffer &&buf) {}
-void CZ_REQUEST_ACTNPC::deserialize(ByteBuffer &buf) {}
+void CZ_REQUEST_ACTNPC::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+}
+void CZ_REQUEST_ACTNPC::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _guid;
+	buf >> _target_id;
+	buf >> _action;
+}
 /**
  * CZ_REQUEST_MOVENPC
  */
-void CZ_REQUEST_MOVENPC::handle(ByteBuffer &&buf) {}
-void CZ_REQUEST_MOVENPC::deserialize(ByteBuffer &buf) {}
+void CZ_REQUEST_MOVENPC::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->move_homunculus_to_coordinates(_guid, _x, _y, _dir);
+}
+void CZ_REQUEST_MOVENPC::deserialize(ByteBuffer &buf) 
+{
+	char packed_pos[3];
+	buf >> _packet_id;
+	buf >> _guid;
+	buf.read(packed_pos, sizeof(packed_pos));
+	UnpackPosition((uint8_t *) packed_pos, &_x, &_y, &_dir);
+}
 /**
  * CZ_REQUEST_MOVETOOWNER
  */
-void CZ_REQUEST_MOVETOOWNER::handle(ByteBuffer &&buf) {}
-void CZ_REQUEST_MOVETOOWNER::deserialize(ByteBuffer &buf) {}
+void CZ_REQUEST_MOVETOOWNER::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->move_homunculus_to_master(_guid);
+}
+void CZ_REQUEST_MOVETOOWNER::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _guid;
+}
 /**
  * CZ_KILLER_RANK
  */
-void CZ_KILLER_RANK::handle(ByteBuffer &&buf) {}
+void CZ_KILLER_RANK::handle(ByteBuffer &&buf) { get_session()->clif()->ranking_pk(); }
 void CZ_KILLER_RANK::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_ACK_STORE_PASSWORD
@@ -1636,13 +2059,33 @@ void CZ_ACK_STORE_PASSWORD::deserialize(ByteBuffer &buf)
 /**
  * CZ_RENAME_MER
  */
-void CZ_RENAME_MER::handle(ByteBuffer &&buf) {}
-void CZ_RENAME_MER::deserialize(ByteBuffer &buf) {}
+void CZ_RENAME_MER::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->rename_homunculus(_name);
+}
+void CZ_RENAME_MER::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_name, MAX_UNIT_NAME_LENGTH);
+}
 /**
  * CZ_MAIL_SEND
  */
-void CZ_MAIL_SEND::handle(ByteBuffer &&buf) {}
-void CZ_MAIL_SEND::deserialize(ByteBuffer &buf) {}
+void CZ_MAIL_SEND::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().send(_recipient, _title, _body);
+}
+void CZ_MAIL_SEND::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf.read(_recipient, MAX_UNIT_NAME_LENGTH);
+	buf.read(_title, MAX_MAIL_TITLE_LENGTH);
+	buf >> _body_length;
+	buf.read(_body, _body_length);
+}
 /**
  * CZ_AUCTION_ADD
  */
@@ -1730,8 +2173,17 @@ void CZ_AUCTION_REQ_MY_SELL_STOP::deserialize(ByteBuffer &buf)
 /**
  * CZ_REQ_MAIL_RETURN
  */
-void CZ_REQ_MAIL_RETURN::handle(ByteBuffer &&buf) {}
-void CZ_REQ_MAIL_RETURN::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_MAIL_RETURN::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->mail().return_(_mail_id, _name);
+}
+void CZ_REQ_MAIL_RETURN::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _mail_id;
+	buf.read(_name, MAX_UNIT_NAME_LENGTH);
+}
 /**
  * CZ_HUNTINGLIST
  */
@@ -1770,8 +2222,24 @@ void CZ_UNUSED_MER_USE_SKILL::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PC_BUY_CASH_POINT_ITEM
  */
-void CZ_PC_BUY_CASH_POINT_ITEM::handle(ByteBuffer &&buf) {}
-void CZ_PC_BUY_CASH_POINT_ITEM::deserialize(ByteBuffer &buf) {}
+void CZ_PC_BUY_CASH_POINT_ITEM::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+}
+void CZ_PC_BUY_CASH_POINT_ITEM::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf >> _kafra_points;
+	buf >> _count;
+	for (int i = 0; i < _count; i++) {
+		cz_pc_buy_cash_point_item item;
+		buf >> item.amount;
+		buf >> item.item_id;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_SRPACKET_START
  */
@@ -1810,8 +2278,16 @@ void CZ_SRPACKETR2_START::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PARTY_CONFIG
  */
-void CZ_PARTY_CONFIG::handle(ByteBuffer &&buf) {}
-void CZ_PARTY_CONFIG::deserialize(ByteBuffer &buf) {}
+void CZ_PARTY_CONFIG::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->party().refuse_invite(((int)_refuse_invite) ? false : true);
+}
+void CZ_PARTY_CONFIG::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _refuse_invite;
+}
 /**
  * CZ_PARTY_JOIN_REQ
  */
@@ -1863,8 +2339,16 @@ void CZ_SHORTCUT_KEY_CHANGE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_MEMORIALDUNGEON_COMMAND
  */
-void CZ_MEMORIALDUNGEON_COMMAND::handle(ByteBuffer &&buf) {}
-void CZ_MEMORIALDUNGEON_COMMAND::deserialize(ByteBuffer &buf) {}
+void CZ_MEMORIALDUNGEON_COMMAND::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->memorial_dungeon_command((cz_memorial_dungeon_command_type) _command);
+}
+void CZ_MEMORIALDUNGEON_COMMAND::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _command;
+}
 /**
  * CZ_CONFIG
  */
@@ -1980,23 +2464,60 @@ void CZ_ITEM_THROW2::deserialize(ByteBuffer &buf)
 /**
  * CZ_MOVE_ITEM_FROM_BODY_TO_STORE2
  */
-void CZ_MOVE_ITEM_FROM_BODY_TO_STORE2::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_BODY_TO_STORE2::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_BODY_TO_STORE2::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_inventory_to_storage(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_BODY_TO_STORE2::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_MOVE_ITEM_FROM_STORE_TO_BODY2
  */
-void CZ_MOVE_ITEM_FROM_STORE_TO_BODY2::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_STORE_TO_BODY2::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_STORE_TO_BODY2::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_storage_to_inventory(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_STORE_TO_BODY2::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_REQNAME_BYGID2
  */
-void CZ_REQNAME_BYGID2::handle(ByteBuffer &&buf) {}
-void CZ_REQNAME_BYGID2::deserialize(ByteBuffer &buf) {}
+void CZ_REQNAME_BYGID2::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->request_name_by_char_id(_char_id);
+}
+void CZ_REQNAME_BYGID2::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _char_id;
+}
 /**
  * CZ_REQUEST_TIME2
  */
-void CZ_REQUEST_TIME2::handle(ByteBuffer &&buf) {}
-void CZ_REQUEST_TIME2::deserialize(ByteBuffer &buf) {}
+void CZ_REQUEST_TIME2::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->notify_time();
+}
+
+void CZ_REQUEST_TIME2::deserialize(ByteBuffer &buf)
+{
+	buf >> _packet_id;
+	buf >> _timestamp;
+}
 /**
  * CZ_USE_SKILL_TOGROUND2
  */
@@ -2072,7 +2593,7 @@ void CZ_OPEN_SIMPLE_CASHSHOP_ITEMLIST::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PROGRESS
  */
-void CZ_PROGRESS::handle(ByteBuffer &&buf) {}
+void CZ_PROGRESS::handle(ByteBuffer &&buf) { get_session()->clif()->progress_bar_completed(); }
 void CZ_PROGRESS::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_CLOSE_WINDOW
@@ -2104,18 +2625,50 @@ void CZ_ITEMLISTWIN_RES::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PARTY_BOOKING_REQ_REGISTER
  */
-void CZ_PARTY_BOOKING_REQ_REGISTER::handle(ByteBuffer &&buf) {}
-void CZ_PARTY_BOOKING_REQ_REGISTER::deserialize(ByteBuffer &buf) {}
+void CZ_PARTY_BOOKING_REQ_REGISTER::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	std::vector<int> jobs;
+	for (int i = 0; i < MAX_PARTY_BOOKING_JOBS; i++)
+		jobs.push_back(_jobs[i]);
+	get_session()->clif()->party_booking().register_(_level, _map_id, jobs);
+}
+void CZ_PARTY_BOOKING_REQ_REGISTER::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _level;
+	buf >> _map_id;
+	for (int i = 0; i < MAX_PARTY_BOOKING_JOBS; i++)
+		buf >> _jobs[i];
+}
 /**
  * CZ_REQ_CLOSE_BUYING_STORE
  */
-void CZ_REQ_CLOSE_BUYING_STORE::handle(ByteBuffer &&buf) {}
+void CZ_REQ_CLOSE_BUYING_STORE::handle(ByteBuffer &&buf) { get_session()->clif()->close_buying_store(); }
 void CZ_REQ_CLOSE_BUYING_STORE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_OPEN_BUYING_STORE
  */
-void CZ_REQ_OPEN_BUYING_STORE::handle(ByteBuffer &&buf) {}
-void CZ_REQ_OPEN_BUYING_STORE::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_OPEN_BUYING_STORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	if ((int) _result)
+		get_session()->clif()->start_buying_store(_store_name, _zeny_limit, _items);
+}
+void CZ_REQ_OPEN_BUYING_STORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _zeny_limit;
+	buf >> _result;
+	buf.read(_store_name, MAX_VENDING_SHOP_NAME_LENGTH);
+	for (int i = 0; i < ((_packet_length - 85) / sizeof(cz_req_open_buying_store_itemlist)); i++) {
+		cz_req_open_buying_store_itemlist item;
+		buf >> item.item_id;
+		buf >> item.amount;
+		buf >> item.price;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_JOIN_BATTLE_FIELD
  */
@@ -2124,18 +2677,53 @@ void CZ_JOIN_BATTLE_FIELD::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_MOVE_ITEM_FROM_BODY_TO_STORE
  */
-void CZ_MOVE_ITEM_FROM_BODY_TO_STORE::handle(ByteBuffer &&buf) {}
-void CZ_MOVE_ITEM_FROM_BODY_TO_STORE::deserialize(ByteBuffer &buf) {}
+void CZ_MOVE_ITEM_FROM_BODY_TO_STORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+
+	get_session()->clif()->move_item_from_inventory_to_storage(_inventory_index, _amount);
+}
+void CZ_MOVE_ITEM_FROM_BODY_TO_STORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+	buf >> _amount;
+}
 /**
  * CZ_REQ_CLICK_TO_BUYING_STORE
  */
-void CZ_REQ_CLICK_TO_BUYING_STORE::handle(ByteBuffer &&buf) {}
-void CZ_REQ_CLICK_TO_BUYING_STORE::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_CLICK_TO_BUYING_STORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->open_buying_store(_account_id);
+}
+void CZ_REQ_CLICK_TO_BUYING_STORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+}
 /**
  * CZ_REQ_TRADE_BUYING_STORE
  */
-void CZ_REQ_TRADE_BUYING_STORE::handle(ByteBuffer &&buf) {}
-void CZ_REQ_TRADE_BUYING_STORE::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_TRADE_BUYING_STORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->sell_to_buying_store(_account_id, _store_id, _items);
+}
+void CZ_REQ_TRADE_BUYING_STORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf >> _account_id;
+	buf >> _store_id;
+	for (int i = 0; i < ((_packet_length - 12) / sizeof(cz_req_trade_buying_store_itemlist)); i++) {
+		cz_req_trade_buying_store_itemlist item;
+		buf >> item.inventory_index;
+		buf >> item.item_id;
+		buf >> item.amount;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_SEARCH_STORE_INFO
  */
@@ -2370,8 +2958,23 @@ void CZ_REQ_SEND_RODEX::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PET_EVOLUTION
  */
-void CZ_PET_EVOLUTION::handle(ByteBuffer &&buf) {}
-void CZ_PET_EVOLUTION::deserialize(ByteBuffer &buf) {}
+void CZ_PET_EVOLUTION::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->pet_evolve(_evolved_pet_egg_id, _items);
+}
+void CZ_PET_EVOLUTION::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf >> _evolved_pet_egg_id;
+	for (int i = 0; i < ((_packet_length - 6) / sizeof(cz_pet_evolution_itemlist)); i++) {
+		cz_pet_evolution_itemlist item;
+		buf >> item.inventory_index;
+		buf >> item.amount;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_SHORTCUTKEYBAR_ROTATE
  */
@@ -2503,13 +3106,30 @@ void CZ_REQ_CHANGE_TITLE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_ONECLICK_ITEMIDENTIFY
  */
-void CZ_REQ_ONECLICK_ITEMIDENTIFY::handle(ByteBuffer &&buf) {}
-void CZ_REQ_ONECLICK_ITEMIDENTIFY::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_ONECLICK_ITEMIDENTIFY::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->identify_item(_inventory_index);
+}
+void CZ_REQ_ONECLICK_ITEMIDENTIFY::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _inventory_index;
+}
 /**
  * CZ_PRIVATE_AIRSHIP_REQUEST
  */
-void CZ_PRIVATE_AIRSHIP_REQUEST::handle(ByteBuffer &&buf) {}
-void CZ_PRIVATE_AIRSHIP_REQUEST::deserialize(ByteBuffer &buf) {}
+void CZ_PRIVATE_AIRSHIP_REQUEST::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->private_airship_request(_map_name, _item_id);
+}
+void CZ_PRIVATE_AIRSHIP_REQUEST::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf.read(_map_name, MAP_NAME_LENGTH_EXT);
+	buf >> _item_id;
+}
 /**
  * CZ_REQ_OPEN_UI
  */
@@ -2699,8 +3319,24 @@ void CZ_GM_FULLSTRIP::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PC_PURCHASE_ITEMLIST_FROMMC2
  */
-void CZ_PC_PURCHASE_ITEMLIST_FROMMC2::handle(ByteBuffer &&buf) {}
-void CZ_PC_PURCHASE_ITEMLIST_FROMMC2::deserialize(ByteBuffer &buf) {}
+void CZ_PC_PURCHASE_ITEMLIST_FROMMC2::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->vending_purchase_items(_account_id, _unique_id, _items);
+}
+void CZ_PC_PURCHASE_ITEMLIST_FROMMC2::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _packet_length;
+	buf >> _account_id;
+	buf >> _unique_id;
+	for (int i = 0; i < ((_packet_length - 12) / sizeof(cz_pc_purchase_itemlist)); i++) {
+		cz_pc_purchase_itemlist item;
+		buf >> item.amount;
+		buf >> item.item_id;
+		_items.push_back(item);
+	}
+}
 /**
  * CZ_SIMPLE_CASH_BTNSHOW
  */
@@ -2709,18 +3345,43 @@ void CZ_SIMPLE_CASH_BTNSHOW::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PARTY_BOOKING_REQ_DELETE
  */
-void CZ_PARTY_BOOKING_REQ_DELETE::handle(ByteBuffer &&buf) {}
+void CZ_PARTY_BOOKING_REQ_DELETE::handle(ByteBuffer &&buf) { get_session()->clif()->party_booking().delete_(); }
 void CZ_PARTY_BOOKING_REQ_DELETE::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_PARTY_BOOKING_REQ_SEARCH
  */
-void CZ_PARTY_BOOKING_REQ_SEARCH::handle(ByteBuffer &&buf) {}
-void CZ_PARTY_BOOKING_REQ_SEARCH::deserialize(ByteBuffer &buf) {}
+void CZ_PARTY_BOOKING_REQ_SEARCH::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->party_booking().search(_level, _map_id, _job, _last_index, _result_count);
+
+}
+void CZ_PARTY_BOOKING_REQ_SEARCH::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _level;
+	buf >> _map_id;
+	buf >> _job;
+	buf >> _last_index;
+	buf >> _result_count;
+}
 /**
  * CZ_PARTY_BOOKING_REQ_UPDATE
  */
-void CZ_PARTY_BOOKING_REQ_UPDATE::handle(ByteBuffer &&buf) {}
-void CZ_PARTY_BOOKING_REQ_UPDATE::deserialize(ByteBuffer &buf) {}
+void CZ_PARTY_BOOKING_REQ_UPDATE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	std::vector<int> jobs;
+	for (int i = 0; i < MAX_PARTY_BOOKING_JOBS; i++)
+		jobs.push_back(_jobs[i]);
+	get_session()->clif()->party_booking().update(jobs);
+}
+void CZ_PARTY_BOOKING_REQ_UPDATE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	for (int i = 0; i < MAX_PARTY_BOOKING_JOBS; i++)
+		buf >> _jobs[i];
+}
 /**
  * CZ_CLOSE_SEARCH_STORE_INFO
  */
@@ -2729,13 +3390,29 @@ void CZ_CLOSE_SEARCH_STORE_INFO::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_RECALL_SSO
  */
-void CZ_RECALL_SSO::handle(ByteBuffer &&buf) {}
-void CZ_RECALL_SSO::deserialize(ByteBuffer &buf) {}
+void CZ_RECALL_SSO::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->recall(_account_id);
+}
+void CZ_RECALL_SSO::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+}
 /**
  * CZ_REMOVE_AID_SSO
  */
-void CZ_REMOVE_AID_SSO::handle(ByteBuffer &&buf) {}
-void CZ_REMOVE_AID_SSO::deserialize(ByteBuffer &buf) {}
+void CZ_REMOVE_AID_SSO::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->warp_to(_account_id);
+}
+void CZ_REMOVE_AID_SSO::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _account_id;
+}
 /**
  * CZ_REQ_SE_CASH_TAB_CODE
  */
@@ -2904,8 +3581,16 @@ void CZ_REQ_SCHEDULER_CASHITEM::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_REQ_RANKING
  */
-void CZ_REQ_RANKING::handle(ByteBuffer &&buf) {}
-void CZ_REQ_RANKING::deserialize(ByteBuffer &buf) {}
+void CZ_REQ_RANKING::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->ranking((cz_req_ranking_type) _type);
+}
+void CZ_REQ_RANKING::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+	buf >> _type;
+}
 /**
  * CZ_SELECTCART
  */

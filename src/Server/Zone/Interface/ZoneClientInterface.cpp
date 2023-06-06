@@ -45,7 +45,7 @@ using namespace Horizon::Zone;
 
 ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
 : ClientInterface(s), _chat_room(s), _trade(s), _party(s), _guild(s), _friend(s), _quest(s), 
-  _auction(s), _mail(s), _clan(s)
+  _auction(s), _mail(s), _clan(s), _party_booking(s)
 {
 	
 }
@@ -122,6 +122,24 @@ bool ZoneClientInterface::restart(uint8_t type)
 	}
 	
 	return true;
+}
+
+/**
+ * Character
+ */
+void ZoneClientInterface::request_name_by_char_id(int char_id)
+{
+
+}
+
+void ZoneClientInterface::invite_baby(int account_id)
+{
+
+}
+
+void ZoneClientInterface::pvpinfo(int character_id, int account_id)
+{
+
 }
 
 bool ZoneClientInterface::disconnect(int8_t type)
@@ -463,6 +481,16 @@ void ZoneClientInterface::register_baby(int account_id, int character_id, cz_joi
 
 }
 
+void ZoneClientInterface::npc_weapon_refine(int32_t inventory_index)
+{
+
+}
+
+void ZoneClientInterface::npc_next_dialog(int32_t npc_guid)
+{
+
+}
+
 void ZoneClientInterface::npc_contact(int32_t guid)
 {
 
@@ -517,7 +545,37 @@ void ZoneClientInterface::npc_input(int guid, std::string value)
 
 }
 
+void ZoneClientInterface::npc_purchase_items(std::vector<cz_pc_purchase_itemlist> items)
+{
+
+}
+
+void ZoneClientInterface::npc_sell_items(std::vector<cz_pc_sell_itemlist> items)
+{
+
+}
+
+void ZoneClientInterface::progress_bar_completed()
+{
+
+}
+
+void ZoneClientInterface::vending_purchase_items(int account_id, std::vector<cz_pc_purchase_itemlist> items)
+{
+
+}
+
+void ZoneClientInterface::vending_purchase_items(int account_id, int unique_id, std::vector<cz_pc_purchase_itemlist> items)
+{
+
+}
+
 void ZoneClientInterface::broadcast(std::string message)
+{
+
+}
+
+void ZoneClientInterface::broadcast_local(std::string message)
 {
 
 }
@@ -635,6 +693,51 @@ void ZoneClientInterface::pickup_item(int guid)
 }
 
 void ZoneClientInterface::throw_item(int16_t inventory_index, int16_t amount)
+{
+
+}
+
+void ZoneClientInterface::move_item_from_inventory_to_cart(int16_t inventory_index, int amount)
+{
+
+}
+
+void ZoneClientInterface::move_item_from_inventory_to_storage(int16_t inventory_index, int amount)
+{
+
+}
+
+void ZoneClientInterface::move_item_from_cart_to_inventory(int16_t inventory_index, int amount)
+{
+
+}
+
+void ZoneClientInterface::move_item_from_cart_to_storage(int16_t inventory_index, int amount)
+{
+
+}
+
+void ZoneClientInterface::move_item_from_storage_to_inventory(int16_t inventory_index, int amount)
+{
+
+}
+
+void ZoneClientInterface::move_item_from_storage_to_cart(int16_t inventory_index, int amount)
+{
+
+}
+
+void ZoneClientInterface::display_item_card_composition(int card_index, int equip_index)
+{
+
+}
+
+void ZoneClientInterface::identify_item(int inventory_index)
+{
+	
+}
+
+void ZoneClientInterface::repair_item(int inventory_index, int item_id, int refine, int card1, int card2, int card3, int card4)
 {
 
 }
@@ -905,6 +1008,58 @@ bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_tim
 	return true;
 }
 
+void ZoneClientInterface::open_vend_shop(int account_id)
+{
+
+}
+
+void ZoneClientInterface::close_vending()
+{
+	
+}
+
+void ZoneClientInterface::open_buying_store(int account_id)
+{
+
+}
+
+void ZoneClientInterface::close_buying_store()
+{
+	
+}
+
+void ZoneClientInterface::start_vending(std::string shop_name, std::vector<cz_req_openstore_itemlist> items)
+{
+
+}
+
+void ZoneClientInterface::start_buying_store(std::string store_name, int zeny_limit, std::vector<cz_req_open_buying_store_itemlist> items)
+{
+
+}
+
+void ZoneClientInterface::sell_to_buying_store(int account_id, int store_id, std::vector<cz_req_trade_buying_store_itemlist> items)
+{
+
+}
+/**
+ * Misc
+ */
+void ZoneClientInterface::emotion(int type)
+{
+
+}
+
+void ZoneClientInterface::user_count()
+{
+
+}
+
+void ZoneClientInterface::ignore_list()
+{
+	
+}
+
 /**
  * Class Specific 
  */
@@ -924,14 +1079,58 @@ void ZoneClientInterface::novice_doridori()
 
 }
 
+void ZoneClientInterface::remember_warppoint()
+{
+
+}
+
+void ZoneClientInterface::produce_item(int item_id, std::vector<int16_t> material_ids)
+{
+
+}
+
+void ZoneClientInterface::remove_cart()
+{
+
+}
+
+void ZoneClientInterface::change_cart(int16_t num)
+{
+
+}
+
+void ZoneClientInterface::make_arrow(int16_t item_id)
+{
+
+}
+
+void ZoneClientInterface::make_item(cz_req_makingitem_type type, int16_t item_id)
+{
+
+}
+
 /**
  * Ranking 
  */
+void ZoneClientInterface::ranking(cz_req_ranking_type type)
+{
+
+}
 void ZoneClientInterface::ranking_alchemist()
 {
 
 }
 void ZoneClientInterface::ranking_blacksmith()
+{
+
+}
+
+void ZoneClientInterface::ranking_pk()
+{
+
+}
+
+void ZoneClientInterface::setting_effects(int setting)
 {
 
 }
@@ -993,6 +1192,16 @@ void ZoneClientInterface::command_pet(cz_command_pet_type command)
 
 }
 
+void ZoneClientInterface::pet_act_emotion(cz_pet_act_emotion_type emotion)
+{
+
+}
+
+void ZoneClientInterface::pet_evolve(int evolved_pet_egg_id, std::vector<cz_pet_evolution_itemlist> items)
+{
+	
+}
+
 void ZoneClientInterface::view_equipment(int account_id)
 {
 	
@@ -1015,6 +1224,32 @@ void ZoneClientInterface::set_config(cz_config_type config, bool setting)
 	}
 }
 
+void ZoneClientInterface::rename_homunculus(std::string name)
+{
+
+}
+
+void ZoneClientInterface::rename_pet(std::string name)
+{
+
+}
+
+void ZoneClientInterface::request_action(int guid, int target_id, int action)
+{
+
+}
+
+void ZoneClientInterface::move_homunculus_to_coordinates(int guid, int x, int y, int dir)
+{
+
+}
+
+void ZoneClientInterface::move_homunculus_to_master(int guid)
+{
+	
+}
+
+
 /**
  * Administration
  */
@@ -1029,6 +1264,76 @@ void ZoneClientInterface::disconnect_account(int account_id)
 }
 
 void ZoneClientInterface::create(std::string create)
+{
+
+}
+
+void ZoneClientInterface::move_to_map(std::string map_name, int16_t x, int16_t y)
+{
+
+}
+
+void ZoneClientInterface::recall(std::string username)
+{
+
+}
+
+void ZoneClientInterface::recall(int account_id)
+{
+
+}
+
+
+void ZoneClientInterface::summon(std::string char_name)
+{
+
+}
+
+void ZoneClientInterface::warp_to(int account_id)
+{
+
+}
+
+void ZoneClientInterface::request_username(int account_id)
+{
+
+}
+
+void ZoneClientInterface::adjust_manner_by_name(std::string name)
+{
+
+}
+
+void ZoneClientInterface::give_manner_point(int account_id, cz_req_give_manner_point_type type, int value)
+{
+
+}
+
+void ZoneClientInterface::check_status(std::string name)
+{
+
+}
+
+/**
+ * Instancing 
+ */
+void ZoneClientInterface::memorial_dungeon_command(cz_memorial_dungeon_command_type command)
+{
+
+}
+
+/**
+ * Cash Point Store 
+ */
+void ZoneClientInterface::cash_point_purchase(int kafra_points, std::vector<cz_pc_buy_cash_point_item> items)
+{
+
+}
+
+/*
+ * Private Airship
+ */
+void ZoneClientInterface::private_airship_request(std::string map_name, int item_id)
 {
 
 }
