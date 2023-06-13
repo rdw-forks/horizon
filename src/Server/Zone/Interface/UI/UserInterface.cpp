@@ -89,6 +89,7 @@ bool Horizon::Zone::UI::Auction::notify_add_item(int inventory_index, zc_ack_auc
 {
 	ZC_ACK_AUCTION_ADD_ITEM pkt(get_session());
 	pkt.deliver(inventory_index, result);
+	return false;
 }
 
 /**
@@ -303,7 +304,7 @@ void Horizon::Zone::UI::Clan::message(std::string name)
 
 bool Horizon::Zone::UI::Clan::notify_leave()
 {
-	ZC_ACK_CLAN_LEAVE(get_session())
+	ZC_ACK_CLAN_LEAVE pkt(get_session());
 	pkt.deliver();
 	return true;
 }
@@ -501,10 +502,11 @@ Horizon::Zone::UI::RODEx::~RODEx()
 
 }
 
-void Horizon::Zone::UI::RODEx::notify_add_item(zc_ack_notify_add_item_rodex info)
+bool Horizon::Zone::UI::RODEx::notify_add_item(s_zc_ack_add_item_rodex info)
 {
 	ZC_ACK_ADD_ITEM_RODEX pkt(get_session());
 	pkt.deliver(info);
+	return true;
 }
 
 /**
@@ -521,10 +523,11 @@ Horizon::Zone::UI::Roulette::~Roulette()
 
 }
 
-void Horizon::Zone::UI::Roulette::notify_close()
+bool Horizon::Zone::UI::Roulette::notify_close()
 {
 	ZC_ACK_CLOSE_ROULETTE pkt(get_session());
 	pkt.deliver(0);
+	return true;
 }
 
 /**

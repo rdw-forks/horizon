@@ -50,7 +50,7 @@ public:
 	Map(std::weak_ptr<MapContainerThread>, std::string const &, uint16_t, uint16_t, std::vector<uint8_t> const &);
 	~Map();
 
-	std::shared_ptr<MapContainerThread> container() { return _container.lock(); }
+	std::shared_ptr<MapContainerThread> container() { return _container.expired() == false ? _container.lock() : nullptr; }
 
 	std::string const &get_name() { return _name; }
 

@@ -48,6 +48,7 @@ namespace Entities
 	class Player;
 }
 
+class ZoneSession;
 class Map;
 
 class MapManager
@@ -66,36 +67,14 @@ public:
 	bool finalize();
 	bool LoadMapCache();
 
-	std::shared_ptr<Map> add_player_to_map(std::string map_name, std::shared_ptr<Entities::Player> p);
-	bool remove_player_from_map(std::string map_name, std::shared_ptr<Entities::Player> p);
+	std::shared_ptr<Map> add_session_to_map(std::string map_name, std::shared_ptr<ZoneSession> s);
+	bool remove_session_from_map(std::string map_name, std::shared_ptr<ZoneSession> s);
 
-	std::shared_ptr<Map> get_map(std::string map_name)
-	{
-		std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
-		
-		for (auto it = container_map.begin(); it != container_map.end(); ++it) {
-			std::shared_ptr<MapContainerThread> mapc = it->second;
-			std::shared_ptr<Map> map = mapc->get_map(map_name);
-			if (map) 
-				return map;
-		}
-
-		return nullptr;
-	}
+	std::shared_ptr<Map> get_map(std::string map_name);
 
 	TaskScheduler &getScheduler() { return _scheduler; }
 
-	std::shared_ptr<Entities::Player> find_player(std::string name)
-	{
-		std::map<int32_t, std::shared_ptr<MapContainerThread>> map_containers = _map_containers.get_map();
-		for (auto it = map_containers.begin(); it != map_containers.end(); it++) {
-			std::shared_ptr<Entities::Player> player = it->second->get_player(name);
-			if (player != nullptr)
-				return player;
-		}
-
-		return nullptr;
-	}
+	std::shared_ptr<Entities::Player> find_player(std::string name);
 
 private:
 	TaskScheduler _scheduler;

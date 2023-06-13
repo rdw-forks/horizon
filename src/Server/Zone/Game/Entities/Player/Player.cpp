@@ -36,7 +36,6 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
-#include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -112,13 +111,13 @@ bool Player::initialize()
 	// On map entry processing.
 	on_map_enter();
 
-	lua_manager()->initialize_player_state(lua_state());
+	map()->container()->get_lua_manager()->initialize_player_state(lua_state());
 
 	// required for npc component definitions upon triggering
-	lua_manager()->initialize_npc_state(lua_state());
+	map()->container()->get_lua_manager()->initialize_npc_state(lua_state());
 
 	// required for triggering monster components upon monster kill events etc.
-	lua_manager()->initialize_monster_state(lua_state());
+	map()->container()->get_lua_manager()->initialize_monster_state(lua_state());
 
 	try {
 		sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string().append("internal/on_login_event.lua"));
@@ -133,6 +132,8 @@ bool Player::initialize()
 		return false;
 	}
 
+	set_initialized(true);
+	
 	return true;
 }
 
@@ -217,7 +218,7 @@ bool Player::load()
 		MapCoords mcoords(r[11].get<int>(), r[12].get<int>());
 		std::shared_ptr<Map> map = MapMgr->get_map(r[10].get<std::string>());
 
-		map->container()->add_player(shared_from_this()->downcast<Player>());
+		map->container()->add_session(get_session());
 
 		set_map(map);
 		set_map_coords(mcoords);
@@ -388,8 +389,8 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 
 	{
 		if (!dest_map->container()->get_map(map()->get_name())) {
-			map()->container()->remove_player(myself);
-			dest_map->container()->add_player(myself);
+			map()->container()->remove_session(get_session());
+			dest_map->container()->add_session(get_session());
 		}
 
 		if (coords == MapCoords(0, 0))

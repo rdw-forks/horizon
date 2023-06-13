@@ -14824,11 +14824,11 @@ public:
 	{}
 	virtual ~ZC_ACK_ADD_ITEM_RODEX() {}
 
-	void deliver(zc_ack_add_item_rodex info);
+	void deliver(s_zc_ack_add_item_rodex info);
 	ByteBuffer &serialize();
 
 /* Structure */
-	zc_ack_add_item_rodex _info;
+	s_zc_ack_add_item_rodex _info;
 };
 
 enum {
@@ -15887,7 +15887,7 @@ public:
 	ByteBuffer &serialize();
 
 /* Structure */
-	int8_t result;
+	int8_t _result;
 };
 
 enum {
@@ -16373,7 +16373,7 @@ public:
 
 /* Structure */
 	int16_t _inventory_index{ 0 };
-	int8_t result{ 0 };
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -16650,8 +16650,8 @@ public:
 	ByteBuffer &serialize();
 
 /* Structure */
-	int16_t inventory_index{ 0 };
-	int8_t result{ 0 };
+	int16_t _inventory_index{ 0 };
+	int8_t _result{ 0 };
 };
 
 enum {
@@ -17351,12 +17351,12 @@ public:
 	{}
 	virtual ~ZC_ACK_RANKING() {}
 
-	void deliver(cz_req_ranking_type ranking_type, std::vector<ranking_info> info, int ranking_points);
+	void deliver(cz_req_ranking_type ranking_type, std::vector<zc_ack_ranking_info> info, int ranking_points);
 	ByteBuffer &serialize();
 
 /* Structure */
-	int16_t ranking_type{ 0 };
-	struct ranking_info info[MAX_RANKING_LIST];
+	int16_t _ranking_type{ 0 };
+	struct zc_ack_ranking_info _info[MAX_RANKING_LIST];
 	int _ranking_points{ 0 };
 };
 
@@ -30160,20 +30160,6 @@ ID_ZC_MAPPROPERTY_R2 = 0x099b
 #else
 ID_ZC_MAPPROPERTY_R2 = 0x0000 // Disabled
 #endif
-};
-struct zc_map_properties {
-	unsigned pvp : 1;
-	unsigned gvg : 1;
-	unsigned siege : 1;
-	unsigned no_effects : 1;
-	unsigned party_pvp : 1;
-	unsigned pvp_kill_counter : 1;
-	unsigned disallow_party : 1;
-	unsigned battleground : 1;
-	unsigned no_costume : 1;
-	unsigned allow_carts : 1;
-	unsigned stargladiator_miracles : 1;
-	unsigned spare_bits : 21;
 };
 /**
  * @brief Main object for the aegis packet: ZC_MAPPROPERTY_R2

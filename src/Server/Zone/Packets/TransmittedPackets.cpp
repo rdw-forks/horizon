@@ -181,7 +181,7 @@ ByteBuffer &ZC_ACK_CREATE_CHATROOM::serialize()
 /**
  * ZC_ACK_DISCONNECT_CHARACTER
  */
-void ZC_ACK_DISCONNECT_CHARACTER::deliver(zc_ack_disconnect_character result) 
+void ZC_ACK_DISCONNECT_CHARACTER::deliver(zc_ack_disconnect_character_type result) 
 {
 	_result = (int8_t) result;
 	serialize();
@@ -189,8 +189,8 @@ void ZC_ACK_DISCONNECT_CHARACTER::deliver(zc_ack_disconnect_character result)
 }
 ByteBuffer &ZC_ACK_DISCONNECT_CHARACTER::serialize()
 {
-	buf << _packet_id;
-	buf << _result;
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -4414,12 +4414,12 @@ ByteBuffer &ZC_SIMPLE_CASHSHOP_POINT_ITEMLIST::serialize()
  */
 void ZC_ACK_CLAN_LEAVE::deliver() 
 {
-	serialize()
+	serialize();
 	transmit();
 }
 ByteBuffer &ZC_ACK_CLAN_LEAVE::serialize()
 {
-	buf << _packet_id;
+	buf() << _packet_id;
 	return buf();
 }
 /**
@@ -5688,7 +5688,7 @@ ByteBuffer &ZC_ACH_UPDATE::serialize()
 /**
  * ZC_ACK_ADD_ITEM_RODEX
  */
-void ZC_ACK_ADD_ITEM_RODEX::deliver(zc_ack_add_item_rodex info) 
+void ZC_ACK_ADD_ITEM_RODEX::deliver(s_zc_ack_add_item_rodex info) 
 {
 	_info = info;
 	serialize();
@@ -7197,7 +7197,7 @@ ByteBuffer &ZC_PERSONAL_INFOMATION_CHN::serialize()
 /**
  * ZC_ACK_RANKING
  */
-void ZC_ACK_RANKING::deliver(cz_req_ranking_type ranking_type, std::vector<ranking_info> info, int ranking_points)
+void ZC_ACK_RANKING::deliver(cz_req_ranking_type ranking_type, std::vector<zc_ack_ranking_info> info, int ranking_points)
 {
 	_ranking_type = (int16_t) ranking_type;
 	for (int i = 0; i < info.size() && i < MAX_RANKING_LIST; i++)
@@ -7211,7 +7211,7 @@ ByteBuffer &ZC_ACK_RANKING::serialize()
 	buf() << _packet_id;
 	buf() << _ranking_type;
 	for (int i = 0; i < MAX_RANKING_LIST; i++) {
-		buf() << _info[i].name;
+		buf().append(_info[i].name, MAX_UNIT_NAME_LENGTH);
 		buf() << _info[i].points;
 	}
 	buf() << _ranking_points;

@@ -80,8 +80,8 @@ bool Monster::initialize()
 
 void Monster::finalize()
 {
-	if (map_container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
-		map_container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
 
 	if (has_valid_grid_reference())
 		remove_grid_reference();
@@ -94,7 +94,7 @@ void Monster::behavior_passive()
 		&& !is_walking()
 		&& was_spotted_once()) {
 	    try {
-	        sol::load_result fx = lua_manager()->lua_state()->load_file(sZone->config().get_script_root_path().string().append("/monsters/functionalities/walking_passive.lua"));
+	        sol::load_result fx = map()->container()->get_lua_manager()->lua_state()->load_file(sZone->config().get_script_root_path().string().append("/monsters/functionalities/walking_passive.lua"));
 	        sol::protected_function_result result = fx(shared_from_this());
 	        if (!result.valid()) {
 	            sol::error err = result;
@@ -193,7 +193,7 @@ bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
-	map_container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
+	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
 
 	switch (killer->type())
 	{

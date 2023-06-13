@@ -146,8 +146,7 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	std::shared_ptr<Horizon::Zone::Entities::Player> pl = get_session()->player();
-	pl->map_container()->remove_player(pl);
+	get_session()->player()->map()->container()->remove_session(get_session());
 
 	return true;
 }
@@ -576,7 +575,7 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
 	if (message[msg_first_char] == '@') {
-		get_session()->player()->lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+		get_session()->player()->map()->container()->get_lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
 		return;
 	}
 
@@ -1075,7 +1074,7 @@ void ZoneClientInterface::ranking_pk()
 {
 
 }
-bool ZoneClientInterface::notify_ranking(cz_req_ranking_type type, std::vector<zc_ack_ranking_info> info, int ranking_points);
+bool ZoneClientInterface::notify_ranking(cz_req_ranking_type type, std::vector<zc_ack_ranking_info> info, int ranking_points)
 {
 	ZC_ACK_RANKING pkt(get_session());
 	pkt.deliver(type, info, ranking_points);
@@ -1083,9 +1082,9 @@ bool ZoneClientInterface::notify_ranking(cz_req_ranking_type type, std::vector<z
 }
 bool ZoneClientInterface::notify_pvp_points()
 {
-	int char_id; int account_id; int win_point; int lose_point; int point;
-	ZC_ACK_PVPPOINT pkt(get_session());
-	pkt.deliver(char_id, account_id, win_point, lose_point, point);
+	//int char_id; int account_id; int win_point; int lose_point; int point;
+	//ZC_ACK_PVPPOINT pkt(get_session());
+	//pkt.deliver(char_id, account_id, win_point, lose_point, point);
 	return true;
 }
 void ZoneClientInterface::setting_effects(int setting)

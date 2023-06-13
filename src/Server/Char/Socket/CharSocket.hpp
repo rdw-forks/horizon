@@ -47,7 +47,7 @@ class CharSocket : public Horizon::Networking::Socket<CharSocket>
 {
 	typedef Socket<CharSocket> BaseSocket;
 public:
-	explicit CharSocket(std::shared_ptr<tcp::socket> socket);
+	explicit CharSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket);
 	~CharSocket();
 
 	/* */

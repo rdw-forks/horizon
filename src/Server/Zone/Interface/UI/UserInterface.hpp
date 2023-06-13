@@ -45,7 +45,7 @@ public:
     Auction(std::shared_ptr<ZoneSession> session);
     ~Auction();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
     void add(int now_money, int max_money, int16_t delete_hour);
     void add_cancel(int auction_id);
@@ -67,7 +67,7 @@ public:
 	Chatroom(std::shared_ptr<ZoneSession> session);
 	~Chatroom();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void create_chatroom(int limit, int _public, std::string password, std::string title);
 	void role_change(int role, std::string name);
@@ -85,7 +85,7 @@ public:
 	Friend(std::shared_ptr<ZoneSession> session);
 	~Friend();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void request(int inviter_account_id, int inviter_char_id, cz_ack_req_add_friends_result_type result);
     void add(std::string name);
@@ -101,7 +101,7 @@ public:
 	~Guild();
 	
 	void create(int master_id, std::string name);
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 	void request_guild_information(int type);
 	void notify_menu_interface();
 	void change_position_info(std::vector<s_cz_reg_change_guild_positioninfo> info);
@@ -132,6 +132,8 @@ public:
 	Clan(std::shared_ptr<ZoneSession> session);
 	~Clan();
 
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
+	
     void message(std::string message);
 	bool notify_leave();
     
@@ -145,7 +147,7 @@ public:
 	Mail(std::shared_ptr<ZoneSession> session);
 	~Mail();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void check_receiver_name(std::string name);
 	void add_item(int inventory_index, int amount);
@@ -169,7 +171,7 @@ public:
 	Party(std::shared_ptr<ZoneSession> session);
 	~Party();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void create(std::string name, int item_pickup_rule, int item_share_rule);
 	void invite(int account_id);
@@ -195,7 +197,7 @@ public:
 	PartyBooking(std::shared_ptr<ZoneSession> session);
 	~PartyBooking();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void delete_();
 	void register_(int level, int map_id, std::vector<int> jobs);
@@ -211,9 +213,9 @@ public:
 	RODEx(std::shared_ptr<ZoneSession> session);
 	~RODEx();
 	
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
-	bool notify_add_item(zc_ack_add_item_rodex info);
+	bool notify_add_item(s_zc_ack_add_item_rodex info);
 	
 private:
 	std::weak_ptr<ZoneSession> _session;
@@ -224,7 +226,7 @@ public:
 	Roulette(std::shared_ptr<ZoneSession> session);
 	~Roulette();
 	
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	bool notify_close();
 	
@@ -237,7 +239,7 @@ public:
 	Trade(std::shared_ptr<ZoneSession> session);
 	~Trade();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void request(int account_id);
 	void response(int result);
@@ -259,7 +261,7 @@ public:
     Quest(std::shared_ptr<ZoneSession> session);
     ~Quest();
 
-	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
     void update_status(int quest_id, cz_active_quest_type type);
 private:

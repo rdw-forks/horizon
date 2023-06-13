@@ -753,7 +753,7 @@ struct zc_ach_update_list_info {
 };
 #pragma pack(pop)
 
-struct zc_ack_add_item_rodex { 
+struct s_zc_ack_add_item_rodex { 
 	int8_t result;
 	int16_t index;
 	int16_t count;
@@ -765,7 +765,7 @@ struct zc_ack_add_item_rodex {
 	uint16_t item_id;
 #endif
 	int8_t type;
-	int8_t is_idenfieid;
+	int8_t is_identified;
 	int8_t is_damaged;
 	int8_t refining_level;
 	item_slot slot;
@@ -863,7 +863,7 @@ enum zc_ack_openstore2_result_type
 	ZC_ACK_OPENSTORE2_RESULT_LOCATION_FAILURE = 3
 };
 
-struct ranking_info
+struct zc_ack_ranking_info
 {
 	char name[MAX_UNIT_NAME_LENGTH]{ 0 };
 	int points{ 0 };

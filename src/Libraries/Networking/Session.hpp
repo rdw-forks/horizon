@@ -40,7 +40,7 @@ template <class SocketType, class SessionType>
 class Session : public std::enable_shared_from_this<SessionType>
 {
 public:
-	Session(std::weak_ptr<SocketType> socket)
+	Session(int64_t uid, std::weak_ptr<SocketType> socket)
 	: _socket(socket)
 	{
 		//
@@ -59,8 +59,14 @@ public:
 
 	virtual void initialize() = 0;
 
+	bool is_initialized() { return _is_initialized; }
+	void set_initialized(bool initialized) { _is_initialized = initialized; }
+
+	int64_t get_session_id() { return _uid; }
 private:
 	std::weak_ptr<SocketType> _socket;
+	bool _is_initialized{ false };
+	int64_t _uid{ 0 };
 };
 }
 }
