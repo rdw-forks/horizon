@@ -6026,9 +6026,13 @@ ByteBuffer &ZC_OFFLINE_STORE_VISIBLE::serialize()
 /**
  * ZC_ALT_PING
  */
-void ZC_ALT_PING::deliver() {}
+void ZC_ALT_PING::deliver() {
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ALT_PING::serialize()
 {
+	buf() << _packet_id;
 	return buf();
 }
 /**
