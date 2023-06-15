@@ -41,7 +41,7 @@ add_executable(auth
     ${CORE_SOURCES}
     ${UTILITY_SOURCES}
 )
-
+message(STATUS ${MYSQLCPPCONN8_LIBRARIES})
 target_link_libraries(auth
 	PUBLIC
         ${Boost_LIBRARIES}
@@ -49,7 +49,11 @@ target_link_libraries(auth
         ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		${MYSQL_LIBRARIES}
-		unofficial::mysql-connector-cpp::connector
+		$<$<BOOL:${WIN32}>:unofficial::mysql-connector-cpp::connector>
+		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_LIBRARIES}>
+		$<$<BOOL:${UNIX}>:-lssl>
+		$<$<BOOL:${UNIX}>:-lcrypto>
+		$<$<BOOL:${UNIX}>:-lresolv>
 )
 
 target_precompile_headers(auth
@@ -82,10 +86,12 @@ target_include_directories(auth
 		${SOL2_INCLUDE_DIR}
 		${SQLPP11_INCLUDE_DIR}
 		${MYSQL_INCLUDE_DIR}
-		${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}
+		$<$<BOOL:${WIN32}>:${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}>
+		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_INCLUDE_DIR}>
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 )
+
 
 if (WITH_COVERAGE)
 	target_compile_options(auth INTERFACE
