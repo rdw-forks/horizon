@@ -24,7 +24,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_C_COMPILER="g++" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true
         make
   
   Linux-Clang:
@@ -36,7 +36,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_C_COMPILER="clang++" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true
         make
 
   Integrate-Dependencies:
