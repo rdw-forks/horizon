@@ -166,7 +166,7 @@ function run_tests
     for f in ${files[@]};
     do
         t=$(basename ${f::-4});
-        ./"$INSTALL_DIRECTORY/${t}.exe";
+        ./"$INSTALL_DIRECTORY/${t}";
     done
 }
 

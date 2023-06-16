@@ -41,7 +41,7 @@ add_executable(auth
     ${CORE_SOURCES}
     ${UTILITY_SOURCES}
 )
-message(STATUS ${MYSQLCPPCONN8_LIBRARIES})
+
 target_link_libraries(auth
 	PUBLIC
         ${Boost_LIBRARIES}
