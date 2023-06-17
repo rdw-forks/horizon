@@ -35,7 +35,7 @@
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-
+#include <cmath>
 namespace Horizon
 {
 namespace Zone
@@ -56,7 +56,7 @@ public:
 	static uint32_t euclidean(MapCoords source_, MapCoords target_)
 	{
 		auto delta = getDelta(source_, target_);
-		return static_cast<uint32_t>(10 * sqrt(pow(delta.x(), 2) + pow(delta.y(), 2)));
+		return static_cast<uint32_t>(10 * std::sqrt(std::pow(delta.x(), 2) + std::pow(delta.y(), 2)));
 	}
 
 	static uint32_t octagonal(MapCoords source_, MapCoords target_)
