@@ -62,6 +62,19 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
         make
+  Ubuntu-GCC-Run-ASAN:
+    needs: Ubuntu-GCC-ALL-ASAN
+    runs-on: Ubuntu
+    steps: &run-steps
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-GCC-ALL-TSAN:
     needs: Ubuntu-GCC-Servers
     runs-on: Ubuntu
@@ -74,6 +87,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
         make
+  Ubuntu-GCC-Run-TSAN:
+    needs: Ubuntu-GCC-ALL-TSAN
+    runs-on: Ubuntu
+    steps: *run-steps
   Ubuntu-Clang-Libraries:
     runs-on: Ubuntu
     steps:
@@ -121,13 +138,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
         make
-        cd bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
-        ./auth --with-config="config/auth-server.lua.dist"
-        ./char --with-config="config/char-server.lua.dist"
-        ./zone --with-config="config/zone-server.lua.dist"
+  Ubuntu-Clang-Run-ASAN:
+    needs: Ubuntu-Clang-ALL-ASAN
+    runs-on: Ubuntu
+    steps: *run-steps
   Ubuntu-Clang-ALL-TSAN:
     needs: Ubuntu-Clang-Servers
     runs-on: Ubuntu
@@ -140,13 +154,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
         make
-        cd bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
-        ./auth --with-config="config/auth-server.lua.dist"
-        ./char --with-config="config/char-server.lua.dist"
-        ./zone --with-config="config/zone-server.lua.dist"
+  Ubuntu-Clang-Run-TSAN:
+    needs: Ubuntu-Clang-ALL-TSAN
+    runs-on: Ubuntu
+    steps: *run-steps
         
   Debian-GCC-Libraries:
     runs-on: Debian
@@ -207,6 +218,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
         make
+  Debian-GCC-Run-TSAN:
+    needs: Debian-GCC-ALL-TSAN
+    runs-on: Debian
+    steps: *run-steps
   Debian-Clang-Libraries:
     runs-on: Debian
     steps:
@@ -254,13 +269,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
         make
-        cd bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
-        ./auth --with-config="config/auth-server.lua.dist"
-        ./char --with-config="config/char-server.lua.dist"
-        ./zone --with-config="config/zone-server.lua.dist"
+  Debian-Clang-Run-ASAN:
+    needs: Debian-Clang-ALL-ASAN
+    runs-on: Debian
+    steps: *run-steps
   Debian-Clang-ALL-TSAN:
     needs: Debian-Clang-Servers
     runs-on: Debian
@@ -273,13 +285,10 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
         make
-        cd bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
-        ./auth --with-config="config/auth-server.lua.dist"
-        ./char --with-config="config/char-server.lua.dist"
-        ./zone --with-config="config/zone-server.lua.dist"
+  Debian-Clang-Run-TSAN:
+    needs: Debian-Clang-ALL-TSAN
+    runs-on: Debian
+    steps: *run-steps
 
   Windows-Libraries:
     runs-on: Windows
@@ -322,14 +331,6 @@ jobs:
     - name: Configure Step & Build
       run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
 
-    - name: Install
-      run:  sh ./horizon.sh install "build/bin/Release"
-      
-    - name: Install Database
-      run: |
-        sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon
     # Uncomment when we have some more information on why its failing?  
     #- name: Run Auth
     #  working-directory: ${{github.workspace}}\build\bin\Release
