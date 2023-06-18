@@ -233,6 +233,19 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
         make
+  Debian-GCC-Run-ASAN:
+    needs: Debian-GCC-ALL-ASAN
+    runs-on: Debian
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
     needs: Debian-GCC-Servers
     runs-on: Debian
