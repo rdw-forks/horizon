@@ -65,7 +65,7 @@ jobs:
   Ubuntu-GCC-Run-ASAN:
     needs: Ubuntu-GCC-ALL-ASAN
     runs-on: Ubuntu
-    steps: &run-steps
+    steps:
     - name: Run
       run: |
         cd build/bin
@@ -90,7 +90,16 @@ jobs:
   Ubuntu-GCC-Run-TSAN:
     needs: Ubuntu-GCC-ALL-TSAN
     runs-on: Ubuntu
-    steps: *run-steps
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-Clang-Libraries:
     runs-on: Ubuntu
     steps:
@@ -141,7 +150,16 @@ jobs:
   Ubuntu-Clang-Run-ASAN:
     needs: Ubuntu-Clang-ALL-ASAN
     runs-on: Ubuntu
-    steps: *run-steps
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-Clang-ALL-TSAN:
     needs: Ubuntu-Clang-Servers
     runs-on: Ubuntu
@@ -157,7 +175,16 @@ jobs:
   Ubuntu-Clang-Run-TSAN:
     needs: Ubuntu-Clang-ALL-TSAN
     runs-on: Ubuntu
-    steps: *run-steps
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
         
   Debian-GCC-Libraries:
     runs-on: Debian
@@ -221,7 +248,16 @@ jobs:
   Debian-GCC-Run-TSAN:
     needs: Debian-GCC-ALL-TSAN
     runs-on: Debian
-    steps: *run-steps
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-Libraries:
     runs-on: Debian
     steps:
@@ -272,7 +308,16 @@ jobs:
   Debian-Clang-Run-ASAN:
     needs: Debian-Clang-ALL-ASAN
     runs-on: Debian
-    steps: *run-steps
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
     needs: Debian-Clang-Servers
     runs-on: Debian
@@ -288,7 +333,16 @@ jobs:
   Debian-Clang-Run-TSAN:
     needs: Debian-Clang-ALL-TSAN
     runs-on: Debian
-    steps: *run-steps
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
 
   Windows-Libraries:
     runs-on: Windows
