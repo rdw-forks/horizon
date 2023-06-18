@@ -22,10 +22,8 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
   Ubuntu-GCC-Tests-Tools:
     needs: Ubuntu-GCC-Libraries
     runs-on: Ubuntu
@@ -34,11 +32,16 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
-        make
-  Ubuntu-GCC-Servers:
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          /"${{github.workspace}}/build/bin/Debug/test/${t}";
+        done
+  Ubuntu-GCC-ALL-ASAN:
     needs: Ubuntu-GCC-Tests-Tools
     runs-on: Ubuntu
     steps:
@@ -46,60 +49,66 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
-        make
-  Ubuntu-GCC-ALL-ASAN:
-    needs: Ubuntu-GCC-Servers
-    runs-on: Ubuntu
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Run-ASAN:
     needs: Ubuntu-GCC-ALL-ASAN
     runs-on: Ubuntu
     steps:
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-GCC-ALL-TSAN:
-    needs: Ubuntu-GCC-Servers
+    needs: Ubuntu-GCC-Tests-Tools
     runs-on: Ubuntu
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Run-TSAN:
     needs: Ubuntu-GCC-ALL-TSAN
     runs-on: Ubuntu
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Ubuntu-GCC-Servers:
+    needs: [ Ubuntu-GCC-Run-ASAN, Ubuntu-GCC-Run-TSAN ]
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+  Ubuntu-GCC-Upload-Artifact:
+    needs: Ubuntu-GCC-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: artifacts bin
+        path: ${{github.workspace}}\build\bin\Debug\**\*
   Ubuntu-Clang-Libraries:
     runs-on: Ubuntu
     steps:
@@ -107,10 +116,8 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
   Ubuntu-Clang-Tests-Tools:
     needs: Ubuntu-Clang-Libraries
     runs-on: Ubuntu
@@ -119,11 +126,16 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
-        make
-  Ubuntu-Clang-Servers:
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          /"${{github.workspace}}/build/bin/Debug/test/${t}";
+        done
+  Ubuntu-Clang-ALL-ASAN:
     needs: Ubuntu-Clang-Tests-Tools
     runs-on: Ubuntu
     steps:
@@ -131,61 +143,66 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
-        make
-  Ubuntu-Clang-ALL-ASAN:
-    needs: Ubuntu-Clang-Servers
-    runs-on: Ubuntu
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Run-ASAN:
     needs: Ubuntu-Clang-ALL-ASAN
     runs-on: Ubuntu
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-Clang-ALL-TSAN:
-    needs: Ubuntu-Clang-Servers
+    needs: Ubuntu-Clang-Tests-Tools
     runs-on: Ubuntu
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Run-TSAN:
     needs: Ubuntu-Clang-ALL-TSAN
     runs-on: Ubuntu
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-        
+  Ubuntu-Clang-Servers:
+    needs: [ Ubuntu-Clang-Run-ASAN, Ubuntu-Clang-Run-TSAN ]
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+  Ubuntu-Clang-Upload-Artifact:
+    needs: Ubuntu-Clang-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: artifacts bin
+        path: ${{github.workspace}}\build\bin\Debug\**\*
   Debian-GCC-Libraries:
     runs-on: Debian
     steps:
@@ -193,10 +210,8 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
   Debian-GCC-Tests-Tools:
     needs: Debian-GCC-Libraries
     runs-on: Debian
@@ -205,11 +220,10 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
-        make
-  Debian-GCC-Servers:
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+  Debian-GCC-ALL-ASAN:
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -217,60 +231,72 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
-        make
-  Debian-GCC-ALL-ASAN:
-    needs: Debian-GCC-Servers
-    runs-on: Debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          /"${{github.workspace}}/build/bin/Debug/test/${t}";
+        done
   Debian-GCC-Run-ASAN:
     needs: Debian-GCC-ALL-ASAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
-    needs: Debian-GCC-Servers
+    needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-TSAN:
     needs: Debian-GCC-ALL-TSAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-GCC-Servers:
+    needs: [ Debian-GCC-Run-TSAN, Debian-GCC-Run-ASAN ]
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+  Debian-GCC-Upload-Artifact:
+    needs: Debian-GCC-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: artifacts bin
+        path: ${{github.workspace}}\build\bin\Debug\**\*
   Debian-Clang-Libraries:
     runs-on: Debian
     steps:
@@ -278,10 +304,8 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
   Debian-Clang-Tests-Tools:
     needs: Debian-Clang-Libraries
     runs-on: Debian
@@ -290,11 +314,16 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
-        make
-  Debian-Clang-Servers:
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          /"${{github.workspace}}/build/bin/Debug/test/${t}";
+        done
+  Debian-Clang-ALL-ASAN:
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -302,60 +331,66 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
-        make
-  Debian-Clang-ALL-ASAN:
-    needs: Debian-Clang-Servers
-    runs-on: Debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-ASAN:
     needs: Debian-Clang-ALL-ASAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
-    needs: Debian-Clang-Servers
+    needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
-        make
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-TSAN:
     needs: Debian-Clang-ALL-TSAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cd build/bin
-        cp ../../config config -r
-        cp ../../db db -r
-        cp ../../scripts scripts -r
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/Debug/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/Debug/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/Debug/scripts -r
+        cd ${{github.workspace}}/build/bin/Debug
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-Clang-Servers:
+    needs: [ Debian-Clang-Run-ASAN, Debian-Clang-Run-TSAN ]
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --target install
+  Debian-Clang-Upload-Artifact:
+    needs: Debian-Clang-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: artifacts bin
+        path: ${{github.workspace}}\build\bin\Debug\**\*
 
   Windows-Libraries:
     runs-on: Windows
@@ -398,6 +433,15 @@ jobs:
     - name: Configure Step & Build
       run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
 
+  Windows-Upload-Artifact:
+    needs: Windows-Servers
+    runs-on: Windows
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: artifacts bin
+        path: ${{github.workspace}}\build\bin\Release\**\*
     # Uncomment when we have some more information on why its failing?  
     #- name: Run Auth
     #  working-directory: ${{github.workspace}}\build\bin\Release
