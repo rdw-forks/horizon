@@ -15,8 +15,8 @@ env:
   MYSQL_HOSTNAME: localhost
 
 jobs:
-  Linux-GCC:
-    runs-on: Linux
+  Ubuntu-GCC-Libraries:
+    runs-on: Ubuntu
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -24,11 +24,11 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
         make
-  
-  Linux-Clang:
-    runs-on: Linux
+  Ubuntu-GCC-Tests-Tools:
+    needs: Ubuntu-GCC-Libraries
+    runs-on: Ubuntu
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -36,26 +36,328 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         make
-
-  Integrate-Dependencies:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: Windows
+  Ubuntu-GCC-Servers:
+    needs: Ubuntu-GCC-Tests-Tools
+    runs-on: Ubuntu
     steps:
-    - name: VCPKG Install
-      run: vcpkg install vcpkg-cmake:x64-windows readline:x64-windows lua:x64-windows zlib:x64-windows sol2:x64-windows libmysql:x64-windows mysql-connector-cpp:x64-windows
-    
-    - name: VCPKG Install Boost
-      run: vcpkg install boost-log:x64-windows boost-filesystem:x64-windows boost-system:x64-windows boost-test:x64-windows boost-locale:x64-windows boost-crc:x64-windows boost-multi-array:x64-windows
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        make
+  Ubuntu-GCC-ALL-ASAN:
+    needs: Ubuntu-GCC-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
+        make
+  Ubuntu-GCC-Run-ASAN:
+    needs: Ubuntu-GCC-ALL-ASAN
+    runs-on: Ubuntu
+    steps:
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Ubuntu-GCC-ALL-TSAN:
+    needs: Ubuntu-GCC-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
+        make
+  Ubuntu-GCC-Run-TSAN:
+    needs: Ubuntu-GCC-ALL-TSAN
+    runs-on: Ubuntu
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Ubuntu-Clang-Libraries:
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
+        make
+  Ubuntu-Clang-Tests-Tools:
+    needs: Ubuntu-Clang-Libraries
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        make
+  Ubuntu-Clang-Servers:
+    needs: Ubuntu-Clang-Tests-Tools
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        make
+  Ubuntu-Clang-ALL-ASAN:
+    needs: Ubuntu-Clang-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
+        make
+  Ubuntu-Clang-Run-ASAN:
+    needs: Ubuntu-Clang-ALL-ASAN
+    runs-on: Ubuntu
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Ubuntu-Clang-ALL-TSAN:
+    needs: Ubuntu-Clang-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
+        make
+  Ubuntu-Clang-Run-TSAN:
+    needs: Ubuntu-Clang-ALL-TSAN
+    runs-on: Ubuntu
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+        
+  Debian-GCC-Libraries:
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
+        make
+  Debian-GCC-Tests-Tools:
+    needs: Debian-GCC-Libraries
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        make
+  Debian-GCC-Servers:
+    needs: Debian-GCC-Tests-Tools
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        make
+  Debian-GCC-ALL-ASAN:
+    needs: Debian-GCC-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
+        make
+  Debian-GCC-Run-ASAN:
+    needs: Debian-GCC-ALL-ASAN
+    runs-on: Debian
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-GCC-ALL-TSAN:
+    needs: Debian-GCC-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
+        make
+  Debian-GCC-Run-TSAN:
+    needs: Debian-GCC-ALL-TSAN
+    runs-on: Debian
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-Clang-Libraries:
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
+        make
+  Debian-Clang-Tests-Tools:
+    needs: Debian-Clang-Libraries
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        make
+  Debian-Clang-Servers:
+    needs: Debian-Clang-Tests-Tools
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        make
+  Debian-Clang-ALL-ASAN:
+    needs: Debian-Clang-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
+        make
+  Debian-Clang-Run-ASAN:
+    needs: Debian-Clang-ALL-ASAN
+    runs-on: Debian
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-Clang-ALL-TSAN:
+    needs: Debian-Clang-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
+        make
+  Debian-Clang-Run-TSAN:
+    needs: Debian-Clang-ALL-TSAN
+    runs-on: Debian
+    steps: 
+    - name: Run
+      run: |
+        cd build/bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
 
-    - name : VCPKG Integrate
-      run: vcpkg integrate install
-
-  Libraries:
-    needs: Integrate-Dependencies
+  Windows-Libraries:
     runs-on: Windows
     steps:
     - name: Checkout
@@ -63,8 +365,8 @@ jobs:
     - name: Build
       run: sh ./horizon.sh build-only-libraries -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
 
-  Tests:
-    needs: Libraries
+  Windows-Tests:
+    needs: Windows-Libraries
     runs-on: Windows
     steps:
     - name: Checkout
@@ -76,8 +378,8 @@ jobs:
     - name: Run
       run: sh ./horizon.sh run-tests "build\test\Release"
       
-  Tools:
-    needs: Tests
+  Windows-Tools:
+    needs: Windows-Tests
     runs-on: Windows
     steps:
     - name: Checkout
@@ -86,8 +388,8 @@ jobs:
     - name: Build
       run: sh ./horizon.sh build-tools -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
     
-  Servers:
-    needs: [ Tests, Tools, Libraries ]
+  Windows-Servers:
+    needs: [ Windows-Tests, Windows-Tools, Windows-Libraries ]
     runs-on: Windows
     steps:
     - name: Checkout
@@ -96,14 +398,6 @@ jobs:
     - name: Configure Step & Build
       run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
 
-    - name: Install
-      run:  sh ./horizon.sh install "build/bin/Release"
-      
-    - name: Install Database
-      run: |
-        sh ./horizon.sh createdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        sh ./horizon.sh importdb ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}}
-        sh ./horizon.sh adduser ${{env.MYSQL_USERNAME}} ${{env.MYSQL_PASSWORD}} ${{env.MYSQL_HOSTNAME}} ${{env.MYSQL_DATABASE}} horizon horizon
     # Uncomment when we have some more information on why its failing?  
     #- name: Run Auth
     #  working-directory: ${{github.workspace}}\build\bin\Release
