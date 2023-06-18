@@ -38,20 +38,8 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         make
-  Ubuntu-GCC-Servers:
-    needs: Ubuntu-GCC-Tests-Tools
-    runs-on: Ubuntu
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
-        make
   Ubuntu-GCC-ALL-ASAN:
-    needs: Ubuntu-GCC-Servers
+    needs: Ubuntu-GCC-Tests-Tools
     runs-on: Ubuntu
     steps:
     - name: Checkout
@@ -76,7 +64,7 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-GCC-ALL-TSAN:
-    needs: Ubuntu-GCC-Servers
+    needs: Ubuntu-GCC-Tests-Tools
     runs-on: Ubuntu
     steps:
     - name: Checkout
@@ -100,6 +88,27 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Ubuntu-GCC-Servers:
+    needs: [ Ubuntu-GCC-Run-ASAN, Ubuntu-GCC-Run-TSAN ]
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        make
+  Ubuntu-GCC-Upload-Artifact:
+    needs: Ubuntu-GCC-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: servers
+        path: build/bin/*
   Ubuntu-Clang-Libraries:
     runs-on: Ubuntu
     steps:
@@ -123,20 +132,8 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         make
-  Ubuntu-Clang-Servers:
-    needs: Ubuntu-Clang-Tests-Tools
-    runs-on: Ubuntu
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
-        make
   Ubuntu-Clang-ALL-ASAN:
-    needs: Ubuntu-Clang-Servers
+    needs: Ubuntu-Clang-Tests-Tools
     runs-on: Ubuntu
     steps:
     - name: Checkout
@@ -161,7 +158,7 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Ubuntu-Clang-ALL-TSAN:
-    needs: Ubuntu-Clang-Servers
+    needs: Ubuntu-Clang-Tests-Tools
     runs-on: Ubuntu
     steps:
     - name: Checkout
@@ -185,7 +182,27 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-        
+  Ubuntu-Clang-Servers:
+    needs: [ Ubuntu-Clang-Run-ASAN, Ubuntu-Clang-Run-TSAN ]
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        make
+  Ubuntu-Clang-Upload-Artifact:
+    needs: Ubuntu-Clang-Servers
+    runs-on: Ubuntu
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: servers
+        path: build/bin/*
   Debian-GCC-Libraries:
     runs-on: Debian
     steps:
@@ -209,20 +226,8 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         make
-  Debian-GCC-Servers:
-    needs: Debian-GCC-Tests-Tools
-    runs-on: Debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
-        make
   Debian-GCC-ALL-ASAN:
-    needs: Debian-GCC-Servers
+    needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
     - name: Checkout
@@ -247,7 +252,7 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
-    needs: Debian-GCC-Servers
+    needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
     - name: Checkout
@@ -271,6 +276,27 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-GCC-Servers:
+    needs: [ Debian-GCC-Run-TSAN, Debian-GCC-Run-ASAN ]
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        make
+  Debian-GCC-Upload-Artifact:
+    needs: Debian-GCC-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: servers
+        path: build/bin/*
   Debian-Clang-Libraries:
     runs-on: Debian
     steps:
@@ -294,20 +320,8 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         make
-  Debian-Clang-Servers:
-    needs: Debian-Clang-Tests-Tools
-    runs-on: Debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
-        make
   Debian-Clang-ALL-ASAN:
-    needs: Debian-Clang-Servers
+    needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
     - name: Checkout
@@ -332,7 +346,7 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
-    needs: Debian-Clang-Servers
+    needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
     - name: Checkout
@@ -356,6 +370,27 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
+  Debian-Clang-Servers:
+    needs: [ Debian-Clang-Run-ASAN, Debian-Clang-Run-TSAN ]
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        make
+  Debian-Clang-Upload-Artifact:
+    needs: Debian-Clang-Servers
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: servers
+        path: build/bin/*
 
   Windows-Libraries:
     runs-on: Windows
