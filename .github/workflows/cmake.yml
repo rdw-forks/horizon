@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Tests-Tools:
     needs: Ubuntu-GCC-Libraries
@@ -32,7 +32,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-ALL-ASAN:
     needs: Ubuntu-GCC-Tests-Tools
@@ -42,7 +42,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Run-ASAN:
     needs: Ubuntu-GCC-ALL-ASAN
@@ -65,7 +65,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Run-TSAN:
     needs: Ubuntu-GCC-ALL-TSAN
@@ -88,7 +88,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Upload-Artifact:
     needs: Ubuntu-GCC-Servers
@@ -106,7 +106,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Tests-Tools:
     needs: Ubuntu-Clang-Libraries
@@ -116,7 +116,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-ALL-ASAN:
     needs: Ubuntu-Clang-Tests-Tools
@@ -126,7 +126,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Run-ASAN:
     needs: Ubuntu-Clang-ALL-ASAN
@@ -149,7 +149,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Run-TSAN:
     needs: Ubuntu-Clang-ALL-TSAN
@@ -172,7 +172,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
         cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Upload-Artifact:
     needs: Ubuntu-Clang-Servers
@@ -190,7 +190,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Tests-Tools:
     needs: Debian-GCC-Libraries
@@ -200,7 +200,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-ALL-ASAN:
     needs: Debian-GCC-Tests-Tools
@@ -210,7 +210,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-ASAN:
     needs: Debian-GCC-ALL-ASAN
@@ -233,7 +233,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-TSAN:
     needs: Debian-GCC-ALL-TSAN
@@ -256,7 +256,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++"
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Upload-Artifact:
     needs: Debian-GCC-Servers
@@ -274,7 +274,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Tests-Tools:
     needs: Debian-Clang-Libraries
@@ -284,7 +284,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-ALL-ASAN:
     needs: Debian-Clang-Tests-Tools
@@ -294,7 +294,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-ASAN:
     needs: Debian-Clang-ALL-ASAN
@@ -317,7 +317,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-TSAN:
     needs: Debian-Clang-ALL-TSAN
@@ -342,7 +342,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake --B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++"
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Upload-Artifact:
     needs: Debian-Clang-Servers
