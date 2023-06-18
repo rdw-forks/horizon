@@ -37,13 +37,14 @@
 #include <cstdio>
 #include <atomic>
 #include <thread>
+#include <array>
 
-#define MAX_THREADS 2
-#define MAX_TABLE_SIZE 1000
+#define MAX_THREADS 10
+#define MAX_TABLE_SIZE 100000
 #define STRING_SIZE 32
 #define MAX_BUCKETS MAX_TABLE_SIZE / 10
 
-#define SPLIT_THREADS 1
+#define SPLIT_THREADS true
 
 std::atomic<bool> go{false}, done_read{false}, done_write{false}, fail{false};
 
@@ -59,7 +60,8 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 {
 	clock_t int_begin = clock();
 	LockedLookupTable<int, int> table(MAX_BUCKETS);
-	std::thread *r[MAX_THREADS], *w[MAX_THREADS];
+	std::array<std::thread, MAX_THREADS> r;
+    std::array<std::thread, MAX_THREADS> w;
 
 #if SPLIT_THREADS
 	printf("Dividing work between %d reader + %d writer threads: %d per thread.\n", MAX_THREADS, MAX_THREADS, (MAX_TABLE_SIZE/MAX_THREADS));
@@ -71,7 +73,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 
 	// Readers
 	for (int i = 0; i < MAX_THREADS; i++) {
-		r[i] = new std::thread([&table, i] () {
+		r[i] = std::thread([&table, i] () {
 #if SPLIT_THREADS
 			int start = MAX_TABLE_SIZE / MAX_THREADS * i;
 			int end = start + MAX_TABLE_SIZE / MAX_THREADS;
@@ -101,7 +103,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 
 	// Writers
 	for (int i = 0; i < MAX_THREADS; i++) {
-		w[i] = new std::thread([&table, i] () {
+		w[i] = std::thread([&table, i] () {
 #if SPLIT_THREADS
 			int start = MAX_TABLE_SIZE / MAX_THREADS * i;
 			int end = start + MAX_TABLE_SIZE / MAX_THREADS;
@@ -149,10 +151,8 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 	printf("INT/INT Finished in %0.5fs\n", double(clock() - int_begin) / CLOCKS_PER_SEC);
 
 	for (int i = 0; i < MAX_THREADS; i++) {
-		if (r[i]->joinable()) r[i]->join();
-		if (w[i]->joinable()) w[i]->join();
-		delete r[i];
-		delete w[i];
+		if (r[i].joinable()) r[i].join();
+		if (w[i].joinable()) w[i].join();
 	}
 
 	done_read.exchange(false);
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 
 	// Erase table contents.
 	for (int i = 0; i < MAX_THREADS; i++) {
-		w[i] = new std::thread([&table, i] () {
+		w[i] = std::thread([&table, i] () {
 #if SPLIT_THREADS
 			int start = MAX_TABLE_SIZE / MAX_THREADS * i;
 			int end = start + MAX_TABLE_SIZE / MAX_THREADS;
@@ -187,8 +187,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 	printf("INT/INT Collisions: %d\n", table.max_collisions());
 
 	for (int i = 0; i < MAX_THREADS; i++) {
-		if (w[i]->joinable()) w[i]->join();
-		delete w[i];
+		if (w[i].joinable()) w[i].join();
 	}
 
 	done_read.exchange(false);
@@ -222,7 +221,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 
 	// Readers
 	for (int i = 0; i < MAX_THREADS; i++) {
-		r[i] = new std::thread([&str_table, keylist, vallist, i] () {
+		r[i] = std::thread([&str_table, keylist, vallist, i] () {
 #if SPLIT_THREADS
 			int start = MAX_TABLE_SIZE / MAX_THREADS * i;
 			int end = start + MAX_TABLE_SIZE / MAX_THREADS;
@@ -251,7 +250,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 
 	// Writers
 	for (int i = 0; i < MAX_THREADS; i++) {
-		w[i] = new std::thread([&str_table, keylist, vallist, i] () {
+		w[i] = std::thread([&str_table, keylist, vallist, i] () {
 #if SPLIT_THREADS
 			int start = MAX_TABLE_SIZE / MAX_THREADS * i;
 			int end = start + MAX_TABLE_SIZE / MAX_THREADS;
@@ -278,10 +277,8 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 		BOOST_FAIL("Failed read.");
 
 	for (int i = 0; i < MAX_THREADS; i++) {
-		if (r[i]->joinable()) r[i]->join();
-		if (w[i]->joinable()) w[i]->join();
-		delete r[i];
-		delete w[i];
+		if (r[i].joinable()) r[i].join();
+		if (w[i].joinable()) w[i].join();
 	}
 
 	printf("STR/STR Read/Write Test Finished in %0.6fs\n", double(clock() - str_begin) / CLOCKS_PER_SEC);
@@ -309,7 +306,7 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 
 	// Erase table contents.
 	for (int i = 0; i < MAX_THREADS; i++) {
-		w[i] = new std::thread([&str_table, keylist, i] () {
+		w[i] = std::thread([&str_table, keylist, i] () {
 #if SPLIT_THREADS
 			int start = MAX_TABLE_SIZE / MAX_THREADS * i;
 			int end = start + MAX_TABLE_SIZE / MAX_THREADS;
@@ -335,7 +332,6 @@ BOOST_AUTO_TEST_CASE(LockedLookupTableTest)
 	printf("STR/STR Collisions: %d\n", str_table.max_collisions());
 
 	for (int i = 0; i < MAX_THREADS; i++) {
-		if (w[i]->joinable()) w[i]->join();
-		delete w[i];
+		if (w[i].joinable()) w[i].join();
 	}
 }

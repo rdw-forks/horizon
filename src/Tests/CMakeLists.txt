@@ -39,7 +39,6 @@ set(UTIL_DIR ${PROJECT_SOURCE_DIR}/src/Utility)
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
-message(STATUS "Building Tests -")
 foreach(TEST_SOURCE ${TEST_SOURCES})
 	# Extract the filename without an extension (NAME_WE)
 	get_filename_component(TEST_NAME ${TEST_SOURCE} NAME_WE)

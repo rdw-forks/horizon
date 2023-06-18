@@ -35,6 +35,7 @@
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
+#include <memory>
 
 namespace Horizon
 {
@@ -74,9 +75,9 @@ struct Node
 {
 	uint32_t G, H;
 	MapCoords coordinates;
-	Node * parent;
+	std::shared_ptr<Node> parent;
 
-	explicit Node(MapCoords coord_, Node * parent_ = nullptr)
+	explicit Node(MapCoords coord_, std::shared_ptr<Node> parent_ = nullptr)
 	{
 		parent = parent_;
 		coordinates = coord_;
@@ -86,11 +87,11 @@ struct Node
 	uint32_t getScore() const { return G + H; }
 };
 
-using NodeSet = std::vector<Node *>;
+using NodeSet = std::vector<std::shared_ptr<Node>>;
 
 class Generator
 {
-	static Node * findNodeOnList(NodeSet& nodes_, MapCoords coordinates_)
+	static std::shared_ptr<Node> findNodeOnList(NodeSet& nodes_, MapCoords coordinates_)
 	{
 		for (auto node : nodes_) {
 			if (node->coordinates == coordinates_) {
@@ -132,13 +133,13 @@ public:
 	CoordinateList findPath(MapCoords source_, MapCoords target_)
 	{
 		CoordinateList path;
-		Node * current = nullptr;
+		std::shared_ptr<Node> current = nullptr;
 		NodeSet openSet, closedSet;
 		int searchStep = 0;
 
 		openSet.reserve(100);
 		closedSet.reserve(100);
-		openSet.push_back(new Node(source_));
+		openSet.push_back(std::make_shared<Node>(source_));
 
 		if (check_collision(target_.x(), target_.y()))
 			return path;
@@ -174,9 +175,9 @@ public:
 				newCoordinates.set_move_cost((i < 4) ? 10 : 14);
 				uint32_t totalCost = current->G + newCoordinates.move_cost();
 
-				Node * successor = findNodeOnList(openSet, newCoordinates);
+				std::shared_ptr<Node> successor = findNodeOnList(openSet, newCoordinates);
 				if (successor == nullptr) {
-					successor = new Node(newCoordinates, current);
+					successor = std::make_shared<Node>(newCoordinates, current);
 					successor->G = totalCost;
 					successor->H = heuristic(successor->coordinates, target_);
 					openSet.push_back(successor);
