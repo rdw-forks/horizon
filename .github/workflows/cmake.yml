@@ -121,6 +121,13 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
         make
+        cd bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist"
+        ./char --with-config="config/char-server.lua.dist"
+        ./zone --with-config="config/zone-server.lua.dist"
   Ubuntu-Clang-ALL-TSAN:
     needs: Ubuntu-Clang-Servers
     runs-on: Ubuntu
@@ -133,6 +140,13 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
         make
+        cd bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist"
+        ./char --with-config="config/char-server.lua.dist"
+        ./zone --with-config="config/zone-server.lua.dist"
         
   Debian-GCC-Libraries:
     runs-on: Debian
@@ -240,6 +254,13 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true
         make
+        cd bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist"
+        ./char --with-config="config/char-server.lua.dist"
+        ./zone --with-config="config/zone-server.lua.dist"
   Debian-Clang-ALL-TSAN:
     needs: Debian-Clang-Servers
     runs-on: Debian
@@ -252,6 +273,13 @@ jobs:
         cd build
         cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true
         make
+        cd bin
+        cp ../../config config -r
+        cp ../../db db -r
+        cp ../../scripts scripts -r
+        ./auth --with-config="config/auth-server.lua.dist"
+        ./char --with-config="config/char-server.lua.dist"
+        ./zone --with-config="config/zone-server.lua.dist"
 
   Windows-Libraries:
     runs-on: Windows
