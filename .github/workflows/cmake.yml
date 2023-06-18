@@ -39,7 +39,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+          ./"${{github.workspace}}/build/bin/test/${t}.exe";
         done
   Ubuntu-GCC-ALL-ASAN:
     needs: Ubuntu-GCC-Tests-Tools
@@ -133,7 +133,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+          ./"${{github.workspace}}/build/bin/test/${t}.exe";
         done
   Ubuntu-Clang-ALL-ASAN:
     needs: Ubuntu-Clang-Tests-Tools
@@ -238,7 +238,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+          ./"${{github.workspace}}/build/bin/test/${t}.exe";
         done
   Debian-GCC-Run-ASAN:
     needs: Debian-GCC-ALL-ASAN
@@ -321,7 +321,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+          ./"${{github.workspace}}/build/bin/test/${t}.exe";
         done
   Debian-Clang-ALL-ASAN:
     needs: Debian-Clang-Tests-Tools
