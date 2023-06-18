@@ -24,7 +24,6 @@ jobs:
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
-        cmake --build ${{github.workspace}}/build --target install
   Ubuntu-GCC-Tests-Tools:
     needs: Ubuntu-GCC-Libraries
     runs-on: Ubuntu
@@ -36,6 +35,12 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
         cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+        done
   Ubuntu-GCC-ALL-ASAN:
     needs: Ubuntu-GCC-Tests-Tools
     runs-on: Ubuntu
@@ -113,7 +118,6 @@ jobs:
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
-        cmake --build ${{github.workspace}}/build --target install
   Ubuntu-Clang-Tests-Tools:
     needs: Ubuntu-Clang-Libraries
     runs-on: Ubuntu
@@ -125,6 +129,12 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
         cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+        done
   Ubuntu-Clang-ALL-ASAN:
     needs: Ubuntu-Clang-Tests-Tools
     runs-on: Ubuntu
@@ -202,7 +212,6 @@ jobs:
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
-        cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Tests-Tools:
     needs: Debian-GCC-Libraries
     runs-on: Debian
@@ -225,6 +234,12 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true
         cmake --build ${{github.workspace}}/build
         cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+        done
   Debian-GCC-Run-ASAN:
     needs: Debian-GCC-ALL-ASAN
     runs-on: Debian
@@ -291,7 +306,6 @@ jobs:
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
-        cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Tests-Tools:
     needs: Debian-Clang-Libraries
     runs-on: Debian
@@ -303,6 +317,12 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true
         cmake --build ${{github.workspace}}/build
         cmake --build ${{github.workspace}}/build --target install
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          ./"${{github.workspace}}/build/bin/Debug/test/${t}.exe";
+        done
   Debian-Clang-ALL-ASAN:
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
