@@ -108,7 +108,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: servers
-        path: build/bin/*
+        path: build/bin/**/*
   Ubuntu-Clang-Libraries:
     runs-on: Ubuntu
     steps:
@@ -202,7 +202,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: servers
-        path: build/bin/*
+        path: build/bin/**/*
   Debian-GCC-Libraries:
     runs-on: Debian
     steps:
@@ -296,7 +296,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: servers
-        path: build/bin/*
+        path: build/bin/**/*
   Debian-Clang-Libraries:
     runs-on: Debian
     steps:
@@ -390,7 +390,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: servers
-        path: build/bin/*
+        path: build/bin/**/*
 
   Windows-Libraries:
     runs-on: Windows
@@ -433,6 +433,15 @@ jobs:
     - name: Configure Step & Build
       run: sh ./horizon.sh build ${{github.workspace}}\build -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" 
 
+  Windows-Upload-Artifact:
+    needs: Windows-Servers
+    runs-on: Windows
+    steps:
+    - name: Checkout
+      uses: actions/upload-artifact@v3
+      with: 
+        name: servers
+        path: ${{github.workspace}}\build\bin\Release\**\*
     # Uncomment when we have some more information on why its failing?  
     #- name: Run Auth
     #  working-directory: ${{github.workspace}}\build\bin\Release
