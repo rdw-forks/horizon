@@ -411,13 +411,7 @@ jobs:
       run: sh ./horizon.sh build-tests -DCMAKE_INSTALL_PREFIX="${{github.workspace}}\build" -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows
     
     - name: Run
-      run: |
-        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
-        for f in ${files[@]};
-        do
-          t=$(basename ${f::-4});
-          /"${{github.workspace}}/build/bin/Release/${t}.exe";
-        done
+      run: sh ./horizon.sh run-tests "build\test\Release"
       
   Windows-Tools:
     needs: Windows-Tests
