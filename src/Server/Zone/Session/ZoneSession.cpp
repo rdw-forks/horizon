@@ -102,7 +102,7 @@ void ZoneSession::update(uint32_t /*diff*/)
 		memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
 		HPacketTablePairType p = _pkt_tbl->get_hpacket_info(packet_id);
 		
-		HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - len:" << p.first << std::endl;
+		HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - len:" << std::dec << p.first << std::endl;
 		
 		p.second->handle(std::move(*read_buf));
 	}
