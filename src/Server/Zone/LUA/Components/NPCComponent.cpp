@@ -168,7 +168,7 @@ void NPCComponent::contact_npc_for_player(std::shared_ptr<Player> player, uint32
 
 	try {
 		std::string script_root_path = sZone->config().get_script_root_path().string();
-		sol::protected_function fx = player->lua_state()->load_file(script_root_path.append("/internal/script_command_main.lua"));
+		sol::protected_function fx = player->lua_state()->load_file(script_root_path + "/internal/script_command_main.lua");
 		sol::protected_function_result result = fx(player, nd->_npc, nd->script, nd->script_is_file);
 		if (!result.valid()) {
 			sol::error err = result;
