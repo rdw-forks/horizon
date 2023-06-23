@@ -29,6 +29,7 @@ function SkillConfigData:get_use_range(skill_lv) end
 ---@field initial_target Entity?
 ---@field target Entity?
 ---@field map_coords MapCoords?
+---@field message string?
 ---@field cast_time integer?
 ---@field flags any?
 SkillCastData = {}

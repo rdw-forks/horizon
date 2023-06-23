@@ -922,14 +922,18 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
 {
-	auto ske = new SkillExecution(get_session()->player()->map(), skill_id, skill_lv);
-	ske->execute(get_session()->player(), target_guid);
+	auto ske = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
+	ske->execute(target_guid);
 }
 void ZoneClientInterface::use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y)
 {
+	auto ske = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
+	ske->execute(pos_x, pos_y);
 }
 void ZoneClientInterface::use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents)
 {
+	auto ske = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
+	ske->execute(pos_x, pos_y, contents);
 }
 
 void ZoneClientInterface::notify_skill_use(uint16_t skill_id, uint32_t src, uint32_t target, uint16_t target_x, uint16_t target_y, uint32_t element, int casttime)

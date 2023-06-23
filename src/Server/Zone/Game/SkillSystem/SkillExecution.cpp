@@ -12,22 +12,14 @@
 
 using namespace Horizon::Zone;
 
-SkillExecution::SkillExecution(std::shared_ptr<Map> map, int16_t skill_id, int16_t skill_lv)
-: _skill_id(skill_id), _skill_lv(skill_lv), _lua_state(std::make_shared<sol::state>()), _map_coords(MapCoords(0, 0))
+SkillExecution::SkillExecution(std::shared_ptr<Entity> initial_source, int16_t skill_id, int16_t skill_lv)
+: _initial_source(initial_source), _skill_id(skill_id), _skill_lv(skill_lv), _map_coords(MapCoords(0, 0)), _message("")
 {
-  set_map(map);
-  load();
+  set_map(initial_source->map());
 }
 
 SkillExecution::~SkillExecution()
 {
-}
-
-void SkillExecution::load()
-{
-	lua_manager()->initialize_player_state(lua_state());
-	lua_manager()->initialize_npc_state(lua_state());
-	lua_manager()->initialize_monster_state(lua_state());
 }
 
 void SkillExecution::start_execution(enum skill_target_type target_type)
@@ -64,6 +56,8 @@ void SkillExecution::start_execution(enum skill_target_type target_type)
       scd["initial_target"] = _initial_target;
     } else {
       scd["map_coords"] = _map_coords;
+      if (_message.empty() == false)
+        scd["message"] = _message;
     }
 
     result = initiate_skill_use(scd, skd);
@@ -78,40 +72,28 @@ void SkillExecution::start_execution(enum skill_target_type target_type)
   }
 }
 
-void SkillExecution::execute(std::shared_ptr<Entity> initial_source, int initial_target_guid)
+void SkillExecution::execute(int initial_target_guid)
 {
-  if (initial_source == nullptr)
-    return;
-
-  _initial_source = initial_source;
-  _initial_target = initial_source->get_nearby_entity(initial_target_guid);
+  _initial_target = _initial_source->get_nearby_entity(initial_target_guid);
   start_execution(SKTT_SINGLE_TARGETED);
 }
 
-void SkillExecution::execute(std::shared_ptr<Entity> initial_source, int16_t x, int16_t y)
+void SkillExecution::execute(int16_t x, int16_t y)
 {
-  execute(initial_source, MapCoords(x, y));
+  execute(MapCoords(x, y));
 }
-void SkillExecution::execute(std::shared_ptr<Entity> initial_source, MapCoords map_coords)
+void SkillExecution::execute(MapCoords map_coords)
 {
-  if (initial_source == nullptr)
-    return;
-
-  _initial_source = initial_source;
   _map_coords = map_coords;
   start_execution(SKTT_GROUND_TARGETED);
 }
 
-void SkillExecution::execute(std::shared_ptr<Entity> initial_source, int16_t x, int16_t y, std::string message)
+void SkillExecution::execute(int16_t x, int16_t y, std::string message)
 {
-  execute(initial_source, MapCoords(x, y), message);
+  execute(MapCoords(x, y), message);
 }
-void SkillExecution::execute(std::shared_ptr<Entity> initial_source, MapCoords map_coords, std::string message)
+void SkillExecution::execute(MapCoords map_coords, std::string message)
 {
-  if (initial_source == nullptr)
-    return;
-
-  _initial_source = initial_source;
   _map_coords = map_coords;
   _message = message;
   start_execution(SKTT_GROUND_TARGETED);

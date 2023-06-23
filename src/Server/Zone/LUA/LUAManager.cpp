@@ -66,6 +66,7 @@ void LUAManager::initialize_for_container()
 	initialize_basic_state(_lua_state);
 	initialize_monster_state(_lua_state);
 	initialize_npc_state(_lua_state);
+	initialize_player_state(_lua_state);
 
 	load_constants();
 	load_scripts();

@@ -150,6 +150,12 @@ function BASE_SKILL.validate_after_casting(scd, skd)
       - validate if the skill can be performed
       - Consume requirements
   ]]
+
+  -- Is target dead?
+  if scd.target:is_dead() then
+    return false
+  end
+
   print("Validating after cast for skill BASE_SKILL")
   return true
 end
