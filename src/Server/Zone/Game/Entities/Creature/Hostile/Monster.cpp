@@ -95,7 +95,7 @@ void Monster::behavior_passive()
 		&& was_spotted_once()) {
 	    try {
 			std::string script_root_path = sZone->config().get_script_root_path().string();
-	        sol::load_result fx = lua_manager()->lua_state()->load_file(script_root_path.append("/monsters/functionalities/walking_passive.lua"));
+	        sol::load_result fx = lua_manager()->lua_state()->load_file(script_root_path + "/monsters/functionalities/walking_passive.lua");
 	        sol::protected_function_result result = fx(shared_from_this());
 	        if (!result.valid()) {
 	            sol::error err = result;
@@ -204,7 +204,7 @@ bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 
 		try {
 			std::string script_root_path = sZone->config().get_script_root_path().string();
-			sol::load_result fx = player->lua_state()->load_file(script_root_path.append("internal/on_monster_killed.lua"));
+			sol::load_result fx = player->lua_state()->load_file(script_root_path + "internal/on_monster_killed.lua");
 			sol::protected_function_result result = fx(player, shared_from_this()->downcast<Monster>(), with_drops, with_exp);
 			if (!result.valid()) {
 				sol::error err = result;

@@ -111,8 +111,8 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	std::string script_root_path = sZone->config().get_script_root_path().string();
 	std::string static_db_root_path = sZone->config().get_static_db_path().string();
 	std::vector<std::string> _loadable_files = {
-		script_root_path.append("utils/strutils.lua"),
-		static_db_root_path.append("definitions/constants.lua")
+		script_root_path + "utils/strutils.lua",
+		static_db_root_path + "definitions/constants.lua"
 	};
 
 	for (auto &file : _loadable_files) {
@@ -198,14 +198,14 @@ void LUAManager::load_scripts()
 	std::string script_root_path = sZone->config().get_script_root_path().string();
 
 	try {
-		_lua_state->script_file(script_root_path.append("include.lua"));
+		_lua_state->script_file(script_root_path + "include.lua");
 
 		sol::table scripts = (*_lua_state)["scripts"];
 
 		int count = 0;
 		scripts.for_each([this, &count, &script_root_path](sol::object const &/*key*/, sol::object const& value) {
 			std::string script_file = value.as<std::string>();
-			sol::protected_function fn = _lua_state->load_file(script_root_path.append(script_file));
+			sol::protected_function fn = _lua_state->load_file(script_root_path + script_file);
 			sol::protected_function_result result = fn();
 			if (!result.valid()) {
 				sol::error error = result;
@@ -224,7 +224,7 @@ void LUAManager::load_constants()
 	std::string file_path = sZone->config().get_static_db_path().string();
 
 	try {
-		_lua_state->script_file(file_path.append("definitions/constants.lua"));
+		_lua_state->script_file(file_path + "definitions/constants.lua");
 		sol::table const_table = _lua_state->get<sol::table>("constants");
 		HLog(info) << "Read constants from '" << file_path << "' for map container " << (void *)_container.lock().get() << ".";
 	} catch (sol::error &e) {

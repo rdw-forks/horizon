@@ -122,7 +122,7 @@ bool Player::initialize()
 
 	try {
 		std::string script_root_path = sZone->config().get_script_root_path().string();
-		sol::load_result fx = lua_state()->load_file(script_root_path.append("internal/on_login_event.lua"));
+		sol::load_result fx = lua_state()->load_file(script_root_path + "internal/on_login_event.lua");
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
 		if (!result.valid()) {
 			sol::error err = result;
@@ -527,7 +527,7 @@ bool Player::perform_skill(int16_t skill_id, int16_t skill_lv)
 
     try {
 		std::string script_root_path = sZone->config().get_script_root_path().string();
-		sol::load_result fx = lua_state()->load_file(script_root_path.append("skills/" + sk_d->name + ".lua"));
+		sol::load_result fx = lua_state()->load_file(script_root_path + "skills/" + sk_d->name + ".lua");
         sol::protected_function_result result = fx(shared_from_this(), skill_id, skill_lv);
         if (!result.valid()) {
             sol::error err = result;
