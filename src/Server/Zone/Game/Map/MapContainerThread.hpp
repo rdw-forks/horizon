@@ -44,6 +44,7 @@ namespace Entities
 	class Player;
 }
 class ZoneSession;
+class MapContainerJob;
 // Important step as when the map is not available in a given MapContainerThread, the function invoked from lua will just exit. 
 // Functions are run on all containers and not just one.
 #define MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name) \
@@ -84,6 +85,9 @@ public:
 	std::shared_ptr<Entities::Player> get_player(std::string const &name);
 	std::shared_ptr<Entities::Player> get_player(int32_t guid);
 
+	//! @brief Returns a session if found, nullptr otherwise.
+	std::shared_ptr<ZoneSession> get_session(int64_t session_id);
+
 	//! @brief Responsible for initialization of the container and is called externally.
 	//! This is mainly for members that can't be initialized from the constructor method.
 	void initialize();
@@ -102,6 +106,8 @@ public:
 
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
+	void add_to_job_queue(MapContainerJob &job);
+
 private:
 	//! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 	//! Is also responsible emulating the world update loop and performing everything in maps it manages.
@@ -114,6 +120,7 @@ private:
 	void update(uint64_t tick);
 
 	std::thread _thread;
+	ThreadSafeQueue<MapContainerJob> _job_queue;
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
 	ThreadSafeQueue<std::pair<bool, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
 	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.

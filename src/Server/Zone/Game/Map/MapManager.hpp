@@ -32,6 +32,7 @@
 
 #include "Utility/TaskScheduler.hpp"
 #include "MapContainerThread.hpp"
+#include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 
 enum mapmgr_task_schedule_group
 {
@@ -53,6 +54,7 @@ class Map;
 
 class MapManager
 {
+friend class MapContainerJob;
 public:
 	MapManager() { };
 	~MapManager();
@@ -76,10 +78,45 @@ public:
 
 	std::shared_ptr<Entities::Player> find_player(std::string name);
 
+	std::map<int32_t, std::shared_ptr<MapContainerThread>> get_containers() { return _map_containers.get_map(); }
+
+	//! @brief Container job queue, storing the jobs required to be called in the next update sequence.
+	//! Jobs are only run in one instance of MapContainerThread, queued by other MapContainerThreads threads.
+	void consign_job_to_all(MapContainerJob &job);
 private:
 	TaskScheduler _scheduler;
 	LockedLookupTable<int32_t, std::shared_ptr<MapContainerThread>> _map_containers;
 };
+
+//! @brief MapContainerJob is a class invoked in the calling thread. The calling thread initiates the
+//! work transaction / transfer. 
+//! @note MapContainerJob class should be a one-way transfer or transaction between
+//! the intiating thread and the remaining worker threads. This typically means that the transfer should not lead
+//! to a recursive invocation of the job, for example, execution pathways that lead to the same job execution should be avoided.
+class MapContainerJob
+{
+public:
+	MapContainerJob() { }
+	~MapContainerJob() { }
+
+	//! @brief Run method is invoked from the invokee threads, responsible for
+	//! invoking the function. Threads in which a job is queued are responsible for running the job.
+	//! thread: any thread but the caller thread.
+	//! thread-safety: Mutex can be applied within the run function's workings to create a thread-safe working environment.
+	virtual bool run(std::shared_ptr<MapContainerThread> container) { return false; }
+};
+
+class SearchSessionAndTransmitJob : public MapContainerJob
+{
+    ByteBuffer _buf;
+    int64_t _session_id{ 0 };
+public:
+    SearchSessionAndTransmitJob(int64_t session_id, ByteBuffer &buf) : _session_id(session_id), _buf(buf), MapContainerJob() { }
+    ~SearchSessionAndTransmitJob() { }
+
+    bool run(std::shared_ptr<MapContainerThread> container);
+};
+
 }
 }
 

@@ -33,6 +33,7 @@
 #include "Libraries/MapCache/MapCache.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -176,4 +177,23 @@ std::shared_ptr<Entities::Player> MapManager::find_player(std::string name)
 	}
 
 	return nullptr;
+}
+
+void MapManager::consign_job_to_all(MapContainerJob &job)
+{
+	std::map<int32_t, std::shared_ptr<MapContainerThread>> map_containers = _map_containers.get_map();
+	for (auto it = map_containers.begin(); it != map_containers.end(); it++)
+		it->second->add_to_job_queue(job);
+}
+
+bool SearchSessionAndTransmitJob::run(std::shared_ptr<MapContainerThread> container)
+{
+    std::shared_ptr<ZoneSession> session = container->get_session(_session_id);
+  
+    if (session == nullptr)
+        return false;
+  
+    session->transmit_buffer(_buf, _buf.active_length());
+
+    return true;
 }

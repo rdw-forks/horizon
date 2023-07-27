@@ -31,6 +31,7 @@
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
+#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 
@@ -106,6 +107,18 @@ std::shared_ptr<Entities::Player> MapContainerThread::get_player(int guid)
 	return nullptr;
 }
 
+//! @brief Returns a session if found, nullptr otherwise.
+std::shared_ptr<ZoneSession> MapContainerThread::get_session(int64_t session_id)
+{
+	std::map<int64_t, std::shared_ptr<ZoneSession>> session_map = _managed_sessions.get_map();
+	auto it = session_map.find(session_id);
+	
+	if (it != session_map.end())
+		return it->second;
+	
+	return nullptr;
+}
+
 //! @brief Responsible for initialization of the container and is called externally.
 //! This is mainly for members that can't be initialized from the constructor method.
 void MapContainerThread::initialize()
@@ -166,6 +179,12 @@ void MapContainerThread::start()
 	HLog(info) << "Map container " << (void *) this << " with " << _managed_maps.size() << " maps has begun working.";
 }
 
+//! @brief Add a MapContainerJob to the job queue for execution on the next update cycle.
+void MapContainerThread::add_to_job_queue(MapContainerJob &job)
+{
+	_job_queue.push(std::move(job));
+}
+
 //! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 //! Is also responsible emulating the world update loop and performing everything in maps it manages.
 //! @thread MapContainerThread
@@ -186,7 +205,13 @@ void MapContainerThread::start_internal()
 //! @param[in] diff current system time.
 void MapContainerThread::update(uint64_t diff)
 {
+	std::shared_ptr<MapContainerJob> jbuf = nullptr;
 	std::shared_ptr<std::pair<bool, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
+
+	// MapContainerJob queue. Invokes jobs that are required to run, sanctioned from other threads.
+	while ((jbuf = _job_queue.try_pop())) {
+		jbuf->run(shared_from_this());
+	}
 
 	// Add any new players / remove anyone else.
 	while ((sbuf = _session_buffer.try_pop())) {
