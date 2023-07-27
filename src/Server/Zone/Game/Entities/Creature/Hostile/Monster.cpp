@@ -95,7 +95,7 @@ void Monster::behavior_passive()
 		&& was_spotted_once()) {
 	    try {
 			std::string script_root_path = sZone->config().get_script_root_path().string();
-	        sol::load_result fx = lua_manager()->lua_state()->load_file(script_root_path + "/monsters/functionalities/walking_passive.lua");
+	        sol::load_result fx = map()->container()->get_lua_manager()->lua_state()->load_file(script_root_path + "/monsters/functionalities/walking_passive.lua");
 	        sol::protected_function_result result = fx(shared_from_this());
 	        if (!result.valid()) {
 	            sol::error err = result;
