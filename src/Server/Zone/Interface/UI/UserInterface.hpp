@@ -88,6 +88,7 @@ public:
 	void request(int inviter_account_id, int inviter_char_id, cz_ack_req_add_friends_result_type result);
     void add(std::string name);
 	void remove(int account_id, int char_id);
+	bool notify_add_friend_request(int inviter_account_id, int inviter_char_id, std::string inviter_name);
 
 private:
 	std::weak_ptr<ZoneSession> _session;
@@ -137,12 +138,12 @@ private:
 class Mail
 {
 public:
-  Mail(std::shared_ptr<ZoneSession> session);
-  ~Mail();
+	Mail(std::shared_ptr<ZoneSession> session);
+	~Mail();
 
-  std::shared_ptr<ZoneSession> session() { return _session.lock(); }
+	std::shared_ptr<ZoneSession> session() { return _session.lock(); }
 
-  void check_receiver_name(std::string name);
+	void check_receiver_name(std::string name);
 	void add_item(int inventory_index, int amount);
 	void delete_(int mail_id);
 	void retrieve_attachment(int mail_id);

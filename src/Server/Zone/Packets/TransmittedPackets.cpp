@@ -2365,9 +2365,18 @@ ByteBuffer &ZC_REPLY_REMAINTIME::serialize()
 /**
  * ZC_REQ_ADD_FRIENDS
  */
-void ZC_REQ_ADD_FRIENDS::deliver() {}
+void ZC_REQ_ADD_FRIENDS::deliver(int req_account_id, int req_char_id, std::string req_char_name) 
+{
+	_req_account_id = req_account_id;
+	_req_char_id = req_char_id;
+	std::strncpy(_req_char_name, req_char_name.c_str(), MAX_UNIT_NAME_LENGTH);
+}
 ByteBuffer &ZC_REQ_ADD_FRIENDS::serialize()
 {
+	buf() << _packet_id;
+	buf() << _req_account_id;
+	buf() << _req_char_id;
+	buf().append(_req_char_name, MAX_UNIT_NAME_LENGTH);
 	return buf();
 }
 /**
