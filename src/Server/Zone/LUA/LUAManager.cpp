@@ -108,9 +108,11 @@ void LUAManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	_entity_component->sync_data_types(state);
 	_entity_component->sync_functions(state);
 
+	std::string script_root_path = sZone->config().get_script_root_path().string();
+	std::string static_db_root_path = sZone->config().get_static_db_path().string();
 	std::vector<std::string> _loadable_files = {
-		sZone->config().get_script_root_path().string().append("utils/strutils.lua"),
-		sZone->config().get_static_db_path().string().append("definitions/constants.lua")
+		script_root_path + "utils/strutils.lua",
+		static_db_root_path + "definitions/constants.lua"
 	};
 
 	for (auto &file : _loadable_files) {
@@ -193,36 +195,36 @@ void LUAManager::finalize()
 
 void LUAManager::load_scripts()
 {
-	std::string file_path = sZone->config().get_script_root_path().string().append("include.lua");
+	std::string script_root_path = sZone->config().get_script_root_path().string();
 
 	try {
-		_lua_state->script_file(file_path);
+		_lua_state->script_file(script_root_path + "include.lua");
 
 		sol::table scripts = (*_lua_state)["scripts"];
 
 		int count = 0;
-		scripts.for_each([this, &count, &file_path](sol::object const &/*key*/, sol::object const& value) {
+		scripts.for_each([this, &count, &script_root_path](sol::object const &/*key*/, sol::object const& value) {
 			std::string script_file = value.as<std::string>();
-			sol::protected_function fn = _lua_state->load_file(sZone->config().get_script_root_path().string().append(script_file));
+			sol::protected_function fn = _lua_state->load_file(script_root_path + script_file);
 			sol::protected_function_result result = fn();
 			if (!result.valid()) {
 				sol::error error = result;
-				HLog(warning) << "Failed to load file '" << script_file << "' from '" << file_path << "', reason: " << error.what();
+				HLog(warning) << "Failed to load file '" << script_file << "' from '" << script_root_path << "', reason: " << error.what();
 				return;
 			}
 			count++;
 		});
-		HLog(info) << "Read " << count << " NPC scripts from '" << file_path << "' for map container " << (void *)_container.lock().get() << ".";
+		HLog(info) << "Read " << count << " NPC scripts from '" << script_root_path << "' for map container " << (void *)_container.lock().get() << ".";
 	} catch (sol::error &e) {
-		HLog(warning) << "Failed to load included script files from '" << file_path << "', reason: " << e.what();
+		HLog(warning) << "Failed to load included script files from '" << script_root_path << "', reason: " << e.what();
 	}
 }
 void LUAManager::load_constants()
 {
-	std::string file_path = sZone->config().get_static_db_path().string().append("definitions/constants.lua");
+	std::string file_path = sZone->config().get_static_db_path().string();
 
 	try {
-		_lua_state->script_file(file_path);
+		_lua_state->script_file(file_path + "definitions/constants.lua");
 		sol::table const_table = _lua_state->get<sol::table>("constants");
 		HLog(info) << "Read constants from '" << file_path << "' for map container " << (void *)_container.lock().get() << ".";
 	} catch (sol::error &e) {

@@ -35,7 +35,7 @@
 #include <string>
 #include <unordered_map>
 #include <boost/filesystem/path.hpp>
-
+#include <memory>
 enum datafile_type
 {
 	DATAFILE_TYPE_FILE          = 0x01, // entry is a file

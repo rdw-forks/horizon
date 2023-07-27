@@ -73,7 +73,11 @@ target_link_libraries(zone
 		${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		${MYSQL_LIBRARIES}
-		unofficial::mysql-connector-cpp::connector
+		$<$<BOOL:${WIN32}>:unofficial::mysql-connector-cpp::connector>
+		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_LIBRARIES}>
+		$<$<BOOL:${UNIX}>:-lssl>
+		$<$<BOOL:${UNIX}>:-lcrypto>
+		$<$<BOOL:${UNIX}>:-lresolv>
 )
 
 set(INCLUDE_DIRS
@@ -95,7 +99,8 @@ target_include_directories(zone
 		${SOL2_INCLUDE_DIR}
 		${SQLPP11_INCLUDE_DIR}
 		${MYSQL_INCLUDE_DIR}
-		${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}
+		$<$<BOOL:${WIN32}>:${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}>
+		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_INCLUDE_DIR}>
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 )

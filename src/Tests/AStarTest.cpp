@@ -34,6 +34,7 @@
 #include <cstring>
 #include <fstream>
 #include <cstdint>
+#include <cmath>
 
 #include "Server/Zone/Game/Map/Path/AStar.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"

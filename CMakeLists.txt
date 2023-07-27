@@ -128,8 +128,11 @@ include(FindLua)
 ###############
 # Sol2
 ###############
+if (WIN32)
 find_package(sol2 3.3.0 REQUIRED)
-
+elseif(UNIX)
+include(FindSol2)
+endif()
 #################
 # Find ZLIB
 #################
@@ -141,6 +144,9 @@ find_package(ZLIB REQUIRED)
 if (WIN32)
 find_package(libmysql REQUIRED)
 find_package(unofficial-mysql-connector-cpp CONFIG REQUIRED)
+elseif(UNIX)
+find_package(MySQL REQUIRED)
+include(FindMySQLCPPConn8)
 endif()
 
 #################
