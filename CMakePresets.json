@@ -20,8 +20,8 @@
         },
         {
             "name": "Release",
-            "description": "Visual Studio Community 2022 Release - amd64",
-            "displayName": "",
+            "description": "",
+            "displayName": "Visual Studio Community 2022 Release - amd64",
             "inherits": [
                 "Debug"
             ],
@@ -89,19 +89,19 @@
     "buildPresets": [
         {
             "name": "Debug",
-            "displayName": "Visual Studio Community 2022 Release - amd64 - Debug",
+            "displayName": "Visual Studio Community 2022 Debug - amd64",
             "configurePreset": "Debug",
             "configuration": "Debug"
         },
         {
             "name": "Release",
-            "displayName": "Visual Studio Community 2022 Release - amd64 - Release",
+            "displayName": "Visual Studio Community 2022 Release - amd64",
             "configurePreset": "Release",
             "configuration": "Release"
         },
         {
-            "name": "Tests-Clang-MSVC-Release-debug",
-            "displayName": "Clang 15.0.1 (MSVC CLI) for MSVC 17.5.33516.290 (Visual Studio Community 2022 Release - x86) - Debug",
+            "name": "Tests-Clang-MSVC-Release",
+            "displayName": "Clang 15.0.1 (MSVC CLI) for MSVC 17.5.33516.290 (Visual Studio Community 2022 Release - x86)",
             "configurePreset": "Tests-Clang-MSVC-Release",
             "configuration": "Debug"
         },

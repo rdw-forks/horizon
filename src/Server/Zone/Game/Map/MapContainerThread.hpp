@@ -38,8 +38,12 @@ namespace Horizon
 {
 namespace Zone
 {
-class ZoneSession;
 class Map;
+namespace Entities
+{
+	class Player;
+}
+class ZoneSession;
 // Important step as when the map is not available in a given MapContainerThread, the function invoked from lua will just exit. 
 // Functions are run on all containers and not just one.
 #define MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name) \
@@ -68,8 +72,8 @@ public:
 	void remove_map(std::string const &name);
 
 	//! @brief Adds a session to the session buffer, marking him for addition to the
-	//! list of managed sessions by this container on the next update.
-	//! @param[in] p shared_ptr to a session object which should be managed by this map.
+	//! list of managed session by this container on the next update.
+	//! @param[in] s shared_ptr to a session object which should be managed by this map.
 	//! @warning A session added for management by this container must be the only owner of the session object.
 	void add_session(std::shared_ptr<ZoneSession> s);
 	//! @brief Adds a session to the session buffer, marking him for removal from the
@@ -84,7 +88,7 @@ public:
 	//! This is mainly for members that can't be initialized from the constructor method.
 	void initialize();
 	
-	//! @brief Process container finalization by cleanly disconnecting sessions after saving their data.
+	//! @brief Process container finalization by cleanly disconnecting players after saving their data.
 	//! Clears all managed map instances from itself and joins the internally running thread.
 	void finalize();
 
