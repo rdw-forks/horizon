@@ -40220,10 +40220,13 @@ public:
 	{}
 	virtual ~ZC_REQ_ADD_FRIENDS() {}
 
-	void deliver();
+	void deliver(int req_account_id, int req_char_id, std::string req_char_name);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int _req_account_id{ 0 };
+	int _req_char_id{ 0 };
+	char _req_char_name[MAX_UNIT_NAME_LENGTH]{ 0 };
 };
 
 enum {

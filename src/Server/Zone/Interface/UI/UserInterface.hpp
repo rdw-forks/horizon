@@ -90,6 +90,7 @@ public:
 	void request(int inviter_account_id, int inviter_char_id, cz_ack_req_add_friends_result_type result);
     void add(std::string name);
 	void remove(int account_id, int char_id);
+	bool notify_add_friend_request(int inviter_account_id, int inviter_char_id, std::string inviter_name);
 
 private:
 	std::weak_ptr<ZoneSession> _session;

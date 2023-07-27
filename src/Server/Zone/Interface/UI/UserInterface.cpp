@@ -165,6 +165,13 @@ void Horizon::Zone::UI::Friend::remove(int account_id, int char_id)
 
 }
 
+bool Horizon::Zone::UI::Friend::notify_add_friend_request(int inviter_account_id, int inviter_char_id, std::string name)
+{
+	ZC_REQ_ADD_FRIENDS pkt(get_session());
+	pkt.deliver(inviter_account_id, inviter_char_id, name);
+	return true;
+}
+
 /**
  * Guild 
  */
