@@ -179,12 +179,6 @@ void MapContainerThread::start()
 	HLog(info) << "Map container " << (void *) this << " with " << _managed_maps.size() << " maps has begun working.";
 }
 
-//! @brief Add a MapContainerJob to the job queue for execution on the next update cycle.
-void MapContainerThread::add_to_job_queue(MapContainerJob &job)
-{
-	_job_queue.push(std::move(job));
-}
-
 //! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 //! Is also responsible emulating the world update loop and performing everything in maps it manages.
 //! @thread MapContainerThread
@@ -205,13 +199,7 @@ void MapContainerThread::start_internal()
 //! @param[in] diff current system time.
 void MapContainerThread::update(uint64_t diff)
 {
-	std::shared_ptr<MapContainerJob> jbuf = nullptr;
 	std::shared_ptr<std::pair<bool, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
-
-	// MapContainerJob queue. Invokes jobs that are required to run, sanctioned from other threads.
-	while ((jbuf = _job_queue.try_pop())) {
-		jbuf->run(shared_from_this());
-	}
 
 	// Add any new players / remove anyone else.
 	while ((sbuf = _session_buffer.try_pop())) {

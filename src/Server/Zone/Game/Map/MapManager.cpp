@@ -178,32 +178,3 @@ std::shared_ptr<Entities::Player> MapManager::find_player(std::string name)
 
 	return nullptr;
 }
-
-void MapManager::consign_job_to_all(MapContainerJob &job)
-{
-	std::map<int32_t, std::shared_ptr<MapContainerThread>> map_containers = _map_containers.get_map();
-	for (auto it = map_containers.begin(); it != map_containers.end(); it++)
-		it->second->add_to_job_queue(job);
-}
-
-//! @brief Multi-threaded access and storage of session found in one of the running map containers.
-std::shared_ptr<ZoneSession> GetSessionJob::get_session() { return std::atomic_load(&_session); }
-void GetSessionJob::set_session(std::shared_ptr<ZoneSession> session) {  }
-
-bool GetSessionJob::run(std::shared_ptr<MapContainerThread> container)
-{
-    std::shared_ptr<ZoneSession> session = container->get_session(_session_id);
-  
-    if (session == nullptr)
-        return false;
-
-	_session = *session;
-	
-    return true;
-}
-
-bool UpdateSessionJob::run(std::shared_ptr<MapContainerThread> container)
-{
-    _session = container->get_session(_session_id);
-	std::atomic_store(&_session, session);
-}

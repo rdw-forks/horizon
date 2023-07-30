@@ -169,8 +169,7 @@ bool Horizon::Zone::UI::Friend::notify_add_friend_request(int inviter_account_id
 {
 	ZC_REQ_ADD_FRIENDS pkt(nullptr);
 	pkt.prepare(inviter_account_id, inviter_char_id, name);
-	SearchSessionAndTransmitJob job(get_session()->get_session_id(), pkt.serialize());
-	MapMgr->consign_job_to_all(job);
+	// @TODO
 	return true;
 }
 
