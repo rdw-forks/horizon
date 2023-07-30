@@ -41,7 +41,7 @@ class Session : public std::enable_shared_from_this<SessionType>
 {
 public:
 	Session(int64_t uid, std::weak_ptr<SocketType> socket)
-	: _socket(socket)
+	: _uid(uid), _socket(socket)
 	{
 		//
 	}

@@ -232,8 +232,10 @@ void MapContainerThread::update(uint64_t diff)
 				continue;
 			}
 			_managed_sessions.insert(session->get_session_id(), session);
+			HLog(debug) << "Session " << session->get_session_id() << " was added to managed sessions in map container " << (void *) this;
 		} else {
 			_managed_sessions.erase(session->get_session_id());
+			HLog(debug) << "Session " << session->get_session_id() << " was remnoved from managed sessions in map container " << (void *) this;
 		}
 	}
 

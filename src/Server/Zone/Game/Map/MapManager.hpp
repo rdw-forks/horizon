@@ -106,13 +106,26 @@ public:
 	virtual bool run(std::shared_ptr<MapContainerThread> container) { return false; }
 };
 
-class SearchSessionAndTransmitJob : public MapContainerJob
+class GetSessionJob : public MapContainerJob
 {
-    ByteBuffer _buf;
+    ZoneSession _session;
     int64_t _session_id{ 0 };
 public:
-    SearchSessionAndTransmitJob(int64_t session_id, ByteBuffer &buf) : _session_id(session_id), _buf(buf), MapContainerJob() { }
-    ~SearchSessionAndTransmitJob() { }
+    GetSessionJob(int64_t session_id) : _session_id(session_id), MapContainerJob() { }
+    ~GetSessionJob() { }
+
+    bool run(std::shared_ptr<MapContainerThread> container);
+
+	ZoneSession get_session();
+};
+
+class UpdateSessionJob : public MapContainerJob
+{
+    std::shared_ptr<ZoneSession> _session;
+    int64_t _session_id{ 0 };
+public:
+    UpdateSessionJob(int64_t session_id) : _session_id(session_id), MapContainerJob() { }
+    ~UpdateSessionJob() { }
 
     bool run(std::shared_ptr<MapContainerThread> container);
 };

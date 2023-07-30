@@ -40220,7 +40220,7 @@ public:
 	{}
 	virtual ~ZC_REQ_ADD_FRIENDS() {}
 
-	void deliver(int req_account_id, int req_char_id, std::string req_char_name);
+	void prepare(int req_account_id, int req_char_id, std::string req_char_name);
 	ByteBuffer &serialize();
 
 /* Structure */

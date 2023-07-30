@@ -186,14 +186,24 @@ void MapManager::consign_job_to_all(MapContainerJob &job)
 		it->second->add_to_job_queue(job);
 }
 
-bool SearchSessionAndTransmitJob::run(std::shared_ptr<MapContainerThread> container)
+//! @brief Multi-threaded access and storage of session found in one of the running map containers.
+std::shared_ptr<ZoneSession> GetSessionJob::get_session() { return std::atomic_load(&_session); }
+void GetSessionJob::set_session(std::shared_ptr<ZoneSession> session) {  }
+
+bool GetSessionJob::run(std::shared_ptr<MapContainerThread> container)
 {
     std::shared_ptr<ZoneSession> session = container->get_session(_session_id);
   
     if (session == nullptr)
         return false;
-  
-    session->transmit_buffer(_buf, _buf.active_length());
 
+	_session = *session;
+	
     return true;
+}
+
+bool UpdateSessionJob::run(std::shared_ptr<MapContainerThread> container)
+{
+    _session = container->get_session(_session_id);
+	std::atomic_store(&_session, session);
 }

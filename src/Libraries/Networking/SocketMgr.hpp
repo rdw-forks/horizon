@@ -152,7 +152,7 @@ public:
 	}
 
 private:
-	uint64_t _last_socket_id{};                                       ///< ID of the last socket connection. Used for new connection IDs.
+	uint64_t _last_socket_id{0};                                      ///< ID of the last socket connection. Used for new connection IDs.
 	std::unordered_map<uint32_t, NetworkThreadPtr> _thread_map;       ///< Unordered map of threads with a unique integer as the key.
 };
 }

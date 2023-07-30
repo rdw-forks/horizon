@@ -2445,7 +2445,7 @@ ByteBuffer &ZC_REPLY_REMAINTIME::serialize()
 /**
  * ZC_REQ_ADD_FRIENDS
  */
-void ZC_REQ_ADD_FRIENDS::deliver(int req_account_id, int req_char_id, std::string req_char_name) 
+void ZC_REQ_ADD_FRIENDS::prepare(int req_account_id, int req_char_id, std::string req_char_name) 
 {
 	_req_account_id = req_account_id;
 	_req_char_id = req_char_id;
@@ -5007,7 +5007,13 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 	_entry.move_start_time = (int32_t) get_sys_time();
 	
 	buf() << _packet_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << (int16_t) 114;
+#else
 	buf() << (int16_t) 110;
+#endif
 	buf() << (int8_t) _entry.unit_type;
 	buf() << _entry.guid;
 	buf() << _entry.character_id;
@@ -5018,6 +5024,11 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 	buf() << _entry.job_id;
 	buf() << _entry.hair_style_id;
 	buf() << _entry.weapon_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << _entry.shield_id;
+#endif
 	buf() << _entry.headgear_bottom_id;
 	buf() << _entry.move_start_time;
 	buf() << _entry.headgear_top_id;
@@ -5087,13 +5098,13 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 	buf() << _entry.headgear_top_id;
 	buf() << _entry.headgear_mid_id;
 	buf() << _entry.hair_color_id;
-	buf() << _entry.cloth_color_id;
+	buf() << _entry.cloth_color_id; // 45
 	buf() << (int16_t)_entry.head_direction;
 	buf() << _entry.robe_id;
 	buf() << _entry.guild_id;
 	buf() << _entry.guild_emblem_version;
 	buf() << _entry.honor;
-	buf() << _entry.virtue;
+	buf() << _entry.virtue; // 63
 	buf() << _entry.in_pk_mode;
 	buf() << _entry.gender;
 
@@ -5108,8 +5119,8 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 	buf() << _entry.max_hp;
 	buf() << _entry.hp;
 	buf() << _entry.is_boss;
-	buf() << _entry.body_style_id;
-	buf().append(_entry.name, MAX_UNIT_NAME_LENGTH);
+	buf() << _entry.body_style_id; // 85
+	buf().append(_entry.name, MAX_UNIT_NAME_LENGTH); // 85 + 24 = 109
 
 	return buf();
 }
@@ -5128,17 +5139,28 @@ ByteBuffer &ZC_NOTIFY_STANDENTRY11::serialize()
 	char packed_pos[3]{0};
 	
 	buf() << _packet_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << (int16_t) 108;
+#else
 	buf() << (int16_t) 104;
+#endif
 	buf() << (int8_t) _entry.unit_type;
 	buf() << _entry.guid;
 	buf() << _entry.character_id;
 	buf() << _entry.speed;
 	buf() << _entry.body_state;
-	buf() <<_entry.health_state;
+	buf() << _entry.health_state;
 	buf() << _entry.effect_state;
 	buf() << _entry.job_id;
 	buf() << _entry.hair_style_id;
 	buf() << _entry.weapon_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << _entry.shield_id;
+#endif
 	buf() << _entry.headgear_bottom_id;
 	buf() << _entry.headgear_top_id;
 	buf() << _entry.headgear_mid_id;
