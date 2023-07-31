@@ -195,24 +195,28 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 
 void CharServer::verify_connected_sessions()
 {
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		sChar->get_db_connection()->sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
+		db_session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
 			.bind("C", std::time(nullptr) - config().session_max_timeout())
 			.execute();
 
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
 			.bind("C")
 			.execute();
 
 		mysqlx::Row r = rr.fetchOne();
 		if (r.isNull()) {
 			HLog(info) << "There are no connected session(s).";
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return;
 		}
 
 		int32_t count = r[0].get<int>();
 
 		HLog(info) << count << " connected session(s).";
+
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << error.what();
@@ -220,6 +224,8 @@ void CharServer::verify_connected_sessions()
 	catch (std::exception& error) {
 		HLog(error) << error.what();
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 }
 
 void CharServer::update(uint64_t time)

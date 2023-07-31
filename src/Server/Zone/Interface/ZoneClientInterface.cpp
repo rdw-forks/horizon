@@ -55,7 +55,8 @@ ZoneClientInterface::~ZoneClientInterface()
 }
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
-	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?")
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	mysqlx::RowResult rr = session.sql("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?")
 		.bind(account_id, auth_code)
 		.execute();
 	mysqlx::Row r = rr.fetchOne();
@@ -72,7 +73,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		return false;
 	}
 
-	mysqlx::RowResult rr2 = sZone->get_db_connection()->sql("SELECT `gender`, `group_id` FROM `game_accounts` WHERE `id` = ?")
+	mysqlx::RowResult rr2 = session.sql("SELECT `gender`, `group_id` FROM `game_accounts` WHERE `id` = ?")
 		.bind(account_id)
 		.execute();
 	mysqlx::Row r2 = rr2.fetchOne();
@@ -82,7 +83,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		return false;
 	}
 	
-	sZone->get_db_connection()->sql("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?")
+	session.sql("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?")
 		.bind(current_server, account_id, auth_code)
 		.execute();
 
@@ -99,6 +100,8 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	get_session()->set_player(pl);
 	
 	ClientSocktMgr->set_socket_for_removal(get_session()->get_socket());
+	
+	sZone->database_pool()->release_connection(std::move(session));
 	
 	return true;
 }
@@ -152,7 +155,8 @@ bool ZoneClientInterface::disconnect(int8_t type)
 }
 bool ZoneClientInterface::update_session(int32_t account_id)
 {
-	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `current_server` FROM `session_data` WHERE `id` = ?")
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	mysqlx::RowResult rr = session.sql("SELECT `current_server` FROM `session_data` WHERE `id` = ?")
 		.bind(account_id)
 		.execute();
 	mysqlx::Row r = rr.fetchOne();
@@ -175,9 +179,11 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 		return false;
 	}
 	
-	sZone->get_db_connection()->sql("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?")
+	session.sql("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?")
 		.bind(account_id, std::time(nullptr))
 		.execute();
+
+	sZone->database_pool()->release_connection(std::move(session));
 	return true;
 }
 bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t dir)

@@ -449,12 +449,14 @@ int32_t Inventory::save()
 		}
 	}
 
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	
 	try {
-		sZone->get_db_connection()->sql("DELETE FROM `character_inventory` WHERE `char_id` = ?")
+		session.sql("DELETE FROM `character_inventory` WHERE `char_id` = ?")
 			.bind(player()->character()._character_id)
 			.execute();
 
-		mysqlx::Schema schema = sZone->get_db_connection()->getSchema("horizon");
+		mysqlx::Schema schema = session.getSchema("horizon");
 		mysqlx::Table table = schema.getTable("character_inventory");
 		mysqlx::TableInsert ti = table.insert("char_id", "item_id", "amount", "equip_location_mask",
 			"is_identified", "refine_level", "element_type", "slot_item_id_0", "slot_item_id_1", "slot_item_id_2", "slot_item_id_3", "opt_idx0", "opt_val0",
@@ -504,14 +506,18 @@ int32_t Inventory::save()
 		HLog(error) << "Inventory::save:" << error.what();
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
 
 	return changes;
 }
 
 int32_t Inventory::load()
 {	
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `item_id`, `amount`, `equip_location_mask`, `refine_level`, `slot_item_id_0`,"
+		mysqlx::RowResult rr = session.sql("SELECT `item_id`, `amount`, `equip_location_mask`, `refine_level`, `slot_item_id_0`,"
 			"`slot_item_id_1`, `slot_item_id_2`, `slot_item_id_3`, `hire_expire_date`, `element_type`, `opt_idx0`, `opt_val0`, `opt_idx1`, `opt_val1`,"
 			"`opt_idx2`, `opt_val2`, `opt_idx3`, `opt_val3`, `opt_idx4`, `opt_val4`, `is_identified`, `is_broken`, `is_favorite`, `bind_type`, `unique_id`"
 			" FROM `character_inventory` WHERE `char_id` = ?")
@@ -603,5 +609,7 @@ int32_t Inventory::load()
 		return false;
 	}
 
+	sZone->database_pool()->release_connection(std::move(session));
+	
 	return _inventory_items.size();
 }

@@ -51,8 +51,10 @@ bool CharClientInterface::authorize_new_connection(uint32_t account_id, uint32_t
 {	
 	HLog(warning) << "A new connection has been established from I.P. " << get_session()->get_socket()->remote_ip_address();
 	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
 			.bind(account_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -64,10 +66,11 @@ bool CharClientInterface::authorize_new_connection(uint32_t account_id, uint32_t
 			HC_REFUSE_ENTER pkt(get_session());
 			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
 			pkt.deliver(CHAR_ERR_REJECTED_FROM_SERVER);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
-		mysqlx::RowResult rr2 = sChar->get_db_connection()->sql("SELECT * FROM `game_accounts` WHERE `id` = ?")
+		mysqlx::RowResult rr2 = db_session.sql("SELECT * FROM `game_accounts` WHERE `id` = ?")
 			.bind(account_id)
 			.execute();
 		mysqlx::Row r2 = rr2.fetchOne();
@@ -76,6 +79,7 @@ bool CharClientInterface::authorize_new_connection(uint32_t account_id, uint32_t
 			HC_REFUSE_ENTER pkt(get_session());
 			HLog(error) << "Game Account with ID " << account_id << " does not exist.";
 			pkt.deliver(CHAR_ERR_REJECTED_FROM_SERVER);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
@@ -115,19 +119,23 @@ bool CharClientInterface::authorize_new_connection(uint32_t account_id, uint32_t
 				hcspl.deliver(PINCODE_REQUEST_PIN);
 		}
 
-		sChar->get_db_connection()->sql("UPDATE `session_data` SET `current_server` = 'C' WHERE `game_account_id` = ?")
+		db_session.sql("UPDATE `session_data` SET `current_server` = 'C' WHERE `game_account_id` = ?")
 			.bind(account_id)
 			.execute();
+			
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::authorize_new_connection:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::authorize_new_connection:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 
+	sChar->database_pool()->release_connection(std::move(db_session));
 	// update with auth code.
 	return true;
 }
@@ -136,8 +144,9 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 {	
 	HC_REFUSE_MAKECHAR hcref(get_session());
 	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT * FROM `characters` WHERE `name` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT * FROM `characters` WHERE `name` = ?")
 			.bind(name)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -145,29 +154,31 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 		if (!r.isNull()) {
 			hcref.deliver(HC_CREATE_ERROR_ALREADY_EXISTS);
 			HLog(info) << "Character creation denied for already existing character '" << name << "'. (Endpoint: " << get_session()->get_socket()->remote_ip_address() << ")";
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
 		if (slot > get_session()->get_session_data()._character_slots) {
 			hcref.deliver(HC_CREATE_ERROR_CHAR_SLOT);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
 		std::string new_map = sChar->config().start_map();
 		uint16_t x = sChar->config().start_x(), y = sChar->config().start_y();
 
-		sChar->get_db_connection()->sql("INSERT INTO `characters` (`account_id`, `slot`, `name`, `current_map`, `current_x`, `current_y`, `saved_map`, `saved_x`, `saved_y`, `gender`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		db_session.sql("INSERT INTO `characters` (`account_id`, `slot`, `name`, `current_map`, `current_x`, `current_y`, `saved_map`, `saved_x`, `saved_y`, `gender`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 			.bind(get_session()->get_session_data()._account_id, slot, name,
 				new_map, x, y,
 				new_map, x, y, gender ? "M" : "F")
 			.execute();
 
-		mysqlx::RowResult rri = sChar->get_db_connection()->sql("SELECT LAST_INSERT_ID();").execute();
+		mysqlx::RowResult rri = db_session.sql("SELECT LAST_INSERT_ID();").execute();
 		mysqlx::Row ri = rri.fetchOne();
 
 		int c_last_insert_id = ri[0].get<int>();
 
-		sChar->get_db_connection()->sql("INSERT INTO `character_status` (`id`, `job_id`, `hair_color_id`, `hair_style_id`) VALUES (?, ?, ?, ?)")
+		db_session.sql("INSERT INTO `character_status` (`id`, `job_id`, `hair_color_id`, `hair_style_id`) VALUES (?, ?, ?, ?)")
 			.bind(c_last_insert_id, job_class, hair_color, hair_style)
 			.execute();
 
@@ -175,7 +186,7 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 			std::pair<uint32_t, uint32_t> p = sChar->config().start_item(j);
 			int item = p.first, c = p.second;
 
-			sChar->get_db_connection()->sql("INSERT INTO `character_inventory` (`char_id`, `item_id`, `amount`, `is_identified`) VALUES (?, ?, ?, ?)")
+			db_session.sql("INSERT INTO `character_inventory` (`char_id`, `item_id`, `amount`, `is_identified`) VALUES (?, ?, ?, ?)")
 				.bind(c_last_insert_id, item, c, 1)
 				.execute();
 		}
@@ -189,12 +200,16 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::make_new_character:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::make_new_character:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 	return true;
 }
 
@@ -205,35 +220,47 @@ bool CharClientInterface::make_new_character(std::string name, uint8_t slot, uin
 
 character_delete_result CharClientInterface::character_delete_soft(uint32_t character_id)
 {	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT * FROM `characters` WHERE `id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT * FROM `characters` WHERE `id` = ?")
 			.bind(character_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
 
-		if (r.isNull())
+		if (r.isNull()) {
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return CHAR_DEL_RESULT_DATABASE_ERR;
-
-		if (r[21].get<int>() > 0) // Guild ID
+		}
+		if (r[21].get<int>() > 0) { // Guild ID
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return CHAR_DEL_RESULT_GUILD_ERR;
+		}
 
-		if (r[20].get<int>() > 0) // Party ID
+		if (r[20].get<int>() > 0) { // Party ID
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return CHAR_DEL_RESULT_PARTY_ERR;
+		}
 
 		std::time_t dt = std::time(nullptr) + sChar->config().character_deletion_time();
 
-		sChar->get_db_connection()->sql("UPDATE `characters` SET `delete_reserved_at` = ? WHERE `id` = ?")
+		db_session.sql("UPDATE `characters` SET `delete_reserved_at` = ? WHERE `id` = ?")
 			.bind(dt, character_id)
 			.execute();
+
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::character_delete_soft:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return CHAR_DEL_RESULT_DATABASE_ERR;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::character_delete_soft:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return CHAR_DEL_RESULT_SYSTEM_ERR;
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 
 	return CHAR_DEL_RESULT_SUCCESS;
 }
@@ -256,8 +283,11 @@ bool CharClientInterface::character_delete_email(uint32_t character_id, std::str
 bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std::string birthdate)
 {
 	HC_DELETE_CHAR3 dc3(get_session());
+	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT `birth_date`, `character_slots` FROM `game_accounts` WHERE `id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT `birth_date`, `character_slots` FROM `game_accounts` WHERE `id` = ?")
 			.bind(get_session()->get_session_data()._account_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -265,6 +295,7 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 		if (r.isNull()) {
 			HLog(error) << "Attempt to delete character with non-existent game-account. (CID: " << character_id << ", AID:" << get_session()->get_session_data()._account_id << ")";
 			dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_SYSTEM_ERR);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
@@ -283,26 +314,32 @@ bool CharClientInterface::character_delete_birthdate(uint32_t character_id, std:
 		HLog(debug) << birthdate << " - " << bd;
 		if (bd.compare(birthdate) != 0) {
 			dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_BIRTHDAY_ERR);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
 		if (sChar->config().char_hard_delete()) {
-			sChar->get_db_connection()->sql("REMOVE FROM `character_status` WHERE `id` = ?").bind(character_id).execute();
-			sChar->get_db_connection()->sql("REMOVE FROM `character_inventory` WHERE `char_id` = ?").bind(character_id).execute();
-			sChar->get_db_connection()->sql("REMOVE FROM `characters` WHERE `id` = ?").bind(character_id).execute();
+			db_session.sql("REMOVE FROM `character_status` WHERE `id` = ?").bind(character_id).execute();
+			db_session.sql("REMOVE FROM `character_inventory` WHERE `char_id` = ?").bind(character_id).execute();
+			db_session.sql("REMOVE FROM `characters` WHERE `id` = ?").bind(character_id).execute();
 		}
 		else {
-			sChar->get_db_connection()->sql("UPDATE `characters` SET `deleted_at` = ? WHERE `id` = ?").bind(std::time(nullptr), character_id).execute();
+			db_session.sql("UPDATE `characters` SET `deleted_at` = ? WHERE `id` = ?").bind(std::time(nullptr), character_id).execute();
 		}
+
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::character_delete_birthdate:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::character_delete_birthdate:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 	
 	dc3.deliver(character_id, CHAR_DEL_ACCEPT_RESULT_SUCCESS);
 
@@ -342,30 +379,37 @@ bool CharClientInterface::character_delete_cancel(uint32_t char_id)
 {
 	HC_DELETE_CHAR3_CANCEL dcc(get_session());
 	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT `delete_reserved_at` FROM `characters` WHERE `id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT `delete_reserved_at` FROM `characters` WHERE `id` = ?")
 			.bind(char_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
 
 		if (r.isNull()) {
 			dcc.deliver(char_id, CHAR3_DEL_CANCEL_FAILURE);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
-		sChar->get_db_connection()->sql("UPDATE `characters` SET `delete_reserved_at` = ? WHERE `id` = ?")
+		db_session.sql("UPDATE `characters` SET `delete_reserved_at` = ? WHERE `id` = ?")
 			.bind(0, char_id)
 			.execute();
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::character_delete_cancel:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::character_delete_cancel:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 
+	sChar->database_pool()->release_connection(std::move(db_session));
+	
 	dcc.deliver(char_id, CHAR3_DEL_CANCEL_SUCCESS);
 
 	return true;
@@ -383,15 +427,19 @@ bool CharClientInterface::pincode_create(uint32_t account_id, char *pincode)
 	
 	{
 		uint32_t pincode_expiry = std::time(nullptr) + sChar->config().pincode_expiry();
+		mysqlx::Session db_session = sChar->database_pool()->get_connection();
 		try {
-			sChar->get_db_connection()->sql("UPDATE `game_accounts` SET `pincode` = ?, `pincode_expiry` = ? WHERE `id` = ? ")
+			db_session.sql("UPDATE `game_accounts` SET `pincode` = ?, `pincode_expiry` = ? WHERE `id` = ? ")
 				.bind(decrypted, pincode_expiry, account_id)
 				.execute();
 		}
 		catch (mysqlx::Error& err) {
 			HLog(error) << "CharClientInterface::pincode_create:" << err.what();
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
+		
+		sChar->database_pool()->release_connection(std::move(db_session));
 	}
 	
 	strncpy(_pincode_confirm, decrypted, MAX_PINCODE_STRING_LENGTH);
@@ -413,8 +461,11 @@ bool CharClientInterface::pincode_change(uint32_t account_id, char *old_pin, cha
 	pincode_decrypt(seed, new_pin, new_decrypted);
 	
 	std::cout << old_decrypted << " - " << new_decrypted << std::endl;
+	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT `pincode` FROM `game_accounts` WHERE `id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT `pincode` FROM `game_accounts` WHERE `id` = ?")
 			.bind(account_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -430,24 +481,29 @@ bool CharClientInterface::pincode_change(uint32_t account_id, char *old_pin, cha
 #else
 			sp.deliver(PINCODE_INCORRECT);
 #endif
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
 		{
 			uint32_t pincode_expiry = std::time(nullptr) + sChar->config().pincode_expiry();
-			sChar->get_db_connection()->sql("UPDATE `game_accounts` SET `pincode` = ?, `pincode_expiry` = ? WHERE `id` = ?")
+			db_session.sql("UPDATE `game_accounts` SET `pincode` = ?, `pincode_expiry` = ? WHERE `id` = ?")
 				.bind(new_decrypted, pincode_expiry, account_id)
 				.execute();
 		}
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::pincode_change: " << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::pincode_change: " << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 	
 	esp.deliver(PINCODE_EDIT_SUCCESS);
 	sp.deliver(PINCODE_CORRECT);
@@ -503,8 +559,10 @@ bool CharClientInterface::pincode_verify(uint32_t account_id, char *pincode)
 	uint32_t seed = get_session()->get_session_data()._pincode_seed;
 	pincode_decrypt(seed, pincode, decrypted);
 	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT `pincode` FROM `game_accounts` WHERE `id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT `pincode` FROM `game_accounts` WHERE `id` = ?")
 			.bind(account_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -526,26 +584,33 @@ bool CharClientInterface::pincode_verify(uint32_t account_id, char *pincode)
 #else
 			sp.deliver(PINCODE_INCORRECT);
 #endif
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << "CharClientInterface::pincode_verify:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::pincode_verify:" << err.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	
+	sChar->database_pool()->release_connection(std::move(db_session));
+
 	sp.deliver(PINCODE_CORRECT);
 	return true;
 }
 
 bool CharClientInterface::select_character(int slot)
 {	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT `id`, `current_map` FROM `characters` WHERE `account_id` = ? AND `slot` = ? AND `deleted_at` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT `id`, `current_map` FROM `characters` WHERE `account_id` = ? AND `slot` = ? AND `deleted_at` = ?")
 			.bind(get_session()->get_session_data()._account_id, slot, 0)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -554,6 +619,7 @@ bool CharClientInterface::select_character(int slot)
 			HC_REFUSE_ENTER hre(get_session());
 			HLog(error) << "Attempt to select non-existent character in slot " << slot << " for account " << get_session()->get_session_data()._account_id << ".";
 			hre.deliver(CHAR_ERR_REJECTED_FROM_SERVER);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
@@ -568,6 +634,8 @@ bool CharClientInterface::select_character(int slot)
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::select_character:" << err.what();
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 	return true;
 }
 
@@ -575,8 +643,10 @@ bool CharClientInterface::update_session(int32_t account_id)
 {
 	HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
 	
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sChar->get_db_connection()->sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
 			.bind(account_id)
 			.execute();
 		mysqlx::Row r = rr.fetchOne();
@@ -585,6 +655,7 @@ bool CharClientInterface::update_session(int32_t account_id)
 			HC_REFUSE_ENTER pkt(get_session());
 			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
 			pkt.deliver(CHAR_ERR_REJECTED_FROM_SERVER);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
@@ -594,10 +665,11 @@ bool CharClientInterface::update_session(int32_t account_id)
 			HC_REFUSE_ENTER pkt(get_session());
 			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
 			pkt.deliver(CHAR_ERR_REJECTED_FROM_SERVER);
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
-		sChar->get_db_connection()->sql("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?")
+		db_session.sql("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?")
 			.bind(std::time(nullptr), account_id)
 			.execute();
 	}
@@ -607,6 +679,8 @@ bool CharClientInterface::update_session(int32_t account_id)
 	catch (std::exception& err) {
 		HLog(error) << "CharClientInterface::update_session:" << err.what();
 	}
+	
+	sChar->database_pool()->release_connection(std::move(db_session));
 
 	return true;
 }
