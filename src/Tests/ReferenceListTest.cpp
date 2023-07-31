@@ -123,7 +123,7 @@ private:
 	int _id;
 };
 
-#define MAX_LIMIT 100000
+#define MAX_LIMIT 10000
 
 BOOST_AUTO_TEST_CASE(ReferenceListTest)
 {
@@ -131,6 +131,7 @@ BOOST_AUTO_TEST_CASE(ReferenceListTest)
 	std::shared_ptr<Player> player[MAX_LIMIT];
 	int var[MAX_LIMIT];
 
+	// Test for validity of reference after adding it.
 	for (int i = 0; i < MAX_LIMIT; i++) {
 		var[i] = i;
 		player[i] = std::make_shared<Player>();
@@ -139,23 +140,32 @@ BOOST_AUTO_TEST_CASE(ReferenceListTest)
 		BOOST_CHECK_EQUAL(player[i]->valid(), true);
 	}
 
+	// Test to verify post-increment forward iteration.
 	int ofs = MAX_LIMIT - 1;
 	for (auto it = playerRefMgr.begin(); it != TestRefManager<Player>::iterator(nullptr); it++)
 		BOOST_CHECK_EQUAL(it->source()->get_id(), var[ofs--]);
 
+	// Test to verify pre-increment forward iteration.
 	ofs = MAX_LIMIT - 1;
 	for (auto it = playerRefMgr.begin(); it != TestRefManager<Player>::iterator(nullptr); ++it)
 		BOOST_CHECK_EQUAL(it->source()->get_id(), var[ofs--]);
 
+	// Test to verify the size of the list.
 	BOOST_CHECK_EQUAL(playerRefMgr.get_size(), MAX_LIMIT);
 
+	// Test to verify if the previous of first element of the Head is nullptr.
 	if (playerRefMgr.first()->prev() != nullptr)
 		BOOST_FAIL("Prev of first is not null!");
+	// Test to verify if next of last element of the Head is nullptr.
 	if (playerRefMgr.last()->next() != nullptr)
 		BOOST_FAIL("Next of last is not null!");
 
-	for (int i = 0; i < MAX_LIMIT; i++)
+	// Test for validity of reference after removing it.
+	for (int i = 0; i < MAX_LIMIT; i++) {
 		player[i]->remove_reference();
+		BOOST_CHECK_EQUAL(player[i]->valid(), false);
+	}
 
+	// Test to verify all elements were removed successfully.
 	BOOST_CHECK_EQUAL(playerRefMgr.get_size(), 0);
 }

@@ -51,7 +51,7 @@ namespace Horizon
 	}
 }
 
-template <class ACTIVE_OBJECT, class ZONE_OBJECT_TYPES>
+template <class ZONE_OBJECT_TYPES>
 class GridHolder;
 
 template <int16_t MAX_COORDINATES>
@@ -74,7 +74,7 @@ typedef TYPELIST_8(entity_ns(Player),
 	entity_ns(Pet),
 	entity_ns(Monster),
 	entity_ns(Skill)) AllEntityTypes;
-typedef GridHolder<entity_ns(Player), AllEntityTypes> GridHolderType;
+typedef GridHolder<AllEntityTypes> GridHolderType;
 #undef entity_ns
 
 typedef Coordinates<MAX_GRIDS_PER_MAP> GridCoords;
