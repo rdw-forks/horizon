@@ -32,9 +32,12 @@
 
 #include "Core/Structures/LinkedList/ReferenceList/Reference.hpp"
 
+//! @brief Forward declaration of GridRefManager, the class that manages GridReference.
 template <class OBJECT>
 class GridRefManager;
 
+//! @brief GridReference is a reference to an object in GridRefManager. It is used to link objects.
+//! @tparam OBJECT The type of object to be linked.
 template <class OBJECT>
 class GridReference : public Horizon::Structures::LinkedList::Reference<GridRefManager<OBJECT>, OBJECT>
 {

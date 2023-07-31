@@ -43,6 +43,16 @@ namespace Horizon
 {
 namespace Zone
 {
+//! @brief The class Map is the representation of a map in the game. It contains all the cells and the grid holder. It also contains the A* pathfinder. 
+//! It is the main class for the map. It is used to get the cells, the grid holder and the pathfinder, and perform a variety of operations on them.
+//! @param _container The container that contains this map.
+//! @param _name The name of the map.
+//! @param _width The width of the map.
+//! @param _height The height of the map.
+//! @param _cells The cells of the map.
+//! @param _gridholder The grid holder of the map.
+//! @param _pathfinder The A* pathfinder of the map.
+//! @param _obstructions The obstructions of the map.
 class Map
 {
 friend class MapManager;

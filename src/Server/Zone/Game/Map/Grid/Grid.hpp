@@ -36,9 +36,16 @@
 
 //! @details Grid is used to store objects in a 2D grid. This is used to speed up the search for objects in a given area.
 //! The grid is divided into cells of a given size. Each grid-cell contains a list of objects that are in that grid-cell.
+//! The grid is actually stored in the GridHolder class.
+//!	- The GridHolder class is a container for Grids.
+//! - The Grid class is a container for objects.
+//! - The GridReferenceContainer class is a container for objects in a grid-cell.
+//! - The GridReferenceContainerVisitor class is used to visit the objects in a grid-cell.
+//! @tparam ACTIVE_OBJECT is the object that is stored in the grid.
+//! @tparam GRID_OBJECT_TYPES is a type-list of object types that are stored in the grid.
+//! @param _container is the container for objects in the grid-cell.
 template
 <
-	class ACTIVE_OBJECT,
 	class GRID_OBJECT_TYPES
 >
 class Grid

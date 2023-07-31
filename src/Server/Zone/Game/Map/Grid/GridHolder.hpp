@@ -36,16 +36,16 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 
-template
-<
-	class ACTIVE_OBJECT,
-	class ZONE_OBJECT_TYPES
->
+//! @brief GridHolder is a container for Grids, handles the visiting of grids.
+//! @tparam ZONE_OBJECT_TYPES TypeList of all the objects that can be stored in the grid.
+//! @param _bounds The bounds of the GridHolder.
+//! @param _grids The Grids contained in the GridHolder.
+template<class ZONE_OBJECT_TYPES>
 class GridHolder
 {
 friend class Horizon::Zone::MapManager;
 public:
-	typedef Grid<ACTIVE_OBJECT, ZONE_OBJECT_TYPES> GridType;
+	typedef Grid<ZONE_OBJECT_TYPES> GridType;
 
 	GridHolder(GridCoords bounds)
 	: _bounds(bounds)

@@ -83,7 +83,7 @@ public:
 private:
 	// disable copy and assignment because we don't want to copy Elements and we don't want to assign Elements to each other.
 	// This is a linked list, not a copyable list because it is used to manage a list of objects that are not copyable.
-	// Copying the objects could result in unexpected behavior.
+	// It should be noted that copying the objects could result in unexpected behavior.
 	Element(Element const&) = delete;
 	Element& operator=(Element const&) = delete;
 
