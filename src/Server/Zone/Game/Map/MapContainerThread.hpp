@@ -43,6 +43,7 @@ namespace Entities
 {
 	class Player;
 }
+class ZoneSession;
 // Important step as when the map is not available in a given MapContainerThread, the function invoked from lua will just exit. 
 // Functions are run on all containers and not just one.
 #define MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name) \
@@ -70,18 +71,21 @@ public:
 	//! saved in thread-safe tables.
 	void remove_map(std::string const &name);
 
-	//! @brief Adds a player to the player buffer, marking him for addition to the
-	//! list of managed players by this container on the next update.
-	//! @param[in] p shared_ptr to a player object which should be managed by this map.
-	//! @warning A player added for management by this container must be the only owner of the player object.
-	void add_player(std::shared_ptr<Entities::Player> p);
-	//! @brief Adds a player to the player buffer, marking him for removal from the
-	//! list of managed players by this container on the next update.
-	void remove_player(std::shared_ptr<Entities::Player> p);
+	//! @brief Adds a session to the session buffer, marking him for addition to the
+	//! list of managed session by this container on the next update.
+	//! @param[in] s shared_ptr to a session object which should be managed by this map.
+	//! @warning A session added for management by this container must be the only owner of the session object.
+	void add_session(std::shared_ptr<ZoneSession> s);
+	//! @brief Adds a session to the session buffer, marking him for removal from the
+	//! list of managed sessions by this container on the next update.
+	void remove_session(std::shared_ptr<ZoneSession> s);
 
 	//! @brief Returns a player if found, nullptr otherwise.
 	std::shared_ptr<Entities::Player> get_player(std::string const &name);
 	std::shared_ptr<Entities::Player> get_player(int32_t guid);
+
+	//! @brief Returns a session if found, nullptr otherwise.
+	std::shared_ptr<ZoneSession> get_session(int64_t session_id);
 
 	//! @brief Responsible for initialization of the container and is called externally.
 	//! This is mainly for members that can't be initialized from the constructor method.
@@ -114,8 +118,8 @@ private:
 
 	std::thread _thread;
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
-	ThreadSafeQueue<std::pair<bool, std::shared_ptr<Entities::Player>>> _player_buffer;     ///< Thread-safe queue of players to add to/remove from the container.
-	LockedLookupTable<int32_t, std::shared_ptr<Entities::Player>> _managed_players;         ///< Thread-safe hash table of managed players.
+	ThreadSafeQueue<std::pair<bool, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
+	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
 	std::shared_ptr<LUAManager> _lua_mgr;                                                   ///< Non-thread-safe shared pointer and owner of a script manager.
 	TaskScheduler _task_scheduler;
 };

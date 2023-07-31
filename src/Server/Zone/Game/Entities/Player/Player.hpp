@@ -54,6 +54,7 @@ namespace Assets
 {
 	class Inventory;
 }
+class Map;
 namespace Entities
 {
 class Player : public Entity, public GridObject<Player>
@@ -90,11 +91,13 @@ public:
 	Player(std::shared_ptr<ZoneSession> session, uint32_t guid);
 	~Player();
 
-	std::shared_ptr<ZoneSession> get_session() { return _session; }
+	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
 
 	void create(int char_id, std::string account_gender, int group_id);
 
 	bool initialize();
+	bool is_initialized() { return _is_initialized; }
+	void set_initialized(bool val) { _is_initialized = val; }
 
 	/**
 	 * Grid applications
@@ -196,7 +199,8 @@ public:
     bool attack(std::shared_ptr<Entity> e, bool continuous = false) override;
     bool stop_attack();
 private:
-	std::shared_ptr<ZoneSession> _session;
+	bool _is_initialized{ false };
+	std::weak_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;
 	std::shared_ptr<Assets::Inventory> _inventory;
 	std::atomic<bool> _is_logged_in{false};

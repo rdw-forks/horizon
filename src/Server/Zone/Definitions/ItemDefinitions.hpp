@@ -481,13 +481,15 @@ struct item_entry_data
 
 typedef std::array<std::pair<item_equip_location_mask, std::weak_ptr<item_entry_data>>, IT_EQPI_MAX> EquipmentListType;
 
+#pragma pack(push, 1)
 struct item_slot {
 #if ((CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
 	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
 	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114))
-	uint32 item_id[4];
+	uint32 item_id[MAX_ITEM_SLOTS];
 #else
-	uint16 item_id[4];
+	uint16 item_id[MAX_ITEM_SLOTS];
 #endif
 };
+#pragma pack(pop)
 #endif /* HORIZON_ZONE_ITEM_DEFINITIONS */

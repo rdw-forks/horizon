@@ -29,12 +29,11 @@
 
 #include "MapContainerThread.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
-#include "Server/Zone/Game/Entities/NPC/NPC.hpp"
-#include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
+#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Core/Logging/Logger.hpp"
+#include "Server/Zone/Session/ZoneSession.hpp"
 
 using namespace Horizon::Zone;
 
@@ -72,39 +71,51 @@ void MapContainerThread::remove_map(std::string const &name)
 	_managed_maps.erase(name);
 }
 
-//! @brief Adds a player to the player buffer, marking him for addition to the
-//! list of managed players by this container on the next update.
-//! @param[in] p shared_ptr to a player object which should be managed by this map.
-//! @note A player added for management by this container must be the only owner of the player object.
-void MapContainerThread::add_player(std::shared_ptr<Entities::Player> p)
+//! @brief Adds a session to the session buffer, marking him for addition to the
+//! list of managed sessions by this container on the next update.
+//! @param[in] p shared_ptr to a session object which should be managed by this map.
+//! @note A session added for management by this container must be the only owner of the session object.
+void MapContainerThread::add_session(std::shared_ptr<ZoneSession> s)
 {
-	_player_buffer.push(std::make_pair(true, p));
+	_session_buffer.push(std::make_pair(true, s));
 }
 
-//! @brief Adds a player to the player buffer, marking him for removal from the
-//! list of managed players by this container on the next update.
-void MapContainerThread::remove_player(std::shared_ptr<Entities::Player> p)
+//! @brief Adds a session to the session buffer, marking him for removal from the
+//! list of managed sessions by this container on the next update.
+void MapContainerThread::remove_session(std::shared_ptr<ZoneSession> s)
 {
-	_player_buffer.push(std::make_pair(false, p));
+	_session_buffer.push(std::make_pair(false, s));
 }
 
 std::shared_ptr<Entities::Player> MapContainerThread::get_player(std::string const &name)
 {
-	std::map<int32_t, std::shared_ptr<Entities::Player>> player_map = _managed_players.get_map();
-	for (auto it = player_map.begin(); it != player_map.end(); it++)
-		if (it->second->name() == name)
-			return it->second;
+	std::map<int64_t, std::shared_ptr<ZoneSession>> session_map = _managed_sessions.get_map();
+	for (auto it = session_map.begin(); it != session_map.end(); it++)
+		if (it->second->player()->name() == name)
+			return it->second->player();
 
 	return nullptr;
 }
 
 std::shared_ptr<Entities::Player> MapContainerThread::get_player(int guid)
 {
-	std::map<int32_t, std::shared_ptr<Entities::Player>> player_map = _managed_players.get_map();
-	for (auto it = player_map.begin(); it != player_map.end(); it++)
-		if (it->second->guid() == guid)
-			return it->second;
+	std::map<int64_t, std::shared_ptr<ZoneSession>> session_map = _managed_sessions.get_map();
+	for (auto it = session_map.begin(); it != session_map.end(); it++)
+		if (it->second->player()->guid() == guid)
+			return it->second->player();
 
+	return nullptr;
+}
+
+//! @brief Returns a session if found, nullptr otherwise.
+std::shared_ptr<ZoneSession> MapContainerThread::get_session(int64_t session_id)
+{
+	std::map<int64_t, std::shared_ptr<ZoneSession>> session_map = _managed_sessions.get_map();
+	auto it = session_map.find(session_id);
+	
+	if (it != session_map.end())
+		return it->second;
+	
 	return nullptr;
 }
 
@@ -120,29 +131,32 @@ void MapContainerThread::initialize()
 //! This method must not be called from within the thread itself! @see MapManager::finalize()
 void MapContainerThread::finalize()
 {
-	std::map<int32_t, std::shared_ptr<Entities::Player>> pmap = _managed_players.get_map();
-	for (auto pi = pmap.begin(); pi != pmap.end();) {
-		std::shared_ptr<Entities::Player> player = pi->second;
+	std::map<int64_t, std::shared_ptr<ZoneSession>> smap = _managed_sessions.get_map();
+	for (auto si = smap.begin(); si != smap.end();) {
+		std::shared_ptr<ZoneSession> session = si->second;
 
-		if (player && player->get_session())
-			player->save();
+		if (session && session->player())
+			session->player()->save();
 
 		// Disconnect player.
-//		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
-		_managed_players.erase(player->guid());
-		pi++;
+		_managed_sessions.erase(session->get_socket()->get_socket_id());
+		si++;
 	}
 
-	// Clear anyone in the player buffer (You never know...)
-	std::shared_ptr<std::pair<bool, std::shared_ptr<Entities::Player>>> pbuf = nullptr;
+	// Clear anyone in the session buffer (You never know...)
+	std::shared_ptr<std::pair<bool, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
 
-	while ((pbuf = _player_buffer.try_pop())) {
-		std::shared_ptr<Entities::Player> player = pbuf->second;
+	while ((sbuf = _session_buffer.try_pop())) {
+		std::shared_ptr<ZoneSession> session = sbuf->second;
 
-		if (!player || !player->get_session())
+		if (session == nullptr)
 			continue;
+		if (session->player() == nullptr) {
+			HLog(warning) << "Tried to save player when player was nullptr in session " << session->get_session_id();
+			continue;
+		}
 
-		player->save();
+		session->player()->save();
 //		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
 	}
 
@@ -185,41 +199,47 @@ void MapContainerThread::start_internal()
 //! @param[in] diff current system time.
 void MapContainerThread::update(uint64_t diff)
 {
-	std::shared_ptr<std::pair<bool, std::shared_ptr<Entities::Player>>> pbuf = nullptr;
+	std::shared_ptr<std::pair<bool, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
 
 	// Add any new players / remove anyone else.
-	while ((pbuf = _player_buffer.try_pop())) {
-		std::shared_ptr<Entities::Player> player = pbuf->second;
+	while ((sbuf = _session_buffer.try_pop())) {
+		std::shared_ptr<ZoneSession> session = sbuf->second;
 
-		if (player->get_session() == nullptr)
+		if (session == nullptr)
 			continue;
 
-		if (pbuf->first) {
-			if (!player->is_initialized())
-				player->initialize();
-			_managed_players.insert(player->guid(), player);
+		if (sbuf->first) {
+			if (session->is_initialized() && session->player() != nullptr && session->player()->is_initialized() == false) {
+				// Intialized player upon loading.
+				session->player()->initialize();
+			} else if (session) {
+				HLog(warning) << "Tried to initialize player when session was not initialized or player was not created in session" << session->get_session_id() << ".";
+				continue;
+			} else {
+				HLog(warning) << "Tried to initialize player when session was 'nullptr' and player was not created.";
+				continue;
+			}
+			_managed_sessions.insert(session->get_session_id(), session);
+			HLog(debug) << "Session " << session->get_session_id() << " was added to managed sessions in map container " << (void *) this;
 		} else {
-			_managed_players.erase(player->guid());
+			_managed_sessions.erase(session->get_session_id());
+			HLog(debug) << "Session " << session->get_session_id() << " was remnoved from managed sessions in map container " << (void *) this;
 		}
 	}
 
 	// Update sessions
-	std::map<int32_t, std::shared_ptr<Entities::Player>> pmap = _managed_players.get_map();
-	for (auto pi = pmap.begin(); pi != pmap.end();) {
-		std::shared_ptr<Entities::Player> player = pi->second;
+	std::map<int64_t, std::shared_ptr<ZoneSession>> smap = _managed_sessions.get_map();
+	for (auto si = smap.begin(); si != smap.end();) {
+		std::shared_ptr<ZoneSession> session = si->second;
 
-		if (!player
-			|| !player->get_session()
-			|| !player->get_session()->get_socket()
-			|| !player->character()._online
-			) {
-			_managed_players.erase(player->guid());
-			pi++;
+		if (session == nullptr) {
+			_managed_sessions.erase(si->first);
+			si++;
 			continue;
 		}
 		// process packets
-		player->get_session()->update(diff);
-		pi++;
+		session->update(diff);
+		si++;
 	}
 
 	// Update Monsters

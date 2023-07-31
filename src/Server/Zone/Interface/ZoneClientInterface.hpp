@@ -91,6 +91,8 @@ public:
 	void ranking_alchemist();
 	void ranking_blacksmith();
 	void ranking_pk();
+	bool notify_pvp_points();
+	bool notify_ranking(cz_req_ranking_type type, std::vector<zc_ack_ranking_info> info, int ranking_points);
 	/**
 	 * Config
 	*/
@@ -189,7 +191,11 @@ public:
 	bool notify_unequip_item(std::shared_ptr<const item_entry_data> item, item_unequip_result_type result);
 	bool notify_equip_arrow(std::shared_ptr<const item_entry_data> item);
 	bool notify_action_failure(int16_t message_type);
-
+	bool notify_item_composition(int16_t item_inventory_index, int16_t card_inventory_index, zc_ack_item_composition_result_type result);
+	bool notify_identified_item(int16_t inventory_index, zc_ack_item_identify_result_type result);
+	bool notify_item_refining(zc_ack_itemrefining_result_type result, int16_t inventory_index, int16_t refine_lv);
+	bool notify_item_repair(int inventory_index, zc_ack_itemrepair_result_type result);
+	bool notify_item_merge(int inventory_index, int amount, zc_ack_merge_item_reason_type reason);
 	/**
 	 * Skills
 	 */
@@ -232,6 +238,8 @@ public:
 	void start_vending(std::string shop_name, std::vector<cz_req_openstore_itemlist> items);
 	void start_buying_store(std::string store_name, int zeny_limit, std::vector<cz_req_open_buying_store_itemlist> items);
 	void sell_to_buying_store(int account_id, int store_id, std::vector<cz_req_trade_buying_store_itemlist> items);
+	bool notify_buying_store_itemlist(int account_id, int store_id, int zeny_limit, std::vector<zc_ack_itemlist_buying_store> items);
+	bool notify_open_vending(zc_ack_openstore2_result_type result);
 
 	/**
 	 * Misc
@@ -296,6 +304,7 @@ public:
 	void adjust_manner_by_name(std::string name);
 	void give_manner_point(int account_id, cz_req_give_manner_point_type type, int value);
 	void check_status(std::string name);
+	bool notify_give_manner_point(zc_ack_give_manner_point_result_type result);
 
 	/**
 	 * Instancing 

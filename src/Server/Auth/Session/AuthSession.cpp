@@ -35,8 +35,8 @@
 
 using namespace Horizon::Auth;
 
-AuthSession::AuthSession(std::shared_ptr<AuthSocket> socket)
-: Networking::Session<AuthSocket, AuthSession>(socket)
+AuthSession::AuthSession(int64_t uid, std::shared_ptr<AuthSocket> socket)
+: Networking::Session<AuthSocket, AuthSession>(uid, socket)
 {
 }
 
@@ -49,6 +49,7 @@ void AuthSession::initialize()
 {
 	_pkt_tbl = std::make_unique<ClientPacketLengthTable>(shared_from_this());
 	_clif = std::make_unique<AuthClientInterface>(shared_from_this());
+	set_initialized(true);
 }
 
 void AuthSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)

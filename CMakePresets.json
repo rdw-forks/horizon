@@ -20,8 +20,8 @@
         },
         {
             "name": "Release",
-            "description": "Visual Studio Community 2022 Release - amd64",
-            "displayName": "",
+            "description": "",
+            "displayName": "Visual Studio Community 2022 Release - amd64",
             "inherits": [
                 "Debug"
             ],
@@ -46,30 +46,90 @@
                 "VCPKG_TARGET_TRIPLET": "x64-windows",
                 "WITH_TESTS": true,
                 "WITHOUT_SERVERS": true
+            },
+            "environment": {
+              "CFLAGS": "/fsanitize=address",
+              "CXXFLAGS": "/fsanitize=address"
+            }
+        },
+        {
+            "name": "Tests-Clang-GNU-Debug-ASAN",
+            "displayName": "Tests-Clang-GNU-Debug-ASAN",
+            "description": "Clang 15.0.1 (GNU CLI) for MSVC 17.5.33516.290 (Visual Studio Community 2022 Release - amd64)",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+                "CMAKE_CXX_COMPILER": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\Llvm\\x64\\bin\\clang.exe",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
+                "WITH_TESTS": true,
+                "WITHOUT_SERVERS": true,
+                "CMAKE_C_FLAGS_DEBUG": "/MTd -fsanitize=address",
+                "CMAKE_CXX_FLAGS_DEBUG": "/MTd -fsanitize=address",
+                "CMAKE_EXE_LINKER_FLAGS_DEBUG": "/MTd -fsanitize=address"
+            }
+        },
+        {
+            "name": "Tests-Clang-GNU-Debug-TSAN",
+            "description": "Clang 15.0.1 (GNU CLI) for MSVC 17.5.33516.290 (Visual Studio Community 2022 Release - amd64)",
+            "displayName": "Tests-Clang-GNU-Debug-TSAN",
+            "inherits": [
+                "Tests-Clang-GNU-Debug-ASAN"
+            ],
+            "cacheVariables": {
+                "CMAKE_C_FLAGS_DEBUG": "-fsanitize=thread",
+                "CMAKE_CXX_FLAGS_DEBUG": "-fsanitize=thread",
+                "CMAKE_EXE_LINKER_FLAGS_DEBUG": "-fsanitize=thread"
             }
         }
     ],
     "buildPresets": [
         {
             "name": "Debug",
-            "displayName": "Visual Studio Community 2022 Release - amd64 - Debug",
+            "displayName": "Visual Studio Community 2022 Debug - amd64",
             "configurePreset": "Debug",
             "configuration": "Debug"
         },
         {
             "name": "Release",
-            "displayName": "Visual Studio Community 2022 Release - amd64 - Release",
+            "displayName": "Visual Studio Community 2022 Release - amd64",
             "configurePreset": "Release",
             "configuration": "Release"
+        },
+        {
+            "name": "Tests-Clang-MSVC-Release",
+            "displayName": "Clang 15.0.1 (MSVC CLI) for MSVC 17.5.33516.290 (Visual Studio Community 2022 Release - x86)",
+            "configurePreset": "Tests-Clang-MSVC-Release",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Tests-Clang-GNU-Debug-ASAN",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Tests-Clang-GNU-Debug-ASAN"
         }
     ],
     "testPresets": [
         {
-            "name": "Tests",
-            "description": "Tests",
-            "displayName": "Tests",
-            "configurePreset": "Tests",
-            "configuration": "Debug"
+            "name": "Tests-Clang-Release",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Tests-Clang-MSVC-Release"
+        },
+        {
+            "name": "Tests-Clang-GNU-Debug",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Tests-Clang-GNU-Debug"
+        },
+        {
+            "name": "Tests-Clang-GNU-Debug-ThreadSan",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "Tests-Clang-GNU-Debug"
         }
     ]
 }

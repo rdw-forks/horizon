@@ -34,8 +34,8 @@
 
 using namespace Horizon::Zone;
 
-ZoneSocket::ZoneSocket(std::shared_ptr<tcp::socket> socket)
-: Socket(socket)
+ZoneSocket::ZoneSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket)
+: Socket(uid, socket)
 {
 	//
 }
@@ -53,10 +53,11 @@ void ZoneSocket::set_session(std::shared_ptr<ZoneSession> session) { std::atomic
  */
 void ZoneSocket::start()
 {
-	auto session = std::make_shared<ZoneSession>(shared_from_this());
+	auto session = std::make_shared<ZoneSession>(get_socket_id(), shared_from_this());
 
 	set_session(session);
 
+	// Session initialized in network thread to initiate the packet length table and packet handling procedure.
 	session->initialize();
 
 	HLog(info) << "Established connection from '" << remote_ip_address() << "'.";

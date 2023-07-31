@@ -55,7 +55,7 @@ class AuthSocket;
 class AuthSession : public Horizon::Networking::Session<AuthSocket, AuthSession>
 {
 public:
-	AuthSession(std::shared_ptr<AuthSocket> socket);
+	AuthSession(int64_t uid, std::shared_ptr<AuthSocket> socket);
 	~AuthSession();
 
 	/* */

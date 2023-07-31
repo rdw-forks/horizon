@@ -59,8 +59,8 @@ template <class SocketType>
 class Socket : public std::enable_shared_from_this<SocketType>
 {
 public:
-	explicit Socket(std::shared_ptr<tcp::socket> socket)
-	: _socket_id(0), _socket(socket), _remote_ip_address(_socket->remote_endpoint().address().to_string()),
+	explicit Socket(uint64_t socket_id, std::shared_ptr<tcp::socket> socket)
+	: _socket_id(socket_id), _socket(socket), _remote_ip_address(_socket->remote_endpoint().address().to_string()),
 	_remote_port(_socket->remote_endpoint().port()), _read_buffer(), _closed(false), _closing(false), _is_writing_async(false)
 	{
 		_read_buffer.resize(READ_BLOCK_SIZE);
@@ -99,7 +99,6 @@ public:
 
 	/* Socket Id */
 	uint64_t get_socket_id() { return _socket_id; }
-	void set_socket_id(uint64_t socket_id) { _socket_id = socket_id; }
 
 	/* Remote IP and Port */
 	std::string &remote_ip_address() { return _remote_ip_address; }

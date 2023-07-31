@@ -129,11 +129,9 @@ public:
 	 */
 	std::shared_ptr<SocketType> on_socket_open(std::shared_ptr<tcp::socket> const &socket, uint32_t thread_index)
 	{
-		std::shared_ptr<SocketType> new_socket = std::make_shared<SocketType>(std::move(socket));
+		std::shared_ptr<SocketType> new_socket = std::make_shared<SocketType>(++_last_socket_id, std::move(socket));
 
 		try {
-			// Set Socket data
-			new_socket->set_socket_id(++_last_socket_id);
 			// Add socket to thread.
 			NetworkThreadPtr(_thread_map.at(thread_index))->add_socket(new_socket);
 		} catch (boost::system::system_error const &error) {
@@ -154,7 +152,7 @@ public:
 	}
 
 private:
-	uint64_t _last_socket_id{};                                       ///< ID of the last socket connection. Used for new connection IDs.
+	uint64_t _last_socket_id{0};                                      ///< ID of the last socket connection. Used for new connection IDs.
 	std::unordered_map<uint32_t, NetworkThreadPtr> _thread_map;       ///< Unordered map of threads with a unique integer as the key.
 };
 }

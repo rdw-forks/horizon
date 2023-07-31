@@ -28,7 +28,6 @@
  **************************************************/
 #include "ZoneSession.hpp"
 
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
@@ -38,8 +37,8 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
-ZoneSession::ZoneSession(std::shared_ptr<ZoneSocket> socket)
-: Session(socket)
+ZoneSession::ZoneSession(int64_t uid, std::shared_ptr<ZoneSocket> socket)
+: Session(uid, socket)
 {
 }
 
@@ -50,12 +49,19 @@ ZoneSession::~ZoneSession()
 
 /**
  * @brief Initializes the zone session's members.
+ * @thread Initialized from the Network Thread after socket and session creation.
  */
 void ZoneSession::initialize()
 {
 	try {
 		_pkt_tbl = std::make_unique<ClientPacketLengthTable>(shared_from_this());
 		_clif = std::make_unique<ZoneClientInterface>(shared_from_this());
+		// It is the responsibility of this method to initialize the player, but 
+		// since player is the map owning thread's responsibility, we wait for the
+		// session to start by letting the client send a CZ_ENTER packet.
+		// When the packet is sent, the player will be created by the Networking Thread.
+		// Initialized by the MapContainerThread.
+		set_initialized(true);
 	}
 	catch (std::exception& error) {
 		HLog(error) << "ZoneSession::initialize: " << error.what();
@@ -121,6 +127,6 @@ void ZoneSession::perform_cleanup()
 		player()->set_logged_in(false);
 		player()->save();
 		player()->remove_grid_reference();
-		player()->map_container()->remove_player(player());
+		player()->map()->container()->remove_session(shared_from_this());
 	}
 }

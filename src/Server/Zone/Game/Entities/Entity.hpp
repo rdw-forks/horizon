@@ -38,7 +38,6 @@
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-#include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 
@@ -135,15 +134,7 @@ public:
 	 * Map & Map Container
 	 */
 	std::shared_ptr<Map> map() { return _map.expired() ? nullptr : _map.lock(); }
-	void set_map(std::shared_ptr<Map> map)
-	{
-		_map = map;
-		_map_container_thread = map->container();
-		_lua_mgr = map->container()->get_lua_manager();
-	}
-
-	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
-	std::shared_ptr<LUAManager> lua_manager() { return _lua_mgr.lock(); }
+	void set_map(std::shared_ptr<Map> map) { _map = map; }
 
 	AStar::CoordinateList get_walk_path() { return _walk_path; }
 
@@ -203,10 +194,6 @@ private:
 	std::weak_ptr<Map> _map;
 	MapCoords _map_coords{0, 0};
 	GridCoords _grid_coords{0, 0};
-
-	/* Simplified References */
-	std::weak_ptr<MapContainerThread> _map_container_thread;
-	std::weak_ptr<LUAManager> _lua_mgr;
 
 	MapCoords _changed_dest_pos{0, 0}, _dest_pos{0, 0};
 	AStar::CoordinateList _walk_path;

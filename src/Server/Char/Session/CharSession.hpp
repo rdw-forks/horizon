@@ -66,7 +66,7 @@ class CharSocket;
 class CharSession : public Horizon::Networking::Session<CharSocket, CharSession>
 {
 public:
-	CharSession(std::shared_ptr<CharSocket> socket);
+	CharSession(int64_t uid, std::shared_ptr<CharSocket> socket);
 	~CharSession();
 
 	void initialize();

@@ -53,7 +53,6 @@ ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
 ZoneClientInterface::~ZoneClientInterface()
 {
 }
-
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
 	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?")
@@ -131,17 +130,14 @@ void ZoneClientInterface::request_name_by_char_id(int char_id)
 {
 
 }
-
 void ZoneClientInterface::invite_baby(int account_id)
 {
 
 }
-
 void ZoneClientInterface::pvpinfo(int character_id, int account_id)
 {
 
 }
-
 bool ZoneClientInterface::disconnect(int8_t type)
 {
 	ZC_ACK_REQ_DISCONNECT pkt(get_session());
@@ -150,12 +146,10 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	std::shared_ptr<Horizon::Zone::Entities::Player> pl = get_session()->player();
-	pl->map_container()->remove_player(pl);
+	get_session()->player()->map()->container()->remove_session(get_session());
 
 	return true;
 }
-
 bool ZoneClientInterface::update_session(int32_t account_id)
 {
 	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `current_server` FROM `session_data` WHERE `id` = ?")
@@ -186,13 +180,11 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 		.execute();
 	return true;
 }
-
 bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t dir)
 {
 	get_session()->player()->walk_to_coordinates(x, y);
 	return true;
 }
-
 bool ZoneClientInterface::notify_time()
 {
 	ZC_NOTIFY_TIME pkt(get_session());
@@ -220,7 +212,6 @@ bool ZoneClientInterface::notify_entity_name(uint32_t guid)
 	
 	return true;
 }
-
 bool ZoneClientInterface::stop_attack()
 {
 	get_session()->player()->stop_attack();
@@ -295,21 +286,18 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	
 	return entry;
 }
-
 bool ZoneClientInterface::notify_player_movement(MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_PLAYERMOVE pkt(get_session());
 	pkt.deliver(from.x(), from.y(), to.x(), to.y());
 	return true;
 }
-
 bool ZoneClientInterface::notify_movement_stop(int32_t guid, int16_t x, int16_t y)
 {
 	ZC_STOPMOVE pkt(get_session());
 	pkt.deliver(guid, x, y);
 	return true;
 }
-
 bool ZoneClientInterface::notify_viewport_add_entity(entity_viewport_entry entry)
 {
 #if PACKET_VERSION >= 20150513
@@ -318,14 +306,12 @@ bool ZoneClientInterface::notify_viewport_add_entity(entity_viewport_entry entry
 #endif
 	return true;
 }
-
 bool ZoneClientInterface::notify_viewport_spawn_entity(entity_viewport_entry entry)
 {
 	ZC_NOTIFY_NEWENTRY11 pkt(get_session());
 	pkt.deliver(entry);
 	return true;
 }
-
 bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry entry)
 {
 #if PACKET_VERSION >= 20150513
@@ -334,14 +320,12 @@ bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry en
 #endif
 	return true;
 }
-
 bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_MOVE pkt(get_session());
 	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
-
 bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Entity> entity, entity_viewport_notification_type type)
 {
 	if (entity == nullptr)
@@ -351,7 +335,6 @@ bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Entity> 
 	pkt.deliver(entity->guid(), type);
 	return true;
 }
-
 bool ZoneClientInterface::notify_initial_status()
 {
 	if (get_session()->player() == nullptr)
@@ -397,7 +380,6 @@ bool ZoneClientInterface::notify_initial_status()
 
 	return true;
 }
-
 bool ZoneClientInterface::notify_appearance_update(entity_appearance_type type, int32_t value, int32_t value2)
 {
 	ZC_SPRITE_CHANGE2 pkt(get_session());
@@ -464,7 +446,6 @@ bool ZoneClientInterface::notify_zeny_update()
 {
 	return true;
 }
-
 bool ZoneClientInterface::increase_status_point(status_point_type type, uint8_t amount)
 {
 	std::shared_ptr<Horizon::Zone::Entities::Player> pl = get_session()->player();
@@ -475,106 +456,86 @@ bool ZoneClientInterface::increase_status_point(status_point_type type, uint8_t 
 	pl->status()->increase_status_point(type, amount);
 	return true;
 }
-
 void ZoneClientInterface::register_baby(int account_id, int character_id, cz_join_baby_reply_type response)
 {
 
 }
-
 void ZoneClientInterface::npc_weapon_refine(int32_t inventory_index)
 {
 
 }
-
 void ZoneClientInterface::npc_next_dialog(int32_t npc_guid)
 {
 
 }
-
 void ZoneClientInterface::npc_contact(int32_t guid)
 {
 
 }
-
 void ZoneClientInterface::npc_close(int32_t npc_guid)
 {
 
 }
-
 void ZoneClientInterface::notify_npc_dialog(uint32_t npc_guid, std::string dialog)
 {
 	uint32_t current_npc_guid = get_session()->player()->npc_contact_guid();
 	
 }
-
 void ZoneClientInterface::notify_npc_next_dialog(uint32_t npc_guid)
 {
 	ZC_WAIT_DIALOG pkt(get_session());
 	pkt.deliver(npc_guid);
 }
-
 void ZoneClientInterface::notify_npc_close_dialog(uint32_t npc_guid)
 {
 	ZC_CLOSE_DIALOG pkt(get_session());
 	pkt.deliver(npc_guid);
 }
-
 void ZoneClientInterface::notify_npc_menu_list(uint32_t npc_guid, std::string const &menu)
 {
 	ZC_MENU_LIST pkt(get_session());
 	pkt.deliver(npc_guid, menu);
 }
-
 void ZoneClientInterface::npc_select_deal_type(int guid, cz_ack_select_dealtype deal_type)
 {
 
 }
-
 void ZoneClientInterface::npc_select_menu(int guid, int choice)
 {
 
 }
-
 void ZoneClientInterface::npc_input(int guid, int value)
 {
 
 }
-
 void ZoneClientInterface::npc_input(int guid, std::string value)
 {
 
 }
-
 void ZoneClientInterface::npc_purchase_items(std::vector<cz_pc_purchase_itemlist> items)
 {
 
 }
-
 void ZoneClientInterface::npc_sell_items(std::vector<cz_pc_sell_itemlist> items)
 {
 
 }
-
 void ZoneClientInterface::progress_bar_completed()
 {
 
 }
-
 void ZoneClientInterface::vending_purchase_items(int account_id, std::vector<cz_pc_purchase_itemlist> items)
 {
 
 }
-
 void ZoneClientInterface::vending_purchase_items(int account_id, int unique_id, std::vector<cz_pc_purchase_itemlist> items)
 {
 
 }
-
 void ZoneClientInterface::broadcast(std::string message)
 {
 
 }
-
 void ZoneClientInterface::broadcast_local(std::string message)
 {
 
@@ -591,21 +552,18 @@ void ZoneClientInterface::storage_change_password(std::string password, std::str
 {
 
 }
-
 bool ZoneClientInterface::notify_move_to_map(std::string map_name, int16_t x, int16_t y)
 {
 	ZC_NPCACK_MAPMOVE pkt(get_session());
 	pkt.deliver(map_name, x, y);
 	return true;
 }
-
 bool ZoneClientInterface::notify_chat(std::string message)
 {
 	ZC_NOTIFY_PLAYERCHAT pkt(get_session());
 	pkt.deliver(message);
 	return true;
 }
-
 void ZoneClientInterface::parse_chat_message(std::string message)
 {
 	ZC_NOTIFY_PLAYERCHAT notify_player_chat(get_session());
@@ -617,7 +575,7 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
 	if (message[msg_first_char] == '@') {
-		get_session()->player()->lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+		get_session()->player()->map()->container()->get_lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
 		return;
 	}
 
@@ -630,19 +588,16 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	get_session()->player()->notify_in_area(buf, GRID_NOTIFY_AREA_WOS);
 	notify_player_chat.deliver(message);
 }
-
 void ZoneClientInterface::map_enter()
 {
 	get_session()->player()->on_map_enter();
 }
-
 bool ZoneClientInterface::notify_map_properties(zc_map_properties p)
 {
 	ZC_MAPPROPERTY_R2 pkt(get_session());
 	pkt.deliver(p);
 	return true;
 }
-
 void ZoneClientInterface::whisper_message(const char *name, int32_t name_length, const char *message, int32_t message_length)
 {
 	// validate name
@@ -671,161 +626,164 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 	ZC_WHISPER pkt2(player->get_session());
 	pkt2.deliver(get_session()->player()->name(), message, player->account()._group_id >= 99 ? true : false);
 }
-
 void ZoneClientInterface::use_item(int16_t inventory_index, int32_t guid)
 {
 	get_session()->player()->inventory()->use_item(inventory_index, guid);
 }
-
 void ZoneClientInterface::equip_item(int16_t inventory_index, int16_t equip_location_mask)
 {
 	get_session()->player()->inventory()->equip_item(inventory_index, equip_location_mask);
 }
-
 void ZoneClientInterface::unequip_item(int16_t inventory_index)
 {
 	get_session()->player()->inventory()->unequip_item(inventory_index);
 }
-
 void ZoneClientInterface::pickup_item(int guid)
 {
 
 }
-
 void ZoneClientInterface::throw_item(int16_t inventory_index, int16_t amount)
 {
 
 }
-
 void ZoneClientInterface::move_item_from_inventory_to_cart(int16_t inventory_index, int amount)
 {
 
 }
-
 void ZoneClientInterface::move_item_from_inventory_to_storage(int16_t inventory_index, int amount)
 {
 
 }
-
 void ZoneClientInterface::move_item_from_cart_to_inventory(int16_t inventory_index, int amount)
 {
 
 }
-
 void ZoneClientInterface::move_item_from_cart_to_storage(int16_t inventory_index, int amount)
 {
 
 }
-
 void ZoneClientInterface::move_item_from_storage_to_inventory(int16_t inventory_index, int amount)
 {
 
 }
-
 void ZoneClientInterface::move_item_from_storage_to_cart(int16_t inventory_index, int amount)
 {
 
 }
-
 void ZoneClientInterface::display_item_card_composition(int card_index, int equip_index)
 {
 
 }
-
 void ZoneClientInterface::identify_item(int inventory_index)
 {
 	
 }
-
 void ZoneClientInterface::repair_item(int inventory_index, int item_id, int refine, int card1, int card2, int card3, int card4)
 {
 
 }
-
 bool ZoneClientInterface::notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
 {
 	ZC_ITEM_PICKUP_ACK_V7 pkt(get_session());
 	pkt.deliver(id, amount, result);
 	return true;
 }
-
 bool ZoneClientInterface::notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
 	ZC_INVENTORY_ITEMLIST_NORMAL_V5 pkt(get_session());
 	pkt.deliver(items);
 	return true;
 }
-
 bool ZoneClientInterface::notify_equipment_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
 	ZC_INVENTORY_ITEMLIST_EQUIP_V6 pkt(get_session());
 	pkt.deliver(items);
 	return true;
 }
-
 bool ZoneClientInterface::notify_throw_item(int16_t inventory_index, int16_t amount)
 {
 	ZC_ITEM_THROW_ACK pkt(get_session());
 	pkt.deliver(inventory_index, amount);
 	return true;
 }
-
 bool ZoneClientInterface::notify_inventory_move_failed(int16_t inventory_index, bool silent)
 {
 	ZC_INVENTORY_MOVE_FAILED pkt(get_session());
 	pkt.deliver(inventory_index, silent);
 	return true;
 }
-
 bool ZoneClientInterface::notify_delete_item(int16_t inventory_index, int16_t amount, item_deletion_reason_type reason)
 {
 	ZC_DELETE_ITEM_FROM_BODY pkt(get_session());
 	pkt.deliver(inventory_index, amount, reason);
 	return true;
 }
-
 bool ZoneClientInterface::notify_bind_on_equip(int16_t inventory_index)
 {
 	ZC_NOTIFY_BIND_ON_EQUIP pkt(get_session());
 	pkt.deliver(inventory_index);
 	return true;
 }
-
 bool ZoneClientInterface::notify_use_item(std::shared_ptr<item_entry_data> inv_item, bool success)
 {
 	ZC_USE_ITEM_ACK pkt(get_session());
 	pkt.deliver(inv_item->inventory_index, inv_item->amount, success);
 	return true;
 }
-
 bool ZoneClientInterface::notify_equip_item(std::shared_ptr<const item_entry_data> item, item_equip_result_type result)
 {
 	ZC_ACK_WEAR_EQUIP_V5 pkt(get_session());
 	pkt.deliver(item->inventory_index, item->current_equip_location_mask, item->sprite_id, result);
 	return true;
 }
-
 bool ZoneClientInterface::notify_unequip_item(std::shared_ptr<const item_entry_data> item, item_unequip_result_type result)
 {
 	ZC_ACK_TAKEOFF_EQUIP_V5 pkt(get_session());
 	pkt.deliver(item->inventory_index, item->current_equip_location_mask, result);
 	return true;
 }
-
 bool ZoneClientInterface::notify_equip_arrow(std::shared_ptr<const item_entry_data> item)
 {
 	ZC_EQUIP_ARROW pkt(get_session());
 	pkt.deliver(item->inventory_index);
 	return true;
 }
-
 bool ZoneClientInterface::notify_action_failure(int16_t message_type)
 {
 	ZC_ACTION_FAILURE pkt(get_session());
 	pkt.deliver(message_type);
 	return true;
 }
-
+bool ZoneClientInterface::notify_item_composition(int16_t item_inventory_index, int16_t card_inventory_index, zc_ack_item_composition_result_type result)
+{
+	ZC_ACK_ITEMCOMPOSITION pkt(get_session());
+	pkt.deliver(item_inventory_index, card_inventory_index, result);
+	return true;
+}
+bool ZoneClientInterface::notify_identified_item(int16_t inventory_index, zc_ack_item_identify_result_type result)
+{
+	ZC_ACK_ITEMIDENTIFY pkt(get_session());
+	pkt.deliver(inventory_index, result);
+	return true;
+}
+bool ZoneClientInterface::notify_item_refining(zc_ack_itemrefining_result_type result, int16_t inventory_index, int16_t refine_lv)
+{
+	ZC_ACK_ITEMREFINING pkt(get_session());
+	pkt.deliver(result, inventory_index, refine_lv);
+	return true;
+}
+bool ZoneClientInterface::notify_item_repair(int inventory_index, zc_ack_itemrepair_result_type result)
+{
+	ZC_ACK_ITEMREPAIR pkt(get_session());
+	pkt.deliver(inventory_index, result);
+	return true;
+}
+bool ZoneClientInterface::notify_item_merge(int inventory_index, int amount, zc_ack_merge_item_reason_type reason)
+{
+	ZC_ACK_MERGE_ITEM pkt(get_session());
+	pkt.deliver(inventory_index, amount, reason);
+	return true;
+}
 void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
 {
 	ZC_SKILLINFO_UPDATE pkt(get_session());
@@ -861,7 +819,6 @@ void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
 
 	pkt.deliver(skill_id, ls->level, skd->sp_cost[ls->level], skd->use_range[ls->level], upgradeable);
 }
-
 bool ZoneClientInterface::notify_learnt_skill_list()
 {
 	const std::map<uint16_t, std::shared_ptr<skill_learnt_info>> &learnt_skills = get_session()->player()->get_learnt_skills();
@@ -918,7 +875,6 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 	return true;
 }
-
 void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
 {
 }
@@ -955,14 +911,12 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 	};
 	
 }
-
 bool ZoneClientInterface::notify_action(player_action_type action)
 {
 	ZC_NOTIFY_ACT na(get_session());
 	na.deliver((int8_t) action);
 	return true;
 }
-
 bool ZoneClientInterface::notify_status_change(int16_t si_type, int32_t guid, int8_t state, int32_t time_remaining, int32_t val1, int32_t val2, int32_t val3)
 {
 	ZC_MSG_STATE_CHANGE2 sc(get_session());
@@ -973,21 +927,18 @@ bool ZoneClientInterface::notify_status_change(int16_t si_type, int32_t guid, in
 	sc.deliver(si_type, guid, state, time_remaining, val1, val2, val3);
 	return true;
 }
-
 bool ZoneClientInterface::notify_status_change_end(int16_t status_index, int32_t guid, int8_t state)
 {
 	ZC_MSG_STATE_CHANGE sce(get_session());
 	sce.deliver(status_index, guid, state);
 	return true;
 }
-
 bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause)
 {
 	ZC_ACK_TOUSESKILL pkt(get_session());
 	pkt.deliver(skill_id, message_type, item_id, cause);
 	return true;
 }
-
 bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage)
 {
 	ZC_NOTIFY_ACT3 pkt(get_session());
@@ -1007,40 +958,45 @@ bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_tim
 
 	return true;
 }
-
 void ZoneClientInterface::open_vend_shop(int account_id)
 {
 
 }
-
 void ZoneClientInterface::close_vending()
 {
 	
 }
-
 void ZoneClientInterface::open_buying_store(int account_id)
 {
 
 }
-
 void ZoneClientInterface::close_buying_store()
 {
 	
 }
-
 void ZoneClientInterface::start_vending(std::string shop_name, std::vector<cz_req_openstore_itemlist> items)
 {
 
 }
-
 void ZoneClientInterface::start_buying_store(std::string store_name, int zeny_limit, std::vector<cz_req_open_buying_store_itemlist> items)
 {
 
 }
-
 void ZoneClientInterface::sell_to_buying_store(int account_id, int store_id, std::vector<cz_req_trade_buying_store_itemlist> items)
 {
 
+}
+bool ZoneClientInterface::notify_buying_store_itemlist(int account_id, int store_id, int zeny_limit, std::vector<zc_ack_itemlist_buying_store> items)
+{
+	ZC_ACK_ITEMLIST_BUYING_STORE pkt(get_session());
+	pkt.deliver(account_id, store_id, zeny_limit, items);
+	return true;
+}
+bool ZoneClientInterface::notify_open_vending(zc_ack_openstore2_result_type result)
+{
+	ZC_ACK_OPENSTORE2 pkt(get_session());
+	pkt.deliver(result);
+	return true;
 }
 /**
  * Misc
@@ -1049,12 +1005,10 @@ void ZoneClientInterface::emotion(int type)
 {
 
 }
-
 void ZoneClientInterface::user_count()
 {
 
 }
-
 void ZoneClientInterface::ignore_list()
 {
 	
@@ -1068,42 +1022,34 @@ void ZoneClientInterface::star_gladiator_feel_save(cz_agree_starplace_type type)
 {
 
 }
-
 void ZoneClientInterface::novice_explosion_spirits()
 {
 
 }
-
 void ZoneClientInterface::novice_doridori()
 {
 
 }
-
 void ZoneClientInterface::remember_warppoint()
 {
 
 }
-
 void ZoneClientInterface::produce_item(int item_id, std::vector<int16_t> material_ids)
 {
 
 }
-
 void ZoneClientInterface::remove_cart()
 {
 
 }
-
 void ZoneClientInterface::change_cart(int16_t num)
 {
 
 }
-
 void ZoneClientInterface::make_arrow(int16_t item_id)
 {
 
 }
-
 void ZoneClientInterface::make_item(cz_req_makingitem_type type, int16_t item_id)
 {
 
@@ -1124,12 +1070,23 @@ void ZoneClientInterface::ranking_blacksmith()
 {
 
 }
-
 void ZoneClientInterface::ranking_pk()
 {
 
 }
-
+bool ZoneClientInterface::notify_ranking(cz_req_ranking_type type, std::vector<zc_ack_ranking_info> info, int ranking_points)
+{
+	ZC_ACK_RANKING pkt(get_session());
+	pkt.deliver(type, info, ranking_points);
+	return true;
+}
+bool ZoneClientInterface::notify_pvp_points()
+{
+	//int char_id; int account_id; int win_point; int lose_point; int point;
+	//ZC_ACK_PVPPOINT pkt(get_session());
+	//pkt.deliver(char_id, account_id, win_point, lose_point, point);
+	return true;
+}
 void ZoneClientInterface::setting_effects(int setting)
 {
 
@@ -1141,74 +1098,60 @@ void ZoneClientInterface::message(std::string message)
 {
 
 }
-
 void ZoneClientInterface::blocking_play_cancel()
 {
 	ZC_ALT_PING pkt(get_session());
 	pkt.deliver();
 	// TODO: should also send ZC_SPECIALPOPUP for clients >= 20221005 based on mapflag.
 }
-
 void ZoneClientInterface::client_version(int version)
 {
 
 }
-
 void ZoneClientInterface::change_direction(int head_direction, int body_direction)
 {
 
 }
-
 void ZoneClientInterface::change_effect_state(int effect_state)
 {
 
 }
-
 void ZoneClientInterface::change_map_type(int x, int y, bool walkable)
 {
 
 }
-
 void ZoneClientInterface::bargain_sale_tool_close()
 {
 
 }
-
 void ZoneClientInterface::searchstore_close()
 {
 
 }
-
 void ZoneClientInterface::command_mercenary(int type, cz_command_mercenary_command_type command)
 {
 
 }
-
 void ZoneClientInterface::auto_revive()
 {
 	
 }
-
 void ZoneClientInterface::command_pet(cz_command_pet_type command)
 {
 
 }
-
 void ZoneClientInterface::pet_act_emotion(cz_pet_act_emotion_type emotion)
 {
 
 }
-
 void ZoneClientInterface::pet_evolve(int evolved_pet_egg_id, std::vector<cz_pet_evolution_itemlist> items)
 {
 	
 }
-
 void ZoneClientInterface::view_equipment(int account_id)
 {
 	
 }
-
 void ZoneClientInterface::set_config(cz_config_type config, bool setting)
 {
 	switch(config)
@@ -1225,27 +1168,22 @@ void ZoneClientInterface::set_config(cz_config_type config, bool setting)
 		break;
 	}
 }
-
 void ZoneClientInterface::rename_homunculus(std::string name)
 {
 
 }
-
 void ZoneClientInterface::rename_pet(std::string name)
 {
 
 }
-
 void ZoneClientInterface::request_action(int guid, int target_id, int action)
 {
 
 }
-
 void ZoneClientInterface::move_homunculus_to_coordinates(int guid, int x, int y, int dir)
 {
 
 }
-
 void ZoneClientInterface::move_homunculus_to_master(int guid)
 {
 	
@@ -1259,27 +1197,22 @@ void ZoneClientInterface::disconnect_all_players()
 {
 
 }
-
 void ZoneClientInterface::disconnect_account(int account_id)
 {
 
 }
-
 void ZoneClientInterface::create(std::string create)
 {
 
 }
-
 void ZoneClientInterface::move_to_map(std::string map_name, int16_t x, int16_t y)
 {
 
 }
-
 void ZoneClientInterface::recall(std::string username)
 {
 
 }
-
 void ZoneClientInterface::recall(int account_id)
 {
 
@@ -1290,30 +1223,31 @@ void ZoneClientInterface::summon(std::string char_name)
 {
 
 }
-
 void ZoneClientInterface::warp_to(int account_id)
 {
 
 }
-
 void ZoneClientInterface::request_username(int account_id)
 {
 
 }
-
 void ZoneClientInterface::adjust_manner_by_name(std::string name)
 {
 
 }
-
 void ZoneClientInterface::give_manner_point(int account_id, cz_req_give_manner_point_type type, int value)
 {
 
 }
-
 void ZoneClientInterface::check_status(std::string name)
 {
 
+}
+bool ZoneClientInterface::notify_give_manner_point(zc_ack_give_manner_point_result_type result)
+{
+	ZC_ACK_GIVE_MANNER_POINT pkt(get_session());
+	pkt.deliver(result);
+	return true;
 }
 
 /**

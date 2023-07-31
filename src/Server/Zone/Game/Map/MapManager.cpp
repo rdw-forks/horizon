@@ -28,12 +28,12 @@
  **************************************************/
 
 #include "MapManager.hpp"
-#include "MapContainerThread.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Libraries/MapCache/MapCache.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -124,13 +124,13 @@ bool MapManager::LoadMapCache()
 	return true;
 }
 
-std::shared_ptr<Map> MapManager::add_player_to_map(std::string map_name, std::shared_ptr<Entities::Player> p)
+std::shared_ptr<Map> MapManager::add_session_to_map(std::string map_name, std::shared_ptr<ZoneSession> p)
 {
 	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
 	for (auto i = container_map.begin(); i != container_map.end(); i++) {
 		std::shared_ptr<Map> map = i->second->get_map(map_name);
 		if (map != nullptr) {
-			i->second->add_player(p);
+			i->second->add_session(p);
 			return map;
 		} else {
 			return nullptr;
@@ -140,15 +140,41 @@ std::shared_ptr<Map> MapManager::add_player_to_map(std::string map_name, std::sh
 	return nullptr;
 }
 
-bool MapManager::remove_player_from_map(std::string map_name, std::shared_ptr<Entities::Player> p)
+bool MapManager::remove_session_from_map(std::string map_name, std::shared_ptr<ZoneSession> s)
 {
 	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
 	for (auto i = container_map.begin(); i != container_map.end(); i++) {
 		if (i->second->get_map(map_name) != nullptr) {
-			i->second->remove_player(p);
+			i->second->remove_session(s);
 			return true;
 		}
 	}
 
 	return false;
+}
+
+std::shared_ptr<Map> MapManager::get_map(std::string map_name)
+{
+	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
+	
+	for (auto it = container_map.begin(); it != container_map.end(); ++it) {
+		std::shared_ptr<MapContainerThread> mapc = it->second;
+		std::shared_ptr<Map> map = mapc->get_map(map_name);
+		if (map) 
+			return map;
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<Entities::Player> MapManager::find_player(std::string name)
+{
+	std::map<int32_t, std::shared_ptr<MapContainerThread>> map_containers = _map_containers.get_map();
+	for (auto it = map_containers.begin(); it != map_containers.end(); it++) {
+		std::shared_ptr<Entities::Player> player = it->second->get_player(name);
+		if (player != nullptr)
+			return player;
+	}
+
+	return nullptr;
 }

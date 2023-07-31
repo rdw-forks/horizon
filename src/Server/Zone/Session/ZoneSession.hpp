@@ -55,7 +55,7 @@ class ZoneSocket;
 class ZoneSession : public Horizon::Networking::Session<ZoneSocket, ZoneSession>
 {
 public:
-	ZoneSession(std::shared_ptr<ZoneSocket> socket);
+	ZoneSession(int64_t uid, std::shared_ptr<ZoneSocket> socket);
 	~ZoneSession();
 
 	void transmit_buffer(ByteBuffer _buffer, std::size_t size);
@@ -65,16 +65,18 @@ public:
 	void perform_cleanup();
 
 	void initialize();
+	bool player_created() { return _player_created; }
 	
 	std::unique_ptr<ZoneClientInterface> &clif() { return _clif; }
 	std::unique_ptr<ClientPacketLengthTable> &pkt_tbl() { return _pkt_tbl; }
-	std::shared_ptr<Entities::Player> player() { return _player.expired() ? nullptr : _player.lock(); }
+	std::shared_ptr<Entities::Player> player() { return _player; }
 	void set_player(std::shared_ptr<Entities::Player> pl) { _player = pl; }
 
 protected:
+	bool _player_created{ false };
 	std::unique_ptr<ZoneClientInterface> _clif;
 	std::unique_ptr<ClientPacketLengthTable> _pkt_tbl;
-	std::weak_ptr<Entities::Player> _player;
+	std::shared_ptr<Entities::Player> _player;
 };
 }
 }

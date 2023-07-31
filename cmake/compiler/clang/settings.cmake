@@ -20,9 +20,6 @@ if(WITH_CORE_DEBUG)
   message(STATUS "Clang: Debug-flags set (-g3)")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG=1")
-
 if (WITH_COVERAGE)
 	set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_FLAGS}")
