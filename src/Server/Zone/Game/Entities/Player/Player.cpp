@@ -146,8 +146,9 @@ void Player::stop_movement()
 
 bool Player::save()
 {
+	mysqlx::Session session = sZone->database_pool()->get_connection();
 	try {
-		sZone->get_db_connection()->sql("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
+		session.sql("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
 			"`last_unique_id` = ?, `hotkey_row_index` = ?, `change_slot_count` = ?, `font` = ?, `show_equip` = ?, `allow_party` = ?, `partner_aid` = ?, `father_aid` = ?, `mother_aid` = ?,"
 			"`child_aid` = ?, `party_id` = ?, `guild_id` = ?, `pet_id` = ?, `homun_id` = ?, `elemental_id` = ?, `current_map` = ?, `current_x` = ?, `current_y` = ?,"
 			"`saved_map` = ?, `saved_x` = ?, `saved_y` = ? "
@@ -174,13 +175,18 @@ bool Player::save()
 		HLog(error) << "Player::save:" << error.what();
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
+	
 	return true;
 }
 
 bool Player::load()
 {
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
+		mysqlx::RowResult rr = session.sql("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
 			"`current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?")
 			.bind(character()._character_id)
 			.execute();
@@ -232,6 +238,8 @@ bool Player::load()
 		HLog(error) << "Player::load:" << error.what();
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
 
 	return true;
 }

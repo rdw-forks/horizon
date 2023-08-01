@@ -64,6 +64,9 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${CORE_DIR}/Logging/Logger.hpp)
 		set (ADD_LIBS -lpthread)
 	elseif (TEST_NAME STREQUAL "MySQLTest")
+		set (ADD_SOURCES
+			${CORE_DIR}/Logging/Logger.cpp
+			${CORE_DIR}/Logging/Logger.hpp)
 		set(ADD_INCLUDE_DIRS 
 			${MYSQL_INCLUDE_DIR} 
 			$<$<BOOL:${WIN32}>:${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}>

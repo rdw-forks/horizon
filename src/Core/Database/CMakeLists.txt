@@ -8,8 +8,8 @@
 ###################################################
 # This file is part of Horizon (c).
 #
-# Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
-# Copyright (c) 2019 Horizon Dev Team.
+# Copyright (c) 2023 Sagun K. (sagunxp@gmail.com).
+# Copyright (c) 2023 Horizon Dev Team.
 #
 # Base Author - Sagun K. (sagunxp@gmail.com)
 #
@@ -27,13 +27,9 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ###################################################
 
-add_subdirectory(Database)
-add_subdirectory(Structures)
+CollectSourceFiles(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+	PRIVATE_SOURCES
+)
 
-set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-set(CORE_SOURCES
-    ${DIR}/Logging/Logger.cpp
-    ${DIR}/Logging/Logger.hpp
-    ${STRUCTURE_SOURCES}
-    PARENT_SCOPE)
+set(DATABASE_SOURCES ${PRIVATE_SOURCES} PARENT_SCOPE)

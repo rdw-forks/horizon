@@ -118,17 +118,28 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_database(db_tbl.get_or<std::string>("db", "horizon"));
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
+
+		general_conf().set_db_threads(tbl.get_or<uint8_t>("database_threads", 5));
 		
-		_mysql_connection = std::make_shared<mysqlx::Session>(general_conf().get_db_host(), general_conf().get_db_port(), general_conf().get_db_user(), general_conf().get_db_pass());
+		_mysql_connections = std::make_shared<ConnectionPool>(general_conf().get_db_host(), 
+			general_conf().get_db_port(), 
+			general_conf().get_db_user(), 
+			general_conf().get_db_pass(), 
+			general_conf().get_db_database(), 
+			general_conf().get_db_threads());
+
+		mysqlx::Session session = database_pool()->get_connection();
 
 		HLog(info) << "Database tcp://" << general_conf().get_db_user()
 			<< ":" << general_conf().get_db_pass()
 			<< "@" << general_conf().get_db_host()
 			<< ":" << general_conf().get_db_port()
 			<< "/" << general_conf().get_db_database()
-			<< (_mysql_connection->getSchema(general_conf().get_db_database()).existsInDatabase() ? " (connected)" : "(not connected)");
+			<< (session.getSchema(general_conf().get_db_database()).existsInDatabase() ? " (connected)" : "(not connected)");
 
-		_mysql_connection->sql(std::string("USE ").append(general_conf().get_db_database())).execute();
+		session.sql(std::string("USE ").append(general_conf().get_db_database())).execute();
+
+		database_pool()->release_connection(std::move(session));
 	}
 	catch (const mysqlx::Error& error) {
 		HLog(error) << error.what() << ".";
