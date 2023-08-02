@@ -68,12 +68,13 @@ void ZoneSocket::start()
 
 /**
  * @brief Socket cleanup method on connection closure.
+ * @note This method is invoked from the network thread.
  */
 void ZoneSocket::on_close()
 {
 	HLog(info) << "Closed connection from '" << remote_ip_address() << "'.";
 
-	get_session()->perform_cleanup();
+	MapMgr->remove_session_from_map(get_session()->get_map_name(), get_session());
 }
 
 /**

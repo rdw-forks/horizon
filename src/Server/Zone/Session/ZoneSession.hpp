@@ -117,11 +117,15 @@ public:
 	//! @return void
 	void set_player(std::shared_ptr<Entities::Player> pl) { _player = pl; }
 
+	//!	@details This function is a getter function which is used to get the map name.
+	std::string get_map_name() { return _map_name; }
+	void set_map_name(std::string map_name) { _map_name = map_name; }
 protected:
 	bool _player_created{ false };
 	std::unique_ptr<ZoneClientInterface> _clif;
 	std::unique_ptr<ClientPacketLengthTable> _pkt_tbl;
 	std::shared_ptr<Entities::Player> _player;
+	std::string _map_name{""};
 };
 }
 }

@@ -55,13 +55,13 @@
 #define MAX_NPC_TRIGGER_RANGE 5
 
 // Network Threads
-#define MAX_NETWORK_THREADS 1
+#define MAX_NETWORK_THREADS 5
 
 // Time in Microseconds (µs)
 #define MAX_CORE_UPDATE_INTERVAL 5000
 
 // Map Thread Containers
-#define MAX_MAP_CONTAINER_THREADS 1
+#define MAX_MAP_CONTAINER_THREADS 20
 
 // Mob searches active path when selecting target.
 #define ACTIVE_PATH_SEARCH 1
