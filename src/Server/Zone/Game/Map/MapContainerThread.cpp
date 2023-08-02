@@ -212,18 +212,19 @@ void MapContainerThread::update(uint64_t diff)
 			if (session->is_initialized() && session->player() != nullptr && session->player()->is_initialized() == false) {
 				// Intialized player upon loading.
 				session->player()->initialize();
-			} else if (session) {
-				HLog(warning) << "Tried to initialize player when session was not initialized or player was not created in session" << session->get_session_id() << ".";
-				continue;
-			} else {
-				HLog(warning) << "Tried to initialize player when session was 'nullptr' and player was not created.";
-				continue;
 			}
+			
 			_managed_sessions.insert(session->get_session_id(), session);
 			HLog(debug) << "Session " << session->get_session_id() << " was added to managed sessions in map container " << (void *) this;
 		} else {
+			// if (session->player() != nullptr) {
+			// 	session->player()->notify_nearby_players_of_existence(EVP_NOTIFY_LOGGED_OUT);
+			// 	session->player()->set_logged_in(false);
+			// 	session->player()->save();
+			// 	session->player()->remove_grid_reference();
+			// }
 			_managed_sessions.erase(session->get_session_id());
-			HLog(debug) << "Session " << session->get_session_id() << " was remnoved from managed sessions in map container " << (void *) this;
+			HLog(debug) << "Session " << session->get_session_id() << " was removed from managed sessions in map container " << (void *) this;
 		}
 	}
 

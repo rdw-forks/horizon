@@ -225,6 +225,10 @@ bool Player::load()
 		MapCoords mcoords(r[11].get<int>(), r[12].get<int>());
 		std::shared_ptr<Map> map = MapMgr->get_map(r[10].get<std::string>());
 
+		if (map == nullptr) { 
+			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
+			map = MapMgr->get_map("prontera");
+		}
 		map->container()->add_session(get_session());
 
 		set_map(map);
@@ -294,18 +298,18 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	
 	_viewport_entities.push_back(entity);
 
-	if (entity->type() == ENTITY_MONSTER) {
-		if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
-			map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
-				[this] (TaskContext context)
-				{
-					GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
-					GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
+	// if (entity->type() == ENTITY_MONSTER) {
+	// 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
+	// 		map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
+	// 			[this] (TaskContext context)
+	// 			{
+	// 				GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
+	// 				GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
 
-					map()->visit_in_range(map_coords(), ai_executor_caller);
-					context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
-				});
-	}
+	// 				map()->visit_in_range(map_coords(), ai_executor_caller);
+	// 				context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
+	// 			});
+	// }
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -397,10 +401,14 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 	notify_nearby_players_of_existence(EVP_NOTIFY_TELEPORT);
 
 	{
+		// If the map is not managed by the destination container, 
+		// remove the session from the current container and add it to the destination container
 		if (!dest_map->container()->get_map(map()->get_name())) {
 			map()->container()->remove_session(get_session());
 			dest_map->container()->add_session(get_session());
 		}
+
+		get_session()->set_map_name(dest_map->get_name());
 
 		if (coords == MapCoords(0, 0))
 			coords = dest_map->get_random_accessible_coordinates();

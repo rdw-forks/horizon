@@ -94,6 +94,9 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
         if (iter->source() == nullptr || iter->source()->guid() == pl->guid())
             continue;
 
+        if (pl->get_session() == nullptr || pl->get_session()->clif() == nullptr)
+            continue;
+
         std::shared_ptr<Horizon::Zone::Entity> vp_e = iter->source()->shared_from_this();
 
         if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
@@ -129,6 +132,9 @@ void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
         std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
 
         if (src_entity == nullptr || src_entity->guid() == tpl->guid())
+            continue;
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
             continue;
 
         bool is_in_range = tpl->is_in_range_of(src_entity);
@@ -182,6 +188,9 @@ void GridEntitySpawnNotifier::notify(GridRefManager<T> &m)
         if (src_entity == nullptr || src_entity->guid() == tpl->guid())
             continue;
 
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+
         tpl->spawn_entity_in_viewport(src_entity);
     }
 }
@@ -215,6 +224,9 @@ void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
         std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
 
         if (src_entity->guid() == tpl->guid())
+            continue;
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
             continue;
 
         if (_new_entry == true)

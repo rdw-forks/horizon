@@ -425,8 +425,8 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 
 		set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(r[15].get<int>())));
 		set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(r[16].get<int>())));
-		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, bexpg->exp[base_level - 1]));
-		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, bexpg->exp[job_level - 1]));
+		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
+		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
 		set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
 
 		set_base_appearance(std::make_shared<BaseAppearance>(_entity, job_id));

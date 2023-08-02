@@ -111,6 +111,10 @@ void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 void ZoneSession::update(uint32_t /*diff*/)
 {
 	std::shared_ptr<ByteBuffer> read_buf;
+	
+	if (get_socket() == nullptr || !get_socket()->is_open())
+		return;
+
 	while ((read_buf = get_socket()->_buffer_recv_queue.try_pop())) {
 		uint16_t packet_id = 0x0;
 		memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
@@ -130,10 +134,4 @@ void ZoneSession::update(uint32_t /*diff*/)
  */
 void ZoneSession::perform_cleanup()
 {
-	if (player() != nullptr) {
-		player()->set_logged_in(false);
-		player()->save();
-		player()->remove_grid_reference();
-		player()->map()->container()->remove_session(shared_from_this());
-	}
 }

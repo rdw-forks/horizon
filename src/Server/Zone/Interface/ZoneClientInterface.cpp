@@ -67,7 +67,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	}
 
 	std::string current_server = r[0].get<std::string>();
-	if (current_server.compare("Z") == 0) {
+	if (current_server.compare("Z") == 0) { // Already on Zone.
 		ZC_REFUSE_ENTER pkt(get_session());
 		pkt.deliver(ZONE_SERV_ERROR_REJECT);
 		return false;
@@ -84,7 +84,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	}
 	
 	session.sql("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?")
-		.bind(current_server, account_id, auth_code)
+		.bind("Z", account_id, auth_code)
 		.execute();
 
 	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), account_id);

@@ -113,11 +113,6 @@ void Monster::behavior_active(std::shared_ptr<Player> pl)
 
 	int can_move = monster_config()->mode & MONSTER_MODE_MASK_CANMOVE;
 
-	if (_target != nullptr) {
-		// Check Validity of current target
-		HLog(debug) << "Monster (" << guid() << ") " << name() << " has begun aggressively engaging " << pl->name() << ".";
-	}
-
 	if (monster_config()->mode & MONSTER_MODE_MASK_AGGRESSIVE) {
 		GridMonsterAIActiveSearchTarget target_search(shared_from_this()->downcast<Monster>());
 		GridReferenceContainerVisitor<GridMonsterAIActiveSearchTarget, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(target_search);
@@ -133,8 +128,9 @@ void Monster::behavior_active(std::shared_ptr<Player> pl)
 	// BL_ITEM
 
 	// Attempt to attack
-	if (_target != nullptr && distance_from(_target) < monster_config()->attack_range) {
-
+	if (_target != nullptr) {
+		HLog(debug) << "Monster " << name() << " is attempting to attack target " << _target->name() << " (guid: ." << _target->guid() << ", distance: " << distance_from(_target) << ", attack_range: " << monster_config()->attack_range << ")";
+		attack(_target);
 	}
 }
 
