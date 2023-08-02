@@ -4,10 +4,9 @@ Horizon is a free software project (authored by [@sagunkho](https://gitlab.com/s
 
 Table of Contents
 ---------
-1. What is Horizon?
-2. Prerequisites
-3. Installation
-4. Troubleshooting
+1. Prerequisites
+2. Installation
+3. Troubleshooting
 
 Prerequisites
 -------------
