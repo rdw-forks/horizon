@@ -68,8 +68,7 @@ public:
 	bool finalize();
 	bool LoadMapCache();
 
-	std::shared_ptr<Map> add_session_to_map(std::string map_name, std::shared_ptr<ZoneSession> s);
-	bool remove_session_from_map(std::string map_name, std::shared_ptr<ZoneSession> s);
+	std::shared_ptr<Map> manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s);
 
 	std::shared_ptr<Map> get_map(std::string map_name);
 

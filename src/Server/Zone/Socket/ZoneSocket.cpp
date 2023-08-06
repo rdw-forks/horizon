@@ -74,7 +74,10 @@ void ZoneSocket::on_close()
 {
 	HLog(info) << "Closed connection from '" << remote_ip_address() << "'.";
 
-	MapMgr->remove_session_from_map(get_session()->get_map_name(), get_session());
+	if (get_session()->player() != nullptr) {
+		// Remove player from map (if any)
+		get_session()->perform_cleanup();
+	}
 }
 
 /**
@@ -83,6 +86,10 @@ void ZoneSocket::on_close()
  */
 void ZoneSocket::on_error()
 {
+	if (get_session()->player() != nullptr) {
+		// Remove player from map (if any)
+		get_session()->perform_cleanup();
+	}
 }
 
 /**

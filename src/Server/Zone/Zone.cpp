@@ -111,19 +111,26 @@ bool ZoneServer::read_config()
 void ZoneServer::verify_connected_sessions()
 {	
 	mysqlx::Session session = sZone->database_pool()->get_connection();
-	session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
-		.bind("Z", std::time(nullptr) - config().session_max_timeout())
-		.execute();
 
-	mysqlx::RowResult rr = session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
-		.bind("Z")
-		.execute();
+	try {
+		session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
+			.bind("Z", std::time(nullptr) - config().session_max_timeout())
+			.execute();
+
+		mysqlx::RowResult rr = session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
+			.bind("Z")
+			.execute();
 		
-	mysqlx::Row r = rr.fetchOne();
+		mysqlx::Row r = rr.fetchOne();
 
-	int32_t count = r[0].get<int>();
+		int32_t count = r[0].get<int>();
 
-	HLog(info) << count << " connected session(s).";
+		HLog(info) << count << " connected session(s).";
+	} catch (const mysqlx::Error &err) {
+		HLog(error) << "Error while verifying connected sessions: " << err.what();
+		sZone->database_pool()->release_connection(std::move(session));
+		return;
+	}
 
 	sZone->database_pool()->release_connection(std::move(session));
 }

@@ -124,33 +124,20 @@ bool MapManager::LoadMapCache()
 	return true;
 }
 
-std::shared_ptr<Map> MapManager::add_session_to_map(std::string map_name, std::shared_ptr<ZoneSession> p)
+std::shared_ptr<Map> MapManager::manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s)
 {
 	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
 	for (auto i = container_map.begin(); i != container_map.end(); i++) {
 		std::shared_ptr<Map> map = i->second->get_map(map_name);
-		if (map != nullptr) {
-			i->second->add_session(p);
-			return map;
-		} else {
-			return nullptr;
-		}
+
+		if (map == nullptr)
+			continue;
+
+		i->second->manage_session(action, s);
+		return map;
 	}
 
 	return nullptr;
-}
-
-bool MapManager::remove_session_from_map(std::string map_name, std::shared_ptr<ZoneSession> s)
-{
-	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
-	for (auto i = container_map.begin(); i != container_map.end(); i++) {
-		if (i->second->get_map(map_name) != nullptr) {
-			i->second->remove_session(s);
-			return true;
-		}
-	}
-
-	return false;
 }
 
 std::shared_ptr<Map> MapManager::get_map(std::string map_name)

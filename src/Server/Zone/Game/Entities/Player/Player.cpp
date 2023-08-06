@@ -93,9 +93,6 @@ bool Player::initialize()
 
 	// Inventory is initialized for the player, notifying weight etc.
 	_inventory->initialize();
-
-	// Ensure grid for entity.
-	map()->ensure_grid_for_entity(this, map_coords());
 	
 	// Populate skill tree.
 	std::vector<std::shared_ptr<const skill_tree_config>> sktree = SkillDB->get_skill_tree_by_job_id((job_class_type) job_id());
@@ -169,10 +166,12 @@ bool Player::save()
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::save:" << error.what();
+		sZone->database_pool()->release_connection(std::move(session));
 		return false;
 	}
 	catch (std::exception& error) {
 		HLog(error) << "Player::save:" << error.what();
+		sZone->database_pool()->release_connection(std::move(session));
 		return false;
 	}
 	
@@ -229,10 +228,16 @@ bool Player::load()
 			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
 			map = MapMgr->get_map("prontera");
 		}
-		map->container()->add_session(get_session());
 
+		map->container()->manage_session(SESSION_ACTION_ADD, get_session());
+
+		get_session()->set_map_name(map->get_name());
+		
 		set_map(map);
 		set_map_coords(mcoords);
+
+		// Ensure grid for entity.
+		map->ensure_grid_for_entity(this, map_coords());
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::load:" << error.what();
@@ -404,8 +409,8 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		// If the map is not managed by the destination container, 
 		// remove the session from the current container and add it to the destination container
 		if (!dest_map->container()->get_map(map()->get_name())) {
-			map()->container()->remove_session(get_session());
-			dest_map->container()->add_session(get_session());
+			map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
+			dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
 
 		get_session()->set_map_name(dest_map->get_name());
@@ -414,6 +419,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 			coords = dest_map->get_random_accessible_coordinates();
 
 		dest_map->ensure_grid_for_entity(this, coords);
+
 		set_map(dest_map);
 		set_map_coords(coords);
 	}
