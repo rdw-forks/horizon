@@ -82,7 +82,7 @@ public:
 		_ref_to = nullptr;
 	}
 
-	bool is_valid() const                                // Only check the _ref_to
+	bool is_valid() const
 	{
 		return _ref_to != nullptr;
 	}

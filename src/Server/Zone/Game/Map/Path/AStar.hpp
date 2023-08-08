@@ -138,8 +138,8 @@ public:
 		NodeSet openSet, closedSet;
 		int searchStep = 0;
 
-		openSet.reserve(100);
-		closedSet.reserve(100);
+		openSet.reserve(15);
+		closedSet.reserve(15);
 		openSet.push_back(std::make_shared<Node>(source_));
 
 		if (check_collision(target_.x(), target_.y()))

@@ -209,15 +209,17 @@ void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
 {
     using namespace Horizon::Zone::Entities;
 
-    if (!m.get_size())
+    if (m.get_size() == 0)
         return;
+
+    HLog(debug) << "GridEntityMovementNotifier::notify() - " << m.get_size() << " entities in range.";
 
     std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
 
     if (src_entity == nullptr)
         return;
 
-    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); iter++) {
         if (iter->source() == nullptr)
             continue;
 

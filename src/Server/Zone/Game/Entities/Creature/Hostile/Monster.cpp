@@ -67,12 +67,12 @@ bool Monster::initialize()
 	map()->ensure_grid_for_entity(this, map_coords());
 
     map()->container()->getScheduler().Schedule(
-    	Milliseconds(MOB_MIN_THINK_TIME_LAZY),
+    	Seconds(0),
     	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
+    	context.Repeat(Seconds(10));
     });
 
 	return true;
@@ -91,9 +91,9 @@ void Monster::behavior_passive()
 {
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (next_walk_time() - std::time(nullptr) < 0)
-		&& !is_walking()
-		&& was_spotted_once()) {
+		&& !is_walking()) {
 	    try {
+			// calculate the time it takes to invoke the script file
 			std::string script_root_path = sZone->config().get_script_root_path().string();
 	        sol::load_result fx = map()->container()->get_lua_manager()->lua_state()->load_file(script_root_path + "/monsters/functionalities/walking_passive.lua");
 	        sol::protected_function_result result = fx(shared_from_this());
@@ -101,6 +101,7 @@ void Monster::behavior_passive()
 	            sol::error err = result;
 	            HLog(error) << "Monster::behavior_passive: " << err.what();
 	        }
+			// Invocation time: ~915us
 	    } catch (sol::error &e) {
 	        HLog(error) << "Monster::behavior_passive: " << e.what();
 	    }

@@ -90,7 +90,7 @@ bool Entity::schedule_walk()
 	}
 
 	// This method returns vector of coordinates from target to source.
-	_walk_path = map()->get_pathfinder().findPath(source_pos, _dest_pos);
+	_walk_path = map()->get_pathfinder().findPath(source_pos, _dest_pos); // ~5us
 
 	_changed_dest_pos = {0, 0};
 
@@ -111,26 +111,28 @@ bool Entity::schedule_walk()
 		return false;
 	}
 
-	on_movement_begin();
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	notify_nearby_players_of_movement();
-	walk();
-	
+	std::chrono::high_resolution_clock::time_point start_time4 = std::chrono::high_resolution_clock::now();
+	on_movement_begin(); // 0us
+	notify_nearby_players_of_movement(); // 3us
+	walk(); // ~173us
 	return true;
 }
 
 void Entity::walk()
 {
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
-		stop_walking();
-		return;
-	}
-
+	//if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
+	//	stop_walking();
+	//	return;
+	//}
 	MapCoords c = _walk_path.at(0); // for the first step.
 
 	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
 		[this] (TaskContext context)
 		{
+			if (_walk_path.size() == 0) // to fix the "invalid vector subscript" error.
+				return;
+	
 			MapCoords c = _walk_path.at(0);
 
 			// Force stop as the current coordinates might asynchronously update after map has changed 
@@ -165,6 +167,7 @@ void Entity::walk()
 			if (!_walk_path.empty())
 				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
 		});
+
 }
 
 bool Entity::stop_walking(bool cancel)
@@ -181,13 +184,13 @@ bool Entity::stop_walking(bool cancel)
 
 bool Entity::walk_to_coordinates(int16_t x, int16_t y)
 {
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK))) {
+	if (_dest_pos.x() != 0 && _dest_pos.y() != 0 && _dest_pos.x() != x && _dest_pos.y() != y) {
 		_changed_dest_pos = { x, y };
 		return true;
 	}
 
-	if (is_attacking())
-		stop_attacking();
+	//if (is_attacking()) ises getScheduler().Count() function, very excessive in time utilization.
+	//	stop_attacking();
 
 	_dest_pos = { x, y };
 
@@ -195,7 +198,6 @@ bool Entity::walk_to_coordinates(int16_t x, int16_t y)
 		HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
 		return false;
 	}
-
 	return true;
 }
 
@@ -338,8 +340,8 @@ bool Entity::is_attacking() { return map()->container()->getScheduler().Count(ge
 
 bool Entity::stop_attacking()
 {
-	if (!is_attacking())
-		return false;
+	//if (!is_attacking())
+	//	return false;
 
 	map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK));
 

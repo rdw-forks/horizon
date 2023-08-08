@@ -72,7 +72,8 @@ public:
 		{
 			uint32_t result = 0;
 			Element const* e = first();
-			while (e)
+
+			while (e != nullptr)
 			{
 				e = e->next();
 				if (e)
