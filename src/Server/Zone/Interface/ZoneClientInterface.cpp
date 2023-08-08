@@ -103,6 +103,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	
 	sZone->database_pool()->release_connection(std::move(session));
 	
+	HLog(info) << "Player (" << pl->guid() << ") " << pl->name() << " has logged in.";
 	return true;
 }
 
@@ -149,8 +150,7 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	get_session()->player()->map()->container()->remove_session(get_session());
-
+	MapMgr->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
 bool ZoneClientInterface::update_session(int32_t account_id)
@@ -188,6 +188,9 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 }
 bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t dir)
 {
+	if (get_session()->player() == nullptr)
+		return false;
+
 	get_session()->player()->walk_to_coordinates(x, y);
 	return true;
 }

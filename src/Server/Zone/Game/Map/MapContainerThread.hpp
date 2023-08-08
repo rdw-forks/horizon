@@ -49,7 +49,16 @@ class ZoneSession;
 #define MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name) \
 	if ((map = container->get_map(map_name)) == nullptr) \
 		return;
-
+// Session action enum for the session buffer.
+// This enum is used to determine what action should be taken on a session
+// when the session buffer is processed.
+enum map_container_session_action
+{
+	SESSION_ACTION_ADD,
+	SESSION_ACTION_REMOVE,
+	SESSION_ACTION_LOGOUT_AND_REMOVE,
+};
+	
 class MapContainerThread : public std::enable_shared_from_this<MapContainerThread>
 {
 public:
@@ -71,14 +80,9 @@ public:
 	//! saved in thread-safe tables.
 	void remove_map(std::string const &name);
 
-	//! @brief Adds a session to the session buffer, marking him for addition to the
-	//! list of managed session by this container on the next update.
-	//! @param[in] s shared_ptr to a session object which should be managed by this map.
-	//! @warning A session added for management by this container must be the only owner of the session object.
-	void add_session(std::shared_ptr<ZoneSession> s);
 	//! @brief Adds a session to the session buffer, marking him for removal from the
 	//! list of managed sessions by this container on the next update.
-	void remove_session(std::shared_ptr<ZoneSession> s);
+	void manage_session(map_container_session_action, std::shared_ptr<ZoneSession> s);
 
 	//! @brief Returns a player if found, nullptr otherwise.
 	std::shared_ptr<Entities::Player> get_player(std::string const &name);
@@ -118,7 +122,7 @@ private:
 
 	std::thread _thread;
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
-	ThreadSafeQueue<std::pair<bool, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
+	ThreadSafeQueue<std::pair<map_container_session_action, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
 	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
 	std::shared_ptr<LUAManager> _lua_mgr;                                                   ///< Non-thread-safe shared pointer and owner of a script manager.
 	TaskScheduler _task_scheduler;

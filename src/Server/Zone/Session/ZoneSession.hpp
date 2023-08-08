@@ -95,10 +95,6 @@ public:
 	//! @details This function is used to handle the initialization of the session.
 	//! @return void
 	void initialize();
-
-	//! @details This function is used to handle the creation of the player.
-	//! @return void
-	bool player_created() { return _player_created; }
 	
 	//! @details This function is a getter function which is used to get the client interface.
 	//! @return std::unique_ptr<ZoneClientInterface> &
@@ -121,7 +117,6 @@ public:
 	std::string get_map_name() { return _map_name; }
 	void set_map_name(std::string map_name) { _map_name = map_name; }
 protected:
-	bool _player_created{ false };
 	std::unique_ptr<ZoneClientInterface> _clif;
 	std::unique_ptr<ClientPacketLengthTable> _pkt_tbl;
 	std::shared_ptr<Entities::Player> _player;

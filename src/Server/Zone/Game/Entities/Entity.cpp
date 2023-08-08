@@ -126,6 +126,11 @@ void Entity::walk()
 		return;
 	}
 
+	if (status() == nullptr || status()->movement_speed() == nullptr) {
+		HLog(error) << "Entity::walk: Status is null, cannot walk.";
+		return;
+	}
+
 	MapCoords c = _walk_path.at(0); // for the first step.
 
 	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
