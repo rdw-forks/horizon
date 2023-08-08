@@ -121,10 +121,18 @@ bool Entity::schedule_walk()
 
 void Entity::walk()
 {
+  // Removes Count function call since we're more careful for access and execution time,
+  // Count function executes longer than ~4000us. We need the overall walk operation to be less than ~1000us
 	//if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
 	//	stop_walking();
 	//	return;
 	//}
+
+	if (status() == nullptr || status()->movement_speed() == nullptr) {
+		HLog(error) << "Entity::walk: Status is null, cannot walk.";
+		return;
+	}
+
 	MapCoords c = _walk_path.at(0); // for the first step.
 
 	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),

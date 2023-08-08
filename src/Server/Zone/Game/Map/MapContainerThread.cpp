@@ -71,20 +71,14 @@ void MapContainerThread::remove_map(std::string const &name)
 	_managed_maps.erase(name);
 }
 
-//! @brief Adds a session to the session buffer, marking him for addition to the
-//! list of managed sessions by this container on the next update.
+//! @brief Adds a session to the session buffer, marking him for management
+//! in the list of the managed session by this container on the next update.
+//! @param[in] action enum value of the action to be performed on the session.
 //! @param[in] p shared_ptr to a session object which should be managed by this map.
 //! @note A session added for management by this container must be the only owner of the session object.
-void MapContainerThread::add_session(std::shared_ptr<ZoneSession> s)
+void MapContainerThread::manage_session(map_container_session_action action, std::shared_ptr<ZoneSession> s)
 {
-	_session_buffer.push(std::make_pair(true, s));
-}
-
-//! @brief Adds a session to the session buffer, marking him for removal from the
-//! list of managed sessions by this container on the next update.
-void MapContainerThread::remove_session(std::shared_ptr<ZoneSession> s)
-{
-	_session_buffer.push(std::make_pair(false, s));
+	_session_buffer.push(std::make_pair(action, s));
 }
 
 std::shared_ptr<Entities::Player> MapContainerThread::get_player(std::string const &name)
@@ -144,7 +138,7 @@ void MapContainerThread::finalize()
 	}
 
 	// Clear anyone in the session buffer (You never know...)
-	std::shared_ptr<std::pair<bool, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
+	std::shared_ptr<std::pair<map_container_session_action, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
 
 	while ((sbuf = _session_buffer.try_pop())) {
 		std::shared_ptr<ZoneSession> session = sbuf->second;
@@ -156,7 +150,11 @@ void MapContainerThread::finalize()
 			continue;
 		}
 
+		session->player()->notify_nearby_players_of_existence(EVP_NOTIFY_LOGGED_OUT);
+		session->player()->set_logged_in(false);
 		session->player()->save();
+		session->player()->remove_grid_reference();
+
 //		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
 	}
 
@@ -226,16 +224,17 @@ void MapContainerThread::start_internal()
 //! @param[in] diff current system time.
 void MapContainerThread::update(uint64_t diff)
 {
-	std::shared_ptr<std::pair<bool, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
+	std::shared_ptr<std::pair<map_container_session_action, std::shared_ptr<ZoneSession>>> sbuf = nullptr;
 
 	// Add any new players / remove anyone else.
 	while ((sbuf = _session_buffer.try_pop())) {
+		map_container_session_action action = sbuf->first;
 		std::shared_ptr<ZoneSession> session = sbuf->second;
 
 		if (session == nullptr)
 			continue;
 
-		if (sbuf->first) {
+		if (action == SESSION_ACTION_ADD) {
 			if (session->is_initialized() && session->player() != nullptr && session->player()->is_initialized() == false) {
 				// Intialized player upon loading.
 				session->player()->initialize();
@@ -243,15 +242,19 @@ void MapContainerThread::update(uint64_t diff)
 			
 			_managed_sessions.insert(session->get_session_id(), session);
 			HLog(debug) << "Session " << session->get_session_id() << " was added to managed sessions in map container " << (void *) this;
-		} else {
-			// if (session->player() != nullptr) {
-			// 	session->player()->notify_nearby_players_of_existence(EVP_NOTIFY_LOGGED_OUT);
-			// 	session->player()->set_logged_in(false);
-			// 	session->player()->save();
-			// 	session->player()->remove_grid_reference();
-			// }
+		} else if (action == SESSION_ACTION_REMOVE) {
 			_managed_sessions.erase(session->get_session_id());
 			HLog(debug) << "Session " << session->get_session_id() << " was removed from managed sessions in map container " << (void *) this;
+		} else if (action == SESSION_ACTION_LOGOUT_AND_REMOVE) {
+			if (session->player() != nullptr) {
+				session->player()->notify_nearby_players_of_existence(EVP_NOTIFY_LOGGED_OUT);
+				session->player()->set_logged_in(false);
+				session->player()->save();
+				if (session->player()->has_valid_grid_reference())
+					session->player()->remove_grid_reference();
+			}
+			_managed_sessions.erase(session->get_session_id());
+			HLog(debug) << "Session " << session->get_session_id() << " was logged out and removed from managed sessions in map container " << (void *) this;
 		}
 	}
 

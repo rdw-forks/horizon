@@ -12,7 +12,6 @@ namespace Structures
 {
 namespace LinkedList
 {
-// write a detailed description of this class here
 //! @details This class is used to manage a linked list of References.
 //! It is not intended to be used directly. It is used as a base class for other classes that need to manage a linked list.
 //! The Head class is a friend of this class (derived from Element) to allow it to access the private members of this class.
