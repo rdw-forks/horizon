@@ -116,13 +116,21 @@ void ZoneSession::update(uint32_t /*diff*/)
 		return;
 
 	while ((read_buf = get_socket()->_buffer_recv_queue.try_pop())) {
-		uint16_t packet_id = 0x0;
-		memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
-		HPacketTablePairType p = _pkt_tbl->get_hpacket_info(packet_id);
-		
-		HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - len:" << std::dec << p.first << std::endl;
-		
-		p.second->handle(std::move(*read_buf));
+		while (read_buf->active_length()) {
+			uint16_t packet_id = 0x0;
+			memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
+			HPacketTablePairType p = _pkt_tbl->get_hpacket_info(packet_id);
+
+			int16_t packet_len = p.first;
+
+			if (packet_len == -1) {
+				memcpy(&packet_len, read_buf->get_read_pointer() + 2, sizeof(int16_t));
+			}
+
+			ByteBuffer buf(*read_buf, packet_len);
+			HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - len:" << std::dec << p.first << std::endl;
+			p.second->handle(std::move(buf));
+		}
 	}
 }
 

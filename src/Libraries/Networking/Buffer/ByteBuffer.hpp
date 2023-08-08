@@ -95,6 +95,16 @@ public:
 	ByteBuffer(ByteBuffer&& buf)
     : _rpos(buf._rpos), _wpos(buf._wpos), _storage(std::move(buf._storage))
     { }
+	
+	ByteBuffer(ByteBuffer& buf, size_t len)
+    : _rpos(0)
+    {	
+		_storage.resize(len);
+		// copy len bytes from buf
+		std::memcpy(&_storage[_wpos], buf.contents(), len);
+		_wpos = len;
+		buf._rpos += len;
+	}
 
 	ByteBuffer(ByteBuffer const& right)
     : _rpos(right._rpos), _wpos(right._wpos), _storage(right._storage)
@@ -386,6 +396,13 @@ public:
 		if (_rpos  + len > maximum_length())
 			throw ByteBufferPositionException(false, _rpos, len, maximum_length());
 		std::memcpy((void *) dest, &_storage[_rpos], len);
+		_rpos += len;
+	}
+
+	void read(ByteBuffer &buf, size_t len)
+	{
+		std::memcpy(&buf._storage[buf._wpos], &_storage[_rpos], len);
+		buf._wpos += len;
 		_rpos += len;
 	}
 
