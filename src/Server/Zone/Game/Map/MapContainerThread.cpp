@@ -184,8 +184,35 @@ void MapContainerThread::start_internal()
 {
 	get_lua_manager()->initialize_for_container();
 
+	HLog(info) << "Map container " << (void *) this << " has initialized.";
+	HLog(info) << "Total maps: " << _managed_maps.size() << " Total sessions: " << _managed_sessions.size();
+	int monster_count = 0, npc_count = 0;
+	for (auto i = _lua_mgr->monster()->_monster_spawn_db.begin(); i != _lua_mgr->monster()->_monster_spawn_db.end(); i++)
+		monster_count += i->second->amount;
+	npc_count = _lua_mgr->npc()->_npc_db.size();
+	HLog(info) << "Total monsters spawned: " << monster_count << " Total NPCs spawned: " << npc_count;
+
+	int updates_per_second_timer = 0;
+	int update_count = 0;
+	double average_update_per_second = 0;
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+		std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 		update(std::time(nullptr));
+		update_count++;
+		std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
+    
+		std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
+
+		// Check updates per second.
+    	updates_per_second_timer += elapsed_time.count();
+
+		if (updates_per_second_timer > 1000) {
+			average_update_per_second = update_count + average_update_per_second / update_count;
+        	HLog(info) << "Map Container " << (void*) this << " update rate: " << average_update_per_second << " updates per second.";
+			updates_per_second_timer = 0;
+        	update_count = 0;
+   		}
+		
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	};
 

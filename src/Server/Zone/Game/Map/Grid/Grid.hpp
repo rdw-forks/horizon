@@ -70,7 +70,6 @@ public:
 	template <class T>
 	uint32_t getObjectCount() const { return uint32_t(_container.template count<T>()); }
 
-private:
 	GridReferenceContainer<GRID_OBJECT_TYPES> _container;
 };
 

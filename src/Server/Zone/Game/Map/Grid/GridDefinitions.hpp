@@ -62,7 +62,7 @@ class GridReferenceContainer;
 
 // Max Cells in a map are 416.
 #define MAX_CELLS_PER_GRID 32
-#define MAX_GRIDS_PER_MAP 13
+#define MAX_GRIDS_PER_MAP 14
 #define MAX_CELLS_PER_MAP MAX_CELLS_PER_GRID * MAX_GRIDS_PER_MAP
 
 #define entity_ns(e) Horizon::Zone::Entities::e

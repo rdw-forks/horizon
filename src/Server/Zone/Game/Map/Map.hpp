@@ -77,7 +77,7 @@ public:
 	bool ensure_grid_for_entity(T *entity, MapCoords coords);
 
 	template<class T, class CONTAINER>
-	void visit(GridCoords const &grid, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
+	void visit(int grid_x, int grid_y, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
 
 	template<class T, class CONTAINER>
 	void visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
@@ -173,22 +173,23 @@ bool Horizon::Zone::Map::ensure_grid_for_entity(T *entity, MapCoords mcoords)
 
 	entity->set_grid_coords(new_gcoords);
 
-	_gridholder.get_grid(new_gcoords).add_object(entity);
+	_gridholder.get_grid(new_gcoords.x(), new_gcoords.y()).add_object(entity);
 
 	return true;
 }
 
 template<class T, class CONTAINER>
-inline void Horizon::Zone::Map::visit(GridCoords const &grid, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
+inline void Horizon::Zone::Map::visit(int grid_x, int grid_y, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
 {
-	_gridholder.get_grid(grid).visit(visitor);
+	Grid<AllEntityTypes> &g = _gridholder.get_grid(grid_x, grid_y);
+	g.visit(visitor);
 }
 
 template<class T, class CONTAINER>
 inline void Horizon::Zone::Map::visit_in_range(MapCoords const &map_coords, GridReferenceContainerVisitor<T, CONTAINER> &visitor, uint16_t range)
 {
-	MapCoords lower_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(-range);
-	MapCoords upper_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(range);
+	MapCoords lower_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(-range, _width, _height);
+	MapCoords upper_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(range, _width, _height);
 
 	visit(lower_bounds.scale<MAX_CELLS_PER_GRID, MAX_GRIDS_PER_MAP>(), upper_bounds.scale<MAX_CELLS_PER_GRID, MAX_GRIDS_PER_MAP>(), visitor);
 }
@@ -196,9 +197,9 @@ inline void Horizon::Zone::Map::visit_in_range(MapCoords const &map_coords, Grid
 template<class T, class CONTAINER>
 inline void Horizon::Zone::Map::visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
 {
-	for (int y = upper_bound.y(); y >= lower_bound.y(); --y) {
-		for (int x = lower_bound.x(); x <= upper_bound.x(); ++x) {
-			visit(GridCoords(x, y), visitor);
+	for (int y = upper_bound.y(); y >= lower_bound.y(); y--) {
+		for (int x = lower_bound.x(); x < upper_bound.x(); x++) {
+			visit(x, y, visitor);
 		}
 	}
 }

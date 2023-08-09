@@ -40,7 +40,7 @@ using namespace Horizon::Zone;
 Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, uint16_t width, uint16_t height, std::vector<uint8_t> const &cells)
 : _container(container), _name(name), _width(width), _height(height),
   _max_grids((width / MAX_CELLS_PER_GRID), (height / MAX_CELLS_PER_GRID)),
-  _gridholder(GridCoords(width, height)),
+  _gridholder((width / MAX_CELLS_PER_GRID) + 1, (height / MAX_CELLS_PER_GRID) + 1),
   _pathfinder(AStar::Generator(MapCoords(width, height), std::bind(&Map::has_obstruction_at, this, std::placeholders::_1, std::placeholders::_2), MAX_VIEW_RANGE))
 {
 	for (int y = height - 1; y >= 0; --y) {
