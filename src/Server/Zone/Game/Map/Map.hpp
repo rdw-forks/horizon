@@ -188,8 +188,8 @@ inline void Horizon::Zone::Map::visit(int grid_x, int grid_y, GridReferenceConta
 template<class T, class CONTAINER>
 inline void Horizon::Zone::Map::visit_in_range(MapCoords const &map_coords, GridReferenceContainerVisitor<T, CONTAINER> &visitor, uint16_t range)
 {
-	MapCoords lower_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(-range, _width, _height);
-	MapCoords upper_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(range, _width, _height);
+	MapCoords lower_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(-range);
+	MapCoords upper_bounds = map_coords.at_range<MAX_CELLS_PER_MAP>(range);
 
 	visit(lower_bounds.scale<MAX_CELLS_PER_GRID, MAX_GRIDS_PER_MAP>(), upper_bounds.scale<MAX_CELLS_PER_GRID, MAX_GRIDS_PER_MAP>(), visitor);
 }
@@ -197,8 +197,15 @@ inline void Horizon::Zone::Map::visit_in_range(MapCoords const &map_coords, Grid
 template<class T, class CONTAINER>
 inline void Horizon::Zone::Map::visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
 {
+	// Visit all grids in the map, from top to bottom, left to right
+	// This is done to ensure that the visitor is called in the same order as the grids are stored in the map
+	// This is important for the GridReferenceContainerVisitor, which will add the grid references to a container
+	// The container will then be iterated over in the same order as the grids were visited
+	// This ensures that the entities are visited in the container in the same order as they are stored in the map
+	// We visit all ranges - 0,0 to maximum grids in a map 
+	// (the upper range as well, i.e. if the map is 10x10 grids, we visit 0,0 to 10,10 and not 9x9)
 	for (int y = upper_bound.y(); y >= lower_bound.y(); y--) {
-		for (int x = lower_bound.x(); x < upper_bound.x(); x++) {
+		for (int x = lower_bound.x(); x <= upper_bound.x(); x++) {
 			visit(x, y, visitor);
 		}
 	}

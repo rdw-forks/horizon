@@ -274,5 +274,10 @@ void MapContainerThread::update(uint64_t diff)
 	}
 
 	// Update Monsters
+	std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 	getScheduler().Update();
+	std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
+	// Check updates per second.
+	HLog(debug) << "Scheduler Update time: " << elapsed_time.count() << "us";
 }

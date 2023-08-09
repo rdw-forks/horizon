@@ -255,7 +255,7 @@ bool Player::load()
 
 void Player::on_pathfinding_failure()
 {
-	HLog(debug) << "Player " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
+	//HLog(debug) << "Player " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
 void Player::on_movement_begin()

@@ -60,9 +60,26 @@ bool check_collision(int16_t x, int16_t y)
 	return cell[x][y].isWalkable() ? false : true;
 }
 
+// This test imitates the client's path search behavior as it 
+// searches for a path within the MAX_VIEW_RANGE of the player
+// and not the entire map.
+// The client searches for a path from the player's current position
+// to the destination position. If the destination is not within the
+// MAX_VIEW_RANGE, the client searches for a path to the nearest
+// walkable cell within the MAX_VIEW_RANGE.
+// - The client does not search for a path to the destination if the
+// destination is not within the MAX_VIEW_RANGE.
+// - The client does not search for a path to the destination if the
+// destination is not walkable.
+// - The client does not search for a path to the destination if the
+// destination is the same as the player's current position.
 BOOST_AUTO_TEST_CASE(AStarTest)
 {
+	Horizon::Zone::AStar::Generator astar({ MAP_WIDTH, MAP_HEIGHT }, &check_collision, true, &Horizon::Zone::AStar::Heuristic::manhattan);
+	astar.setHeuristic(&AStar::Heuristic::manhattan);
+	
 	std::srand(std::time(nullptr));
+	
 	int total_time = 0;
 	int idx = 0;
 	// maps are stored from max-y,x down to 0,0
@@ -78,29 +95,25 @@ BOOST_AUTO_TEST_CASE(AStarTest)
 		MapCoords start, end;
 
 		do {
-			do {
-				start = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
-			} while(check_collision(start.x(), start.y()));
+			start = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
+		} while(check_collision(start.x(), start.y()));
 
+		std::vector<MapCoords> path;
+		do {
 			do {
 				end = MapCoords( rand() % MAP_WIDTH - 1, rand() % MAP_HEIGHT - 1 );
 			} while(check_collision(end.x(), end.y()));
-			start_end.push_back(std::make_pair(start, end));
-		} while (!start.is_within_range(end, MAX_VIEW_RANGE));
+		} while (!start.is_within_range(end, MAX_VIEW_RANGE) && ((path = astar.findPath(start, end)).size() == 0 || (path.at(0).x() != end.x() && path.at(0).y() != end.y())));
+		
+		start_end.push_back(std::make_pair(start, end));
+		std::cout << "Generated " << i << " start: " << start.x() << ", " << start.y() << " end: " << end.x() << ", " << end.y() << std::endl;
 	}
-
+	
 	for (int i = 0; i < 10000; i++) {
 		MapCoords start = start_end[i].first;
 		MapCoords end = start_end[i].second;
-//	auto start_time = std::chrono::high_resolution_clock::now();
-//	astar.navigate(start, end);
-//	auto finish_time = std::chrono::high_resolution_clock::now();
-//	std::chrono::duration<double> elapsed = finish_time - start_time;
-//	printf("Euclidean: %.2fs\n", elapsed.count());
 
-		Horizon::Zone::AStar::Generator astar({ MAP_WIDTH, MAP_HEIGHT }, &check_collision, true, &Horizon::Zone::AStar::Heuristic::manhattan);
 		auto start_time = std::chrono::high_resolution_clock::now();
-		astar.setHeuristic(&AStar::Heuristic::manhattan);
 		auto path = astar.findPath(start, end);
 		auto finish_time = std::chrono::high_resolution_clock::now();
 		auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(finish_time - start_time);

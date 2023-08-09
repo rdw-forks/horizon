@@ -212,8 +212,6 @@ void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
     if (m.get_size() == 0)
         return;
 
-    HLog(debug) << "GridEntityMovementNotifier::notify() - " << m.get_size() << " entities in range.";
-
     std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
 
     if (src_entity == nullptr)

@@ -60,9 +60,9 @@ public:
 	{
 		assert(x <= _width);
 		assert(y <= _height);
-		assert(x > 0 && y > 0);
-
-		return _grids[x - 1][y - 1];
+		assert(x >= 0 && y >= 0);
+		
+		return _grids[x][y];
 	}
 
 	uint16_t height() { return _height; }

@@ -94,7 +94,7 @@ public:
 	MapCoords const &dest_coords() const { return _dest_pos; }
 	virtual bool walk_to_coordinates(int16_t x, int16_t y);
 	virtual bool walk_to_entity(std::shared_ptr<Entity> entity);
-	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
+	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)) || ((_changed_dest_pos) != MapCoords(0, 0)); }
 
 	virtual void stop_movement() = 0;
 protected:
@@ -183,12 +183,16 @@ public:
 
 	virtual bool attack(std::shared_ptr<Entity> target, bool continuous = false);
 	virtual bool stop_attacking();
-	bool is_attacking();
+
+	void set_attacking(bool attacking) { _is_attacking = attacking; }
+	bool is_attacking() { return _is_attacking; }
+	void on_attack_end();
 
 	bool is_dead();
 
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
+	bool _is_attacking{false};
 	uint32_t _guid{0};
 	entity_type _type{ENTITY_UNKNOWN};
 	std::weak_ptr<Map> _map;
