@@ -84,10 +84,10 @@ public:
 	}
 
 	template<int16_t BOUNDS>
-	Coordinates<BOUNDS> at_range(int range, int max_width, int max_height) const
+	Coordinates<BOUNDS> at_range(int range) const
 	{
-		int x = std::max(0, std::min((_x + range), (int) max_width));
-		int y = std::max(0, std::min((_y + range), (int) max_height));
+		int x = std::max(0, std::min((_x + range), (int) BOUNDS));
+		int y = std::max(0, std::min((_y + range), (int) BOUNDS));
 
 		return Coordinates<BOUNDS>(x, y);
 	}
@@ -95,11 +95,11 @@ public:
 	template<int16_t BLOCK_SIZE, int16_t BLOCK_COUNT>
 	Coordinates<BLOCK_COUNT> scale() const
 	{
-		int x = _x / BLOCK_SIZE + 1;
-		int y = _y / BLOCK_SIZE + 1;
+		int x = _x / BLOCK_SIZE;
+		int y = _y / BLOCK_SIZE;
 
-		assert(x <= BLOCK_COUNT && y <= BLOCK_COUNT);
-		assert(x > 0 && y > 0);
+		assert(x < BLOCK_COUNT && y < BLOCK_COUNT);
+		assert(x >= 0 && y >= 0);
 
 		return Coordinates<BLOCK_COUNT>(x, y);
 	}

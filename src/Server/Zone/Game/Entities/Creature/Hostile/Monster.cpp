@@ -72,7 +72,7 @@ bool Monster::initialize()
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Seconds(10));
+    	context.Repeat(Seconds(std::rand() % 10));
     });
 
 	return true;
@@ -87,20 +87,23 @@ void Monster::finalize()
 		remove_grid_reference();
 }
 
+// Code in this function is executed 
 void Monster::behavior_passive()
 {
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (next_walk_time() - std::time(nullptr) < 0)
 		&& !is_walking()) {
 	    try {
-			// calculate the time it takes to invoke the script file
-			std::string script_root_path = sZone->config().get_script_root_path().string();
-	        sol::load_result fx = map()->container()->get_lua_manager()->lua_state()->load_file(script_root_path + "/monsters/functionalities/walking_passive.lua");
-	        sol::protected_function_result result = fx(shared_from_this());
-	        if (!result.valid()) {
-	            sol::error err = result;
-	            HLog(error) << "Monster::behavior_passive: " << err.what();
-	        }
+			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+			MapCoords move_c = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
+			if (walk_to_coordinates(move_c.x(), move_c.y()) == false) {
+				//HLog(error) << "Monster (" << guid() << ") " << name() << " could not move to coordinates.";
+				return;
+			}
+			set_next_walk_time(std::time(nullptr) + std::rand() % 5 + 1);
+			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+			std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+			//HLog(debug) << "Monster::behavior_passive: script invocation time " << duration.count() << "us";
 			// Invocation time: ~915us
 	    } catch (sol::error &e) {
 	        HLog(error) << "Monster::behavior_passive: " << e.what();
@@ -141,7 +144,7 @@ void Monster::stop_movement()
 
 void Monster::on_pathfinding_failure()
 {
-	HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
+	//HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
 void Monster::on_movement_begin()
