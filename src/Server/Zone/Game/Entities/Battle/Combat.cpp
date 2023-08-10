@@ -95,6 +95,10 @@ combat_retaliate_type Combat::weapon_attack()
             break;
         case ENTITY_ELEMENTAL:
             break;
+        case ENTITY_ITEM:
+        case ENTITY_UNKNOWN:
+        case ENTITY_EVENT:
+            break;
         }
     }
 

@@ -573,7 +573,7 @@ bool Player::on_skill_failure(int16_t skill_id, int message_type, int item_id, s
 bool Player::on_action_request(player_action_type action)
 {
 	try {
-		sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string().append("internal/on_player_action.lua"));
+		sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string() + "internal/on_player_action.lua");
 		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), action);
 		if (!result.valid()) {
 			sol::error err = result;
