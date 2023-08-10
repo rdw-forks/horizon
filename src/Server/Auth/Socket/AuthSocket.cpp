@@ -35,8 +35,8 @@
 
 using namespace Horizon::Auth;
 
-AuthSocket::AuthSocket(std::shared_ptr<tcp::socket> socket)
-: Socket(socket)
+AuthSocket::AuthSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket)
+: Socket(uid, socket)
 {
 }
 
@@ -57,7 +57,7 @@ void AuthSocket::set_session(std::shared_ptr<AuthSession> session) { std::atomic
  */
 void AuthSocket::start()
 {
-	auto session = std::make_shared<AuthSession>(shared_from_this());
+	auto session = std::make_shared<AuthSession>(get_socket_id(), shared_from_this());
     
 	set_session(session);
 

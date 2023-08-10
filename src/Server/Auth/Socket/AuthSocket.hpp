@@ -47,7 +47,7 @@ class AuthSocket : public Horizon::Networking::Socket<AuthSocket>
 {
 	typedef Socket<AuthSocket> BaseSocket;
 public:
-	explicit AuthSocket(std::shared_ptr<tcp::socket> socket);
+	explicit AuthSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket);
 	~AuthSocket();
 	/* */
 	void start() override;

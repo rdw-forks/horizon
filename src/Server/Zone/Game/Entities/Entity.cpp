@@ -86,19 +86,19 @@ bool Entity::schedule_walk()
 		_walk_path.clear();
 
 	if (!map()) {
-		HLog(error) << "Reference to map object has been lost for entity " << (void *) this << ".";
+		// HLog(error) << "Reference to map object has been lost for entity " << (void *) this << ".";
 		_dest_pos = { 0, 0 };
 		return false;
 	}
 
 	// This method returns vector of coordinates from target to source.
-	_walk_path = map()->get_pathfinder().findPath(source_pos, _dest_pos);
+	_walk_path = map()->get_pathfinder().findPath(source_pos, _dest_pos); // ~5us
 
 	_changed_dest_pos = {0, 0};
 
 	// If destination was a collision, nothing is returned.
 	if (_walk_path.size() == 0) {
-		HLog(warning) << "Entity::schedule_walk: Destination was a collision, no walk path available.";
+		// HLog(warning) << "Entity::schedule_walk: Destination was a collision, no walk path available.";
 		_dest_pos = { 0, 0 };
 		return false;
 	}
@@ -108,23 +108,25 @@ bool Entity::schedule_walk()
 
 	if (_walk_path.empty()) {
 		on_pathfinding_failure();
-		HLog(warning) << "Entity::schedule_walk: Path too short or empty, failed to schedule movement.";
+		// HLog(warning) << "Entity::schedule_walk: Path too short or empty, failed to schedule movement.";
 		_dest_pos = { 0, 0 };
 		return false;
 	}
 
-	on_movement_begin();
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	notify_nearby_players_of_movement();
-	walk();
-	
+	std::chrono::high_resolution_clock::time_point start_time4 = std::chrono::high_resolution_clock::now();
+	on_movement_begin(); // 0us
+	notify_nearby_players_of_movement(); // 3us
+	walk(); // ~173us
 	return true;
 }
 
+// This method begins the movement of the entity and schedules movement, server side.
+// @NOTE This method is called when the entity is already in motion and a new destination is set.
 void Entity::walk()
 {
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
-		stop_walking();
+	if (status() == nullptr || status()->movement_speed() == nullptr) {
+		// HLog(error) << "Entity::walk: Status is null, cannot walk.";
 		return;
 	}
 
@@ -136,6 +138,9 @@ void Entity::walk()
 	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
 		[this] (TaskContext context)
 		{
+			if (_walk_path.size() == 0) // to fix the "invalid vector subscript" error.
+				return;
+	
 			MapCoords c = _walk_path.at(0);
 
 			// Force stop as the current coordinates might asynchronously update after map has changed 
@@ -170,8 +175,13 @@ void Entity::walk()
 			if (!_walk_path.empty())
 				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
 		});
+
 }
 
+// Walking cancel and stopping algorithm.
+// Stops the Entity from walking and triggers the on_movement_end event.
+// If cancel is true, the Entity will be forced to stop walking and the scheduler task will be cancelled.
+// returns true if the Entity was walking and was stopped.
 bool Entity::stop_walking(bool cancel)
 {
 	_dest_pos = { 0, 0 };
@@ -184,9 +194,14 @@ bool Entity::stop_walking(bool cancel)
 	return true;
 }
 
+void Entity::on_attack_end()
+{
+	set_attacking(false);
+}
+
 bool Entity::walk_to_coordinates(int16_t x, int16_t y)
 {
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK))) {
+	if (_dest_pos.x() != 0 && _dest_pos.y() != 0 && _dest_pos.x() != x && _dest_pos.y() != y) {
 		_changed_dest_pos = { x, y };
 		return true;
 	}
@@ -197,10 +212,9 @@ bool Entity::walk_to_coordinates(int16_t x, int16_t y)
 	_dest_pos = { x, y };
 
 	if (schedule_walk() == false) {
-		HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
+		// HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
 		return false;
 	}
-
 	return true;
 }
 
@@ -210,7 +224,7 @@ bool Entity::walk_to_entity(std::shared_ptr<Entity> entity)
 		return false;
 
 	if (walk_to_coordinates(entity->map_coords().x(), entity->map_coords().y())){
-		HLog(warning) << "Entity (" << guid() << ") could not walk to (" << entity->guid() << ").";
+		// HLog(warning) << "Entity (" << guid() << ") could not walk to (" << entity->guid() << ").";
 		return false;
 	}
 
@@ -380,8 +394,6 @@ bool Entity::is_dead() {
 	return status()->current_hp()->get_base() == 0; 
 }
 
-bool Entity::is_attacking() { return map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK)) > 0; }
-
 bool Entity::stop_attacking()
 {
 	if (!is_attacking())
@@ -403,14 +415,18 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 	map()->container()->getScheduler().Schedule(Milliseconds(0), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
 		[this, continuous, target] (TaskContext context) {
 
-			if (target == nullptr)
+			if (target == nullptr) { 
+				on_attack_end();
 				return;
+			}
 
 			if (target->is_dead()) {
+				on_attack_end();
 				return;
 			}
 
 			if (path_to(target)->size() == 0) {
+				on_attack_end();
 				return;
 			}
 
@@ -436,7 +452,14 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 			if (is_in_range_of(target, range) && is_walking())
 				stop_walking();
 			
+<<<<<<< HEAD
 			combat()->weapon_attack();
+=======
+			if (!is_attacking())
+				set_attacking(true);
+
+			combat.weapon_attack();
+>>>>>>> master
 
 			if (continuous)
 				context.Repeat(Milliseconds(_attackable_time));

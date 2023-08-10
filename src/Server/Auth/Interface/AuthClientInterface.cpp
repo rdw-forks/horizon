@@ -72,7 +72,8 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 		//std::string salt = sAuth->get_auth_config()._password_salt_mix.c_str();
 		//std::string hash = argon2.gen_hash(password, salt);
 
-		mysqlx::RowResult rr = sAuth->get_db_connection()->sql("SELECT * `game_accounts` WHERE `username` = ?").bind(username).execute();
+		mysqlx::Session db_session = sAuth->database_pool()->get_connection();
+		mysqlx::RowResult rr = db_session.sql("SELECT * `game_accounts` WHERE `username` = ?").bind(username).execute();
 
 		mysqlx::Row r = rr.fetchOne();
 
@@ -84,16 +85,16 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 			HLog(info) << "Creating a new account for user '" << username << "' with password '" << password << "'.";
 
 			try {
-				sAuth->get_db_connection()->sql("INSERT INTO `game_accounts` (`username`, `hash`, `salt`, `gender`, `group_id`, `state`, `login_count`, `last_login`, `last_ip`, `character_slots`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+				db_session.sql("INSERT INTO `game_accounts` (`username`, `hash`, `salt`, `gender`, `group_id`, `state`, `login_count`, `last_login`, `last_ip`, `character_slots`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 					.bind(username, password, "", (gender == (int)ACCOUNT_GENDER_FEMALE ? "F" : "M"), 0, (int)ACCOUNT_STATE_NONE, 1, std::time(nullptr), get_session()->get_socket()->remote_ip_address(), 3)
 					.execute();
-				mysqlx::RowResult rr = sAuth->get_db_connection()->sql("SELECT LAST_INSERT_ID() AS id;").execute();
+				mysqlx::RowResult rr = db_session.sql("SELECT LAST_INSERT_ID() AS id;").execute();
 				mysqlx::Row r = rr.fetchOne();
 				int last_insert_id = r[0].get<int>();
 				uint32_t aid = last_insert_id;
 				acal.deliver(aid, aid, 0, gender);
 
-				sAuth->get_db_connection()->sql("REPLACE INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);")
+				db_session.sql("REPLACE INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);")
 					.bind(last_insert_id, aid, PACKET_VERSION, client_type, 3, 0, std::time(nullptr), "A")
 					.execute();
 
@@ -103,19 +104,25 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 			catch (std::exception& error) {
 				HLog(error) << error.what();
 				acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
+				sAuth->database_pool()->release_connection(std::move(db_session));
 				return false;
 			}
 
+			sAuth->database_pool()->release_connection(std::move(db_session));
 			return true;
 		}
 
+		sAuth->database_pool()->release_connection(std::move(db_session));
+		
 		acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
 		return false;
 	}
 
+	mysqlx::Session db_session = sAuth->database_pool()->get_connection();
+	
 	try
 	{
-		mysqlx::RowResult rr = sAuth->get_db_connection()->sql("SELECT * FROM `game_accounts` WHERE `username` = ?")
+		mysqlx::RowResult rr = db_session.sql("SELECT * FROM `game_accounts` WHERE `username` = ?")
 			.bind(username)
 			.execute();
 
@@ -124,6 +131,7 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 		if (r.isNull()) {
 			HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
 			acrl.deliver(login_error_codes::ERR_UNREGISTERED_ID, block_date, 0);
+			sAuth->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
@@ -137,10 +145,11 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 		if (password.compare(hash) != 0) {
 			HLog(info) << "Incorrect password for account '" << username << "' with password '" << password << "'.";
 			acrl.deliver(login_error_codes::ERR_INCORRECT_PASSWORD, block_date, 0);
+			sAuth->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
-		mysqlx::RowResult rr2 = sAuth->get_db_connection()->sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
+		mysqlx::RowResult rr2 = db_session.sql("SELECT * FROM `session_data` WHERE `game_account_id` = ?")
 			.bind(aid)
 			.execute();
 
@@ -148,10 +157,11 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 
 		if (!r3.isNull()) {
 			acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
+			sAuth->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 		else {
-			sAuth->get_db_connection()->sql("INSERT INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+			db_session.sql("INSERT INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 				.bind(aid, aid, PACKET_VERSION, client_type, 3, 0, std::time(nullptr), "A")
 				.execute();
 
@@ -164,13 +174,17 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << err.what();
+		sAuth->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& err) {
 		HLog(error) << err.what();
+		sAuth->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 
+	sAuth->database_pool()->release_connection(std::move(db_session));
+	
 	return true;
 }
 

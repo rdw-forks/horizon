@@ -153,16 +153,19 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	int group_id = separated_args.size() >= 8 ? std::stoi(separated_args[7]) : 0;
 	int character_slots = separated_args.size() >= 9 ? std::stoi(separated_args[8]) : 3;
 
+	mysqlx::Session db_session = sAuth->database_pool()->get_connection();
+	
 	try {
-		auto res = sAuth->get_db_connection()->sql("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username).execute();
+		auto res = db_session.sql("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username).execute();
 		mysqlx::Row r = res.fetchOne();
 
 		if (!r.isNull()) {
 			HLog(error) << "Account with username '" << username << "' already exists.";
+			sAuth->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
-		sAuth->get_db_connection()->sql("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
+		db_session.sql("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")
 			.bind(username, password, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
 				email, birthdate, character_slots, pincode, group_id, (int)ACCOUNT_STATE_NONE)
@@ -170,9 +173,12 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	}
 	catch (mysqlx::Error& err) {
 		HLog(error) << err.what();
+		sAuth->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 
+	sAuth->database_pool()->release_connection(std::move(db_session));
+	
 	HLog(info) << "Account '" << username << "' has been created successfully.";
 
 	return true;

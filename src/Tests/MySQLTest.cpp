@@ -30,37 +30,16 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "MySQLTest"
 
+#include "Core/Database/ConnectionPool.hpp"
+
 #include <mysqlx/xdevapi.h>
 #include <boost/test/unit_test.hpp>
 #include <cstring>
 #include <iostream>
+#include <thread>
 
-
-BOOST_AUTO_TEST_CASE(MySQLTest)
+void test_connection(mysqlx::Session &session)
 {
-    std::string host = "localhost";
-    int port = 33060;
-    std::string user = "horizon";
-    std::string pass = "horizon";
-    std::string schema = "horizon";
-
-    try {
-        mysqlx::Session session(mysqlx::SessionOption::HOST, host,
-            mysqlx::SessionOption::PORT, port,
-            mysqlx::SessionOption::USER, user,
-            mysqlx::SessionOption::PWD, "wrong-password");
-    }
-    catch (mysqlx::Error& err) {
-        std::string e = err.what();
-        BOOST_CHECK_EQUAL(e.compare("CDK Error: Access denied for user 'horizon'@'localhost' (using password: YES)"), 0);
-    }
-
-    // Connect to MySQL Server on a network machine
-    mysqlx::Session session(mysqlx::SessionOption::HOST, host,
-        mysqlx::SessionOption::PORT, port,
-        mysqlx::SessionOption::USER, user,
-        mysqlx::SessionOption::PWD, pass);
-
     session.sql("CREATE DATABASE IF NOT EXISTS `horizon`").execute();
 
     try {
@@ -102,6 +81,7 @@ BOOST_AUTO_TEST_CASE(MySQLTest)
         BOOST_CHECK_EQUAL(row[5].get<std::string>().compare("1990-11-01 01:01:01"), 0); // 657401461);
 
         std::cout << "Dropping table `horizon`.`test`..." << std::endl;
+        
         session.sql("DROP TABLE IF EXISTS `horizon`.`test`;").execute();
         session.sql("DROP TABLE IF EXISTS `horizon`.`character_inventory`;").execute();
         session.sql("DROP TABLE IF EXISTS `horizon`.`character_status`;").execute();
@@ -311,8 +291,104 @@ BOOST_AUTO_TEST_CASE(MySQLTest)
             BOOST_CHECK_EQUAL(r.colCount(), 63);
         }
 
+        std::cout << "Executed all queries successfully." << std::endl;
     }
     catch (mysqlx::Error& error) {
         std::cout << "error:" << error.what() << std::endl;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(MySQLTest)
+{
+    std::string host = "localhost";
+    int port = 33060;
+    std::string user = "horizon";
+    std::string pass = "horizon";
+    std::string schema = "horizon";
+
+    try {
+        mysqlx::Session session(mysqlx::SessionOption::HOST, host,
+            mysqlx::SessionOption::PORT, port,
+            mysqlx::SessionOption::USER, user,
+            mysqlx::SessionOption::PWD, "wrong-password");
+    }
+    catch (mysqlx::Error& err) {
+        std::string e = err.what();
+        BOOST_CHECK_EQUAL(e.compare("CDK Error: Access denied for user 'horizon'@'localhost' (using password: YES)"), 0);
+    }
+
+    // Connect to MySQL Server on a network machine
+    mysqlx::Session session(mysqlx::SessionOption::HOST, host,
+        mysqlx::SessionOption::PORT, port,
+        mysqlx::SessionOption::USER, user,
+        mysqlx::SessionOption::PWD, pass);
+
+    test_connection(session);
+}
+
+BOOST_AUTO_TEST_CASE(ConnectionPoolCanCreateAndReleaseConnections) {
+    
+    std::string host = "localhost";
+    int port = 33060;
+    std::string user = "horizon";
+    std::string pass = "horizon";
+    std::string schema = "horizon";
+
+    // Create a connection pool with a pool size of 2
+    ConnectionPool pool(host, port, user, pass, schema, 2);
+
+    // Get a connection from the pool
+    mysqlx::Session connection1 = pool.get_connection();
+
+    test_connection(connection1);
+
+    // Get another connection from the pool
+    mysqlx::Session connection2 = pool.get_connection();
+    
+    test_connection(connection2);
+
+    // Try to get another connection from the pool (should block)
+    std::thread thread([&]() {
+        mysqlx::Session connection3 = pool.get_connection();
+        BOOST_TEST(connection3.sql("SELECT 1").execute().count() == 1);
+    });
+
+    // Wait for the thread to start blocking
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    // Release one of the connections back to the pool
+    pool.release_connection(std::move(connection1));
+
+    // Wait for the thread to finish acquiring the connection
+    thread.join();
+
+    // Release the other connection back to the pool
+    pool.release_connection(std::move(connection2));
+}
+
+BOOST_AUTO_TEST_CASE(ConnectionPoolCanHandleMultipleThreads) {
+    std::string host = "localhost";
+    int port = 33060;
+    std::string user = "horizon";
+    std::string pass = "horizon";
+    std::string schema = "horizon";
+
+    // Create a connection pool with a pool size of 2
+    ConnectionPool pool(host, port, user, pass, schema, 2);
+
+    // Create a vector of threads to get connections from the pool
+    std::vector<std::thread> threads;
+    for (int i = 0; i < 4; ++i) {
+        threads.emplace_back([&]() {
+            mysqlx::Session connection = pool.get_connection();
+            BOOST_TEST(connection.sql("SELECT 1").execute().count() == 1);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            pool.release_connection(std::move(connection));
+        });
+    }
+
+    // Wait for the threads to finish
+    for (auto& thread : threads) {
+        thread.join();
     }
 }

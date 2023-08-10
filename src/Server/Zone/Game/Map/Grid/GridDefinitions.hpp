@@ -51,7 +51,7 @@ namespace Horizon
 	}
 }
 
-template <class ACTIVE_OBJECT, class ZONE_OBJECT_TYPES>
+template <class ZONE_OBJECT_TYPES>
 class GridHolder;
 
 template <int16_t MAX_COORDINATES>
@@ -62,7 +62,7 @@ class GridReferenceContainer;
 
 // Max Cells in a map are 416.
 #define MAX_CELLS_PER_GRID 32
-#define MAX_GRIDS_PER_MAP 13
+#define MAX_GRIDS_PER_MAP 14
 #define MAX_CELLS_PER_MAP MAX_CELLS_PER_GRID * MAX_GRIDS_PER_MAP
 
 #define entity_ns(e) Horizon::Zone::Entities::e
@@ -74,7 +74,7 @@ typedef TYPELIST_8(entity_ns(Player),
 	entity_ns(Pet),
 	entity_ns(Monster),
 	entity_ns(Skill)) AllEntityTypes;
-typedef GridHolder<entity_ns(Player), AllEntityTypes> GridHolderType;
+typedef GridHolder<AllEntityTypes> GridHolderType;
 #undef entity_ns
 
 typedef Coordinates<MAX_GRIDS_PER_MAP> GridCoords;

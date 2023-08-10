@@ -39,7 +39,6 @@
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-#include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 
@@ -98,7 +97,7 @@ public:
 	MapCoords const &dest_coords() const { return _dest_pos; }
 	virtual bool walk_to_coordinates(int16_t x, int16_t y);
 	virtual bool walk_to_entity(std::shared_ptr<Entity> entity);
-	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)); }
+	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)) || ((_changed_dest_pos) != MapCoords(0, 0)); }
 
 	virtual void stop_movement() = 0;
 protected:
@@ -138,15 +137,7 @@ public:
 	 * Map & Map Container
 	 */
 	std::shared_ptr<Map> map() { return _map.expired() ? nullptr : _map.lock(); }
-	void set_map(std::shared_ptr<Map> map)
-	{
-		_map = map;
-		_map_container_thread = map->container();
-		_lua_mgr = map->container()->get_lua_manager();
-	}
-
-	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
-	std::shared_ptr<LUAManager> lua_manager() { return _lua_mgr.lock(); }
+	void set_map(std::shared_ptr<Map> map) { _map = map; }
 
 	AStar::CoordinateList get_walk_path() { return _walk_path; }
 
@@ -197,7 +188,10 @@ public:
 
 	virtual bool attack(std::shared_ptr<Entity> target, bool continuous = false);
 	virtual bool stop_attacking();
-	bool is_attacking();
+
+	void set_attacking(bool attacking) { _is_attacking = attacking; }
+	bool is_attacking() { return _is_attacking; }
+	void on_attack_end();
 
 	bool is_dead();
 
@@ -212,15 +206,12 @@ public:
 
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
+	bool _is_attacking{false};
 	uint32_t _guid{0};
 	entity_type _type{ENTITY_UNKNOWN};
 	std::weak_ptr<Map> _map;
 	MapCoords _map_coords{0, 0};
 	GridCoords _grid_coords{0, 0};
-
-	/* Simplified References */
-	std::weak_ptr<MapContainerThread> _map_container_thread;
-	std::weak_ptr<LUAManager> _lua_mgr;
 
 	MapCoords _changed_dest_pos{0, 0}, _dest_pos{0, 0};
 	AStar::CoordinateList _walk_path;

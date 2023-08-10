@@ -70,6 +70,12 @@
 
 #define MAX_VENDING_SHOP_NAME_LENGTH 80
 
+#define MAX_RANKING_LIST 10
+/**
+ * Achievement
+ */
+#define MAX_ACHIEVEMENT_OBJECTIVES 10
+
 enum grid_notifier_type
 {
     GRID_NOTIFY_AREA,               // area
@@ -733,4 +739,158 @@ enum cz_req_ranking_type
 	CZ_REQRANKING_TAEKWON    = 2,
 	CZ_REQRANKING_PK         = 3
 };
+
+/*
+ * ZC Packets
+ */
+#pragma pack(push, 1)
+struct zc_ach_update_list_info {
+	uint32 ach_id;
+	uint8 completed;
+	uint32 objective[MAX_ACHIEVEMENT_OBJECTIVES];
+	uint32 completed_at;
+	uint8 reward;
+};
+#pragma pack(pop)
+
+struct s_zc_ack_add_item_rodex { 
+	int8_t result;
+	int16_t index;
+	int16_t count;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	uint32_t item_id;
+#else
+	uint16_t item_id;
+#endif
+	int8_t type;
+	int8_t is_identified;
+	int8_t is_damaged;
+	int8_t refining_level;
+	item_slot slot;
+	struct {
+		int16_t index{ 0 };
+		int16_t value{ 0 };
+		int16_t param{ 0 };
+	} option_data[MAX_ITEM_OPTIONS];
+	int16_t weight;
+	uint8_t is_favorite;
+	uint32_t location;
+};
+
+enum zc_ack_auction_add_item_result_type
+{
+	ZC_ACKAUCTION_ADDITEM_SUCCESS = 0,
+	ZC_ACKAUCTION_ADDITEM_FAILURE = 1
+};
+
+enum zc_ack_disconnect_character_type
+{
+	ZC_ACKDISCONNECTCHARACTER_FAILURE = 0,
+	ZC_ACKDISCONNECTCHARACTER_SUCCESS = 1
+};
+
+enum zc_ack_give_manner_point_result_type
+{
+	ZC_ACKGIVEMANNERPOINT_SUCCESS = 0,
+	ZC_ACKGIVEMANNERPOINT_FAILURE_EXHAUST = 1,
+	ZC_ACKGIVEMANNERPOINT_FAILURE_ALREADY_GIVEN = 2,
+	ZC_ACKGIVEMANNERPOINT_CHAT_BLOCK = 3,
+	ZC_ACKGIVEMANNERPOINT_AUTOMATED_CHAT_BLOCK = 4,
+	ZC_ACKGIVEMANNERPOINT_POSITIVE = 5
+};
+
+enum zc_ack_item_composition_result_type
+{
+	ZC_ACKITEMCOMPOSITION_SUCCESS = 0,
+	ZC_ACKITEMCOMPOSITION_FAILURE = 1
+};
+
+enum zc_ack_item_identify_result_type
+{
+	ZC_ACKITEMIDENTIFY_SUCCESS = 0,
+	ZC_ACKITEMIDENTIFY_FAILURE = 1
+};
+
+#pragma pack(push, 1)
+struct zc_ack_itemlist_buying_store { int price{ 0 }; int16_t amount{ 0 }; int8_t item_type{ 0 }; int16_t item_id{ 0 }; };
+#pragma pack(pop)
+
+enum zc_ack_itemrefining_result_type
+{
+	ZC_ACKITEMREFINING_SUCCESS = 0,
+	ZC_ACKITEMREFINING_FAILURE = 1,
+	ZC_ACKITEMREFINING_DOWNGRADE = 2	
+};
+
+enum zc_ack_itemrepair_result_type
+{
+	ZC_ACKITEMREPAIR_SUCCESS = 0,
+	ZC_ACKITEMREPAIR_FAILURE = 1
+};
+
+enum zc_ack_mail_add_item_result_type
+{
+	ZC_ACKMAIL_ADDITEM_SUCCESS = 0,
+	ZC_ACKMAIL_ADDITEM_FAILURE = 1
+};
+
+enum zc_ack_mail_delete_result_type
+{
+	ZC_ACKMAIL_DELETE_SUCCESS = 0,
+	ZC_ACKMAIL_DELETE_FAILURE = 1
+};
+
+enum zc_ack_mail_return_result_type
+{
+	ZC_ACKMAIL_RETURNRESULT_SUCCESS = 0,
+	ZC_ACKMAIL_RETURNRESULT_FAILURE = 1
+};
+
+enum zc_ack_merge_item_reason_type
+{
+	ZC_ACKMERGE_ITEMREASON_SUCCESS = 0,
+	ZC_ACKMERGE_ITEMREASON_FAILED = 1,
+	ZC_ACKMERGE_ITEMREASON_MAXCOUNT_FAILED = 2
+};
+
+enum zc_ack_openstore2_result_type
+{
+	ZC_ACK_OPENSTORE2_RESULT_SUCCESS = 0,
+	ZC_ACK_OPENSTORE2_RESULT_FAILED  = 1,
+	ZC_ACK_OPENSTORE2_RESULT_SILENT_FAILURE = 2,
+	ZC_ACK_OPENSTORE2_RESULT_LOCATION_FAILURE = 3
+};
+
+struct zc_ack_ranking_info
+{
+	char name[MAX_UNIT_NAME_LENGTH]{ 0 };
+	int points{ 0 };
+};
+
+struct zc_ack_read_rodex_item
+{
+	int16_t amount;
+#if PACKETVER_MAIN_NUM >= 20181121 || PACKETVER_RE_NUM >= 20180704 || PACKETVER_ZERO_NUM >= 20181114
+	uint32_t item_id;
+#else
+	uint16_t item_id;
+#endif
+	int8_t is_identified;
+	int8_t is_damaged;
+	int8_t refining_level;
+	item_slot slot;
+	uint32_t location;
+	uint8_t type;
+	uint16_t view_sprite;
+	uint16_t bind_on_equip;
+	struct {
+		int16_t index{ 0 };
+		int16_t value{ 0 };
+		int16_t param{ 0 };
+	} option_data[MAX_ITEM_OPTIONS];
+};
+
+
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

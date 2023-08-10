@@ -43,7 +43,7 @@ class ZoneSocket : public Horizon::Networking::Socket<ZoneSocket>
 {
 	typedef Socket<ZoneSocket> BaseSocket;
 public:
-	ZoneSocket(std::shared_ptr<tcp::socket> socket);
+	ZoneSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket);
 	~ZoneSocket() { }
 	/* */
 	void start() override;

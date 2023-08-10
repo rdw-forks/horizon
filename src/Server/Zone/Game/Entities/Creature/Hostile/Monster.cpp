@@ -67,12 +67,12 @@ bool Monster::initialize()
 	map()->ensure_grid_for_entity(this, map_coords());
 
     map()->container()->getScheduler().Schedule(
-    	Milliseconds(MOB_MIN_THINK_TIME_LAZY),
+    	Seconds(0),
     	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
+    	context.Repeat(Seconds(std::rand() % 10));
     });
 
 	return true;
@@ -80,27 +80,31 @@ bool Monster::initialize()
 
 void Monster::finalize()
 {
-	if (map_container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
-		map_container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
 
 	if (has_valid_grid_reference())
 		remove_grid_reference();
 }
 
+// Code in this function is executed 
 void Monster::behavior_passive()
 {
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (next_walk_time() - std::time(nullptr) < 0)
-		&& !is_walking()
-		&& was_spotted_once()) {
+		&& !is_walking()) {
 	    try {
-			std::string script_root_path = sZone->config().get_script_root_path().string();
-	        sol::load_result fx = lua_manager()->lua_state()->load_file(script_root_path + "/monsters/functionalities/walking_passive.lua");
-	        sol::protected_function_result result = fx(shared_from_this());
-	        if (!result.valid()) {
-	            sol::error err = result;
-	            HLog(error) << "Monster::behavior_passive: " << err.what();
-	        }
+			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+			MapCoords move_c = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
+			if (walk_to_coordinates(move_c.x(), move_c.y()) == false) {
+				//HLog(error) << "Monster (" << guid() << ") " << name() << " could not move to coordinates.";
+				return;
+			}
+			set_next_walk_time(std::time(nullptr) + std::rand() % 5 + 1);
+			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+			std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+			//HLog(debug) << "Monster::behavior_passive: script invocation time " << duration.count() << "us";
+			// Invocation time: ~915us
 	    } catch (sol::error &e) {
 	        HLog(error) << "Monster::behavior_passive: " << e.what();
 	    }
@@ -112,11 +116,6 @@ void Monster::behavior_active(std::shared_ptr<Player> pl)
 	set_spotted(true);
 
 	int can_move = monster_config()->mode & MONSTER_MODE_MASK_CANMOVE;
-
-	if (_target != nullptr) {
-		// Check Validity of current target
-		HLog(debug) << "Monster (" << guid() << ") " << name() << " has begun aggressively engaging " << pl->name() << ".";
-	}
 
 	if (monster_config()->mode & MONSTER_MODE_MASK_AGGRESSIVE) {
 		GridMonsterAIActiveSearchTarget target_search(shared_from_this()->downcast<Monster>());
@@ -133,8 +132,9 @@ void Monster::behavior_active(std::shared_ptr<Player> pl)
 	// BL_ITEM
 
 	// Attempt to attack
-	if (_target != nullptr && distance_from(_target) < monster_config()->attack_range) {
-
+	if (_target != nullptr) {
+		HLog(debug) << "Monster " << name() << " is attempting to attack target " << _target->name() << " (guid: ." << _target->guid() << ", distance: " << distance_from(_target) << ", attack_range: " << monster_config()->attack_range << ")";
+		attack(_target);
 	}
 }
 
@@ -144,7 +144,7 @@ void Monster::stop_movement()
 
 void Monster::on_pathfinding_failure()
 {
-	HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
+	//HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
 void Monster::on_movement_begin()
@@ -194,7 +194,7 @@ bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
-	map_container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
+	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
 
 	switch (killer->type())
 	{

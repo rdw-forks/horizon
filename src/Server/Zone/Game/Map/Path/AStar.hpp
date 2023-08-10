@@ -69,6 +69,8 @@ public:
 };
 
 typedef std::function<uint32_t(MapCoords, MapCoords)> HeuristicFunction;
+/// @brief We use a vector because the AStar algorithm is only searching on small datasets.
+/// Other data structures such as a priority queue can be used for larger datasets.
 typedef std::vector<MapCoords> CoordinateList;
 typedef std::function<bool(uint16_t x, uint16_t y)> CollisionDetectionFunction;
 
@@ -138,8 +140,8 @@ public:
 		NodeSet openSet, closedSet;
 		int searchStep = 0;
 
-		openSet.reserve(100);
-		closedSet.reserve(100);
+		openSet.reserve(20);
+		closedSet.reserve(20);
 		openSet.push_back(std::make_shared<Node>(source_));
 
 		if (check_collision(target_.x(), target_.y()))

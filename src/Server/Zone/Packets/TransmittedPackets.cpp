@@ -50,9 +50,21 @@ ByteBuffer &ZC_NOTIFY_WEAPONITEMLIST::serialize()
 /**
  * ZC_ACCEPT_ENTER
  */
-void ZC_ACCEPT_ENTER::deliver() {}
+void ZC_ACCEPT_ENTER::deliver(int16_t x, int16_t y, int16_t dir) 
+{
+	PackPosition((int8_t *) _packed_pos, x, y, dir);
+	_start_time = (int32_t) get_sys_time();
+	_x_size = _y_size = 5;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACCEPT_ENTER::serialize()
 {
+	buf() << _packet_id;
+	buf() << _start_time;
+	buf().append(_packed_pos, sizeof(_packed_pos));
+	buf() << _x_size << _y_size;
 	return buf();
 }
 /**
@@ -66,9 +78,18 @@ ByteBuffer &ZC_ACCEPT_QUIT::serialize()
 /**
  * ZC_ACK_ACCOUNTNAME
  */
-void ZC_ACK_ACCOUNTNAME::deliver() {}
+void ZC_ACK_ACCOUNTNAME::deliver(int account_id, std::string account_name)
+{
+	_account_id = account_id;
+	std::strncpy(_account_name, account_name.c_str(), MAX_USERNAME_LENGTH);
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_ACCOUNTNAME::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf().append(_account_name, MAX_USERNAME_LENGTH);
 	return buf();
 }
 /**
@@ -160,9 +181,16 @@ ByteBuffer &ZC_ACK_CREATE_CHATROOM::serialize()
 /**
  * ZC_ACK_DISCONNECT_CHARACTER
  */
-void ZC_ACK_DISCONNECT_CHARACTER::deliver() {}
+void ZC_ACK_DISCONNECT_CHARACTER::deliver(zc_ack_disconnect_character_type result) 
+{
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_DISCONNECT_CHARACTER::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -192,9 +220,16 @@ ByteBuffer &ZC_ACK_DISORGANIZE_GUILD_RESULT::serialize()
 /**
  * ZC_ACK_EXCHANGE_ITEM
  */
-void ZC_ACK_EXCHANGE_ITEM::deliver() {}
+void ZC_ACK_EXCHANGE_ITEM::deliver(zc_ack_exchange_item_result_type result) 
+{
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_EXCHANGE_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -221,9 +256,16 @@ ByteBuffer &ZC_ACK_EXCHANGE_ITEM2::serialize()
 /**
  * ZC_ACK_GIVE_MANNER_POINT
  */
-void ZC_ACK_GIVE_MANNER_POINT::deliver() {}
+void ZC_ACK_GIVE_MANNER_POINT::deliver(zc_ack_give_manner_point_result_type result)
+{
+	_result = (int) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_GIVE_MANNER_POINT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -253,33 +295,71 @@ ByteBuffer &ZC_ACK_GUILD_MENUINTERFACE::serialize()
 /**
  * ZC_ACK_ITEMCOMPOSITION
  */
-void ZC_ACK_ITEMCOMPOSITION::deliver() {}
+void ZC_ACK_ITEMCOMPOSITION::deliver(int16_t item_inventory_index, int16_t card_inventory_index, zc_ack_item_composition_result_type result) 
+{
+	_item_inventory_index = item_inventory_index;
+	_card_inventory_index = card_inventory_index;
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_ITEMCOMPOSITION::serialize()
 {
+	buf() << _packet_id;
+	buf() << _item_inventory_index;
+	buf() << _card_inventory_index;
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_ITEMIDENTIFY
  */
-void ZC_ACK_ITEMIDENTIFY::deliver() {}
+void ZC_ACK_ITEMIDENTIFY::deliver(int inventory_index, zc_ack_item_identify_result_type result) 
+{
+	_inventory_index = inventory_index;
+	_result = (int8_t) result;
+}
 ByteBuffer &ZC_ACK_ITEMIDENTIFY::serialize()
 {
+	buf() >> _packet_id;
+	buf() >> _inventory_index;
+	buf() >> _result;
 	return buf();
 }
 /**
  * ZC_ACK_ITEMREFINING
  */
-void ZC_ACK_ITEMREFINING::deliver() {}
+void ZC_ACK_ITEMREFINING::deliver(zc_ack_itemrefining_result_type result, int16_t inventory_index, int16_t refine_lv) 
+{
+	_result = (int16_t) result;
+	_inventory_index = inventory_index;
+	_refine_lv = refine_lv;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_ITEMREFINING::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
+	buf() << _inventory_index;
+	buf() << _refine_lv;
 	return buf();
 }
 /**
  * ZC_ACK_ITEMREPAIR
  */
-void ZC_ACK_ITEMREPAIR::deliver() {}
+void ZC_ACK_ITEMREPAIR::deliver(int inventory_index, zc_ack_itemrepair_result_type result) 
+{
+	_inventory_index = inventory_index;
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_ITEMREPAIR::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -2411,9 +2491,18 @@ ByteBuffer &ZC_REPLY_REMAINTIME::serialize()
 /**
  * ZC_REQ_ADD_FRIENDS
  */
-void ZC_REQ_ADD_FRIENDS::deliver() {}
+void ZC_REQ_ADD_FRIENDS::prepare(int req_account_id, int req_char_id, std::string req_char_name) 
+{
+	_req_account_id = req_account_id;
+	_req_char_id = req_char_id;
+	std::strncpy(_req_char_name, req_char_name.c_str(), MAX_UNIT_NAME_LENGTH);
+}
 ByteBuffer &ZC_REQ_ADD_FRIENDS::serialize()
 {
+	buf() << _packet_id;
+	buf() << _req_account_id;
+	buf() << _req_char_id;
+	buf().append(_req_char_name, MAX_UNIT_NAME_LENGTH);
 	return buf();
 }
 /**
@@ -3287,9 +3376,24 @@ ByteBuffer &ZC_NOTIFY_PKINFO::serialize()
 /**
  * ZC_ACK_PVPPOINT
  */
-void ZC_ACK_PVPPOINT::deliver() {}
+void ZC_ACK_PVPPOINT::deliver(int char_id, int account_id, int win_point, int lose_point, int point) 
+{
+	_char_id = char_id;
+	_account_id = account_id;
+	_win_point = win_point;
+	_lose_point = lose_point;
+	_point = point;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_PVPPOINT::serialize()
 {
+	buf() << _packet_id;
+	buf() << _char_id;
+	buf() << _account_id;
+	buf() << _win_point;
+	buf() << _lose_point;
+	buf() << _point;
 	return buf();
 }
 /**
@@ -3527,25 +3631,53 @@ ByteBuffer &ZC_RESULT_STORE_PASSWORD::serialize()
 /**
  * ZC_ACK_AUCTION_ADD_ITEM
  */
-void ZC_ACK_AUCTION_ADD_ITEM::deliver() {}
+void ZC_ACK_AUCTION_ADD_ITEM::deliver(int inventory_index, zc_ack_auction_add_item_result_type result) 
+{
+	_inventory_index = inventory_index;
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_AUCTION_ADD_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_MAIL_ADD_ITEM
  */
-void ZC_ACK_MAIL_ADD_ITEM::deliver() {}
+void ZC_ACK_MAIL_ADD_ITEM::deliver(int16_t inventory_index, zc_ack_mail_add_item_result_type result) 
+{
+	_inventory_index = inventory_index;
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_MAIL_ADD_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _result;
 	return buf();
 }
 /**
  * ZC_ACK_MAIL_DELETE
  */
-void ZC_ACK_MAIL_DELETE::deliver() {}
+void ZC_ACK_MAIL_DELETE::deliver(int mail_id, zc_ack_mail_delete_result_type result)
+{
+	_mail_id = mail_id;
+	_result = (int16_t) result;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_MAIL_DELETE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _mail_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -3599,9 +3731,19 @@ ByteBuffer &ZC_MAIL_WINDOWS::serialize()
 /**
  * ZC_ACK_MAIL_RETURN
  */
-void ZC_ACK_MAIL_RETURN::deliver() {}
+void ZC_ACK_MAIL_RETURN::deliver(int mail_id, zc_ack_mail_return_result_type result)
+{
+	_mail_id = mail_id;
+	_result = (int16_t) result;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_MAIL_RETURN::serialize()
 {
+	buf() << _packet_id;
+	buf() << _mail_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -4325,9 +4467,14 @@ ByteBuffer &ZC_SIMPLE_CASHSHOP_POINT_ITEMLIST::serialize()
 /**
  * ZC_ACK_CLAN_LEAVE
  */
-void ZC_ACK_CLAN_LEAVE::deliver() {}
+void ZC_ACK_CLAN_LEAVE::deliver() 
+{
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_CLAN_LEAVE::serialize()
 {
+	buf() << _packet_id;
 	return buf();
 }
 /**
@@ -4906,7 +5053,13 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 	_entry.move_start_time = (int32_t) get_sys_time();
 	
 	buf() << _packet_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << (int16_t) 114;
+#else
 	buf() << (int16_t) 110;
+#endif
 	buf() << (int8_t) _entry.unit_type;
 	buf() << _entry.guid;
 	buf() << _entry.character_id;
@@ -4917,6 +5070,11 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 	buf() << _entry.job_id;
 	buf() << _entry.hair_style_id;
 	buf() << _entry.weapon_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << _entry.shield_id;
+#endif
 	buf() << _entry.headgear_bottom_id;
 	buf() << _entry.move_start_time;
 	buf() << _entry.headgear_top_id;
@@ -4986,13 +5144,13 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 	buf() << _entry.headgear_top_id;
 	buf() << _entry.headgear_mid_id;
 	buf() << _entry.hair_color_id;
-	buf() << _entry.cloth_color_id;
+	buf() << _entry.cloth_color_id; // 45
 	buf() << (int16_t)_entry.head_direction;
 	buf() << _entry.robe_id;
 	buf() << _entry.guild_id;
 	buf() << _entry.guild_emblem_version;
 	buf() << _entry.honor;
-	buf() << _entry.virtue;
+	buf() << _entry.virtue; // 63
 	buf() << _entry.in_pk_mode;
 	buf() << _entry.gender;
 
@@ -5007,8 +5165,8 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 	buf() << _entry.max_hp;
 	buf() << _entry.hp;
 	buf() << _entry.is_boss;
-	buf() << _entry.body_style_id;
-	buf().append(_entry.name, MAX_UNIT_NAME_LENGTH);
+	buf() << _entry.body_style_id; // 85
+	buf().append(_entry.name, MAX_UNIT_NAME_LENGTH); // 85 + 24 = 109
 
 	return buf();
 }
@@ -5027,17 +5185,28 @@ ByteBuffer &ZC_NOTIFY_STANDENTRY11::serialize()
 	char packed_pos[3]{0};
 	
 	buf() << _packet_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
 	buf() << (int16_t) 108;
+#else
+	buf() << (int16_t) 104;
+#endif
 	buf() << (int8_t) _entry.unit_type;
 	buf() << _entry.guid;
 	buf() << _entry.character_id;
 	buf() << _entry.speed;
 	buf() << _entry.body_state;
-	buf() <<_entry.health_state;
+	buf() << _entry.health_state;
 	buf() << _entry.effect_state;
 	buf() << _entry.job_id;
 	buf() << _entry.hair_style_id;
 	buf() << _entry.weapon_id;
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
+|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) \
+|| (CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	buf() << _entry.shield_id;
+#endif
 	buf() << _entry.headgear_bottom_id;
 	buf() << (uint32_t) 0; //shield
 	buf() << _entry.headgear_top_id;
@@ -5284,9 +5453,16 @@ ByteBuffer &ZC_ACCEPT_ENTER3::serialize()
 /**
  * ZC_ACK_CLOSE_ROULETTE
  */
-void ZC_ACK_CLOSE_ROULETTE::deliver() {}
+void ZC_ACK_CLOSE_ROULETTE::deliver(int result) 
+{
+	_result = result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_CLOSE_ROULETTE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -5439,9 +5615,16 @@ ByteBuffer &ZC_RECV_ROULETTE_ITEM::serialize()
 /**
  * ZC_ACK_OPENSTORE2
  */
-void ZC_ACK_OPENSTORE2::deliver() {}
+void ZC_ACK_OPENSTORE2::deliver(zc_ack_openstore2_result_type result)
+{
+	_result = (int8_t) result;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_OPENSTORE2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -5555,17 +5738,61 @@ ByteBuffer &ZC_UPDATE_TAIWANCASH::serialize()
 /**
  * ZC_ACH_UPDATE
  */
-void ZC_ACH_UPDATE::deliver() {}
+void ZC_ACH_UPDATE::deliver(int total_points, int rank, int current_rank_points, int next_rank_points, zc_ach_update_list_info info)
+{
+	_total_points = total_points;
+	_rank = rank;
+	_current_rank_points = current_rank_points;
+	_next_rank_points = next_rank_points;
+	_info = info;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACH_UPDATE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _total_points;
+	buf() << _rank;
+	buf() << _current_rank_points;
+	buf() << _next_rank_points;
+	buf() << _info.ach_id;
+	buf() << _info.completed;
+	for (int i = 0; i < MAX_ACHIEVEMENT_OBJECTIVES; i++)
+		buf() << _info.objective[i];
+	buf() << _info.completed_at;
+	buf() << _info.reward;
 	return buf();
 }
 /**
  * ZC_ACK_ADD_ITEM_RODEX
  */
-void ZC_ACK_ADD_ITEM_RODEX::deliver() {}
+void ZC_ACK_ADD_ITEM_RODEX::deliver(s_zc_ack_add_item_rodex info) 
+{
+	_info = info;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_ADD_ITEM_RODEX::serialize()
 {
+	buf() << _packet_id;
+	buf() << _info.result;
+	buf() << _info.index;
+	buf() << _info.count;
+	buf() << _info.item_id;
+	buf() << _info.type;
+	buf() << _info.is_identified;
+	buf() << _info.is_damaged;
+	buf() << _info.refining_level;
+	for (int i = 0; i < MAX_ITEM_SLOTS; i++)
+		buf() << _info.slot.item_id[i];
+	for (int i = 0; i < MAX_ITEM_OPTIONS; i++) {
+		buf() << _info.option_data[i].index;
+		buf() << _info.option_data[i].value;
+		buf() << _info.option_data[i].param;
+	}
+	buf() << _info.weight;
+	buf() << _info.is_favorite;
+	buf() << _info.location;
 	return buf();
 }
 /**
@@ -6436,9 +6663,27 @@ ByteBuffer &ZC_UPDATE_ITEM_FROM_BUYING_STORE::serialize()
 /**
  * ZC_ACK_ITEMLIST_BUYING_STORE
  */
-void ZC_ACK_ITEMLIST_BUYING_STORE::deliver() {}
+void ZC_ACK_ITEMLIST_BUYING_STORE::deliver(int account_id, int store_id, int zeny_limit, std::vector<zc_ack_itemlist_buying_store> items)
+{
+	_account_id = account_id;
+	_store_id = store_id;
+	_zeny_limit = zeny_limit;
+	_items = items;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_ITEMLIST_BUYING_STORE::serialize()
 {
+	buf() << _packet_id;
+	buf() << _account_id;
+	buf() << _store_id;
+	buf() << _zeny_limit;
+	for (int i = 0; i < _items.size(); i++) {
+		buf() << _items[i].price;
+		buf() << _items[i].amount;
+		buf() << _items[i].item_type;
+		buf() << _items[i].item_id;
+	}
 	return buf();
 }
 /**
@@ -7034,9 +7279,24 @@ ByteBuffer &ZC_PERSONAL_INFOMATION_CHN::serialize()
 /**
  * ZC_ACK_RANKING
  */
-void ZC_ACK_RANKING::deliver() {}
+void ZC_ACK_RANKING::deliver(cz_req_ranking_type ranking_type, std::vector<zc_ack_ranking_info> info, int ranking_points)
+{
+	_ranking_type = (int16_t) ranking_type;
+	for (int i = 0; i < info.size() && i < MAX_RANKING_LIST; i++)
+		_info[i] = info[i];
+	_ranking_points = ranking_points;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_RANKING::serialize()
 {
+	buf() << _packet_id;
+	buf() << _ranking_type;
+	for (int i = 0; i < MAX_RANKING_LIST; i++) {
+		buf().append(_info[i].name, MAX_UNIT_NAME_LENGTH);
+		buf() << _info[i].points;
+	}
+	buf() << _ranking_points;
 	return buf();
 }
 /**
@@ -7155,9 +7415,20 @@ ByteBuffer &ZC_MERGE_ITEM_OPEN::serialize()
 /**
  * ZC_ACK_MERGE_ITEM
  */
-void ZC_ACK_MERGE_ITEM::deliver() {}
+void ZC_ACK_MERGE_ITEM::deliver(int inventory_index, int amount, zc_ack_merge_item_reason_type reason) 
+{
+	_inventory_index = inventory_index;
+	_amount = amount;
+	_reason = reason;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ACK_MERGE_ITEM::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_index;
+	buf() << _amount;
+	buf() << _reason;
 	return buf();
 }
 /**

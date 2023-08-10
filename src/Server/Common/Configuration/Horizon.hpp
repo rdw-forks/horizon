@@ -58,7 +58,7 @@
 #define MAX_NETWORK_THREADS 1
 
 // Time in Microseconds (µs)
-#define MAX_CORE_UPDATE_INTERVAL 5000
+#define MAX_CORE_UPDATE_INTERVAL 500
 
 // Map Thread Containers
 #define MAX_MAP_CONTAINER_THREADS 1
@@ -80,7 +80,7 @@ static_assert(MAX_NPC_TRIGGER_RANGE > 0 && MAX_NPC_TRIGGER_RANGE < MAX_VIEW_RANG
 static_assert(MAX_NETWORK_THREADS > 0,
               "MAX_NETWORK_THREADS cannot be less than or equal to 0.");
 
-static_assert(MAX_CORE_UPDATE_INTERVAL >= 500,
+static_assert(MAX_CORE_UPDATE_INTERVAL >= 1,
             "MAX_CORE_UPDATE_INTERVAL should be greater than or equal to 500 microseconds (µs).");
 
 static_assert(MAX_MAP_CONTAINER_THREADS > 0,

@@ -357,8 +357,10 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 
 bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
+		mysqlx::RowResult rr = session.sql("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
 			"`luck`, `status_points`, `skill_points`, `hp`, `sp`, `maximum_hp`, `maximum_sp`, `base_level`, `job_level`, `base_experience`, `job_experience`, "
 			"`hair_color_id`, `cloth_color_id`, `head_top_view_id`, `head_mid_view_id`, `head_bottom_view_id`, `hair_style_id`, `shield_view_id`, `weapon_view_id`, `robe_view_id`, "
 			"`body_id`, `zeny`, `virtue`, `honor`, `manner` FROM `character_status` WHERE `id` = ?")
@@ -423,8 +425,8 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 
 		set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(r[15].get<int>())));
 		set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(r[16].get<int>())));
-		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, bexpg->exp[base_level - 1]));
-		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, bexpg->exp[job_level - 1]));
+		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
+		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
 		set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
 
 		set_base_appearance(std::make_shared<BaseAppearance>(_entity, job_id));
@@ -448,6 +450,7 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		set_manner(std::make_shared<Manner>(_entity, int32_t(r[30].get<int>())));
 
 		HLog(info) << "Status loaded for character " << pl->name() << "(" << pl->character()._character_id << ").";
+
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Status::load:" << error.what();
@@ -457,13 +460,18 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		HLog(error) << "Status::load:" << error.what();
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
+	
 	return true;
 }
 
 bool Status::save(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	
 	try {
-		sZone->get_db_connection()->sql("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
+		session.sql("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
 			"`zeny` = ?, `strength` = ?, `agility` = ?, `vitality` = ?, `intelligence` = ?, `dexterity` = ?, `luck` = ?, `maximum_hp` = ?, `hp` = ?, `maximum_sp` = ?, `sp` = ?, "
 			"`status_points` = ?, `skill_points` = ?, `body_state` = ?, `virtue` = ?, `honor` = ?, `manner` = ?, `hair_style_id` = ?, `hair_color_id` = ?, `cloth_color_id` = ?, `body_id` = ?, "
 			"`weapon_view_id` = ?, `shield_view_id` = ?, `head_top_view_id` = ?, `head_mid_view_id` = ?, `head_bottom_view_id` = ?, `robe_view_id` = ? "
@@ -488,6 +496,9 @@ bool Status::save(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		HLog(error) << "Status::save:" << error.what();
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
+	
 	return true;
 }
 

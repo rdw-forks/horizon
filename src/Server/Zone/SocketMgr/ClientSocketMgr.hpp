@@ -36,7 +36,6 @@
 
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
-#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
 namespace Horizon

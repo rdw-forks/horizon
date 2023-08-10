@@ -34,8 +34,8 @@
 
 using namespace Horizon::Char;
 
-CharSession::CharSession(std::shared_ptr<CharSocket> socket)
-: Horizon::Networking::Session<CharSocket, CharSession>(socket)
+CharSession::CharSession(int64_t uid, std::shared_ptr<CharSocket> socket)
+: Horizon::Networking::Session<CharSocket, CharSession>(uid, socket)
 {
 }
 
@@ -48,6 +48,7 @@ void CharSession::initialize()
 {
 	_pkt_tbl = std::make_unique<ClientPacketLengthTable>(shared_from_this());
 	_clif = std::make_unique<CharClientInterface>(shared_from_this());
+	set_initialized(true);
 }
 
 void CharSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)

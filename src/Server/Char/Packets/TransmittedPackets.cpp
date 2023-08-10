@@ -70,8 +70,10 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 {
 	mysqlx::RowResult rr;
 
+	mysqlx::Session db_session = sChar->database_pool()->get_connection();
+	
 	try {
-		rr = sChar->get_db_connection()->sql("SELECT "
+		rr = db_session.sql("SELECT "
 			"a.`id`, a.`account_id`, a.`slot`, a.`name`, a.`online`, a.`gender`, a.`delete_reserved_at`, a.`deleted_at`, a.`unban_time`, " // 0 - 8
 			"a.`rename_count`, a.`last_unique_id`, a.`hotkey_row_index`, a.`change_slot_count`, a.`font`, a.`show_equip`, a.`allow_party`, " // 9 - 15
 			"a.`partner_aid`, a.`father_aid`, a.`mother_aid`, a.`child_aid`, a.`party_id`, a.`guild_id`, a.`pet_id`, a.`homun_id`, " // 16 - 23
@@ -175,12 +177,16 @@ bool HC_ACCEPT_ENTER::prepare(uint32_t account_id, uint8_t max_char_slots, uint8
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "HC_ACCEPT_ENTER::prepare: " << error.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
 	catch (std::exception& error) {
 		HLog(error) << "HC_ACCEPT_ENTER::prepare: " << error.what();
+		sChar->database_pool()->release_connection(std::move(db_session));
 		return false;
 	}
+
+	sChar->database_pool()->release_connection(std::move(db_session));
 
 #if PACKET_VERSION >= 20100413
 	_packet_length += 27;
@@ -635,8 +641,9 @@ int32_t HC_ACK_CHARINFO_PER_PAGE::prepare(bool empty)
 
 		mysqlx::RowResult rr;
 
+		mysqlx::Session db_session = sChar->database_pool()->get_connection();
 		try {
-			rr = sChar->get_db_connection()->sql("SELECT "
+			rr = db_session.sql("SELECT "
 				"a.`id`, a.`account_id`, a.`slot`, a.`name`, a.`online`, a.`gender`, a.`delete_reserved_at`, a.`deleted_at`, a.`unban_time`, "
 				"a.`rename_count`, a.`last_unique_id`, a.`hotkey_row_index`, a.`change_slot_count`, a.`font`, a.`show_equip`, a.`allow_party`, "
 				"a.`partner_aid`, a.`father_aid`, a.`mother_aid`, a.`child_aid`, a.`party_id`, a.`guild_id`, a.`pet_id`, a.`homun_id`, "
@@ -652,9 +659,12 @@ int32_t HC_ACK_CHARINFO_PER_PAGE::prepare(bool empty)
 		}
 		catch (mysqlx::Error& error) {
 			HLog(error) << "HC_ACK_CHARINFO_PER_PAGE::prepare:" << error.what();
+			sChar->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
+		sChar->database_pool()->release_connection(std::move(db_session));
+		
 		std::list<mysqlx::Row> rs = rr.fetchAll();
 
 		for (auto r : rs)

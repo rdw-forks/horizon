@@ -110,18 +110,29 @@ bool ZoneServer::read_config()
 
 void ZoneServer::verify_connected_sessions()
 {	
-	sZone->get_db_connection()->sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
-		.bind("Z", std::time(nullptr) - config().session_max_timeout())
-		.execute();
+	mysqlx::Session session = sZone->database_pool()->get_connection();
 
-	mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
-		.bind("Z")
-		.execute();
-	mysqlx::Row r = rr.fetchOne();
+	try {
+		session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
+			.bind("Z", std::time(nullptr) - config().session_max_timeout())
+			.execute();
 
-	int32_t count = r[0].get<int>();
+		mysqlx::RowResult rr = session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
+			.bind("Z")
+			.execute();
+		
+		mysqlx::Row r = rr.fetchOne();
 
-	HLog(info) << count << " connected session(s).";
+		int32_t count = r[0].get<int>();
+
+		HLog(info) << count << " connected session(s).";
+	} catch (const mysqlx::Error &err) {
+		HLog(error) << "Error while verifying connected sessions: " << err.what();
+		sZone->database_pool()->release_connection(std::move(session));
+		return;
+	}
+
+	sZone->database_pool()->release_connection(std::move(session));
 }
 
 void ZoneServer::update(uint64_t time)

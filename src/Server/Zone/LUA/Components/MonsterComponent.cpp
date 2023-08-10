@@ -181,6 +181,8 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 			std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(monster_id);
 
+			HLog(info) << "Monster spawn set (" << name << ") in " << map_name << " at " << x << ", " << y << "[" << x_area << "," << y_area << "]" " for a total of " << amount << " monsters is initializing...";
+
 			for (int i = 0; i < amount; i++) {
 				MapCoords mcoords = MapCoords(x, y);
 

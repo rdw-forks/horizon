@@ -69,6 +69,9 @@ struct general_server_configuration
     const uint16_t &get_db_port() const { return _db_port; }
     void set_db_port(uint16_t port) { _db_port = port; }
 
+    const uint8_t &get_db_threads() const { return _db_threads; }
+    void set_db_threads(uint8_t threads) { _db_threads = threads; }
+
     boost::filesystem::path _config_file_path{""};
 	
     int shutdown_signal;    ///< Shutdown signal.
@@ -78,6 +81,7 @@ struct general_server_configuration
     
     std::string _db_host, _db_user, _db_pass, _db_database;
     uint16_t _db_port{3306};
+    uint8_t _db_threads{5};
     
 };
 

@@ -91,12 +91,15 @@ public:
 
 		return Coordinates<BOUNDS>(x, y);
 	}
-
+	
 	template<int16_t BLOCK_SIZE, int16_t BLOCK_COUNT>
 	Coordinates<BLOCK_COUNT> scale() const
 	{
 		int x = _x / BLOCK_SIZE;
 		int y = _y / BLOCK_SIZE;
+
+		assert(x < BLOCK_COUNT && y < BLOCK_COUNT);
+		assert(x >= 0 && y >= 0);
 
 		return Coordinates<BLOCK_COUNT>(x, y);
 	}

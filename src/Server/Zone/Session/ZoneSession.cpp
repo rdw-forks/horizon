@@ -28,7 +28,6 @@
  **************************************************/
 #include "ZoneSession.hpp"
 
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
@@ -38,8 +37,8 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
-ZoneSession::ZoneSession(std::shared_ptr<ZoneSocket> socket)
-: Session(socket)
+ZoneSession::ZoneSession(int64_t uid, std::shared_ptr<ZoneSocket> socket)
+: Session(uid, socket)
 {
 }
 
@@ -50,18 +49,31 @@ ZoneSession::~ZoneSession()
 
 /**
  * @brief Initializes the zone session's members.
+ * @thread Initialized from the Network Thread after socket and session creation.
  */
 void ZoneSession::initialize()
 {
 	try {
+		// Initialize the packet length table. This is used to determine the length of the packet from the packet id.
 		_pkt_tbl = std::make_unique<ClientPacketLengthTable>(shared_from_this());
+		// Initialize the packet handler. This is used to handle the packets received from the client.
 		_clif = std::make_unique<ZoneClientInterface>(shared_from_this());
+		// It is the responsibility of this method to initialize the player, but 
+		// since player is the map owning thread's responsibility, we wait for the
+		// session to start by letting the client send a CZ_ENTER packet.
+		// When the packet is sent, the player will be created by the Networking Thread.
+		// Initialized by the MapContainerThread.
+		set_initialized(true);
 	}
 	catch (std::exception& error) {
 		HLog(error) << "ZoneSession::initialize: " << error.what();
 	}
 }
 
+//! @brief Queues a buffer to be sent to the client.
+//! @param _buffer The buffer to be sent.
+//! @param size The size of the buffer.
+//! @return void
 void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 {
 	if (get_socket() == nullptr || !get_socket()->is_open())
@@ -81,11 +93,13 @@ void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 			packet_len = p.first;
 		}
 
+		// Warns when the packet length is not the same as the buffer length.
 		if (packet_len != _buffer.active_length()) {
 			HLog(warning) << "Packet 0x" << std::hex << packet_id << " has length " << std::dec << packet_len << " but buffer has " << _buffer.active_length() << " bytes... ignoring.";
 			return;
 		}
 
+		// Queue the buffer for the Network Thread to send.
 		get_socket()->queue_buffer(std::move(_buffer));
 	}
 }
@@ -97,14 +111,26 @@ void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 void ZoneSession::update(uint32_t /*diff*/)
 {
 	std::shared_ptr<ByteBuffer> read_buf;
+	
+	if (get_socket() == nullptr || !get_socket()->is_open())
+		return;
+
 	while ((read_buf = get_socket()->_buffer_recv_queue.try_pop())) {
-		uint16_t packet_id = 0x0;
-		memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
-		HPacketTablePairType p = _pkt_tbl->get_hpacket_info(packet_id);
-		
-		HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - len:" << std::dec << p.first << std::endl;
-		
-		p.second->handle(std::move(*read_buf));
+		while (read_buf->active_length()) {
+			uint16_t packet_id = 0x0;
+			memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
+			HPacketTablePairType p = _pkt_tbl->get_hpacket_info(packet_id);
+
+			int16_t packet_len = p.first;
+
+			if (packet_len == -1) {
+				memcpy(&packet_len, read_buf->get_read_pointer() + 2, sizeof(int16_t));
+			}
+
+			ByteBuffer buf(*read_buf, packet_len);
+			HLog(debug) << "Handling packet 0x" << std::hex << packet_id << " - len:" << std::dec << p.first << std::endl;
+			p.second->handle(std::move(buf));
+		}
 	}
 }
 
@@ -116,11 +142,6 @@ void ZoneSession::update(uint32_t /*diff*/)
  */
 void ZoneSession::perform_cleanup()
 {
-	if (player() != nullptr) {
-
-		player()->set_logged_in(false);
-		player()->save();
-		player()->remove_grid_reference();
-		player()->map_container()->remove_player(player());
-	}
+	if (player() != nullptr)
+		MapMgr->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
 }

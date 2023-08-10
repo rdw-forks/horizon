@@ -43,6 +43,16 @@ namespace Horizon
 {
 namespace Zone
 {
+//! @brief The class Map is the representation of a map in the game. It contains all the cells and the grid holder. It also contains the A* pathfinder. 
+//! It is the main class for the map. It is used to get the cells, the grid holder and the pathfinder, and perform a variety of operations on them.
+//! @param _container The container that contains this map.
+//! @param _name The name of the map.
+//! @param _width The width of the map.
+//! @param _height The height of the map.
+//! @param _cells The cells of the map.
+//! @param _gridholder The grid holder of the map.
+//! @param _pathfinder The A* pathfinder of the map.
+//! @param _obstructions The obstructions of the map.
 class Map
 {
 friend class MapManager;
@@ -50,7 +60,7 @@ public:
 	Map(std::weak_ptr<MapContainerThread>, std::string const &, uint16_t, uint16_t, std::vector<uint8_t> const &);
 	~Map();
 
-	std::shared_ptr<MapContainerThread> container() { return _container.lock(); }
+	std::shared_ptr<MapContainerThread> container() { return _container.expired() == false ? _container.lock() : nullptr; }
 
 	std::string const &get_name() { return _name; }
 
@@ -67,7 +77,7 @@ public:
 	bool ensure_grid_for_entity(T *entity, MapCoords coords);
 
 	template<class T, class CONTAINER>
-	void visit(GridCoords const &grid, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
+	void visit(int grid_x, int grid_y, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
 
 	template<class T, class CONTAINER>
 	void visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
@@ -163,15 +173,16 @@ bool Horizon::Zone::Map::ensure_grid_for_entity(T *entity, MapCoords mcoords)
 
 	entity->set_grid_coords(new_gcoords);
 
-	_gridholder.get_grid(new_gcoords).add_object(entity);
+	_gridholder.get_grid(new_gcoords.x(), new_gcoords.y()).add_object(entity);
 
 	return true;
 }
 
 template<class T, class CONTAINER>
-inline void Horizon::Zone::Map::visit(GridCoords const &grid, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
+inline void Horizon::Zone::Map::visit(int grid_x, int grid_y, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
 {
-	_gridholder.get_grid(grid).visit(visitor);
+	Grid<AllEntityTypes> &g = _gridholder.get_grid(grid_x, grid_y);
+	g.visit(visitor);
 }
 
 template<class T, class CONTAINER>
@@ -186,9 +197,16 @@ inline void Horizon::Zone::Map::visit_in_range(MapCoords const &map_coords, Grid
 template<class T, class CONTAINER>
 inline void Horizon::Zone::Map::visit(GridCoords const &lower_bound, GridCoords const &upper_bound, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
 {
-	for (int y = upper_bound.y(); y >= lower_bound.y(); --y) {
-		for (int x = lower_bound.x(); x <= upper_bound.x(); ++x) {
-			visit(GridCoords(x, y), visitor);
+	// Visit all grids in the map, from top to bottom, left to right
+	// This is done to ensure that the visitor is called in the same order as the grids are stored in the map
+	// This is important for the GridReferenceContainerVisitor, which will add the grid references to a container
+	// The container will then be iterated over in the same order as the grids were visited
+	// This ensures that the entities are visited in the container in the same order as they are stored in the map
+	// We visit all ranges - 0,0 to maximum grids in a map 
+	// (the upper range as well, i.e. if the map is 10x10 grids, we visit 0,0 to 10,10 and not 9x9)
+	for (int y = upper_bound.y(); y >= lower_bound.y(); y--) {
+		for (int x = lower_bound.x(); x <= upper_bound.x(); x++) {
+			visit(x, y, visitor);
 		}
 	}
 }

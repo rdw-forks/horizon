@@ -37,8 +37,8 @@
 
 using namespace Horizon::Char;
 
-CharSocket::CharSocket(std::shared_ptr<tcp::socket> socket)
-: Socket(socket)
+CharSocket::CharSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket)
+: Socket(uid, socket)
 {
 	//
 }
@@ -59,7 +59,7 @@ void CharSocket::set_session(std::shared_ptr<CharSession> session) { std::atomic
  */
 void CharSocket::start()
 {
-	auto session = std::make_shared<CharSession>(shared_from_this());
+	auto session = std::make_shared<CharSession>(get_socket_id(), shared_from_this());
 
 	set_session(session);
 

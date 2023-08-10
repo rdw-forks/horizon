@@ -59,6 +59,8 @@ horizon_config = {
         pass = 'horizon',
         port = 33060
     },
+
+	database_threads = 5,
     
     ------------------------------------------------------------------------------------------------------
     -- Maximum timeout of a connected session.

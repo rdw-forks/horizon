@@ -31,6 +31,7 @@
 #define HORIZON_SERVER_HPP
 
 #include "CLI/CLICommand.hpp"
+#include "Core/Database/ConnectionPool.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -87,7 +88,7 @@ public:
 	 */
 	bool clicmd_shutdown(std::string /*cmd*/);
     
-	std::shared_ptr<mysqlx::Session> get_db_connection() { return _mysql_connection; }
+	std::shared_ptr<ConnectionPool> database_pool() { return _mysql_connections; }
     
 protected:
 	/* General Configuration */
@@ -98,7 +99,7 @@ protected:
 	std::atomic<shutdown_stages> _shutdown_stage;
 	std::atomic<int> _shutdown_signal;
 	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
-	std::shared_ptr<mysqlx::Session> _mysql_connection;
+	std::shared_ptr<ConnectionPool> _mysql_connections;
     
 	/**
 	 * Core IO Service

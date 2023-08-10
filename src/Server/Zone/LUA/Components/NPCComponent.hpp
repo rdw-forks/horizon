@@ -60,7 +60,6 @@ public:
     // void send_next_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
     // void send_close_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
 
-private:
     LockedLookupTable<uint32_t, std::shared_ptr<npc_db_data>> _npc_db;
 };
 }

@@ -34,6 +34,8 @@
 #include "Core/Structures/LinkedList/ReferenceList/Reference.hpp"
 #include "GridReference.hpp"
 
+//! @brief GridRefManager is a manager for GridReference. It is used to link objects and iterate through them.
+//! @tparam OBJECT The type of object to be linked.
 template <class OBJECT>
 class GridRefManager : public Horizon::Structures::LinkedList::RefManager<GridRefManager<OBJECT>, OBJECT>
 {

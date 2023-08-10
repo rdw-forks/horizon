@@ -59,6 +59,7 @@ add_executable(zone
 	${GAME_SOURCES}
 	${LUA_SOURCES}
 	${INTERFACE_SOURCES}
+	${DATABASE_SOURCES}
 )
 
 target_precompile_headers(zone

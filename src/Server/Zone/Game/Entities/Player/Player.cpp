@@ -36,7 +36,6 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
-#include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -94,9 +93,6 @@ bool Player::initialize()
 
 	// Inventory is initialized for the player, notifying weight etc.
 	_inventory->initialize();
-
-	// Ensure grid for entity.
-	map()->ensure_grid_for_entity(this, map_coords());
 	
 	// Populate skill tree.
 	std::vector<std::shared_ptr<const skill_tree_config>> sktree = SkillDB->get_skill_tree_by_job_id((job_class_type) job_id());
@@ -112,13 +108,13 @@ bool Player::initialize()
 	// On map entry processing.
 	on_map_enter();
 
-	lua_manager()->initialize_player_state(lua_state());
+	map()->container()->get_lua_manager()->initialize_player_state(lua_state());
 
 	// required for npc component definitions upon triggering
-	lua_manager()->initialize_npc_state(lua_state());
+	map()->container()->get_lua_manager()->initialize_npc_state(lua_state());
 
 	// required for triggering monster components upon monster kill events etc.
-	lua_manager()->initialize_monster_state(lua_state());
+	map()->container()->get_lua_manager()->initialize_monster_state(lua_state());
 
 	try {
 		std::string script_root_path = sZone->config().get_script_root_path().string();
@@ -134,6 +130,8 @@ bool Player::initialize()
 		return false;
 	}
 
+	set_initialized(true);
+	
 	return true;
 }
 
@@ -145,8 +143,9 @@ void Player::stop_movement()
 
 bool Player::save()
 {
+	mysqlx::Session session = sZone->database_pool()->get_connection();
 	try {
-		sZone->get_db_connection()->sql("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
+		session.sql("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
 			"`last_unique_id` = ?, `hotkey_row_index` = ?, `change_slot_count` = ?, `font` = ?, `show_equip` = ?, `allow_party` = ?, `partner_aid` = ?, `father_aid` = ?, `mother_aid` = ?,"
 			"`child_aid` = ?, `party_id` = ?, `guild_id` = ?, `pet_id` = ?, `homun_id` = ?, `elemental_id` = ?, `current_map` = ?, `current_x` = ?, `current_y` = ?,"
 			"`saved_map` = ?, `saved_x` = ?, `saved_y` = ? "
@@ -167,19 +166,26 @@ bool Player::save()
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::save:" << error.what();
+		sZone->database_pool()->release_connection(std::move(session));
 		return false;
 	}
 	catch (std::exception& error) {
 		HLog(error) << "Player::save:" << error.what();
+		sZone->database_pool()->release_connection(std::move(session));
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
+	
 	return true;
 }
 
 bool Player::load()
 {
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+	
 	try {
-		mysqlx::RowResult rr = sZone->get_db_connection()->sql("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
+		mysqlx::RowResult rr = session.sql("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
 			"`current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?")
 			.bind(character()._character_id)
 			.execute();
@@ -218,10 +224,20 @@ bool Player::load()
 		MapCoords mcoords(r[11].get<int>(), r[12].get<int>());
 		std::shared_ptr<Map> map = MapMgr->get_map(r[10].get<std::string>());
 
-		map->container()->add_player(shared_from_this()->downcast<Player>());
+		if (map == nullptr) { 
+			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
+			map = MapMgr->get_map("prontera");
+		}
 
+		map->container()->manage_session(SESSION_ACTION_ADD, get_session());
+
+		get_session()->set_map_name(map->get_name());
+		
 		set_map(map);
 		set_map_coords(mcoords);
+
+		// Ensure grid for entity.
+		map->ensure_grid_for_entity(this, map_coords());
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::load:" << error.what();
@@ -231,13 +247,15 @@ bool Player::load()
 		HLog(error) << "Player::load:" << error.what();
 		return false;
 	}
+	
+	sZone->database_pool()->release_connection(std::move(session));
 
 	return true;
 }
 
 void Player::on_pathfinding_failure()
 {
-	HLog(debug) << "Player " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
+	//HLog(debug) << "Player " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
 void Player::on_movement_begin()
@@ -285,18 +303,18 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	
 	_viewport_entities.push_back(entity);
 
-	if (entity->type() == ENTITY_MONSTER) {
-		if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
-			map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
-				[this] (TaskContext context)
-				{
-					GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
-					GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
+	// if (entity->type() == ENTITY_MONSTER) {
+	// 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
+	// 		map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
+	// 			[this] (TaskContext context)
+	// 			{
+	// 				GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
+	// 				GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
 
-					map()->visit_in_range(map_coords(), ai_executor_caller);
-					context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
-				});
-	}
+	// 				map()->visit_in_range(map_coords(), ai_executor_caller);
+	// 				context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
+	// 			});
+	// }
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -388,15 +406,20 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 	notify_nearby_players_of_existence(EVP_NOTIFY_TELEPORT);
 
 	{
+		// If the map is not managed by the destination container, 
+		// remove the session from the current container and add it to the destination container
 		if (!dest_map->container()->get_map(map()->get_name())) {
-			map()->container()->remove_player(myself);
-			dest_map->container()->add_player(myself);
+			map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
+			dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
+
+		get_session()->set_map_name(dest_map->get_name());
 
 		if (coords == MapCoords(0, 0))
 			coords = dest_map->get_random_accessible_coordinates();
 
 		dest_map->ensure_grid_for_entity(this, coords);
+
 		set_map(dest_map);
 		set_map_coords(coords);
 	}
