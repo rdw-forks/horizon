@@ -72,7 +72,7 @@ bool Monster::initialize()
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Seconds(std::rand() % 10));
+    	context.Repeat(Seconds(std::rand() % 10 + 1));
     });
 
 	return true;

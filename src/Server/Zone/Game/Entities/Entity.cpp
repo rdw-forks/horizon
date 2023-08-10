@@ -452,14 +452,10 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 			if (is_in_range_of(target, range) && is_walking())
 				stop_walking();
 			
-<<<<<<< HEAD
-			combat()->weapon_attack();
-=======
 			if (!is_attacking())
 				set_attacking(true);
 
-			combat.weapon_attack();
->>>>>>> master
+			combat()->weapon_attack();
 
 			if (continuous)
 				context.Repeat(Milliseconds(_attackable_time));

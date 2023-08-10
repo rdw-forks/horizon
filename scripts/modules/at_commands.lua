@@ -2,11 +2,13 @@
 
 -- @skillpoint
 local function skillpoint(player, args)
-	player:entity():status():skill_point():set(tonumber(args[2]))
+	status = player:entity():status()
+	status:skill_point():set(tonumber(args[2]))
 end
 -- @resetskillpoints
 local function resetskillpoints(player, args)
-	player:entity():status():skill_point():set(0)
+	status = player:entity():status()
+	status:skill_point():set(0)
 end
 -- @job
 local function job(player, args)
