@@ -35,7 +35,7 @@ void SkillExecution::start_execution(enum skill_target_type target_type)
   }
 
   try {
-    sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string().append("skills/" + skd->name + ".lua"));
+    sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string() + "skills/" + skd->name + ".lua");
     sol::protected_function_result result = fx();
     if (!result.valid()) {
       sol::error err = result;
