@@ -627,8 +627,8 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"status_effect_start", &Entity::status_effect_start,
 		"status_effect_end", &Entity::status_effect_end,
 		"get_walk_path", &Entity::get_walk_path,
-		"cast_skill_at_target", &Entity::notify_nearby_players_of_skill_use,
-		"show_skill_damage", &Entity::notify_nearby_players_of_skill_damage,
+		"notify_nearby_players_of_skill_use", &Entity::notify_nearby_players_of_skill_use,
+		"notify_nearby_players_of_skill_damage", &Entity::notify_nearby_players_of_skill_damage,
 		"is_dead", &Entity::is_dead,
 		"combat", &Entity::combat
 	);
