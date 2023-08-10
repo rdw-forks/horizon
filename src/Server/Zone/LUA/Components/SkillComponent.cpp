@@ -28,6 +28,7 @@
 
 #include "SkillComponent.hpp"
 
+#include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "SkillDefinitions.hpp"
 
@@ -122,6 +123,11 @@ void SkillComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"ReplacedLv0", SKILL_LEARN_REPLACED_LV_0
 	);
 
+	state->create_named_table("SkillTargetType",
+		"Single", SKTT_SINGLE_TARGETED,
+		"Ground", SKTT_GROUND_TARGETED
+	);
+
 	state->create_named_table("SkillUseFailCauseType",
 		"Level", SKILL_USE_FAIL_LEVEL,
 		"SpInsufficient", SKILL_USE_FAIL_SP_INSUFFICIENT,
@@ -193,6 +199,26 @@ void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"skill_id", &skill_learnt_info::skill_id,
 		"level", &skill_learnt_info::level,
 		"learn_type", &skill_learnt_info::learn_type
+	);
+
+	state->new_usertype<skill_config_data>("SkillConfigData",
+		"skill_id", &skill_config_data::skill_id,
+		"name", &skill_config_data::name,
+		"desc", &skill_config_data::desc,
+		"max_level", &skill_config_data::max_level,
+		"primary_type", &skill_config_data::primary_type,
+		"secondary_type", &skill_config_data::secondary_type,
+		"dmg_property", &skill_config_data::dmg_property,
+		"cast_time_options", &skill_config_data::cast_time_options,
+		"skill_delay_options", &skill_config_data::skill_delay_options,
+		"weapon_type", &skill_config_data::weapon_type,
+		"ammunition_type", &skill_config_data::ammunition_type,
+		"placement_flag", &skill_config_data::placement_flag,
+		"get_use_range", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		{
+			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
+			return skd->use_range[skill_lv - 1];
+		}
 	);
 }
 
