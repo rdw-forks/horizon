@@ -5208,7 +5208,6 @@ ByteBuffer &ZC_NOTIFY_STANDENTRY11::serialize()
 	buf() << _entry.shield_id;
 #endif
 	buf() << _entry.headgear_bottom_id;
-	buf() << (uint32_t) 0; //shield
 	buf() << _entry.headgear_top_id;
 	buf() << _entry.headgear_mid_id;
 	buf() << _entry.hair_color_id;
