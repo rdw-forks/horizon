@@ -67,8 +67,10 @@ enum entity_walk_state
 
 #define ENTITY_STATUS_EFFECT_CHECK_TIME 1000
 
+enum grid_entity_skill_use_notification_type;
 struct s_grid_sc_apply_in_skill_area_config;
 struct s_grid_apply_in_area_config;
+struct s_entity_skill_use_notifier_config;
 
 namespace Horizon
 {
@@ -170,12 +172,11 @@ public:
 	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
 	void notify_nearby_players_of_spawn();
 	void notify_nearby_players_of_movement(bool new_entry = false);
-	void notify_nearby_players_of_skill_use(std::shared_ptr<Entity> target, int16_t skill_id, int cast_time, enum element_type element);
-	void notify_nearby_players_of_skill_damage(std::shared_ptr<Entity> target, uint16_t skill_id, uint16_t skill_lv, uint32_t start_time, int32_t attack_motion, int32_t attacked_motion, int32_t damage, int16_t count, uint8_t action_type);
-	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
+	void notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config);
 
+	// Essentials
+	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
-    
 	std::map<int16_t, std::shared_ptr<status_change_entry>> &get_status_effects() { return _status_effects; }
 	
 	// Skills

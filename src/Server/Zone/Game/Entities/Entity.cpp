@@ -276,45 +276,12 @@ void Entity::notify_nearby_players_of_movement(bool new_entry)
 	map()->visit_in_range(map_coords(), entity_visitor);
 }
 
-void Entity::notify_nearby_players_of_skill_damage(std::shared_ptr<Entity> target, uint16_t skill_id, uint16_t skill_lv, uint32_t start_time, int32_t attack_motion, int32_t attacked_motion, int32_t damage, int16_t count, uint8_t action_type)
+void Entity::notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config)
 {
-	ZC_NOTIFY_SKILL2 pkt(nullptr);
+	GridEntitySkillUseNotifier notifier(shared_from_this(), notification_type, config);
+	GridReferenceContainerVisitor<GridEntitySkillUseNotifier, GridReferenceContainer<AllEntityTypes>> skill_use_notifier(notifier);
 
-	pkt._source_id = guid();
-	pkt._target_id = target->guid();
-	pkt._skill_id = skill_id;
-	pkt._level = skill_lv;
-	pkt._start_time = start_time;
-	pkt._attack_motion = attack_motion;
-	pkt._attacked_motion = attacked_motion;
-	pkt._damage = damage;
-	pkt._count = count;
-	pkt._action = action_type;
-	
-	GridPlayerNotifier notifier(pkt.serialize(), static_cast<Entity *>(this)->shared_from_this());
-	GridReferenceContainerVisitor<GridPlayerNotifier, GridReferenceContainer<AllEntityTypes>> container(notifier);
-
-	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
-}
-
-void Entity::notify_nearby_players_of_skill_use(std::shared_ptr<Entity> target, int16_t skill_id, int cast_time, enum element_type element)
-{
-	ZC_USESKILL_ACK3 pkt(nullptr);
-
-	pkt._src_id = guid();
-	pkt._target_id = target->guid();
-	pkt._x = 0;
-	pkt._y = 0;
-	pkt._skill_id = skill_id;
-	pkt._element = element;
-	pkt._delay_time = cast_time;
-	pkt._disposable = 0;
-	pkt._attack_motion = 0;
-
-	GridPlayerNotifier notifier(pkt.serialize(), static_cast<Entity *>(this)->shared_from_this());
-	GridReferenceContainerVisitor<GridPlayerNotifier, GridReferenceContainer<AllEntityTypes>> container(notifier);
-
-	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+	map()->visit_in_range(map_coords(), skill_use_notifier, MAX_VIEW_RANGE);
 }
 
 bool Entity::status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4)

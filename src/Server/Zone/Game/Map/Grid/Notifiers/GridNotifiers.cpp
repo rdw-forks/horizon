@@ -581,4 +581,64 @@ void GridExecuteSkillInCell::Visit(GridRefManager<Pet> &m) { apply(m); }
 void GridExecuteSkillInCell::Visit(GridRefManager<Monster> &m) { apply(m); }
 void GridExecuteSkillInCell::Visit(GridRefManager<Skill> &m) { apply(m); }
 
+template <class T>
+void GridEntitySkillUseNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
 
+    if (!m.get_size())
+        return;
+
+    std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+
+        switch (_notification_type)
+        {
+            case GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME:
+            {
+                tpl->get_session()->clif()->notify_skill_cast(_config.skill_id, _config.source_guid, _config.target_guid, _config.target_x, _config.target_y, _config.element, _config.cast_time);
+            }
+                break;
+            case GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE:
+            {
+                tpl->get_session()->clif()->notify_hostile_skill_use(
+                    _config.skill_id, 
+                    _config.source_guid, 
+                    _config.target_guid, 
+                    _config.start_time,
+                    _config.attack_motion,
+                    _config.delay_motion,
+                    _config.damage_value, 
+                    _config.display_value,
+                    _config.number_of_hits,
+                    ZCNA3_SKILL);
+            }
+                break;
+            case GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE:
+            {
+                tpl->get_session()->clif()->notify_safe_skill_use(_config.skill_id, _config.display_value, _config.target_guid, ZC_USESKILL2_SUCCESS);
+            }
+                break;
+            default:
+                HLog(warning) << "GridEntitySkillUseNotifier::notify: Unknown notification type: " << _notification_type << "." << std::endl;
+                break;
+        }
+    }
+}
+
+void GridEntitySkillUseNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntitySkillUseNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Skill>(GridRefManager<Skill> &m);

@@ -433,6 +433,29 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 		"All", (int) JMASK_ALL
 	);
+
+	state->create_named_table("zc_notify_act_3_action_types",
+    	"Damage", (int) ZCNA3_DAMAGE,
+    	"PickupItem", (int) ZCNA3_PICKUP_ITEM,
+    	"Sit", (int) ZCNA3_SIT,
+    	"Stand", (int) ZCNA3_STAND,
+    	"EndureDamage", (int) ZCNA3_ENDURE_DAMAGE,
+    	"Splash", (int) ZCNA3_SPLASH,
+    	"Skill", (int) ZCNA3_SKILL ,
+    	"RepeatDamage", (int) ZCNA3_REPEAT_DAMAGE,
+    	"MultiHitDamage", (int) ZCNA3_MULTI_HIT_DAMAGE,
+    	"MultiHitEndureDamage", (int) ZCNA3_MULTI_HIT_ENDURE_DAMAGE,
+    	"CriticalHit ", (int) ZCNA3_CRITICAL_HIT,
+    	"LuckyDodge ", (int) ZCNA3_LUCKY_DODGE,
+    	"TouchSkill", (int) ZCNA3_TOUCH_SKILL,
+    	"MultiHitCritical", (int) ZCNA3_MULTI_HIT_CRITICAL
+	);
+
+	state->create_named_table("grid_entity_skill_use_notification_type",
+		"GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME", GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME,
+		"GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
+    	"GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE
+	);
 }
 
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
@@ -629,7 +652,6 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"status_effect_end", &Entity::status_effect_end,
 		"get_walk_path", &Entity::get_walk_path,
 		"notify_nearby_players_of_skill_use", &Entity::notify_nearby_players_of_skill_use,
-		"notify_nearby_players_of_skill_damage", &Entity::notify_nearby_players_of_skill_damage,
 		"is_dead", &Entity::is_dead,
 		"combat", &Entity::combat,
 		"combat_registry", &Entity::combat_registry,
@@ -637,6 +659,25 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"remove_status_change_in_area", &Entity::remove_status_change_in_area,
 		"execute_skill_in_area", &Entity::execute_skill_in_area,
 		"execute_skill_in_cell", &Entity::execute_skill_in_cell
+	);
+
+	state->new_usertype<s_entity_skill_use_notifier_config>("s_entity_skill_use_notifier_config",
+		"source_guid", &s_entity_skill_use_notifier_config::source_guid,
+		"target_guid", &s_entity_skill_use_notifier_config::target_guid,
+		"skill_id", &s_entity_skill_use_notifier_config::skill_id,
+		"skill_lv", &s_entity_skill_use_notifier_config::skill_lv,
+		"damage_value", &s_entity_skill_use_notifier_config::damage_value,
+		"display_value", &s_entity_skill_use_notifier_config::display_value,
+		"start_time", &s_entity_skill_use_notifier_config::start_time,
+		"attack_motion", &s_entity_skill_use_notifier_config::attack_motion,
+		"delay_motion", &s_entity_skill_use_notifier_config::delay_motion,
+		"number_of_hits", &s_entity_skill_use_notifier_config::number_of_hits,
+		"action_type", &s_entity_skill_use_notifier_config::action_type,
+		"item_id", &s_entity_skill_use_notifier_config::item_id,
+		"target_x", &s_entity_skill_use_notifier_config::target_x,
+		"target_y", &s_entity_skill_use_notifier_config::target_y,
+		"element", &s_entity_skill_use_notifier_config::element,
+		"cast_time", &s_entity_skill_use_notifier_config::cast_time
 	);
 }
 

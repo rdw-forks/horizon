@@ -30,6 +30,7 @@
 #include "Combat.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
+#include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
@@ -354,33 +355,36 @@ void CombatRegistry::SkillResultOperation::execute() const
     {
         case SKILL_RESULT_OPERATION_DAMAGE:
         {
-            HLog(debug) << "Started skill result damage operation for skill: " << (dynamic_cast<CombatRegistry::SkillResultOperation::SkillResultOperand *>(get_operand()))->get_config().skill_id << "." << std::endl;
-            if (source->type() == ENTITY_PLAYER) {
-                CombatValueDamage *value = dynamic_cast<CombatValueDamage *>(get_operation_value());
-                combat_damage damage = value->get_damage();
-                target = get_operand()->get_target();
-                source->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_hostile_skill_use(damage.skill_id, 
-                    source->guid(), 
-                    target->guid(), 
-                    0,
-                    damage.amotion,
-                    damage.dmotion, 
-                    damage.left_damage + damage.right_damage, 
-                    damage.skill_lv,
-                    damage.number_of_hits,
-                    ZCNA3_SKILL);
-            }
-            HLog(debug) << "Finished skill result damage operation for skill: " << dynamic_cast<CombatRegistry::SkillResultOperation::SkillResultOperand *>(get_operand())->get_config().skill_id << "." << std::endl;
+            CombatRegistry::SkillResultOperation::SkillResultOperand *operand = dynamic_cast<CombatRegistry::SkillResultOperation::SkillResultOperand *>(get_operand());
+            CombatRegistry::CombatValueDamage *damage = dynamic_cast<CombatRegistry::CombatValueDamage *>(get_operation_value());
+            HLog(debug) << "Started skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
+            s_entity_skill_use_notifier_config notifier_config;
+            notifier_config.skill_id = operand->get_config().skill_id;
+            notifier_config.skill_lv = operand->get_config().skill_lv;
+            notifier_config.source_guid = source->guid();
+            notifier_config.target_guid = operand->get_target()->guid();
+            notifier_config.start_time = get_sys_time();
+            notifier_config.attack_motion = operand->get_config().attack_motion;
+            notifier_config.delay_motion = operand->get_config().delay_motion;
+            notifier_config.damage_value = damage->get_damage().left_damage + damage->get_damage().right_damage;
+            notifier_config.number_of_hits = damage->get_damage().number_of_hits;
+            source->notify_nearby_players_of_skill_use(GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE, notifier_config);
+            HLog(debug) << "Finished skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
         }
-            break;
+                break;
         case SKILL_RESULT_OPERATION_HEALING:
         {
-            if (source->type() == ENTITY_PLAYER) {
-                CombatValueHealing *value = dynamic_cast<CombatValueHealing *>(get_operation_value());
-                combat_healing healing = value->get_healing();
-                target = get_operand()->get_target();
-                source->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_safe_skill_use(healing.skill_id, healing.heal_amount, target->guid(), ZC_USESKILL2_SUCCESS);
-            }
+            CombatRegistry::SkillResultOperation::SkillResultOperand *operand = dynamic_cast<CombatRegistry::SkillResultOperation::SkillResultOperand *>(get_operand());
+            CombatRegistry::CombatValueHealing *healing = dynamic_cast<CombatRegistry::CombatValueHealing *>(get_operation_value());
+            HLog(debug) << "Started skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
+            s_entity_skill_use_notifier_config notifier_config;
+            notifier_config.skill_id = operand->get_config().skill_id;
+            notifier_config.skill_lv = operand->get_config().skill_lv;
+            notifier_config.source_guid = source->guid();
+            notifier_config.display_value = healing->get_healing().heal_amount;
+            notifier_config.target_guid = operand->get_target()->guid();
+            source->notify_nearby_players_of_skill_use(GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE, notifier_config);
+            HLog(debug) << "Finished skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
         }
             break;
         default:

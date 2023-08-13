@@ -7579,6 +7579,8 @@ void ZC_USESKILL_ACK3::deliver(uint16_t skill_id, uint32_t src, uint32_t target,
 	_delay_time = casttime;
 	_disposable = 0;
 	_attack_motion = 0;
+	serialize();
+	transmit();
 }
 ByteBuffer &ZC_USESKILL_ACK3::serialize()
 {

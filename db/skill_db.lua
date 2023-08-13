@@ -445,7 +445,6 @@ local skill_db = {
 	Description = "Increase SP Recovery",
 	MaxLevel = 10,
 	NumberOfHits = 0,
-	calc_regen = "skill_lv*3 + skill_lv*st->max_sp/500"
 },
 [ "MG_SIGHT" ] = {
 	Id = 10,

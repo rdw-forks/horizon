@@ -363,6 +363,42 @@ struct GridExecuteSkillInCell
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
+
+enum grid_entity_skill_use_notification_type
+{
+	GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME,
+	GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
+	GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE,
+};
+
+struct s_entity_skill_use_notifier_config
+{
+	int source_guid, target_guid, skill_id, skill_lv, damage_value, display_value, start_time, attack_motion;
+	int delay_motion, number_of_hits;
+	zc_notify_act_3_action_types action_type;
+	int item_id;
+	int target_x, target_y;
+	int element, cast_time;
+};
+
+struct GridEntitySkillUseNotifier
+{
+	std::weak_ptr<Horizon::Zone::Entity> _entity;
+	grid_entity_skill_use_notification_type _notification_type;
+	s_entity_skill_use_notifier_config _config;
+
+	explicit GridEntitySkillUseNotifier(const std::shared_ptr<Horizon::Zone::Entity>& entity, grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config)
+	: _entity(entity), _notification_type(notification_type), _config(config)
+	{ }
+
+	template <class T>
+	void notify(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
 #undef entity_ns
 
 #endif /* HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP */
