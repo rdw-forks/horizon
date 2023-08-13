@@ -6,7 +6,7 @@ function MG_COLDBOLT.cast_skill(scd, skd)
 	local notifier_config = s_entity_skill_use_notifier_config.new()
 	notifier_config.skill_id = scd.skill_id
 	notifier_config.cast_time = scd.cast_time
-	notifier_config.element = Element.Fire
+	notifier_config.element = Element.Water
 	notifier_config.source_guid = scd.source:guid()
 	notifier_config.target_guid = scd.target:guid()
 	notifier_config.target_x = scd.target:map_coords():x()

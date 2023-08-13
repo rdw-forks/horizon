@@ -6,7 +6,7 @@ function MG_FIREBOLT.cast_skill(scd, skd)
 	local notifier_config = s_entity_skill_use_notifier_config.new()
 	notifier_config.skill_id = scd.skill_id
 	notifier_config.cast_time = scd.cast_time
-	notifier_config.element = Element.Water
+	notifier_config.element = Element.Fire
 	notifier_config.source_guid = scd.source:guid()
 	notifier_config.target_guid = scd.target:guid()
 	notifier_config.target_x = scd.target:map_coords():x()
@@ -16,7 +16,7 @@ function MG_FIREBOLT.cast_skill(scd, skd)
 	print("Casting skill for skill " .. scd.skill_id .. " Cast Time of	" .. scd.cast_time .. " milliseconds")
 end
 
-function MG_COLDBOLT.perform_skill(scd, skd)
+function MG_FIREBOLT.perform_skill(scd, skd)
 	if scd.target_type == SkillTargetType.Single then
 		local int = scd.source:status():intelligence():get()
 		local min_matk = int + math.floor(int / 7) ^ 2
@@ -50,4 +50,4 @@ function MG_COLDBOLT.perform_skill(scd, skd)
 	return true
 end
 
-return MG_COLDBOLT
+return MG_FIREBOLT
