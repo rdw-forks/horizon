@@ -11,7 +11,7 @@ namespace Horizon
 {
 namespace Zone
 {
-class SkillExecution
+class SkillExecution : public std::enable_shared_from_this<SkillExecution>
 {
 public:
 	SkillExecution(std::shared_ptr<Entity> initial_source, int16_t skill_id, int16_t skill_lv);
@@ -23,7 +23,7 @@ public:
 	void execute(MapCoords map_coords, std::string message);
 	void execute(int16_t x, int16_t y, std::string message);
 
-
+	sol::table get_skill_cast_data() { return _scd; }
 private:
 	void start_execution(enum skill_target_type target_type);
 	std::shared_ptr<Map> map() { return _map.expired() ? nullptr : _map.lock(); }
@@ -48,6 +48,7 @@ private:
 	int16_t _skill_lv;
 	MapCoords _map_coords;
 	std::string _message;
+	sol::table _scd;
 };
 }
 }

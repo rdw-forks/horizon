@@ -42,7 +42,8 @@ class MapContainerThread;
 class NPCComponent : public LUAComponent
 {
 public:
-    NPCComponent() : LUAComponent() { }
+    NPCComponent() { }
+    NPCComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
     ~NPCComponent() {}
     
     void sync_definitions(std::shared_ptr<sol::state> state);

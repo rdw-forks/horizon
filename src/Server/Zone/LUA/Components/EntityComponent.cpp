@@ -34,6 +34,7 @@
 #include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
+#include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 
 #include "EntityDefinitions.hpp"
 
@@ -73,8 +74,8 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"Monster", (int) ENTITY_MASK_MONSTER,
 		"Event", (int) ENTITY_MASK_EVENT,
 		"Pet", (int) ENTITY_MASK_PET,
-		"Homunculus", (int) ENTITY_MASK_HOMNUCLUS,
-		"Mercenary", (int) ENTITY_MASK_MERCNARY,
+		"Homunculus", (int) ENTITY_MASK_HOMUNCULUS,
+		"Mercenary", (int) ENTITY_MASK_MERCENARY,
 		"Elemental", (int) ENTITY_MASK_ELEMENTAL
 	);
 
@@ -630,7 +631,12 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"notify_nearby_players_of_skill_use", &Entity::notify_nearby_players_of_skill_use,
 		"notify_nearby_players_of_skill_damage", &Entity::notify_nearby_players_of_skill_damage,
 		"is_dead", &Entity::is_dead,
-		"combat", &Entity::combat
+		"combat", &Entity::combat,
+		"combat_registry", &Entity::combat_registry,
+		"apply_status_change_in_area", &Entity::apply_status_change_in_area,
+		"remove_status_change_in_area", &Entity::remove_status_change_in_area,
+		"execute_skill_in_area", &Entity::execute_skill_in_area,
+		"execute_skill_in_cell", &Entity::execute_skill_in_cell
 	);
 }
 

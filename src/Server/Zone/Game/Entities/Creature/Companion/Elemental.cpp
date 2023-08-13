@@ -33,7 +33,7 @@
 using namespace Horizon::Zone::Entities;
 
 Elemental::Elemental(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_ELEMENTAL, map, mcoords)
+: Creature(guid, ENTITY_ELEMENTAL, ENTITY_MASK_ELEMENTAL, map, mcoords)
 {
 	//
 }

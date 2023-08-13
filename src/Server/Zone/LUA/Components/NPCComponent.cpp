@@ -159,7 +159,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		});
 }
 
-void NPCComponent::contact_npc_for_player(std::shared_ptr<Player> player, uint32_t npc_guid)
+void NPCComponent::contact_npc_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid)
 {
 	std::shared_ptr<npc_db_data> const &nd = _npc_db.at(npc_guid);
 

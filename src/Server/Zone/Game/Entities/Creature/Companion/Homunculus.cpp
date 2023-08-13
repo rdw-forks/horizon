@@ -33,7 +33,7 @@
 using namespace Horizon::Zone::Entities;
 
 Homunculus::Homunculus(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_HOMUNCULUS, map, mcoords)
+: Creature(guid, ENTITY_HOMUNCULUS, ENTITY_MASK_HOMUNCULUS, map, mcoords)
 {
 	//
 }

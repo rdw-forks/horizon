@@ -35,10 +35,12 @@ namespace Horizon
 {
 namespace Zone
 {
+class MapContainerThread;
 class MapComponent : public LUAComponent
 {
 public:
-    MapComponent() : LUAComponent() { }
+    MapComponent() { }
+    MapComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
     ~MapComponent() { }
 
     void sync_definitions(std::shared_ptr<sol::state> state);

@@ -29,6 +29,7 @@
 #include "SkillComponent.hpp"
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "SkillDefinitions.hpp"
 
@@ -219,6 +220,15 @@ void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
 			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
 			return skd->use_range[skill_lv - 1];
 		}
+	);
+
+	state->new_usertype<SkillExecution>("SkillExecution", 
+		"execute_on_target", sol::resolve<void(int)>(&SkillExecution::execute),
+		"execute_on_ground", sol::resolve<void(MapCoords)>(&SkillExecution::execute),
+		"execute_on_ground_xy", sol::resolve<void(int16_t, int16_t)>(&SkillExecution::execute),
+		"execute_on_ground_with_message", sol::resolve<void(MapCoords, std::string)>(&SkillExecution::execute),
+		"execute_on_ground_xy_with_message", sol::resolve<void(int16_t, int16_t, std::string)>(&SkillExecution::execute),
+		"get_skill_cast_data", &SkillExecution::get_skill_cast_data
 	);
 }
 

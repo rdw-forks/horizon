@@ -37,7 +37,10 @@ namespace Horizon
 namespace Zone
 {
 class Entity;
-class Player;
+namespace Entities
+{
+	class Player;
+}
 namespace Traits
 {
 	class Appearance

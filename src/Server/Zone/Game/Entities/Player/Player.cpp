@@ -49,7 +49,7 @@
 using namespace Horizon::Zone::Entities;
 
 Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid)
-: Entity(guid, ENTITY_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
+: Entity(guid, ENTITY_PLAYER, ENTITY_MASK_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
 {
 }
 
@@ -522,7 +522,6 @@ void Player::notify_in_area(ByteBuffer &buf, grid_notifier_type type, uint16_t r
 
 	map()->visit_in_range(map_coords(), container, range);
 }
-
 
 bool Player::job_change(int32_t job_id)
 {

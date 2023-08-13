@@ -46,21 +46,22 @@ void SkillExecution::start_execution(enum skill_target_type target_type)
 		sol::table skill_functions = result;
 		sol::protected_function initiate_skill_use = skill_functions["initiate_skill_use"];
 
-		sol::table scd = lua_state()->create_table();
-		scd["initial_source"] = _initial_source;
-		scd["skill_id"] = _skill_id;
-		scd["skill_lv"] = _skill_lv;
-		scd["target_type"] = target_type;
+		_scd = lua_state()->create_table();
+		_scd["skill_execution"] = shared_from_this(); // ptr to self.
+		_scd["initial_source"] = _initial_source;
+		_scd["skill_id"] = _skill_id;
+		_scd["skill_lv"] = _skill_lv;
+		_scd["target_type"] = target_type;
 
 		if (target_type == SKTT_SINGLE_TARGETED) {
-			scd["initial_target"] = _initial_target;
+			_scd["initial_target"] = _initial_target;
 		} else {
-			scd["map_coords"] = _map_coords;
+			_scd["map_coords"] = _map_coords;
 			if (_message.empty() == false)
-				scd["message"] = _message;
+				_scd["message"] = _message;
 		}
 
-		result = initiate_skill_use(scd, skd);
+		result = initiate_skill_use(_scd, skd);
 		if (!result.valid()) {
 			sol::error err = result;
 			HLog(error) << "SkillExecution::start_execution: Error on initiate_skill_use function: " << err.what();

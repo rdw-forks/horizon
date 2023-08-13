@@ -68,11 +68,11 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 	}
 
 	set_attack_range(std::make_shared<AttackRange>(_entity));
-	attack_range()->compute(true);
+	attack_range()->compute();
 
 	set_max_weight(std::make_shared<MaxWeight>(_entity, job->max_weight));
 	max_weight()->set_strength(strength().get());
-	max_weight()->compute(true);
+	max_weight()->compute();
 
 	// Calculated when inventory is synced.
 	set_current_weight(std::make_shared<CurrentWeight>(_entity, 0));
@@ -82,52 +82,52 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 	status_atk()->set_strength(strength().get());
 	status_atk()->set_dexterity(dexterity().get());
 	status_atk()->set_luck(luck().get());
-	status_atk()->compute(true);
+	status_atk()->compute();
 
 	set_equip_atk(std::make_shared<EquipATK>(_entity));
 	equip_atk()->set_strength(strength().get());
 	equip_atk()->set_dexterity(dexterity().get());
-	equip_atk()->compute(true);
+	equip_atk()->compute();
 
 	set_status_matk(std::make_shared<StatusMATK>(_entity));
 	status_matk()->set_base_level(base_level().get());
 	status_matk()->set_intelligence(intelligence().get());
 	status_matk()->set_dexterity(dexterity().get());
 	status_matk()->set_luck(luck().get());
-	status_matk()->compute(true);
+	status_matk()->compute();
 
 	set_soft_def(std::make_shared<SoftDEF>(_entity));
 	soft_def()->set_vitality(vitality().get());
-	soft_def()->compute(true);
+	soft_def()->compute();
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
 	soft_mdef()->set_base_level(base_level().get());
 	soft_mdef()->set_intelligence(intelligence().get());
 	soft_mdef()->set_dexterity(dexterity().get());
 	soft_mdef()->set_vitality(vitality().get());
-	soft_mdef()->compute(true);
+	soft_mdef()->compute();
 
 	set_hit(std::make_shared<HIT>(_entity));
 	hit()->set_base_level(base_level().get());
 	hit()->set_dexterity(dexterity().get());
 	hit()->set_luck(luck().get());
-	hit()->compute(true);
+	hit()->compute();
 
 	set_crit(std::make_shared<CRIT>(_entity));
 	crit()->set_luck(luck().get());
-	crit()->compute(true);
+	crit()->compute();
 
 	set_flee(std::make_shared<FLEE>(_entity));
 	flee()->set_base_level(base_level().get());
 	flee()->set_agility(agility().get());
 	flee()->set_luck(luck().get());
-	flee()->compute(true);
+	flee()->compute();
 
 	set_attack_speed(std::make_shared<AttackSpeed>(_entity));
 	attack_speed()->set_base_level(base_level().get());
 	attack_speed()->set_agility(agility().get());
 	attack_speed()->set_dexterity(dexterity().get());
-	attack_speed()->compute(true);
+	attack_speed()->compute();
 
 	// Register Status Observables
 	strength()->register_observable(strength().get());
@@ -285,33 +285,33 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 
 	set_soft_def(std::make_shared<SoftDEF>(_entity));
 	soft_def()->set_vitality(vitality().get());
-	soft_def()->compute(true);
+	soft_def()->compute();
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
 	soft_mdef()->set_base_level(base_level().get());
 	soft_mdef()->set_intelligence(intelligence().get());
 	soft_mdef()->set_dexterity(dexterity().get());
 	soft_mdef()->set_vitality(vitality().get());
-	soft_mdef()->compute(true);
+	soft_mdef()->compute();
 
 	set_hit(std::make_shared<HIT>(_entity));
 	hit()->set_base_level(base_level().get());
 	hit()->set_dexterity(dexterity().get());
 	hit()->set_luck(luck().get());
-	hit()->compute(true);
+	hit()->compute();
 
 	set_crit(std::make_shared<CRIT>(_entity));
 	crit()->set_luck(luck().get());
-	crit()->compute(true);
+	crit()->compute();
 
 	set_flee(std::make_shared<FLEE>(_entity));
 	flee()->set_base_level(base_level().get());
 	flee()->set_agility(agility().get());
 	flee()->set_luck(luck().get());
-	flee()->compute(true);
+	flee()->compute();
 
 	set_attack_range(std::make_shared<AttackRange>(_entity));
-	attack_range()->compute(true);
+	attack_range()->compute();
 
 	set_attack_motion(std::make_shared<AttackMotion>(_entity));
 	attack_motion()->compute();
@@ -323,7 +323,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 	damage_motion()->compute();
 
 	set_attack_range(std::make_shared<AttackRange>(_entity));
-	attack_range()->compute(false);
+	attack_range()->compute();
 
 	set_creature_weapon_attack(std::make_shared<CreatureWeaponAttack>(_entity, md->attack_damage[0]));
 	set_creature_weapon_attack_magic(std::make_shared<CreatureWeaponAttack>(_entity, md->attack_damage[1]));
@@ -571,10 +571,6 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 
 #define notify_status(t, amount, result) \
 		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
-#define notify_compound_attribute(t, amount) \
-		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(t, amount)
-#define notify_required_attribute(t, amount) \
-		entity()->template downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_required_attribute_update(t, amount)
 	do {
 		value = get_status_base(type);
 		required_points = get_required_statpoints(value + 1, value + 2);
@@ -587,27 +583,27 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 		{
 			case STATUS_STRENGTH:
 				strength()->add_base(1);
-				notify_required_attribute(STATUS_STRENGTH_COST, required_points);
+				strength_cost()->set_base(required_points);
 				break;
 			case STATUS_AGILITY:
 				agility()->add_base(1);
-				notify_required_attribute(STATUS_AGILITY_COST, required_points);
+				agility_cost()->set_base(required_points);
 				break;
 			case STATUS_VITALITY:
 				vitality()->add_base(1);
-				notify_required_attribute(STATUS_VITALITY_COST, required_points);
+				vitality_cost()->set_base(required_points);
 				break;
 			case STATUS_INTELLIGENCE:
 				intelligence()->add_base(1);
-				notify_required_attribute(STATUS_INTELLIGENCE_COST, required_points);
+				intelligence_cost()->set_base(required_points);
 				break;
 			case STATUS_DEXTERITY:
 				dexterity()->add_base(1);
-				notify_required_attribute(STATUS_DEXTERITY_COST, required_points);
+				dexterity_cost()->set_base(required_points);
 				break;
 			case STATUS_LUCK:
 				luck()->add_base(1);
-				notify_required_attribute(STATUS_LUCK_COST, required_points);
+				luck_cost()->set_base(required_points);
 				break;
 			default:
 				notify_status(type, get_status_base(type), false);
@@ -615,9 +611,7 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 		}
 
 		notify_status(type, get_status_base(type), true);
-
 		status_point()->set_base(available_points);
-		notify_compound_attribute(STATUS_STATUSPOINT, available_points);
 
 	} while (get_status_base(type) < limit);
 #undef notify_status

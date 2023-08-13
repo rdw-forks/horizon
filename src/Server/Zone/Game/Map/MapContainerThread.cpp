@@ -120,6 +120,18 @@ void MapContainerThread::initialize()
 	_lua_mgr = std::make_shared<LUAManager>(shared_from_this());
 }
 
+//! @brief Add entity to vector of entities to be updated.
+void MapContainerThread::add_entity(std::shared_ptr<Entity> entity)
+{
+	_entities.push_back(entity);
+}
+
+//! @brief Remove entity from vector of entities to be updated.
+void MapContainerThread::remove_entity(std::shared_ptr<Entity> entity)
+{
+	_entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
+}
+
 //! @brief Process container finalization by cleanly disconnecting players after saving their data.
 //! Clears all managed map instances from itself.
 //! This method must not be called from within the thread itself! @see MapManager::finalize()
@@ -206,9 +218,9 @@ void MapContainerThread::start_internal()
 		// Check updates per second.
     	updates_per_second_timer += elapsed_time.count();
 
-		if (updates_per_second_timer > 1000) {
-			average_update_per_second = update_count + average_update_per_second / update_count;
-        	HLog(info) << "Map Container " << (void*) this << " update rate: " << average_update_per_second << " updates per second.";
+		if (updates_per_second_timer / 1000 >= 1000) {
+			average_update_per_second = update_count + (update_count <= 1 ? 0 : average_update_per_second) / update_count;
+        	HLog(info) << "Map Container " << (void*) this << " update rate: " << average_update_per_second << " update(s) per second.";
 			updates_per_second_timer = 0;
         	update_count = 0;
    		}
@@ -241,8 +253,10 @@ void MapContainerThread::update(uint64_t diff)
 			}
 			
 			_managed_sessions.insert(session->get_session_id(), session);
+			add_entity(session->player());
 			HLog(debug) << "Session " << session->get_session_id() << " was added to managed sessions in map container " << (void *) this;
 		} else if (action == SESSION_ACTION_REMOVE) {
+			remove_entity(session->player());
 			_managed_sessions.erase(session->get_session_id());
 			HLog(debug) << "Session " << session->get_session_id() << " was removed from managed sessions in map container " << (void *) this;
 		} else if (action == SESSION_ACTION_LOGOUT_AND_REMOVE) {
@@ -253,6 +267,7 @@ void MapContainerThread::update(uint64_t diff)
 				if (session->player()->has_valid_grid_reference())
 					session->player()->remove_grid_reference();
 			}
+			remove_entity(session->player());
 			_managed_sessions.erase(session->get_session_id());
 			HLog(debug) << "Session " << session->get_session_id() << " was logged out and removed from managed sessions in map container " << (void *) this;
 		}
@@ -273,11 +288,27 @@ void MapContainerThread::update(uint64_t diff)
 		si++;
 	}
 
+	// Update the entities.
+	std::chrono::high_resolution_clock::time_point start_time_e = std::chrono::high_resolution_clock::now();
+	for (auto i = _entities.begin(); i != _entities.end();) {
+		std::shared_ptr<Entity> entity = *i;
+
+		if (entity == nullptr) {
+			_entities.erase(i++);
+			continue;
+		}
+
+		entity->update(diff);
+		i++;
+	}
+	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);
+	//HLog(debug) << "Entities Update time: " << elapsed_time_e.count() << "us";
+
 	// Update Monsters
 	std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 	getScheduler().Update();
 	std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
-	// Check updates per second.
-	HLog(debug) << "Scheduler Update time: " << elapsed_time.count() << "us";
+	//HLog(debug) << "Scheduler Update time: " << elapsed_time.count() << "us";
 }

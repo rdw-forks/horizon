@@ -34,6 +34,7 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifierPredicates.hpp"
+#include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 
 #define entity_ns(class) Horizon::Zone::Entities::class
 struct GridViewPortUpdater
@@ -233,6 +234,135 @@ struct GridPlayerNotifier
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
+struct s_grid_sc_apply_in_skill_area_config
+{
+	int type{ 0 }, total_time{ 0 }, val1{ 0 }, val2{ 0 }, val3{ 0 }, val4{ 0 };
+};
+
+struct s_grid_apply_in_area_config
+{
+	int aoe_range{ 0 };
+	int aoe_target_mask{ 0 };
+};
+
+// Searches a skillarea for an entity that is within the splash range of the target.
+// If found, the status change is applied to the target.
+struct GridSCApplyInSkillArea
+{
+	std::weak_ptr<Horizon::Zone::Entity> _source;
+	std::weak_ptr<Horizon::Zone::Entity> _target;
+	s_grid_sc_apply_in_skill_area_config _sc_config;
+	s_grid_apply_in_area_config _aoe_config;
+
+	explicit GridSCApplyInSkillArea(const std::shared_ptr<Horizon::Zone::Entity>& source, const std::shared_ptr<Horizon::Zone::Entity>& target, const s_grid_sc_apply_in_skill_area_config sc_config, s_grid_apply_in_area_config aoe_config)
+	: _source(source), _target(target), _sc_config(sc_config), _aoe_config(aoe_config)
+	{ }
+
+	template <class T>
+	void apply(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<entity_ns(NPC)> &m);
+	void Visit(GridRefManager<entity_ns(Elemental)> &m);
+	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
+	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<entity_ns(Pet)> &m);
+	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<entity_ns(Skill)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+// Removes a status change from an entity that is within the splash range of the target and area with target as center.
+struct GridSCRemoveInSkillArea
+{
+	std::weak_ptr<Horizon::Zone::Entity> _source;
+	std::weak_ptr<Horizon::Zone::Entity> _target;
+	s_grid_apply_in_area_config _aoe_config;
+	int _sc_type;
+
+	explicit GridSCRemoveInSkillArea(const std::shared_ptr<Horizon::Zone::Entity>& source, const std::shared_ptr<Horizon::Zone::Entity>& target, int sc_type, s_grid_apply_in_area_config aoe_config)
+	: _source(source), _target(target), _sc_type(sc_type), _aoe_config(aoe_config)
+	{ }
+
+	template <class T>
+	void apply(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<entity_ns(NPC)> &m);
+	void Visit(GridRefManager<entity_ns(Elemental)> &m);
+	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
+	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<entity_ns(Pet)> &m);
+	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<entity_ns(Skill)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+// Executes a skill in an area with the target as the center.
+struct GridExecuteSkillInArea
+{
+	std::weak_ptr<Horizon::Zone::Entity> _initial_source;
+	std::weak_ptr<Horizon::Zone::Entity> _initial_target;
+	s_grid_apply_in_area_config _aoe_config;
+	std::shared_ptr<Horizon::Zone::SkillExecution> _skill_execution;
+
+	explicit GridExecuteSkillInArea(const std::shared_ptr<Horizon::Zone::Entity>& source,
+		const std::shared_ptr<Horizon::Zone::Entity>& target,
+		std::shared_ptr<Horizon::Zone::SkillExecution> skill_execution,
+		s_grid_apply_in_area_config aoe_config)
+	: _initial_source(source), _initial_target(target), _skill_execution(skill_execution), _aoe_config(aoe_config)
+	{ }
+
+	template <class T>
+	void apply(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<entity_ns(NPC)> &m);
+	void Visit(GridRefManager<entity_ns(Elemental)> &m);
+	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
+	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<entity_ns(Pet)> &m);
+	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<entity_ns(Skill)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+// Executes a skill targeted at all entities in a particular map coordinate.
+struct GridExecuteSkillInCell
+{
+	std::weak_ptr<Horizon::Zone::Entity> _initial_source;
+	MapCoords _cell;
+	s_grid_apply_in_area_config _aoe_config;
+	std::shared_ptr<Horizon::Zone::SkillExecution> _skill_execution;
+
+	explicit GridExecuteSkillInCell(const std::shared_ptr<Horizon::Zone::Entity>& source,
+		MapCoords cell,
+		std::shared_ptr<Horizon::Zone::SkillExecution> skill_execution,
+		s_grid_apply_in_area_config aoe_config)
+	: _initial_source(source), _cell(cell), _skill_execution(skill_execution), _aoe_config(aoe_config)
+	{ }
+
+	template <class T>
+	void apply(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<entity_ns(NPC)> &m);
+	void Visit(GridRefManager<entity_ns(Elemental)> &m);
+	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
+	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<entity_ns(Pet)> &m);
+	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<entity_ns(Skill)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
 #undef entity_ns
 
 #endif /* HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP */

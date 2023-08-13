@@ -31,6 +31,7 @@
 
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
@@ -44,7 +45,7 @@ using namespace Horizon::Zone::Entities;
 Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
-: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
+: Creature(_last_np_entity_guid++, ENTITY_MONSTER, ENTITY_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
 	set_name(md->name);
 	set_job_id(md->monster_id);

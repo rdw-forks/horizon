@@ -39,6 +39,7 @@ namespace Horizon
 namespace Zone
 {
 class Map;
+class Entity;
 namespace Entities
 {
 	class Player;
@@ -109,6 +110,10 @@ public:
 
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
+	//! @brief Add entity to vector of entities to be updated.
+	void add_entity(std::shared_ptr<Entity> entity);
+	//! @brief Remove entity from vector of entities to be updated.
+	void remove_entity(std::shared_ptr<Entity> entity);
 private:
 	//! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 	//! Is also responsible emulating the world update loop and performing everything in maps it manages.
@@ -126,6 +131,7 @@ private:
 	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
 	std::shared_ptr<LUAManager> _lua_mgr;                                                   ///< Non-thread-safe shared pointer and owner of a script manager.
 	TaskScheduler _task_scheduler;
+	std::vector<std::shared_ptr<Entity>> _entities;                                                        ///< Non-thread-safe vector of entities within this container.
 };
 }
 }

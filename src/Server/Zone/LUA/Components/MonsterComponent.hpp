@@ -41,7 +41,9 @@ class MapContainerThread;
 class MonsterComponent : public LUAComponent
 {
 public:
-    MonsterComponent() : LUAComponent() { }
+    MonsterComponent() { }
+    MonsterComponent(std::shared_ptr<MapContainerThread> container) 
+    : LUAComponent(container) { }
     ~MonsterComponent() { }
 
     void sync_definitions(std::shared_ptr<sol::state> state);
