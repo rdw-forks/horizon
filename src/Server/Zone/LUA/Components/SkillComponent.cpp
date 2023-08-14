@@ -215,6 +215,15 @@ void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"weapon_type", &skill_config_data::weapon_type,
 		"ammunition_type", &skill_config_data::ammunition_type,
 		"placement_flag", &skill_config_data::placement_flag,
+		"get_cast_time", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		{
+			return skd->cast_time[skill_lv - 1];
+		},
+		"get_element", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		{
+			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
+			return skd->element[skill_lv - 1];
+		},
 		"get_use_range", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
 		{
 			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL

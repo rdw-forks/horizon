@@ -1,4 +1,9 @@
+
+if package.loaded["scripts/skills/base_skill"] then
+	package.loaded["scripts/skills/base_skill"] = nil
+end
 ---@type SkillExecution
+
 local BASE_SKILL = {}
 
 function BASE_SKILL.initiate_skill_use(scd, skd)
@@ -6,16 +11,6 @@ function BASE_SKILL.initiate_skill_use(scd, skd)
   if BASE_SKILL.resolve_target(scd, skd) == false then return end
   if BASE_SKILL.validate_before_casting(scd, skd) == false then return end
   if BASE_SKILL.cast_skill(scd, skd) == false then return end
-
-  if scd.cast_time ~= nil and scd.cast_time > 0 then
-    schedule(scd.cast_time, function()
-      if BASE_SKILL.validate_after_casting(scd, skd) == false then return end
-      if BASE_SKILL.perform_skill(scd, skd) == false then return end
-    end)
-  else
-    if BASE_SKILL.validate_after_casting(scd, skd) == false then return end
-    if BASE_SKILL.perform_skill(scd, skd) == false then return end
-  end
 end
 
 function BASE_SKILL.resolve_source(scd, skd)
@@ -130,11 +125,6 @@ function BASE_SKILL.cast_skill(scd, skd)
       - Depending on the skill it can perform the cast skill animation (show cast bar and other effects, refer to herc's clif->useskill and ZC_USESKILL_ACK)
   ]]
   -- local ct = skd.
-  scd.cast_time = 2000
-
-
-  scd.source:cast_skill_at_target(scd.target, scd.skill_id, scd.cast_time, Element.Fire)
-  print("Casting skill for skill BASE_SKILL. Cast Time of  " .. scd.cast_time .. " milliseconds")
   return true
 end
 

@@ -328,6 +328,30 @@ void CombatRegistry::SkillExecutionOperation::execute() const
 
     switch(get_operation_sub_type())
     {
+        case SKILL_EXECUTION_OPERATION_CAST:
+        {
+            s_entity_skill_use_notifier_config notifier_config;
+            notifier_config.skill_id = config.skill_id;
+            notifier_config.cast_time = config.cast_time;
+            notifier_config.element = config.element;
+            notifier_config.source_guid = source->guid();
+            notifier_config.target_guid = target->guid();
+            notifier_config.target_x = target->map_coords().x();
+            notifier_config.target_y = target->map_coords().y();
+            source->notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type::GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME, notifier_config);
+
+            HLog(debug) << "Casting skill: " << config.skd->name << " on target: " << target->guid() << "." << std::endl;
+            source->map()->container()->getScheduler().Schedule(
+			    Milliseconds(config.cast_time), 
+			    source->get_scheduler_task_id(ENTITY_SCHEDULE_SKILL_CAST),
+			    [this, config, target] (TaskContext context)
+			    {
+                    config.cast_end_function(config.skill_cast_data, config.skd);
+                    HLog(debug) << "Cast complete for skill: " << config.skd->name << " on target: " << target->guid() << "." << std::endl;
+                }
+            );
+        }
+            break;
         case SKILL_EXECUTION_OPERATION_TARGET:
         {
             HLog(debug) << "Started skill execution on target: " << target->guid() << " with skill: " << config.skd->name << "." << std::endl;
@@ -342,7 +366,7 @@ void CombatRegistry::SkillExecutionOperation::execute() const
             else
                 config.skill_execution->execute(config.pos_x, config.pos_y);
         }
-        break;
+            break;
     }
 }
 

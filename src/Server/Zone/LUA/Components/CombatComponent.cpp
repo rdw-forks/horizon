@@ -86,6 +86,7 @@ void CombatComponent::sync_definitions(std::shared_ptr<sol::state> state)
 	);
 
 	state->create_named_table("SkillExecutionOperationType",
+		"Cast", (int) CombatRegistry::SkillExecutionOperation::SKILL_EXECUTION_OPERATION_CAST,
 		"Target", (int) CombatRegistry::SkillExecutionOperation::SKILL_EXECUTION_OPERATION_TARGET,
 		"Ground", (int) CombatRegistry::SkillExecutionOperation::SKILL_EXECUTION_OPERATION_GROUND
 	);
@@ -134,7 +135,11 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"pos_y", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::pos_y,
 		"contents", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::contents,
 		"skd", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::skd,
-		"skill_execution", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::skill_execution
+		"skill_execution", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::skill_execution,
+		"cast_time", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::cast_time,
+		"element", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::element,
+		"cast_end_function", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::cast_end_function,
+		"skill_cast_data", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config::skill_cast_data
 	);
 
 	state->new_usertype<CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config>("s_skill_result_operation_config",

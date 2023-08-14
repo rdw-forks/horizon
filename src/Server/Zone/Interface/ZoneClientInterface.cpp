@@ -912,8 +912,6 @@ void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id
 	}
 
 	CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config config;
-	
-	std::memset(&config, 0, sizeof(config));
 
 	config.skill_id = skill_id;
 	config.skill_lv = skill_lv;

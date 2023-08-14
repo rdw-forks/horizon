@@ -49,7 +49,7 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"Max", (int) ESZ_MAX
 	);
 
-	state->create_named_table("Element",
+	state->new_enum("Element",
 		"Neutral", (int) ELE_NEUTRAL,
 		"Water", (int) ELE_WATER,
 		"Earth", (int) ELE_EARTH,

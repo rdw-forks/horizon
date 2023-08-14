@@ -289,7 +289,8 @@ protected:
     public:
         enum skill_execution_operation_type
         {
-            SKILL_EXECUTION_OPERATION_TARGET = 0,
+            SKILL_EXECUTION_OPERATION_CAST = 0,
+            SKILL_EXECUTION_OPERATION_TARGET = 1,
             SKILL_EXECUTION_OPERATION_GROUND
         };
 
@@ -304,8 +305,12 @@ protected:
                 std::string contents{ "" };
                 std::shared_ptr<const skill_config_data> skd{nullptr};
                 std::shared_ptr<SkillExecution> skill_execution{nullptr};
+                element_type element{ element_type::ELE_NEUTRAL };
+                int cast_time;
+                sol::function cast_end_function;
+                sol::table skill_cast_data;
 
-                s_skill_execution_operation_config operator= (const s_skill_execution_operation_config &config)
+                void operator=(const s_skill_execution_operation_config &config)
                 {
                     skill_id = config.skill_id;
                     skill_lv = config.skill_lv;
@@ -314,7 +319,10 @@ protected:
                     contents = config.contents;
                     skd = config.skd;
                     skill_execution = config.skill_execution;
-                    return *this;
+                    element = config.element;
+                    cast_time = config.cast_time;
+                    cast_end_function = config.cast_end_function;
+                    skill_cast_data = config.skill_cast_data;
                 }
             };
             SkillExecutionOperand() = delete;

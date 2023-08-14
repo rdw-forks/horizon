@@ -1,18 +1,25 @@
+
 local MG_LIGHTNINGBOLT = require("scripts/skills/base_skill")
 
 function MG_LIGHTNINGBOLT.cast_skill(scd, skd)
-	scd.cast_time = 2000
-  
-	local notifier_config = s_entity_skill_use_notifier_config.new()
-	notifier_config.skill_id = scd.skill_id
-	notifier_config.cast_time = scd.cast_time
-	notifier_config.element = Element.Wind
-	notifier_config.source_guid = scd.source:guid()
-	notifier_config.target_guid = scd.target:guid()
-	notifier_config.target_x = scd.target:map_coords():x()
-	notifier_config.target_y = scd.target:map_coords():y()
+	scd.cast_time = skd:get_cast_time(scd.skill_lv)
+	
+	local config = s_skill_execution_operation_config.new()
+	config.skill_id = scd.skill_id
+	config.element = skd:get_element(scd.skill_lv)
+	config.cast_time = scd.cast_time
+	config.skill_cast_data = scd
+	config.skd = skd
 
-	scd.source:notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type.GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME, notifier_config)
+	config.cast_end_function = function(scd, skd)
+		if MG_LIGHTNINGBOLT.validate_after_casting(scd, skd) == false then return end
+		if MG_LIGHTNINGBOLT.perform_skill(scd, skd) == false then return end
+	end
+	
+	local stage = scd.source:combat_registry():create_combat_stage(os.time())
+	stage:push_skill_execution_operation(scd.source, scd.target, config, SkillExecutionOperationType.Cast)
+	scd.source:combat_registry():queue_combat_stage(stage)
+
 	print("Casting skill for skill " .. scd.skill_id .. " Cast Time of	" .. scd.cast_time .. " milliseconds")
 end
 
