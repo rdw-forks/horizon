@@ -565,12 +565,12 @@ int32_t AttackRange::compute()
 		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
 		
 		if (equipments[IT_EQPI_HAND_R].second.expired() == true)
-			return 0;
+			return 1;
 
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 		
 		if (rhw == nullptr || rhw->config == nullptr)
-			return 0;
+			return 1;
 
 		set_base(rhw->config->attack_range);
 

@@ -1043,20 +1043,7 @@ bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_ty
 bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage)
 {
 	ZC_NOTIFY_ACT3 pkt(get_session());
-
-	pkt._guid = guid;
-	pkt._target_guid = target_guid; 
-	pkt._start_time = start_time;
-	pkt._delay_skill = delay_skill;
-	pkt._delay_damage = delay_damage;
-	pkt._damage = damage;
-	pkt._is_sp_damaged = is_sp_damaged;
-	pkt._number_of_hits = number_of_hits;
-	pkt._action_type = action_type;
-	pkt._left_damage = left_damage; 
-
-	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
-
+	pkt.deliver(guid, target_guid, start_time, delay_skill, delay_damage, damage, is_sp_damaged, number_of_hits, action_type, left_damage);
 	return true;
 }
 void ZoneClientInterface::open_vend_shop(int account_id)

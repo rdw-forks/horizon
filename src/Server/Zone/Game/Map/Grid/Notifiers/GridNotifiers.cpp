@@ -642,3 +642,38 @@ template <> void GridEntitySkillUseNotifier::Visit<Mercenary>(GridRefManager<Mer
 template <> void GridEntitySkillUseNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridEntitySkillUseNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntitySkillUseNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+
+
+template <class T>
+void GridEntityBasicAttackNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
+
+    if (!m.get_size())
+        return;
+
+    std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+
+        tpl->get_session()->clif()->notify_damage(_config.guid, _config.target_guid, _config.start_time, _config.delay_skill,
+            _config.delay_damage, _config.damage, _config.is_sp_damaged, _config.number_of_hits, _config.action_type, _config.left_damage);
+    }
+}
+
+void GridEntityBasicAttackNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntityBasicAttackNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+

@@ -399,6 +399,30 @@ struct GridEntitySkillUseNotifier
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
+
+struct s_grid_entity_basic_attack_config
+{
+	int guid, target_guid, start_time, delay_skill, delay_damage, damage, is_sp_damaged, number_of_hits, action_type, left_damage;
+};
+
+struct GridEntityBasicAttackNotifier
+{
+	std::weak_ptr<Horizon::Zone::Entity> _entity;
+	s_grid_entity_basic_attack_config _config;
+
+	explicit GridEntityBasicAttackNotifier(const std::shared_ptr<Horizon::Zone::Entity>& entity, s_grid_entity_basic_attack_config config)
+	: _entity(entity), _config(config)
+	{ }
+
+	template <class T>
+	void notify(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
 #undef entity_ns
 
 #endif /* HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP */

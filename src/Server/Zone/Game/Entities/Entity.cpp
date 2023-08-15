@@ -284,6 +284,14 @@ void Entity::notify_nearby_players_of_skill_use(grid_entity_skill_use_notificati
 	map()->visit_in_range(map_coords(), skill_use_notifier, MAX_VIEW_RANGE);
 }
 
+void Entity::notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config)
+{
+	GridEntityBasicAttackNotifier notifier(shared_from_this(), config);
+	GridReferenceContainerVisitor<GridEntityBasicAttackNotifier, GridReferenceContainer<AllEntityTypes>> basic_attack_notifier(notifier);
+
+	map()->visit_in_range(map_coords(), basic_attack_notifier, MAX_VIEW_RANGE);
+}
+
 bool Entity::status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4)
 {
 	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
@@ -399,7 +407,7 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 				return;
 			}
 
-			int range = target->status()->attack_range()->get_base();
+			int range = this->status()->attack_range()->get_base();
 			
 			_attackable_time = status()->attack_delay()->total();
 

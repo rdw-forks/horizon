@@ -71,6 +71,7 @@ enum grid_entity_skill_use_notification_type;
 struct s_grid_sc_apply_in_skill_area_config;
 struct s_grid_apply_in_area_config;
 struct s_entity_skill_use_notifier_config;
+struct s_grid_entity_basic_attack_config;
 
 namespace Horizon
 {
@@ -173,6 +174,7 @@ public:
 	void notify_nearby_players_of_spawn();
 	void notify_nearby_players_of_movement(bool new_entry = false);
 	void notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config);
+	void notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config);
 
 	// Essentials
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);

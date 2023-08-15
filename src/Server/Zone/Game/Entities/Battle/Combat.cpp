@@ -63,11 +63,11 @@ Combat::~Combat()
 
 combat_retaliate_type Combat::weapon_attack()
 {
+    combat_damage dmg;
+    
     if (entity()->type() == ENTITY_PLAYER) {
         EquipmentListType const& equipments = entity()->downcast<Horizon::Zone::Entities::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
-
-        combat_damage dmg;
 
         // Calculate element damage ratio and damage.
         int64_t batk = entity()->status()->base_attack()->total();
@@ -83,36 +83,25 @@ combat_retaliate_type Combat::weapon_attack()
             batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_L);
             dmg.left_damage = batk;
         }
-
-        entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_damage(entity()->guid(), target()->guid(), get_sys_time(), entity()->status()->attack_motion()->total(), entity()->status()->attack_delay()->total(), dmg.right_damage, 0, 1, ZCNA3_DAMAGE, dmg.left_damage);
-
-        target()->status()->current_hp()->sub_base(dmg.right_damage + dmg.left_damage);
-
-        switch (target()->type()) {
-        case ENTITY_PLAYER:
-            break;
-        case ENTITY_NPC:
-            break;
-        case ENTITY_SKILL:
-            break;
-        case ENTITY_MONSTER:
-            target()->notify_nearby_players_of_movement(true);
-            target()->downcast<Horizon::Zone::Entities::Monster>()->on_damage_received(entity(), dmg.right_damage + dmg.left_damage);
-            break;
-        case ENTITY_PET:
-            break;
-        case ENTITY_HOMUNCULUS:
-            break;
-        case ENTITY_MERCENARY:
-            break;
-        case ENTITY_ELEMENTAL:
-            break;
-        case ENTITY_ITEM:
-        case ENTITY_UNKNOWN:
-        case ENTITY_EVENT:
-            break;
-        }
+    } else {
+        dmg.right_damage = (std::rand() % entity()->status()->creature_attack_damage()->get_min()) + (entity()->status()->creature_attack_damage()->get_max() - entity()->status()->creature_attack_damage()->get_min());
     }
+    
+    dmg.number_of_hits = 1;
+
+    CombatRegistry::MeleeResultOperation::MeleeResultOperand *melee_operand = new CombatRegistry::MeleeResultOperation::MeleeResultOperand(entity(), target());
+    CombatRegistry::CombatValueDamage *melee_value = new CombatRegistry::CombatValueDamage(dmg);
+    CombatRegistry::MeleeResultOperation *melee_operation = new CombatRegistry::MeleeResultOperation(melee_operand, CombatRegistry::MeleeResultOperation::melee_result_operation_type::MELEE_RESULT_OPERATION_DAMAGE, melee_value);
+
+    CombatRegistry::AttributeOperation::AttributeOperand *attr_operand = new CombatRegistry::AttributeOperation::AttributeOperand(entity(), target(), target()->status()->current_hp());
+    CombatRegistry::CombatValueInteger *attr_value = new CombatRegistry::CombatValueInteger(dmg.left_damage + dmg.right_damage);
+    CombatRegistry::AttributeOperation *attr_operation = new CombatRegistry::AttributeOperation(attr_operand, CombatRegistry::AttributeOperation::attribute_operation_type::ATTRIBUTE_OPERATION_SUBTRACT_FROM_BASE, attr_value);
+    
+    int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	CombatRegistry::CombatStage *stage = new CombatRegistry::CombatStage(time);
+    stage->add_operation(melee_operation);
+    stage->add_operation(attr_operation);
+    entity()->combat_registry()->queue_combat_stage(stage);
 
     return CBT_RET_NONE;
 }
@@ -420,7 +409,7 @@ void CombatRegistry::SkillResultOperation::execute() const
 void CombatRegistry::MeleeExecutionOperation::execute() const
 {
     std::shared_ptr<Entity> source = get_operand()->get_source();
-    std::shared_ptr<Entity> target = get_operand()->get_source();
+    std::shared_ptr<Entity> target = get_operand()->get_target();
     CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand *operand = dynamic_cast<CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand*>(get_operand());
     CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config config = operand->get_config();
     
@@ -437,18 +426,30 @@ void CombatRegistry::MeleeExecutionOperation::execute() const
 void CombatRegistry::MeleeResultOperation::execute() const
 {
     std::shared_ptr<Entity> source = get_operand()->get_source();
-    std::shared_ptr<Entity> target = get_operand()->get_source();
+    std::shared_ptr<Entity> target = get_operand()->get_target();
 
     switch(get_operation_sub_type())
     {
         case MELEE_RESULT_OPERATION_DAMAGE:
         {
-
+            CombatRegistry::CombatValueDamage *value = dynamic_cast<CombatRegistry::CombatValueDamage *>(get_operation_value());
+            s_grid_entity_basic_attack_config config;
+            config.guid = source->guid();
+            config.target_guid = target->guid();
+            config.start_time = get_sys_time();
+            config.delay_skill = source->status()->attack_motion()->total();
+            config.delay_damage = source->status()->attack_delay()->total();
+            config.damage = value->get_damage().right_damage;
+            config.is_sp_damaged = 0;
+            config.number_of_hits = value->get_damage().number_of_hits;
+            config.action_type = ZCNA3_DAMAGE;
+            config.left_damage = value->get_damage().left_damage;
+            source->notify_nearby_players_of_basic_attack(config);
         }
             break;
         case MELEE_RESULT_OPERATION_HEALING:
         {
-
+            // Could be a possibility?
         }
             break;
     }
