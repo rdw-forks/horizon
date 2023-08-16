@@ -58,3 +58,13 @@ bool Creature::initialize(std::shared_ptr<const monster_config_data> md)
 
 	return true;
 }
+
+void Creature::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
+{
+	Entity::on_damage_received(damage_dealer, damage);
+}
+
+void Creature::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+{
+	Entity::on_killed(killer, with_drops, with_exp);
+}

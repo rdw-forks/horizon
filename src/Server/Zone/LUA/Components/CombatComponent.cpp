@@ -71,7 +71,7 @@ void CombatComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"IgnoreEquipDef", (int) DMG_BHVR_IGNORE_EQUIP_DEF
 	);
 
-	state->create_named_table("AttributeOperationTypes",
+	state->create_named_table("AttributeOperationType",
 		"AddToBase", (int) CombatRegistry::AttributeOperation::ATTRIBUTE_OPERATION_ADD_TO_BASE,
 		"SubFromBase", (int) CombatRegistry::AttributeOperation::ATTRIBUTE_OPERATION_SUBTRACT_FROM_BASE,
 		"AddToEquip", (int) CombatRegistry::AttributeOperation::ATTRIBUTE_OPERATION_ADD_TO_EQUIP,
@@ -148,7 +148,8 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"pos_x", &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::pos_x,
 		"pos_y", &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::pos_y,
 		"contents", &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::contents,
-		"skd", &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::skd
+		"skd", &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::skd,
+		"action_type", &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::action_type
 	);
 
 	state->new_usertype<CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config>("s_melee_execution_operation_config",

@@ -619,7 +619,7 @@ void GridEntitySkillUseNotifier::notify(GridRefManager<T> &m)
                     _config.damage_value, 
                     _config.display_value,
                     _config.number_of_hits,
-                    ZCNA3_SKILL);
+                    _config.action_type);
             }
                 break;
             case GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE:

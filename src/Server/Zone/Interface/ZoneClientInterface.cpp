@@ -431,10 +431,10 @@ bool ZoneClientInterface::notify_cart_weight_update()
 }
 
 // 0x0141
-bool ZoneClientInterface::notify_attribute_update(status_point_type type, int32_t value)
+bool ZoneClientInterface::notify_attribute_update(status_point_type type, int32_t value, int32_t value2)
 {
 	ZC_COUPLESTATUS pkt(get_session());
-	pkt.deliver(type, value);
+	pkt.deliver(type, value, value2);
 	return true;
 }
 
@@ -970,7 +970,7 @@ void ZoneClientInterface::notify_hostile_skill_use(int16_t skill_id, int32_t src
 	pkt._attacked_motion = delay_motion;
 	pkt._damage = damage;
 	pkt._count = number_of_hits;
-	pkt._action = ZCNA3_SKILL;
+	pkt._action = action;
 	
 	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
 }

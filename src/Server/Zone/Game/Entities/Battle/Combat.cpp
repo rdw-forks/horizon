@@ -362,7 +362,7 @@ void CombatRegistry::SkillExecutionOperation::execute() const
 void CombatRegistry::SkillResultOperation::execute() const
 {
     std::shared_ptr<Entity> source = get_operand()->get_source();
-    std::shared_ptr<Entity> target = nullptr;
+    std::shared_ptr<Entity> target = get_operand()->get_target();
 
     switch(get_operation_sub_type())
     {
@@ -375,14 +375,19 @@ void CombatRegistry::SkillResultOperation::execute() const
             notifier_config.skill_id = operand->get_config().skill_id;
             notifier_config.skill_lv = operand->get_config().skill_lv;
             notifier_config.source_guid = source->guid();
-            notifier_config.target_guid = operand->get_target()->guid();
+            notifier_config.target_guid = target->guid();
             notifier_config.start_time = get_sys_time();
             notifier_config.attack_motion = operand->get_config().attack_motion;
             notifier_config.delay_motion = operand->get_config().delay_motion;
             notifier_config.damage_value = damage->get_damage().left_damage + damage->get_damage().right_damage;
             notifier_config.number_of_hits = damage->get_damage().number_of_hits;
+            notifier_config.action_type = operand->get_config().action_type;
             source->notify_nearby_players_of_skill_use(GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE, notifier_config);
             HLog(debug) << "Finished skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
+            if (target->type() == ENTITY_MONSTER) {
+                target->notify_nearby_players_of_movement(true);
+            }
+            target->on_damage_received(source, damage->get_damage().left_damage + damage->get_damage().right_damage);
         }
                 break;
         case SKILL_RESULT_OPERATION_HEALING:

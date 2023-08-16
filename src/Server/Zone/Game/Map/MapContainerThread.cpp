@@ -293,13 +293,13 @@ void MapContainerThread::update(uint64_t diff)
 	for (auto i = _entities.begin(); i != _entities.end();) {
 		std::shared_ptr<Entity> entity = *i;
 
-		if (entity == nullptr) {
-			_entities.erase(i++);
+		if (entity == nullptr || entity->is_dead()) {
+			i = _entities.erase(i);
 			continue;
 		}
 
 		entity->update(diff);
-		i++;
+		++i;
 	}
 	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);

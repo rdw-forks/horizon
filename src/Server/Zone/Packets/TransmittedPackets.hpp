@@ -23750,12 +23750,13 @@ public:
 	{}
 	virtual ~ZC_COUPLESTATUS() {}
 
-	void deliver(status_point_type type, int value);
+	void deliver(status_point_type type, int value, int value2);
 	ByteBuffer &serialize();
 
 /* Structure */
 	int32_t _status_point_type{ 0 };
 	int32_t _value{ 0 };
+	int32_t _value2{ 0 };
 };
 
 enum {

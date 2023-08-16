@@ -370,6 +370,7 @@ protected:
                 std::shared_ptr<const skill_config_data> skd;
                 int delay_motion;
                 int attack_motion;
+            	zc_notify_act_3_action_types action_type;
             };
             SkillResultOperand() = delete;
             SkillResultOperand(std::shared_ptr<Entity> source, std::shared_ptr<Entity> target, s_skill_result_operation_config config)

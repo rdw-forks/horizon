@@ -112,7 +112,7 @@ void Attribute::notify()
 	case STATUS_DEXTERITY:
 	case STATUS_LUCK:
 	{
-		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_attribute_update(_status_point_type, total());
+		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_attribute_update(_status_point_type, get_base(), get_status() + get_equip());
 	}
 	break;
 	case STATUS_CARTINFO:
@@ -166,12 +166,6 @@ void LuckPointCost::on_observable_changed(Luck *luk)
 	set_new_point_cost(entity(), this, luk);
 }
 
-void BaseLevel::set_base(int32_t val)
-{
-	Attribute::set_base(val);
-	this->notify_observers();
-}
-
 void BaseLevel::on_observable_changed(BaseExperience *bexp)
 {
 	if (entity() == nullptr || bexp == nullptr)
@@ -180,19 +174,10 @@ void BaseLevel::on_observable_changed(BaseExperience *bexp)
 	if (get_base() >= MAX_LEVEL)
 		return;
 
-	if (bexp->get_base() == entity()->status()->next_base_experience()->get_base()) {
+	if (bexp->get_base() >= entity()->status()->next_base_experience()->get_base()) {
+		int carried_over = bexp->get_base() - entity()->status()->next_base_experience()->get_base();
 		add_base(1);
-		bexp->set_base(0);
-	}
-}
-
-void JobLevel::set_base(int32_t val)
-{
-	Attribute::set_base(val);
-	this->notify_observers();
-
-	if (entity()->type() == ENTITY_PLAYER) {
-		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_compound_attribute_update(STATUS_JOBLEVEL, val);
+		bexp->set_base(carried_over);
 	}
 }
 
@@ -201,26 +186,17 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 	if (entity() == nullptr || jexp == nullptr)
 		return;
 
-	if (jexp->get_base() == entity()->status()->next_job_experience()->get_base()) {
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
+	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
+
+	if (entity()->status()->job_level()->get_base() >= jexpg->max_level)
+		return;
+
+	if (jexp->get_base() >= entity()->status()->next_job_experience()->get_base()) {
+		int carried_over = jexp->get_base() - entity()->status()->next_job_experience()->get_base();
 		add_base(1);
-		jexp->set_base(0);
+		jexp->set_base(carried_over);
 	}
-}
-
-void BaseExperience::set_base(int32_t val)
-{
-	Attribute::set_base(val);
-	this->notify_observers();
-
-	if (entity()->type() == ENTITY_PLAYER) {
-		entity()->downcast<Horizon::Zone::Entities::Player>()->get_session()->clif()->notify_experience_update(STATUS_BASEEXP, val);
-	}
-}
-
-void JobExperience::set_base(int32_t val)
-{
-	Attribute::set_base(val);
-	this->notify_observers();
 }
 
 void CurrentHP::damage(int damage)
@@ -239,12 +215,6 @@ void CurrentSP::reduce(int amount)
 		sub_base(amount);
 }
 
-
-void NextBaseExperience::set_base(int32_t val)
-{
-	Attribute::set_base(val);
-}
-
 void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 {
 	if (entity() == nullptr || blvl == nullptr)
@@ -254,11 +224,6 @@ void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
 	set_base(bexpg->exp[blvl->get_base() - 1]);
-}
-
-void NextJobExperience::set_base(int32_t val)
-{
-	Attribute::set_base(val);
 }
 
 void NextJobExperience::on_observable_changed(JobLevel *jlvl)

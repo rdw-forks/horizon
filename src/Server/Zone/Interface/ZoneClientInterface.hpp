@@ -141,7 +141,7 @@ public:
 	bool notify_compound_attribute_update(status_point_type type, int32_t value);
 	bool notify_status_attribute_update(status_point_type type, int32_t value, bool success);
 	bool notify_required_attribute_update(status_point_type type, int32_t value);
-	bool notify_attribute_update(status_point_type type, int32_t value);
+	bool notify_attribute_update(status_point_type type, int32_t value, int32_t value2);
 	bool notify_cart_weight_update();
 	bool notify_attack_range_update(int32_t value);
 	bool notify_experience_update(status_point_type type, int32_t value);

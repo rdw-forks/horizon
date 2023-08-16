@@ -192,6 +192,23 @@ void SkillComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"NearNPC", SKILL_USE_FAIL_THERE_ARE_NPC_AROUND,
 		"ReqBullet", SKILL_USE_FAIL_NEED_MORE_BULLET
 	);
+
+	state->create_named_table("zc_notify_act_3_action_types",
+    	"Damage", (int) ZCNA3_DAMAGE,
+    	"PickupItem", (int) ZCNA3_PICKUP_ITEM,
+    	"Sit", (int) ZCNA3_SIT,
+    	"Stand", (int) ZCNA3_STAND,
+    	"EndureDamage", (int) ZCNA3_ENDURE_DAMAGE,
+    	"Splash", (int) ZCNA3_SPLASH,
+    	"Skill", (int) ZCNA3_SKILL,
+    	"RepeatDamage", (int) ZCNA3_REPEAT_DAMAGE,
+    	"MultiHitDamage", (int) ZCNA3_MULTI_HIT_DAMAGE,
+    	"MultiHitEndureDamage", (int) ZCNA3_MULTI_HIT_ENDURE_DAMAGE,
+    	"CriticalHit", (int) ZCNA3_CRITICAL_HIT,
+    	"LuckyDodge", (int) ZCNA3_LUCKY_DODGE,
+    	"TouchSkill", (int) ZCNA3_TOUCH_SKILL,
+    	"MultiHitCritical", (int) ZCNA3_MULTI_HIT_CRITICAL
+	);
 }
 
 void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)

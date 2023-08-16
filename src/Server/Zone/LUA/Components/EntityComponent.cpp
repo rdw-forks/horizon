@@ -460,6 +460,16 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
+	state->new_usertype<Horizon::Zone::Traits::Attribute>("Attribute",
+		"add_base", &Horizon::Zone::Traits::Attribute::add_base,
+		"sub_base", &Horizon::Zone::Traits::Attribute::sub_base,
+		"add_equip", &Horizon::Zone::Traits::Attribute::add_equip,
+		"sub_equip", &Horizon::Zone::Traits::Attribute::sub_equip,
+		"add_status", &Horizon::Zone::Traits::Attribute::add_status,
+		"sub_status", &Horizon::Zone::Traits::Attribute::sub_status,
+		"total", &Horizon::Zone::Traits::Attribute::total
+	);
+
     state->new_usertype<Horizon::Zone::Traits::Status>("Status",
         "strength", &Horizon::Zone::Traits::Status::strength,
         "agility", &Horizon::Zone::Traits::Status::agility,
@@ -494,133 +504,154 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "skill_point", &Horizon::Zone::Traits::Status::skill_point
     );
 
-		state->new_usertype<Combat>("Combat",
-			sol::constructors<Combat(std::shared_ptr<Entity>, std::shared_ptr<Entity>)>(),
-			"source", &Combat::entity,
-			"target", &Combat::target
-		);
+	state->new_usertype<Combat>("Combat",
+		sol::constructors<Combat(std::shared_ptr<Entity>, std::shared_ptr<Entity>)>(),
+		"source", &Combat::entity,
+		"target", &Combat::target
+	);
 
     state->new_usertype<Horizon::Zone::Traits::BaseLevel>("BaseLevel",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::BaseLevel> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::BaseLevel::add_base,
         "sub", &Horizon::Zone::Traits::BaseLevel::sub_base,
         "get", &Horizon::Zone::Traits::BaseLevel::get_base,
         "set", &Horizon::Zone::Traits::BaseLevel::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::JobLevel>("JobLevel",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::JobLevel> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::JobLevel::add_base,
         "sub", &Horizon::Zone::Traits::JobLevel::sub_base,
         "get", &Horizon::Zone::Traits::JobLevel::get_base,
         "set", &Horizon::Zone::Traits::JobLevel::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::MaxHP>("MaxHP",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::MaxHP> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::MaxHP::add_base,
         "sub", &Horizon::Zone::Traits::MaxHP::sub_base,
         "get", &Horizon::Zone::Traits::MaxHP::get_base,
         "set", &Horizon::Zone::Traits::MaxHP::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::MaxSP>("MaxSP",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::MaxSP> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::MaxSP::add_base,
         "sub", &Horizon::Zone::Traits::MaxSP::sub_base,
         "get", &Horizon::Zone::Traits::MaxSP::get_base,
         "set", &Horizon::Zone::Traits::MaxSP::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::CurrentHP>("CurrentHP",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::CurrentHP> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::CurrentHP::add_base,
         "sub", &Horizon::Zone::Traits::CurrentHP::sub_base,
         "get", &Horizon::Zone::Traits::CurrentHP::get_base,
         "set", &Horizon::Zone::Traits::CurrentHP::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::CurrentSP>("CurrentSP",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::CurrentHP> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::CurrentSP::add_base,
         "sub", &Horizon::Zone::Traits::CurrentSP::sub_base,
         "get", &Horizon::Zone::Traits::CurrentSP::get_base,
         "set", &Horizon::Zone::Traits::CurrentSP::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::MovementSpeed>("MovementSpeed",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::MovementSpeed> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::MovementSpeed::add_base,
         "sub", &Horizon::Zone::Traits::MovementSpeed::sub_base,
         "get", &Horizon::Zone::Traits::MovementSpeed::get_base,
         "set", &Horizon::Zone::Traits::MovementSpeed::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::MaxWeight>("MaxWeight",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::MaxWeight> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::MaxWeight::add_base,
         "sub", &Horizon::Zone::Traits::MaxWeight::sub_base,
         "get", &Horizon::Zone::Traits::MaxWeight::get_base,
         "set", &Horizon::Zone::Traits::MaxWeight::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::CurrentWeight>("CurrentWeight",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::CurrentWeight> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::CurrentWeight::add_base,
         "sub", &Horizon::Zone::Traits::CurrentWeight::sub_base,
         "get", &Horizon::Zone::Traits::CurrentWeight::get_base,
         "set", &Horizon::Zone::Traits::CurrentWeight::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::Strength>("Strength",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Strength> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::Strength::add_base,
         "sub", &Horizon::Zone::Traits::Strength::sub_base,
         "get", &Horizon::Zone::Traits::Strength::get_base,
         "set", &Horizon::Zone::Traits::Strength::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::Agility>("Agility",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Agility> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::Agility::add_base,
         "sub", &Horizon::Zone::Traits::Agility::sub_base,
         "get", &Horizon::Zone::Traits::Agility::get_base,
         "set", &Horizon::Zone::Traits::Agility::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::Vitality>("Vitality",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Vitality> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::Vitality::add_base,
         "sub", &Horizon::Zone::Traits::Vitality::sub_base,
         "get", &Horizon::Zone::Traits::Vitality::get_base,
         "set", &Horizon::Zone::Traits::Vitality::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::Intelligence>("Intelligence",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Intelligence> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::Intelligence::add_base,
         "sub", &Horizon::Zone::Traits::Intelligence::sub_base,
         "get", &Horizon::Zone::Traits::Intelligence::get_base,
         "set", &Horizon::Zone::Traits::Intelligence::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::Dexterity>("Dexterity",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Dexterity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::Dexterity::add_base,
         "sub", &Horizon::Zone::Traits::Dexterity::sub_base,
         "get", &Horizon::Zone::Traits::Dexterity::get_base,
         "set", &Horizon::Zone::Traits::Dexterity::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::Luck>("Luck",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Luck> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::Luck::add_base,
         "sub", &Horizon::Zone::Traits::Luck::sub_base,
         "get", &Horizon::Zone::Traits::Luck::get_base,
         "set", &Horizon::Zone::Traits::Luck::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::BaseExperience>("BaseExperience",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::BaseExperience> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::BaseExperience::add_base,
         "sub", &Horizon::Zone::Traits::BaseExperience::sub_base,
         "get", &Horizon::Zone::Traits::BaseExperience::get_base,
         "set", &Horizon::Zone::Traits::BaseExperience::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::JobExperience>("JobExperience",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::JobExperience> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::JobExperience::add_base,
         "sub", &Horizon::Zone::Traits::JobExperience::sub_base,
         "get", &Horizon::Zone::Traits::JobExperience::get_base,
         "set", &Horizon::Zone::Traits::JobExperience::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::NextBaseExperience>("NextBaseExperience",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::NextBaseExperience> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::NextBaseExperience::add_base,
         "sub", &Horizon::Zone::Traits::NextBaseExperience::sub_base,
         "get", &Horizon::Zone::Traits::NextBaseExperience::get_base,
         "set", &Horizon::Zone::Traits::NextBaseExperience::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::NextJobExperience>("NextJobExperience",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::NextJobExperience> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::NextJobExperience::add_base,
         "sub", &Horizon::Zone::Traits::NextJobExperience::sub_base,
         "get", &Horizon::Zone::Traits::NextJobExperience::get_base,
         "set", &Horizon::Zone::Traits::NextJobExperience::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::StatusPoint>("StatusPoint",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::StatusPoint> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::StatusPoint::add_base,
         "sub", &Horizon::Zone::Traits::StatusPoint::sub_base,
         "get", &Horizon::Zone::Traits::StatusPoint::get_base,
         "set", &Horizon::Zone::Traits::StatusPoint::set_base
     );
     state->new_usertype<Horizon::Zone::Traits::SkillPoint>("SkillPoint",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::SkillPoint> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
         "add", &Horizon::Zone::Traits::SkillPoint::add_base,
         "sub", &Horizon::Zone::Traits::SkillPoint::sub_base,
         "get", &Horizon::Zone::Traits::SkillPoint::get_base,

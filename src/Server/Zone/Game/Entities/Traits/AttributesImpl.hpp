@@ -87,10 +87,26 @@ namespace Traits
 		{ }
 		~BaseLevel() { };
 
-		void set_base(int32_t val) override;
 		void on_observable_changed(BaseExperience *wbexp);
 		void notify();
 
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+			this->notify_observers();
+		}
+		
+		void set_equip(int32_t val) override
+		{
+			Attribute::set_equip(val);
+			this->notify_observers();
+		}
+		
+		void set_status(int32_t val) override
+		{
+			Attribute::set_status(val);
+			this->notify_observers();
+		}
 	};
 
 	class JobLevel
@@ -104,9 +120,25 @@ namespace Traits
 		{ }
 		~JobLevel() { };
 
-		void set_base(int32_t val) override;
-
 		void on_observable_changed(JobExperience *wjexp);
+		
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+			this->notify_observers();
+		}
+		
+		void set_equip(int32_t val) override
+		{
+			Attribute::set_equip(val);
+			this->notify_observers();
+		}
+		
+		void set_status(int32_t val) override
+		{
+			Attribute::set_status(val);
+			this->notify_observers();
+		}
 	};
 
 	class MaxHP
@@ -114,7 +146,7 @@ namespace Traits
 	{
 	public:
 		MaxHP(std::weak_ptr<Entity> entity, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(entity, STATUS_MAXHP, equip, status)
+		: Attribute(entity, STATUS_MAXHP, base, equip, status)
 		{ }
 		~MaxHP() { };
 	};
@@ -370,7 +402,23 @@ namespace Traits
 		{ }
 		~BaseExperience() { };
 
-		void set_base(int32_t val) override;
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+			this->notify_observers();
+		}
+		
+		void set_equip(int32_t val) override
+		{
+			Attribute::set_equip(val);
+			this->notify_observers();
+		}
+		
+		void set_status(int32_t val) override
+		{
+			Attribute::set_status(val);
+			this->notify_observers();
+		}
 	};
 
 	class JobExperience
@@ -384,7 +432,23 @@ namespace Traits
 		{ }
 		~JobExperience() { };
 
-		void set_base(int32_t val) override;
+		void set_base(int32_t val) override
+		{
+			Attribute::set_base(val);
+			this->notify_observers();
+		}
+		
+		void set_equip(int32_t val) override
+		{
+			Attribute::set_equip(val);
+			this->notify_observers();
+		}
+		
+		void set_status(int32_t val) override
+		{
+			Attribute::set_status(val);
+			this->notify_observers();
+		}
 	};
 
 	class Zeny
@@ -456,8 +520,6 @@ namespace Traits
 		{ }
 		~NextBaseExperience() { };
 
-		void set_base(int32_t val) override;
-
 		void on_observable_changed(BaseLevel *blvl);
 	};
 
@@ -470,19 +532,15 @@ namespace Traits
 		{ }
 		~NextJobExperience() { };
 
-		void set_base(int32_t val) override;
-
 		void on_observable_changed(JobLevel *jlvl);
 	};
 
 	class MaxWeight
-	: public Attribute,
-	ObservableStatus<MaxWeight *, Strength *>
+	: public Attribute
 	{
 	public:
 		MaxWeight(std::weak_ptr<Entity> entity, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(entity, STATUS_MAX_WEIGHT, base, equip, status),
-		ObservableStatus(nullptr)
+		: Attribute(entity, STATUS_MAX_WEIGHT, base, equip, status)
 		{ }
 		~MaxWeight() { };
 

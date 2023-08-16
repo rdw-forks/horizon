@@ -1033,10 +1033,11 @@ ByteBuffer &ZC_COUPLENAME::serialize()
 /**
  * ZC_COUPLESTATUS
  */
-void ZC_COUPLESTATUS::deliver(status_point_type type, int value)
+void ZC_COUPLESTATUS::deliver(status_point_type type, int value, int value2)
 {
 	_status_point_type = type;
 	_value = value;
+	_value2 = value2;
 
 	serialize();
 	transmit();
@@ -1046,6 +1047,7 @@ ByteBuffer &ZC_COUPLESTATUS::serialize()
 	buf() << _packet_id;
 	buf() << _status_point_type;
 	buf() << _value;
+	buf() << _value2;
 	return buf();
 }
 /**

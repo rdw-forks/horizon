@@ -371,6 +371,20 @@ bool Entity::is_dead() {
 	return status()->current_hp()->get_base() == 0; 
 }
 
+void Entity::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
+{
+	if (status()->current_hp()->total() < damage) {
+		status()->current_hp()->set_base(0);
+		on_killed(damage_dealer);
+		return;
+	}
+}
+
+void Entity::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+{
+
+}
+
 bool Entity::stop_attacking()
 {
 	if (!is_attacking())

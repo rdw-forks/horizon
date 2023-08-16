@@ -225,7 +225,6 @@ void MonsterComponent::deregister_single_spawned_monster(uint32_t guid) {
 		if ((*i).second->guid() == guid) {
 			(*i).second->finalize();
 			// Remove the entity from the containers.
-			get_container()->remove_entity((*i).second);
 			_monster_spawned_map.erase(i);
 			return;
 		}
