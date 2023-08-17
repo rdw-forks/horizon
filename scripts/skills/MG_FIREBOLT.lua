@@ -28,10 +28,9 @@ function MG_FIREBOLT.perform_skill(scd, skd)
 		local int = scd.source:status():intelligence():get()
 		local min_matk = int + math.floor(int / 7) ^ 2
 		local max_matk = int + math.floor(int / 5) ^ 2
-
+		local find_skill_by_name = require("scripts/modules/find_skill_by_name")
+		local sk_config = find_skill_by_name("MG_FIREBOLT")
 		local damage = math.random(min_matk, max_matk) * scd.skill_lv
-
-		scd.target:status():current_hp():sub(damage)
 
 		local attack_motion = 3050
 		local attacked_motion = 500
@@ -39,6 +38,7 @@ function MG_FIREBOLT.perform_skill(scd, skd)
 		local config = s_skill_result_operation_config.new()
 		config.skill_id = scd.skill_id
 		config.skill_lv = scd.skill_lv
+		config.action_type = zc_notify_act_3_action_types.MultiHitDamage
 		local combat_dmg = combat_damage.new()
 		
 		combat_dmg.skill_cast_data = scd
@@ -47,9 +47,10 @@ function MG_FIREBOLT.perform_skill(scd, skd)
 		combat_dmg.left_damage = damage 
 		combat_dmg.right_damage = 0
 		combat_dmg.skill_lv = scd.skill_lv
-		combat_dmg.number_of_hits = 1
+		combat_dmg.number_of_hits = sk_config["NumberOfHits"][scd.skill_lv]
 		
 		local stage = scd.source:combat_registry():create_combat_stage(os.time())
+		stage:push_attribute_operation(scd.source, scd.target, scd.target:status():current_hp():attribute(), AttributeOperationType.SubFromBase, damage)
 		stage:push_skill_result_damage_operation(scd.source, scd.target, config, combat_dmg)
 		scd.source:combat_registry():queue_combat_stage(stage)
 		print("queued combat result damage for skill " .. scd.skill_id)
