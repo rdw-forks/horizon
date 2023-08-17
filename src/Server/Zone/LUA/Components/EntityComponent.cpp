@@ -657,6 +657,34 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "get", &Horizon::Zone::Traits::SkillPoint::get_base,
         "set", &Horizon::Zone::Traits::SkillPoint::set_base
     );
+    state->new_usertype<Horizon::Zone::Traits::Zeny>("Zeny",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Zeny> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
+        "add", &Horizon::Zone::Traits::Zeny::add_base,
+        "sub", &Horizon::Zone::Traits::Zeny::sub_base,
+        "get", &Horizon::Zone::Traits::Zeny::get_base,
+        "set", &Horizon::Zone::Traits::Zeny::set_base
+    );
+    state->new_usertype<Horizon::Zone::Traits::Honor>("Honor",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Honor> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
+        "add", &Horizon::Zone::Traits::Honor::add_base,
+        "sub", &Horizon::Zone::Traits::Honor::sub_base,
+        "get", &Horizon::Zone::Traits::Honor::get_base,
+        "set", &Horizon::Zone::Traits::Honor::set_base
+    );
+    state->new_usertype<Horizon::Zone::Traits::Manner>("Manner",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Manner> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
+        "add", &Horizon::Zone::Traits::Manner::add_base,
+        "sub", &Horizon::Zone::Traits::Manner::sub_base,
+        "get", &Horizon::Zone::Traits::Manner::get_base,
+        "set", &Horizon::Zone::Traits::Manner::set_base
+    );
+    state->new_usertype<Horizon::Zone::Traits::Virtue>("Virtue",
+        "attribute", [](std::shared_ptr<Horizon::Zone::Traits::Virtue> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); },
+        "add", &Horizon::Zone::Traits::Virtue::add_base,
+        "sub", &Horizon::Zone::Traits::Virtue::sub_base,
+        "get", &Horizon::Zone::Traits::Virtue::get_base,
+        "set", &Horizon::Zone::Traits::Virtue::set_base
+    );
 	state->new_usertype<Entity>("Entity",
 		"dest_coords", &Entity::dest_coords,
 		"walk_to_coordinates", &Entity::walk_to_coordinates,
