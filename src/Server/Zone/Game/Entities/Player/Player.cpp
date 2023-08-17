@@ -488,6 +488,10 @@ void Player::on_map_enter()
 
 	inventory()->notify_all();
 
+	// Notify Weight.
+	status()->current_weight()->notify();
+	status()->max_weight()->notify();
+
 	// clear viewport
 	get_viewport_entities().clear();
 
