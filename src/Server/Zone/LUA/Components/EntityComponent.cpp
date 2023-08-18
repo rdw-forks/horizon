@@ -92,6 +92,337 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"Dead", (int) POSTURE_DEAD,
 		"Sitting", (int) POSTURE_SITTING
 	);
+
+	sol::table tbl = state->create_named_table("Job");
+
+	tbl["Novice"] = (int) JOB_NOVICE;
+	tbl["Swordman"] = (int) JOB_SWORDMAN;
+	tbl["Magician"] = (int) JOB_MAGE;
+	tbl["Archer"] = (int) JOB_ARCHER;
+	tbl["Acolyte"] = (int) JOB_ACOLYTE;
+	tbl["Merchant"] = (int) JOB_MERCHANT;
+	tbl["Thief"] = (int) JOB_THIEF;
+	tbl["Knight"] = (int) JOB_KNIGHT;
+	tbl["Priest"] = (int) JOB_PRIEST;
+	tbl["Wizard"] = (int) JOB_WIZARD;
+	tbl["Blacksmith"] = (int) JOB_BLACKSMITH;
+	tbl["Hunter"] = (int) JOB_HUNTER;
+	tbl["Assassin"] = (int) JOB_ASSASSIN;
+	//JOB_KNIGHT2
+	tbl["Crusader"] = (int) JOB_CRUSADER;
+	tbl["Monk"] = (int) JOB_MONK;
+	tbl["Sage"] = (int) JOB_SAGE;
+	tbl["Rogue"] = (int) JOB_ROGUE;
+	tbl["Alchemist"] = (int) JOB_ALCHEMIST;
+	tbl["Bard"] = (int) JOB_BARD;
+	tbl["Dancer"] = (int) JOB_DANCER;
+	tbl["Wedding"] = (int) JOB_WEDDING;
+	tbl["SuperNovice"] = (int) JOB_SUPER_NOVICE;
+	tbl["Gunslinger"] = (int) JOB_GUNSLINGER;
+	tbl["Ninja"] = (int) JOB_NINJA;
+	tbl["Xmas"] = (int) JOB_XMAS;
+	tbl["Summer"] = (int) JOB_SUMMER;
+	//4000-
+	tbl["HighNovice"] = (int) JOB_NOVICE_HIGH;
+	tbl["HighSwordman"] = (int) JOB_SWORDMAN_HIGH;
+	tbl["HighMagician"] = (int) JOB_MAGE_HIGH;
+	tbl["HighArcher"] = (int) JOB_ARCHER_HIGH;
+	tbl["HighAcolyte"] = (int) JOB_ACOLYTE_HIGH;
+	tbl["HighMerchant"] = (int) JOB_MERCHANT_HIGH;
+	tbl["HighThief"] = (int) JOB_THIEF_HIGH;
+	tbl["LordKnight"] = (int) JOB_LORD_KNIGHT;
+	tbl["HighPriest"] = (int) JOB_HIGH_PRIEST;
+	tbl["HighWizard"] = (int) JOB_HIGH_WIZARD;
+	tbl["Whitesmith"] = (int) JOB_WHITESMITH;
+	tbl["Sniper"] = (int) JOB_SNIPER;
+	tbl["AssassinCross"] = (int) JOB_ASSASSIN_CROSS;
+	tbl["Paladin"] = (int) JOB_PALADIN;
+	tbl["Champion"] = (int) JOB_CHAMPION;
+	tbl["Professor"] = (int) JOB_PROFESSOR;
+	tbl["Stalker"] = (int) JOB_STALKER;
+	tbl["Creator"] = (int) JOB_CREATOR;
+	tbl["Clown"] = (int) JOB_CLOWN;
+	tbl["Gypsy"] = (int) JOB_GYPSY;
+	tbl["BabyNovice"] = (int) JOB_BABY_NOVICE;
+	tbl["BabySwordman"] = (int) JOB_BABY_SWORDMAN;
+	tbl["BabyMagician"] = (int) JOB_BABY_MAGE;
+	tbl["BabyArcher"] = (int) JOB_BABY_ARCHER;
+	tbl["BabyAcolyte"] = (int) JOB_BABY_ACOLYTE;
+	tbl["BabyMerchant"] = (int) JOB_BABY_MERCHANT;
+	tbl["BabyThief"] = (int) JOB_BABY_THIEF;
+	tbl["BabyKnight"] = (int) JOB_BABY_KNIGHT;
+	tbl["BabyPriest"] = (int) JOB_BABY_PRIEST;
+	tbl["BabyWizard"] = (int) JOB_BABY_WIZARD;
+	tbl["BabyBlacksmith"] = (int) JOB_BABY_BLACKSMITH;
+	tbl["BabyHunter"] = (int) JOB_BABY_HUNTER;
+	tbl["BabyAssassin"] = (int) JOB_BABY_ASSASSIN;
+	tbl["BabyCrusader"] = (int) JOB_BABY_CRUSADER;
+	tbl["BabyMonk"] = (int) JOB_BABY_MONK;
+	tbl["BabySage"] = (int) JOB_BABY_SAGE;
+	tbl["BabyRogue"] = (int) JOB_BABY_ROGUE;
+	tbl["BabyAlchemist"] = (int) JOB_BABY_ALCHEMIST;
+	tbl["BabyBard"] = (int) JOB_BABY_BARD;
+	tbl["BabyDancer"] = (int) JOB_BABY_DANCER;
+	tbl["SuperBaby"] = (int) JOB_SUPER_BABY;
+	tbl["Taekwon"] = (int) JOB_TAEKWON;
+	tbl["StarGladiator"] = (int) JOB_STAR_GLADIATOR;
+	tbl["SoulLinker"] = (int) JOB_SOUL_LINKER;
+	tbl["Gangsi"] = (int) JOB_GANGSI;
+	tbl["DeathKnight"] = (int) JOB_DEATH_KNIGHT;
+	tbl["DarkCollector"] = (int) JOB_DARK_COLLECTOR;
+	// 4053-
+	tbl["RuneKnight"] = (int) JOB_RUNE_KNIGHT;
+	tbl["Warlock"] = (int) JOB_WARLOCK;
+	tbl["Ranger"] = (int) JOB_RANGER;
+	tbl["Archbishop"] = (int) JOB_ARCH_BISHOP;
+	tbl["Mechanic"] = (int) JOB_MECHANIC;
+	tbl["GuillotineCross"] = (int) JOB_GUILLOTINE_CROSS;
+	tbl["RuneKnightTrans"] = (int) JOB_RUNE_KNIGHT_T;
+	tbl["WarlockTrans"] = (int) JOB_WARLOCK_T;
+	tbl["RangerTrans"] = (int) JOB_RANGER_T;
+	tbl["ArchbishopTrans"] = (int) JOB_ARCH_BISHOP_T;
+	tbl["MechanicTrans"] = (int) JOB_MECHANIC_T;
+	tbl["GuillotineCrossTrans"] = (int) JOB_GUILLOTINE_CROSS_T;
+	tbl["RoyalGuard"] = (int) JOB_ROYAL_GUARD;
+	tbl["Sorcerer"] = (int) JOB_SORCERER;
+	tbl["Minstrel"] = (int) JOB_MINSTREL;
+	tbl["Wanderer"] = (int) JOB_WANDERER;
+	tbl["Sura"] = (int) JOB_SURA;
+	tbl["Genetic"] = (int) JOB_GENETIC;
+	tbl["ShadowChaser"] = (int) JOB_SHADOW_CHASER;
+	tbl["RoyalGuardTrans"] = (int) JOB_ROYAL_GUARD_T;
+	tbl["SorcererTrans"] = (int) JOB_SORCERER_T;
+	tbl["MinstrelTrans"] = (int) JOB_MINSTREL_T;
+	tbl["WandererTrans"] = (int) JOB_WANDERER_T;
+	tbl["SuraTrans"] = (int) JOB_SURA_T;
+	tbl["GeneticTrans"] = (int) JOB_GENETIC_T;
+	tbl["ShadowChaserTrans"] = (int) JOB_SHADOW_CHASER_T;
+	//4088-4097
+	tbl["BabyRuneKnight"] = (int) JOB_BABY_RUNE_KNIGHT;
+	tbl["BabyWarlock"] = (int) JOB_BABY_WARLOCK;
+	tbl["BabyRanger"] = (int) JOB_BABY_RANGER;
+	tbl["BabyArchbishop"] = (int) JOB_BABY_ARCH_BISHOP;
+	tbl["BabyMechanic"] = (int) JOB_BABY_MECHANIC;
+	tbl["BabyGuillotineCross"] = (int) JOB_BABY_GUILLOTINE_CROSS;
+	tbl["BabyRoyalGuard"] = (int) JOB_BABY_ROYAL_GUARD;
+	tbl["BabySorcerer"] = (int) JOB_BABY_SORCERER;
+	tbl["BabyMinstrel"] = (int) JOB_BABY_MINSTREL;
+	tbl["BabyWanderer"] = (int) JOB_BABY_WANDERER;
+	tbl["BabySura"] = (int) JOB_BABY_SURA;
+	tbl["BabyGenetic"] = (int) JOB_BABY_GENETIC;
+	tbl["BabyShadowChaser"] = (int) JOB_BABY_SHADOW_CHASER;
+	tbl["SuperNoviceExpanded"] = (int) JOB_SUPER_NOVICE_E;
+	tbl["SuperBabyExpanded"] = (int) JOB_SUPER_BABY_E;
+	tbl["Kagerou"] = (int) JOB_KAGEROU;
+	tbl["Oboro"] = (int) JOB_OBORO;
+	tbl["Rebellion"] = (int) JOB_REBELLION;
+	tbl["Summoner"] = (int) JOB_SUMMONER;
+	tbl["StartBase"] = (int) JOB_BASE_START;
+	tbl["EndBase"] = (int) JOB_BASE_END;
+	tbl["Start_2_1"] = (int) JOB_2_1_START;
+	tbl["End_2_1"] = (int) JOB_2_1_END;
+	tbl["Start_2_2"] = (int) JOB_2_2_START;
+	tbl["End_2_2"] = (int) JOB_2_2_END;
+	tbl["StartTransBase"] = (int) JOB_TRANS_BASE_START;
+	tbl["EndTransBase"] = (int) JOB_TRANS_BASE_END;
+	tbl["Start_Trans_2_1"] = (int) JOB_TRANS_2_1_START;
+	tbl["End_Trans_2_1"] = (int) JOB_TRANS_2_1_END;
+	tbl["Start_Trans_2_2"] = (int) JOB_TRANS_2_2_START;
+	tbl["End_Trans_2_2"] = (int) JOB_TRANS_2_2_END;
+	tbl["Start_Baby_Base"] = (int) JOB_BABY_BASE_START;
+	tbl["End_Baby_Base"] = (int) JOB_BABY_BASE_END;
+	tbl["Start_Baby_2_1"] = (int) JOB_BABY_2_1_START;
+	tbl["End_Baby_2_1"] = (int) JOB_BABY_2_1_END;
+	tbl["Start_Baby_2_2"] = (int) JOB_BABY_2_2_START;
+	tbl["End_Baby_2_2"] = (int) JOB_BABY_2_2_END;
+	tbl["Start_3_1"] = (int) JOB_3_1_START;
+	tbl["End_3_1"] = (int) JOB_3_1_END;
+	tbl["Start_3_2"] = (int) JOB_3_2_START;
+	tbl["End_3_2"] = (int) JOB_3_2_END;
+	tbl["Start_Trans_3_1"] = (int) JOB_TRANS_3_1_START;
+	tbl["End_Trans_3_1"] = (int) JOB_TRANS_3_1_END;
+	tbl["Start_Trans_3_2"] = (int) JOB_TRANS_3_2_START;
+	tbl["End_Trans_3_2"] = (int) JOB_TRANS_3_2_END;
+	tbl["Start_Baby_3_1"] = (int) JOB_BABY_3_1_START;
+	tbl["End_Baby_3_1"] = (int) JOB_BABY_3_1_END;
+	tbl["Start_Baby_3_2"] = (int) JOB_BABY_3_2_START;
+	tbl["End_Baby_3_2"] = (int) JOB_BABY_3_2_END;
+
+	sol::table job_mask_table = state->create_named_table("JobMask");
+	job_mask_table["Invalid"] = (int) JMASK_INVALID;
+	job_mask_table["Novice"] = (int) JMASK_NOVICE;
+	job_mask_table["Swordman"] = (int) JMASK_SWORDMAN;
+	job_mask_table["Magician"] = (int) JMASK_MAGE;
+	job_mask_table["Archer"] = (int) JMASK_ARCHER;
+	job_mask_table["Acolyte"] = (int) JMASK_ACOLYTE;
+	job_mask_table["Merchant"] = (int) JMASK_MERCHANT;
+	job_mask_table["Thief"] = (int) JMASK_THIEF;
+	job_mask_table["Gangsi"] = (int) JMASK_GANGSI;
+	job_mask_table["Summoner"] = (int) JMASK_SUMMONER;
+	job_mask_table["Taekwon"] = (int) JMASK_TAEKWON_BASE;
+	job_mask_table["Gunslinger"] = (int) JMASK_GUNSLINGER_BASE;
+	job_mask_table["Ninja"] = (int) JMASK_NINJA_BASE;
+	job_mask_table["BaseClass"] = (int) JMASK_BASE;
+	job_mask_table["Wedding"] = (int) JMASK_WEDDING;
+	job_mask_table["2_1_Class"] = (int) JMASK_2_1;
+	job_mask_table["2_2_Class"] = (int) JMASK_2_2;
+	job_mask_table["BabyBaseClass"] = (int) JMASK_BABY_BASE;
+	job_mask_table["Baby_1_1_Class"] = (int) JMASK_BABY_1_1;
+	job_mask_table["Baby_1_2_Class"] = (int) JMASK_BABY_1_2;
+	job_mask_table["Baby_2_1_Class"] = (int) JMASK_BABY_2_1;
+	job_mask_table["Baby_2_2_Class"] = (int) JMASK_BABY_2_2;
+	job_mask_table["TransBaseClass"] = (int) JMASK_TRANS_BASE;
+	job_mask_table["Trans_1_1_Class"] = (int) JMASK_TRANS_1_1;
+	job_mask_table["Trans_1_2_Class"] = (int) JMASK_TRANS_1_2;
+	job_mask_table["Trans_2_1_Class"] = (int) JMASK_TRANS_2_1;
+	job_mask_table["Trans_2_2_Class"] = (int) JMASK_TRANS_2_2;
+	job_mask_table["3_1_Class"] = (int) JMASK_3_1;
+	job_mask_table["3_2_Class"] = (int) JMASK_3_2;
+	job_mask_table["Trans_3_1_Class"] = (int) JMASK_TRANS_3_1;
+	job_mask_table["Trans_3_2_Class"] = (int) JMASK_TRANS_3_2;
+	job_mask_table["Baby_3_1_Class"] = (int) JMASK_BABY_3_1;
+	job_mask_table["Baby_3_3_Class"] = (int) JMASK_BABY_3_2;
+	job_mask_table["ExpandedClass"] = (int) JMASK_EXPANDED;
+	job_mask_table["ExpandedBabyClass"] = (int) JMASK_EXPANDED_BABY;
+	job_mask_table["Expanded_2_1_Class"] = (int) JMASK_EXPANDED_2_1;
+	job_mask_table["Expanded_2_2_Class"] = (int) JMASK_EXPANDED_2_2;
+
+	job_mask_table["NormalClass"] = (int) JMASK_NORMAL;
+	job_mask_table["BabyClass"] = (int) JMASK_BABY;
+	job_mask_table["TransClass"] = (int) JMASK_TRANS;
+	job_mask_table["ThirdClass"] = (int) JMASK_3;
+	job_mask_table["TransThirdClass"] = (int) JMASK_TRANS_3;
+	job_mask_table["BabyThirdClass"] = (int) JMASK_BABY_3;
+
+	// 2-1 Jobs
+	job_mask_table["Knight"] = (int) JMASK_KNIGHT;
+	job_mask_table["Wizard"] = (int) JMASK_WIZARD;
+	job_mask_table["Hunter"] = (int) JMASK_HUNTER;
+	job_mask_table["Priest"] = (int) JMASK_PRIEST;
+	job_mask_table["Blacksmith"] = (int) JMASK_BLACKSMITH;
+	job_mask_table["Assassin"] = (int) JMASK_ASSASSIN;
+	job_mask_table["DeathKnight"] = (int) JMASK_DEATH_KNIGHT;
+
+	// 2-2 Jobs
+	job_mask_table["Crusader"] = (int) JMASK_CRUSADER;
+	job_mask_table["Sage"] = (int) JMASK_SAGE;
+	job_mask_table["BardOrDancer"] = (int) JMASK_BARDDANCER;
+	job_mask_table["Monk"] = (int) JMASK_MONK;
+	job_mask_table["Alchemist"] = (int) JMASK_ALCHEMIST;
+	job_mask_table["Rogue"] = (int) JMASK_ROGUE;
+	job_mask_table["DarkCollector"] = (int) JMASK_DARK_COLLECTOR;
+
+	//Trans Novice And Trans 1-1 J
+	job_mask_table["HighNovice"] = (int) JMASK_NOVICE_HIGH;
+	job_mask_table["HighSwordman"] = (int) JMASK_SWORDMAN_HIGH;
+	job_mask_table["HighMagician"] = (int) JMASK_MAGE_HIGH;
+	job_mask_table["HighArcher"] = (int) JMASK_ARCHER_HIGH;
+	job_mask_table["HighAcolyte"] = (int) JMASK_ACOLYTE_HIGH;
+	job_mask_table["HighMerchant"] = (int) JMASK_MERCHANT_HIGH;
+	job_mask_table["HighThief"] = (int) JMASK_THIEF_HIGH;
+
+	//Trans 2-1 Jobs
+	job_mask_table["LordKnight"] = (int) JMASK_LORD_KNIGHT;
+	job_mask_table["HighWizard"] = (int) JMASK_HIGH_WIZARD;
+	job_mask_table["Sniper"] = (int) JMASK_SNIPER;
+	job_mask_table["HighPriest"] = (int) JMASK_HIGH_PRIEST;
+	job_mask_table["Whitesmith"] = (int) JMASK_WHITESMITH;
+	job_mask_table["AssassinCross"] = (int) JMASK_ASSASSIN_CROSS;
+
+	//Trans 2-2 Jobs
+	job_mask_table["Paladin"] = (int) JMASK_PALADIN;
+	job_mask_table["Professor"] = (int) JMASK_PROFESSOR;
+	job_mask_table["ClownOrGypsy"] = (int) JMASK_CLOWNGYPSY;
+	job_mask_table["Champion"] = (int) JMASK_CHAMPION;
+	job_mask_table["Creator"] = (int) JMASK_CREATOR;
+	job_mask_table["Stalker"] = (int) JMASK_STALKER;
+
+	//Baby Novice And Baby 1-1 Job
+	job_mask_table["BabyNovice"] = (int) JMASK_BABY_NOVICE;
+	job_mask_table["BabySwordman"] = (int) JMASK_BABY_SWORDMAN;
+	job_mask_table["BabyMage"] = (int) JMASK_BABY_MAGE;
+	job_mask_table["BabyArcher"] = (int) JMASK_BABY_ARCHER;
+	job_mask_table["BabyAcolyte"] = (int) JMASK_BABY_ACOLYTE;
+	job_mask_table["BabyMerchant"] = (int) JMASK_BABY_MERCHANT;
+	job_mask_table["BabyThief"] = (int) JMASK_BABY_THIEF;
+
+	//Baby 2-1 Jobs
+	job_mask_table["BabyKnight"] = (int) JMASK_BABY_KNIGHT;
+	job_mask_table["BabyWizard"] = (int) JMASK_BABY_WIZARD;
+	job_mask_table["BabyHunter"] = (int) JMASK_BABY_HUNTER;
+	job_mask_table["BabyPriest"] = (int) JMASK_BABY_PRIEST;
+	job_mask_table["BabyBlacksmith"] = (int) JMASK_BABY_BLACKSMITH;
+	job_mask_table["BabyAssassin"] = (int) JMASK_BABY_ASSASSIN;
+
+	//Baby 2-2 Jobs
+	job_mask_table["BabyCrusader"] = (int) JMASK_BABY_CRUSADER;
+	job_mask_table["BabySage"] = (int) JMASK_BABY_SAGE;
+	job_mask_table["BabyBardOrDancer"] = (int) JMASK_BABY_BARDDANCER;
+	job_mask_table["BabyMonk"] = (int) JMASK_BABY_MONK;
+	job_mask_table["BabyAlchemist"] = (int) JMASK_BABY_ALCHEMIST;
+	job_mask_table["BabyRogue"] = (int) JMASK_BABY_ROGUE;
+
+	//3-1 Jobs
+	job_mask_table["RuneKnight"] = (int) JMASK_RUNE_KNIGHT;
+	job_mask_table["Warlock"] = (int) JMASK_WARLOCK;
+	job_mask_table["Ranger"] = (int) JMASK_RANGER;
+	job_mask_table["Archbishop"] = (int) JMASK_ARCH_BISHOP;
+	job_mask_table["Mechanic"] = (int) JMASK_MECHANIC;
+	job_mask_table["GuillotineCross"] = (int) JMASK_GUILLOTINE_CROSS;
+
+	//3-2 Jobs
+	job_mask_table["RoyalGuard"] = (int) JMASK_ROYAL_GUARD;
+	job_mask_table["Sorcerer"] = (int) JMASK_SORCERER;
+	job_mask_table["MinstrelOrWanderer"] = (int) JMASK_MINSTRELWANDERER;
+	job_mask_table["Sura"] = (int) JMASK_SURA;
+	job_mask_table["Genetic"] = (int) JMASK_GENETIC;
+	job_mask_table["ShadowChaser"] = (int) JMASK_SHADOW_CHASER;
+
+	//Trans 3-1 Jobs
+	job_mask_table["RuneKnightTrans"] = (int) JMASK_RUNE_KNIGHT_T;
+	job_mask_table["WarlockTrans"] = (int) JMASK_WARLOCK_T;
+	job_mask_table["RangerTrans"] = (int) JMASK_RANGER_T;
+	job_mask_table["ArchbishopTrans"] = (int) JMASK_ARCH_BISHOP_T;
+	job_mask_table["MechanicTrans"] = (int) JMASK_MECHANIC_T;
+	job_mask_table["GuillotineCrossTrans"] = (int) JMASK_GUILLOTINE_CROSS_T;
+
+	//Trans 3-2 Jobs
+	job_mask_table["RoyalGuardTrans"] = (int) JMASK_ROYAL_GUARD_T;
+	job_mask_table["SorcererTrans"] = (int) JMASK_SORCERER_T;
+	job_mask_table["MinstrelOrWandererTrans"] = (int) JMASK_MINSTRELWANDERER_T;
+	job_mask_table["SuraTrans"] = (int) JMASK_SURA_T;
+	job_mask_table["GeneticTrans"] = (int) JMASK_GENETIC_T;
+	job_mask_table["ShadowChaserTrans"] = (int) JMASK_SHADOW_CHASER_T;
+
+	//Baby 3-1 Jobs
+	job_mask_table["BabyRuneKnight"] = (int) JMASK_BABY_RUNE_KNIGHT;
+	job_mask_table["BabyWarlock"] = (int) JMASK_BABY_WARLOCK;
+	job_mask_table["BabyRanger"] = (int) JMASK_BABY_RANGER;
+	job_mask_table["BabyArchbishop"] = (int) JMASK_BABY_ARCH_BISHOP;
+	job_mask_table["BabyMechanic"] = (int) JMASK_BABY_MECHANIC;
+	job_mask_table["BabyGuillotineCross"] = (int) JMASK_BABY_GUILLOTINE_CROSS;
+
+	//Baby 3-2 Jobs
+	job_mask_table["BabyRoyalGuard"] = (int) JMASK_BABY_ROYAL_GUARD;
+	job_mask_table["BabySorcerer"] = (int) JMASK_BABY_SORCERER;
+	job_mask_table["BabyMinstrelOrWanderer"] = (int) JMASK_BABY_MINSTRELWANDERER;
+	job_mask_table["BabySura"] = (int) JMASK_BABY_SURA;
+	job_mask_table["BabyGenetic"] = (int) JMASK_BABY_GENETIC;
+	job_mask_table["BabyShadowChaser"] = (int) JMASK_BABY_SHADOW_CHASER;
+
+	// Expanded Jobs
+	job_mask_table["Taekwon"] = (int) JMASK_TAEKWON;
+	job_mask_table["StarGladiator"] = (int) JMASK_STAR_GLADIATOR;
+	job_mask_table["SoulLinker"] = (int) JMASK_SOUL_LINKER;
+	job_mask_table["SuperNovice"] = (int) JMASK_SUPER_NOVICE;
+	job_mask_table["SuperNoviceExpanded"] = (int) JMASK_SUPER_NOVICE_E;
+	job_mask_table["SuperBaby"] = (int) JMASK_SUPER_BABY;
+	job_mask_table["SuperBabyExpanded"] = (int) JMASK_SUPER_BABY_E;
+	job_mask_table["Gunslinger"] = (int) JMASK_GUNSLINGER;
+	job_mask_table["Rebellion"] = (int) JMASK_REBELLION;
+	job_mask_table["Ninja"] = (int) JMASK_NINJA;
+	job_mask_table["KagerouOrOboro"] = (int) JMASK_KAGEROUOBORO;
+	job_mask_table["All"] = (int) JMASK_ALL;
 }
 
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
