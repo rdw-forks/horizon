@@ -96,7 +96,6 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"Dead", (int) POSTURE_DEAD,
 		"Sitting", (int) POSTURE_SITTING
 	);
-
 	state->create_named_table("zc_notify_act_3_action_types",
     	"Damage", (int) ZCNA3_DAMAGE,
     	"PickupItem", (int) ZCNA3_PICKUP_ITEM,
@@ -117,9 +116,9 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 	state->create_named_table("grid_entity_skill_use_notification_type",
 		"GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME", GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME,
 		"GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
-    "GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE
+    	"GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE
 	);
-  
+
 	sol::table tbl = state->create_named_table("Job");
 
 	tbl["Novice"] = (int) JOB_NOVICE;
@@ -450,7 +449,6 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 	job_mask_table["Ninja"] = (int) JMASK_NINJA;
 	job_mask_table["KagerouOrOboro"] = (int) JMASK_KAGEROUOBORO;
 	job_mask_table["All"] = (int) JMASK_ALL;
-
 }
 
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
