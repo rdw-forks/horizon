@@ -60,8 +60,8 @@ public:
 	virtual void on_movement_step() override;
 	virtual void on_movement_end() override;
 
-	void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage);
-	void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false);
+	void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage) override;
+	void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false) override;
 
 	void set_spotted(bool spotted) { _was_spotted_once = spotted; }
 	bool was_spotted_once() { return _was_spotted_once; }

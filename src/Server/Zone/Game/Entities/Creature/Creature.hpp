@@ -49,8 +49,8 @@ public:
 
 	bool initialize(std::shared_ptr<const monster_config_data> md);
 	
-	virtual void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage);
-	virtual void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false);
+	virtual void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage) override;
+	virtual void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false) override;
 };
 }
 }
