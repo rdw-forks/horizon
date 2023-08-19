@@ -1,12 +1,18 @@
 -- At command functions!
-
+-- @statpoint
+local function statpoint(player, args)
+	status = player:entity():status()
+	status:status_point():set(tonumber(args[2]))
+end
 -- @skillpoint
 local function skillpoint(player, args)
-	player:entity():status():skill_point():set(tonumber(args[2]))
+	status = player:entity():status()
+	status:skill_point():set(tonumber(args[2]))
 end
 -- @resetskillpoints
 local function resetskillpoints(player, args)
-	player:entity():status():skill_point():set(0)
+	status = player:entity():status()
+	status:skill_point():set(0)
 end
 -- @job
 local function job(player, args)
@@ -222,6 +228,7 @@ local at_commands = {
 		["blvl"] = change_base_level_cmd,
 		["iteminfo"] = iteminfo,
 		["job"] = job,
+		["statpoint"] = statpoint,
 		["skillpoint"] = skillpoint,
 		["resetskillpoints"] = resetskillpoints,
 		["go"] = go

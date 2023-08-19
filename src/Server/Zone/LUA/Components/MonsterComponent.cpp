@@ -148,7 +148,8 @@ void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"on_status_effect_end", &Monster::on_status_effect_end,
 		"on_status_effect_change", &Monster::on_status_effect_change,
 		"set_next_walk_time", &Monster::set_next_walk_time,
-		"next_walk_time", &Monster::next_walk_time
+		"next_walk_time", &Monster::next_walk_time,
+		"on_damage_received", &Monster::on_damage_received
 	);
 }
 
@@ -180,7 +181,7 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 			std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(monster_id);
 
-			HLog(info) << "Monster spawn set (" << name << ") in " << map_name << " at " << x << ", " << y << "[" << x_area << "," << y_area << "]" " for a total of " << amount << " monsters is initializing...";
+			HLog(info) << "Monster spawn set (" << name << ") in " << map_name << " at (" << x << "," << y << ")[" << x_area << "," << y_area << "]" " for a total of " << amount << " monsters is initializing...";
 
 			for (int i = 0; i < amount; i++) {
 				MapCoords mcoords = MapCoords(x, y);
@@ -196,6 +197,8 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, md, mskd);
 				monster->initialize();
+
+				get_container()->add_entity(monster);
 				
 				register_single_spawned_monster(monster->guid(), monster);
 			}
@@ -221,6 +224,7 @@ void MonsterComponent::deregister_single_spawned_monster(uint32_t guid) {
 	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end(); i++)
 		if ((*i).second->guid() == guid) {
 			(*i).second->finalize();
+			// Remove the entity from the containers.
 			_monster_spawned_map.erase(i);
 			return;
 		}

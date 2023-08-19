@@ -49,7 +49,7 @@
 using namespace Horizon::Zone::Entities;
 
 Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid)
-: Entity(guid, ENTITY_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
+: Entity(guid, ENTITY_PLAYER, ENTITY_MASK_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
 {
 }
 
@@ -488,6 +488,10 @@ void Player::on_map_enter()
 
 	inventory()->notify_all();
 
+	// Notify Weight.
+	status()->current_weight()->notify();
+	status()->max_weight()->notify();
+
 	// clear viewport
 	get_viewport_entities().clear();
 
@@ -522,7 +526,6 @@ void Player::notify_in_area(ByteBuffer &buf, grid_notifier_type type, uint16_t r
 
 	map()->visit_in_range(map_coords(), container, range);
 }
-
 
 bool Player::job_change(int32_t job_id)
 {
@@ -567,6 +570,21 @@ bool Player::perform_skill(int16_t skill_id, int16_t skill_lv)
 bool Player::on_skill_failure(int16_t skill_id, int message_type, int item_id, skill_use_fail_cause_type cause)
 {
 	get_session()->clif()->notify_skill_fail(skill_id, message_type, item_id, cause);
+	return true;
+}
+
+bool Player::on_action_request(player_action_type action)
+{
+	try {
+		sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string() + "internal/on_player_action.lua");
+		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), action);
+		if (!result.valid()) {
+			sol::error err = result;
+			HLog(error) << "Player::on_action_request: " << err.what();
+		}
+	} catch (sol::error &e) {
+		HLog(error) << "Player::on_action_request: " << e.what();
+	}
 	return true;
 }
 

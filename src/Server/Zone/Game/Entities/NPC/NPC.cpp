@@ -36,7 +36,7 @@
 using namespace Horizon::Zone::Entities;
 
 NPC::NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, uint32_t job_id, directions dir)
-: Entity(_last_np_entity_guid++, ENTITY_NPC, map, MapCoords(x, y))
+: Entity(_last_np_entity_guid++, ENTITY_NPC, ENTITY_MASK_NPC, map, MapCoords(x, y))
 {
 	set_name(name);
 	set_job_id(job_id);
@@ -44,7 +44,7 @@ NPC::NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t
 }
 
 NPC::NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, std::string const &script)
-: Entity(_last_np_entity_guid++, ENTITY_NPC, map, MapCoords(x, y))
+: Entity(_last_np_entity_guid++, ENTITY_NPC, ENTITY_MASK_NPC, map, MapCoords(x, y))
 {
 	set_name(name);
 	set_job_id(NPC_TYPE_PORTAL);

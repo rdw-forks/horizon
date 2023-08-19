@@ -892,5 +892,10 @@ struct zc_ack_read_rodex_item
 	} option_data[MAX_ITEM_OPTIONS];
 };
 
+enum zc_use_skill2_result_type
+{
+	ZC_USESKILL2_SUCCESS = 0,
+	ZC_USESKILL2_FAILURE = 1
+};
 
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

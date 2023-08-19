@@ -33,7 +33,7 @@
 using namespace Horizon::Zone::Entities;
 
 Mercenary::Mercenary(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_MERCENARY, map, mcoords)
+: Creature(guid, ENTITY_MERCENARY, ENTITY_MASK_MERCENARY, map, mcoords)
 {
 	//
 }

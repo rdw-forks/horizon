@@ -141,6 +141,7 @@ public:
 	bool notify_compound_attribute_update(status_point_type type, int32_t value);
 	bool notify_status_attribute_update(status_point_type type, int32_t value, bool success);
 	bool notify_required_attribute_update(status_point_type type, int32_t value);
+	bool notify_attribute_update(status_point_type type, int32_t value, int32_t value2);
 	bool notify_cart_weight_update();
 	bool notify_attack_range_update(int32_t value);
 	bool notify_experience_update(status_point_type type, int32_t value);
@@ -203,9 +204,12 @@ public:
 	bool notify_learnt_skill_list();
 	bool notify_skill_fail(int16_t skill_id, int32_t message_type, int32_t item_id, skill_use_fail_cause_type cause);
 	void use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid);
-	void use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y);
-	void use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents);
-
+	void use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y);
+	void use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents);
+	void notify_skill_cast(uint16_t skill_id, uint32_t src_guid, uint32_t target_guid, uint16_t target_x, uint16_t target_y, uint32_t element, int cast_time);
+	void notify_safe_skill_use(int skill_id, int heal_amount, int target_guid, zc_use_skill2_result_type result);
+	void notify_hostile_skill_use(int16_t skill_id, int32_t src_guid, int32_t target_guid, int32_t start_time, int32_t attack_motion, int32_t delay_motion, int32_t damage, int16_t level, int16_t count, int8_t action);
+	
 	/* UI Requests */
 	void action_request(int32_t target_guid, player_action_type action);
 	bool notify_action(player_action_type action);

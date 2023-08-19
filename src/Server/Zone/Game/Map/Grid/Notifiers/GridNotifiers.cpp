@@ -52,9 +52,6 @@ void GridPlayerNotifier::notify(GridRefManager<Horizon::Zone::Entities::Player> 
 
 	std::shared_ptr<Player> pl = _entity.lock()->template downcast<Player>();
 
-	if (pl == nullptr)
-		return;
-
 	for (typename GridRefManager<Player>::iterator iter = m.begin(); iter != typename GridRefManager<Player>::iterator(nullptr); ++iter) {
 		if (iter->source() == nullptr)
 			continue;
@@ -62,7 +59,7 @@ void GridPlayerNotifier::notify(GridRefManager<Horizon::Zone::Entities::Player> 
 		switch (_type)
 		{
 			case GRID_NOTIFY_AREA_WOS:
-				if (iter->source()->guid() == pl->guid())
+				if (pl != nullptr && iter->source()->guid() == pl->guid())
 					continue;
 			default:
 				break;
@@ -426,5 +423,257 @@ template<> void GridNPCTrigger::Visit<Pet>(GridRefManager<Pet> &m);
 template<> void GridNPCTrigger::Visit<Monster>(GridRefManager<Monster> &m);
 template<> void GridNPCTrigger::Visit<Skill>(GridRefManager<Skill> &m);
 
+// Searches a skillarea for an entity that is within the splash range of the target.
+// If found, the status change is applied to the entity.
+template <class T>
+void GridSCApplyInSkillArea::apply(GridRefManager<T> &m)
+{
+    if (_source.expired())
+        return;
 
+    using namespace Horizon::Zone::Entities;
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        std::shared_ptr<Horizon::Zone::Entity> entity = iter->source()->shared_from_this();
+        
+        if (entity == nullptr)
+            continue;
+        
+        // AOE Target Type check.       
+        AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
+
+        if (!aoe_predicate(entity))
+            continue;
+
+        RangeCheckPredicate range_predicate(entity);
+        
+        // If the entity is not in range of target's splash range, 
+        // ignore.
+        if (!range_predicate(_target, _aoe_config.aoe_range))
+            continue;
+        
+        entity->status_effect_start(_sc_config.type, _sc_config.total_time, _sc_config.val1, _sc_config.val2, _sc_config.val3, _sc_config.val4);
+    }
+}
+
+void GridSCApplyInSkillArea::Visit(GridRefManager<NPC> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Player> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Elemental> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Homunculus> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Mercenary> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Pet> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Monster> &m) { apply(m); }
+void GridSCApplyInSkillArea::Visit(GridRefManager<Skill> &m) { apply(m); }
+
+template <class T>
+void GridSCRemoveInSkillArea::apply(GridRefManager<T> &m)
+{
+    if (_source.expired())
+        return;
+
+    using namespace Horizon::Zone::Entities;
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        std::shared_ptr<Horizon::Zone::Entity> entity = iter->source()->shared_from_this();
+        
+        if (entity == nullptr)
+            continue;
+
+        // AOE Target Type check.       
+        AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
+
+        if (!aoe_predicate(entity))
+            continue;
+
+        // @Todo: check map type PvP, GvG, etc.
+        RangeCheckPredicate range_predicate(entity);
+        
+        // If the entity is not in range of target's splash range, 
+        // ignore.
+        if (!range_predicate(_target, _aoe_config.aoe_range))
+            continue;
+        
+        entity->status_effect_end(_sc_type);
+    }
+}
+
+void GridSCRemoveInSkillArea::Visit(GridRefManager<NPC> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Player> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Elemental> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Homunculus> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Mercenary> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Pet> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Monster> &m) { apply(m); }
+void GridSCRemoveInSkillArea::Visit(GridRefManager<Skill> &m) { apply(m); }
+
+template <class T>
+void GridExecuteSkillInArea::apply(GridRefManager<T> &m)
+{
+    if (_initial_source.expired())
+        return;
+
+    using namespace Horizon::Zone::Entities;
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        std::shared_ptr<Horizon::Zone::Entity> entity = iter->source()->shared_from_this();
+        
+        if (entity == nullptr)
+            continue;
+
+        // AOE Target Type check.       
+        AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
+
+        if (!aoe_predicate(entity))
+            continue;
+
+        // @Todo: check map type PvP, GvG, etc.
+        RangeCheckPredicate range_predicate(entity);
+        
+        // If the entity is not in range of target's splash range, 
+        // ignore.
+        if (!range_predicate(_initial_source, _aoe_config.aoe_range))
+            continue;
+        
+        _skill_execution->execute(entity->guid());
+    }
+}
+
+void GridExecuteSkillInArea::Visit(GridRefManager<NPC> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Player> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Elemental> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Homunculus> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Mercenary> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Pet> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Monster> &m) { apply(m); }
+void GridExecuteSkillInArea::Visit(GridRefManager<Skill> &m) { apply(m); }
+
+template <class T>
+void GridExecuteSkillInCell::apply(GridRefManager<T> &m)
+{
+    if (_initial_source.expired())
+        return;
+
+    using namespace Horizon::Zone::Entities;
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        std::shared_ptr<Horizon::Zone::Entity> entity = iter->source()->shared_from_this();
+        
+        if (entity == nullptr)
+            continue;
+
+        // AOE Target Type check.       
+        AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
+
+        if (!aoe_predicate(entity))
+            continue;
+        
+        CellCheckPredicate cell_predicate(_cell);
+
+        if (!cell_predicate(entity->map_coords()))
+            continue;
+
+        _skill_execution->execute(entity->guid());
+    }
+}
+
+void GridExecuteSkillInCell::Visit(GridRefManager<NPC> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Player> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Elemental> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Homunculus> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Mercenary> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Pet> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Monster> &m) { apply(m); }
+void GridExecuteSkillInCell::Visit(GridRefManager<Skill> &m) { apply(m); }
+
+template <class T>
+void GridEntitySkillUseNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
+
+    if (!m.get_size())
+        return;
+
+    std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+
+        switch (_notification_type)
+        {
+            case GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME:
+            {
+                tpl->get_session()->clif()->notify_skill_cast(_config.skill_id, _config.source_guid, _config.target_guid, _config.target_x, _config.target_y, _config.element, _config.cast_time);
+            }
+                break;
+            case GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE:
+            {
+                tpl->get_session()->clif()->notify_hostile_skill_use(
+                    _config.skill_id, 
+                    _config.source_guid, 
+                    _config.target_guid, 
+                    _config.start_time,
+                    _config.attack_motion,
+                    _config.delay_motion,
+                    _config.damage_value, 
+                    _config.display_value,
+                    _config.number_of_hits,
+                    _config.action_type);
+            }
+                break;
+            case GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE:
+            {
+                tpl->get_session()->clif()->notify_safe_skill_use(_config.skill_id, _config.display_value, _config.target_guid, ZC_USESKILL2_SUCCESS);
+            }
+                break;
+            default:
+                HLog(warning) << "GridEntitySkillUseNotifier::notify: Unknown notification type: " << _notification_type << "." << std::endl;
+                break;
+        }
+    }
+}
+
+void GridEntitySkillUseNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntitySkillUseNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+
+
+template <class T>
+void GridEntityBasicAttackNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
+
+    if (!m.get_size())
+        return;
+
+    std::shared_ptr<Horizon::Zone::Entity> src_entity = _entity.lock();
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+
+        tpl->get_session()->clif()->notify_damage(_config.guid, _config.target_guid, _config.start_time, _config.delay_skill,
+            _config.delay_damage, _config.damage, _config.is_sp_damaged, _config.number_of_hits, _config.action_type, _config.left_damage);
+    }
+}
+
+void GridEntityBasicAttackNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntityBasicAttackNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Skill>(GridRefManager<Skill> &m);
 

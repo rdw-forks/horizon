@@ -95,7 +95,14 @@ enum combat_damage_hit_type {
 	//CBT_DMG_HIT_TOUCH     = 12, // (touch skill?)
 };
 
-struct combat_damage {
+struct combat_structures
+{
+	int16_t skill_id{ 0 };
+	int16_t skill_lv{ 0 };
+	sol::table skill_cast_data;
+};
+
+struct combat_damage : public combat_structures {
     int64_t right_damage{0}, left_damage{0};
     combat_damage_hit_type type{CBT_DMG_HIT_NORMAL};
     int number_of_hits{0};
@@ -105,6 +112,11 @@ struct combat_damage {
     combat_retaliate_type ret_type{CBT_RET_NONE};
     element_type ele_type{ELE_NEUTRAL};
     int8_t element_level{1};
+};
+
+struct combat_healing : public combat_structures  {
+	int64_t heal_amount{ 0 };
+	bool success{ 0 };
 };
 
 #endif /* HORIZON_ZONE_COMBAT_DEFINITIONS_HPP */

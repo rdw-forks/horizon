@@ -226,7 +226,7 @@ void CZ_USE_SKILL::deserialize(ByteBuffer &buf) {
  */
 void CZ_USE_SKILL_TOGROUND::handle(ByteBuffer &&buf) {
 	deserialize(buf);
-	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y); 	
+	get_session()->clif()->use_skill_on_ground(_skill_lv, _skill_id, _pos_x, _pos_y); 	
 }
 void CZ_USE_SKILL_TOGROUND::deserialize(ByteBuffer &buf) {
 	buf >> _packet_id;
@@ -241,7 +241,7 @@ void CZ_USE_SKILL_TOGROUND::deserialize(ByteBuffer &buf) {
 void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::handle(ByteBuffer &&buf)
 {
 	deserialize(buf);
-	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y, _contents);
+	get_session()->clif()->use_skill_on_ground(_skill_lv, _skill_id, _pos_x, _pos_y, _contents);
 }
 void CZ_USE_SKILL_TOGROUND_WITHTALKBOX::deserialize(ByteBuffer &buf)
 {
@@ -2523,7 +2523,7 @@ void CZ_REQUEST_TIME2::deserialize(ByteBuffer &buf)
  */
 void CZ_USE_SKILL_TOGROUND2::handle(ByteBuffer &&buf) {
 	deserialize(buf);
-	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y); 	
+	get_session()->clif()->use_skill_on_ground(_skill_lv, _skill_id, _pos_x, _pos_y); 	
 }
 void CZ_USE_SKILL_TOGROUND2::deserialize(ByteBuffer &buf)
 {
@@ -2560,7 +2560,7 @@ void CZ_REQUEST_MOVE2::deserialize(ByteBuffer &buf)
 void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::handle(ByteBuffer &&buf)
 {
 	deserialize(buf);
-	get_session()->clif()->use_ground_skill(_skill_lv, _skill_id, _pos_x, _pos_y, _contents);
+	get_session()->clif()->use_skill_on_ground(_skill_lv, _skill_id, _pos_x, _pos_y, _contents);
 }
 void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::deserialize(ByteBuffer &buf)
 {

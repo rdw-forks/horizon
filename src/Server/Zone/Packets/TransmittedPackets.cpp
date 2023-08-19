@@ -1033,9 +1033,21 @@ ByteBuffer &ZC_COUPLENAME::serialize()
 /**
  * ZC_COUPLESTATUS
  */
-void ZC_COUPLESTATUS::deliver() {}
+void ZC_COUPLESTATUS::deliver(status_point_type type, int value, int value2)
+{
+	_status_point_type = type;
+	_value = value;
+	_value2 = value2;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_COUPLESTATUS::serialize()
 {
+	buf() << _packet_id;
+	buf() << _status_point_type;
+	buf() << _value;
+	buf() << _value2;
 	return buf();
 }
 /**
@@ -1810,9 +1822,23 @@ ByteBuffer &ZC_NOTIFY_ACT_POSITION::serialize()
 /**
  * ZC_NOTIFY_CARTITEM_COUNTINFO
  */
-void ZC_NOTIFY_CARTITEM_COUNTINFO::deliver() {}
+void ZC_NOTIFY_CARTITEM_COUNTINFO::deliver(int unique_items, int max_cart_items, int cart_weight, int cart_weight_max) 
+{
+	_unique_items = unique_items;
+	_max_cart_items = max_cart_items;
+	_cart_weight = cart_weight;
+	_cart_weight_max = cart_weight_max;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_NOTIFY_CARTITEM_COUNTINFO::serialize()
 {
+	buf() << _packet_id;
+	buf() << _unique_items;
+	buf() << _max_cart_items;
+	buf() << _cart_weight;
+	buf() << _cart_weight_max;
 	return buf();
 }
 /**
@@ -2036,17 +2062,63 @@ ByteBuffer &ZC_NOTIFY_RANKING::serialize()
 /**
  * ZC_NOTIFY_SKILL
  */
-void ZC_NOTIFY_SKILL::deliver() {}
+void ZC_NOTIFY_SKILL::deliver(uint32_t source, uint32_t target, uint16_t skill_id, uint16_t skill_lv, uint32_t start_time, int32_t attack_motion, int32_t attacked_motion, int16_t damage, int16 count, enum zc_notify_act_3_action_types action_type)
+{
+	_skill_id = skill_id;
+	_source_id = source;
+	_target_id = target;
+	_start_time = start_time;
+	_attack_motion = attack_motion;
+	_attacked_motion = attacked_motion;
+	_damage = damage;
+	_level = skill_lv;
+	_count = count;
+	_action = action_type;
+}
 ByteBuffer &ZC_NOTIFY_SKILL::serialize()
 {
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _source_id;
+	buf() << _target_id;
+	buf() << _start_time;
+	buf() << _attack_motion;
+	buf() << _attacked_motion;
+	buf() << _damage;
+	buf() << _level;
+	buf() << _count;
+	buf() << _action;
 	return buf();
 }
 /**
  * ZC_NOTIFY_SKILL2
  */
-void ZC_NOTIFY_SKILL2::deliver() {}
+void ZC_NOTIFY_SKILL2::deliver(uint32_t source, uint32_t target, uint16_t skill_id, uint16_t skill_lv, uint32_t start_time, int32_t attack_motion, int32_t attacked_motion, int32_t damage, int16 count, enum zc_notify_act_3_action_types action_type)
+{
+	_skill_id = skill_id;
+	_source_id = source;
+	_target_id = target;
+	_start_time = start_time;
+	_attack_motion = attack_motion;
+	_attacked_motion = attacked_motion;
+	_damage = damage;
+	_level = skill_lv;
+	_count = count;
+	_action = action_type;
+}
 ByteBuffer &ZC_NOTIFY_SKILL2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _source_id;
+	buf() << _target_id;
+	buf() << _start_time;
+	buf() << _attack_motion;
+	buf() << _attacked_motion;
+	buf() << _damage;
+	buf() << _level;
+	buf() << _count;
+	buf() << _action;
 	return buf();
 }
 /**
@@ -4783,9 +4855,24 @@ ByteBuffer &ZC_SECRETSCAN_DATA::serialize()
 /**
  * ZC_USE_SKILL2
  */
-void ZC_USE_SKILL2::deliver() {}
+void ZC_USE_SKILL2::deliver(int skill_id, int heal_amount, int target_guid, zc_use_skill2_result_type result) 
+{
+	_skill_id = skill_id;
+	_heal_amount = heal_amount;
+	_target_guid = target_guid;
+	_result = (int) result;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_USE_SKILL2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _skill_id;
+	buf() << _heal_amount;
+	buf() << _target_guid;
+	buf() << _result;
 	return buf();
 }
 /**
@@ -5759,7 +5846,7 @@ ByteBuffer &ZC_HP_INFO_TINY::serialize()
 /**
  * ZC_ITEM_PICKUP_ACK_V7
  */
-void ZC_ITEM_PICKUP_ACK_V7::deliver(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
+void ZC_ITEM_PICKUP_ACK_V7::deliver(struct item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
 {
 	_id = id;
 	_amount = amount;
@@ -7483,9 +7570,32 @@ ByteBuffer &ZC_HAT_EFFECT::serialize()
 /**
  * ZC_USESKILL_ACK3
  */
-void ZC_USESKILL_ACK3::deliver() {}
+void ZC_USESKILL_ACK3::deliver(uint16_t skill_id, uint32_t src, uint32_t target, uint16_t target_x, uint16_t target_y, uint32_t element, int casttime)
+{
+	_src_id = src;
+	_target_id = target;
+	_x = target_x;
+	_y = target_y;
+	_skill_id = skill_id;
+	_element = element < 0 ? 0 : element;
+	_delay_time = casttime;
+	_disposable = 0;
+	_attack_motion = 0;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_USESKILL_ACK3::serialize()
 {
+	buf() << _packet_id;
+	buf() << _src_id;
+	buf() << _target_id;
+	buf() << _x;
+	buf() << _y;
+	buf() << _skill_id;
+	buf() << _element;
+	buf() << _delay_time;
+	buf() << _disposable;
+	buf() << _attack_motion;
 	return buf();
 }
 /**
