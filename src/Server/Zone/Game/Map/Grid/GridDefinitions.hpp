@@ -82,4 +82,11 @@ typedef Coordinates<MAX_CELLS_PER_MAP> MapCoords;
 
 typedef GridReferenceContainer<AllEntityTypes> MapEntityContainer;
 
+enum grid_entity_skill_use_notification_type
+{
+	GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME,
+	GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
+	GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE,
+};
+
 #endif /* HORIZON_ZONE_GAME_GRIDDEFINITIONS_HPP */
