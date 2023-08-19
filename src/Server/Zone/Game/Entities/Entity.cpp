@@ -508,8 +508,8 @@ void Entity::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos
 /**
  * Extremely time-sensitive, do not use for any other purpose than to check for very small calculations.
  */
-
 void Entity::update(uint64_t tick)
 {
 	combat_registry()->process_queue();
+	status()->status_registry()->process_queue();
 }

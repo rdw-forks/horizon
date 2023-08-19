@@ -194,7 +194,7 @@ protected:
         int get_priority() { return _priority; }
         void set_priority(int priority) { _priority = priority; }
 
-        virtual void execute() const = 0 { }
+        virtual void execute() const = 0;
 
         void operator=(const CombatOperation &operation) = delete;
 

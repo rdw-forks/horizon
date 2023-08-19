@@ -29,6 +29,7 @@
 
 #include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
@@ -41,6 +42,26 @@
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Traits;
+
+
+void Attribute::add_base(int32_t val) { 
+	entity()->status()->status_registry()->add_to_base(this, val);
+}
+void Attribute::sub_base(int32_t val) { 
+	entity()->status()->status_registry()->subtract_from_base(this, std::min(_base_val, val));
+}
+void Attribute::add_equip(int32_t val) { 
+	entity()->status()->status_registry()->add_to_equip(this, val);
+}
+void Attribute::sub_equip(int32_t val) { 
+	entity()->status()->status_registry()->subtract_from_equip(this, std::min(_equip_val, val));
+}
+void Attribute::add_status(int32_t val) { 
+	entity()->status()->status_registry()->add_to_status(this, val);
+}
+void Attribute::sub_status(int32_t val) { 
+	entity()->status()->status_registry()->subtract_from_status(this, std::min(_status_val, val));
+}
 
 void Attribute::notify()
 {
