@@ -67,7 +67,6 @@ enum entity_walk_state
 
 #define ENTITY_STATUS_EFFECT_CHECK_TIME 1000
 
-enum grid_entity_skill_use_notification_type;
 struct s_grid_sc_apply_in_skill_area_config;
 struct s_grid_apply_in_area_config;
 struct s_entity_skill_use_notifier_config;
