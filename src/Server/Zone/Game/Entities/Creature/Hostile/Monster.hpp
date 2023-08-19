@@ -61,7 +61,7 @@ public:
 	virtual void on_movement_end() override;
 
 	void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage);
-	bool on_killed(std::shared_ptr<Entity> killer, bool with_drops = true, bool with_exp = true);
+	void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false);
 
 	void set_spotted(bool spotted) { _was_spotted_once = spotted; }
 	bool was_spotted_once() { return _was_spotted_once; }

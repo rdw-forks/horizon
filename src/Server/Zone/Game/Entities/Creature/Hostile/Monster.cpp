@@ -31,6 +31,7 @@
 
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
@@ -44,7 +45,7 @@ using namespace Horizon::Zone::Entities;
 Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
-: Creature(_last_np_entity_guid++, ENTITY_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
+: Creature(_last_np_entity_guid++, ENTITY_MONSTER, ENTITY_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
 	set_name(md->name);
 	set_job_id(md->monster_id);
@@ -178,19 +179,17 @@ void Monster::on_status_effect_change(std::shared_ptr<status_change_entry> sce)
 
 void Monster::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
 {
-	if (status()->current_hp()->total() < damage) {
-		status()->current_hp()->set_base(0);
-		on_killed(damage_dealer);
-		return;
-	}
+	Creature::on_damage_received(damage_dealer, damage);
 }
 
-bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
 {
+	Creature::on_killed(killer, with_drops, with_exp);
+
 	std::shared_ptr<const monster_config_data> md = _wmd_data.lock();
 
 	if (md == nullptr)
-		return false;
+		return;
 
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
@@ -209,12 +208,12 @@ bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 			if (!result.valid()) {
 				sol::error err = result;
 				HLog(error) << "Monster::on_killed: " << err.what();
-				return false;
+				return;
 			}
 		}
 		catch (sol::error& e) {
 			HLog(error) << "Monster::on_killed: " << e.what();
-			return false;
+			return;
 		}
 	}
 		break;
@@ -223,5 +222,5 @@ bool Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 		break;
 	}
 
-	return true;
+	return;
 }

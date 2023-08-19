@@ -31,6 +31,7 @@
 #define HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERPREDICATES_HPP
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 
 class GUIDCheckPredicate
 {
@@ -39,7 +40,7 @@ public:
 
 	bool operator()(std::weak_ptr<Horizon::Zone::Entity> entity)
 	{
-		return !entity.expired() && (entity.lock()->guid() == _guid);
+		return !entity.expired() && ((entity.lock())->guid() == _guid);
 	}
 
 private:
@@ -59,6 +60,36 @@ public:
 
 private:
 	std::weak_ptr<Horizon::Zone::Entity> _source;
+};
+
+class AOETargetTypePredicate
+{
+public:
+	AOETargetTypePredicate(int aoe_target_mask)
+	: _aoe_target_mask(aoe_target_mask){ }
+
+	bool operator()(std::weak_ptr<Horizon::Zone::Entity> target)
+	{
+		return !target.expired() && (target.lock())->is_of_type(_aoe_target_mask);
+	}
+
+private:
+	int _aoe_target_mask{ 0 };
+};
+
+class CellCheckPredicate
+{
+public:
+	CellCheckPredicate(MapCoords cell)
+	: _cell(cell){ }
+
+	bool operator()(MapCoords cell)
+	{
+		return cell == _cell;
+	}
+
+private:
+	MapCoords _cell{ 0, 0 };
 };
 
 #endif /* GRIDNOTIFIERPREDICATES_HPP */

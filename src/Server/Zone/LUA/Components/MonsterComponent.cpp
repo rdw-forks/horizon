@@ -197,6 +197,8 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, md, mskd);
 				monster->initialize();
+
+				get_container()->add_entity(monster);
 				
 				register_single_spawned_monster(monster->guid(), monster);
 			}
@@ -222,6 +224,7 @@ void MonsterComponent::deregister_single_spawned_monster(uint32_t guid) {
 	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end(); i++)
 		if ((*i).second->guid() == guid) {
 			(*i).second->finalize();
+			// Remove the entity from the containers.
 			_monster_spawned_map.erase(i);
 			return;
 		}

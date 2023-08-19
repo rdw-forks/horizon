@@ -29,6 +29,7 @@
 #include "SkillComponent.hpp"
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "SkillDefinitions.hpp"
 
@@ -191,6 +192,23 @@ void SkillComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"NearNPC", SKILL_USE_FAIL_THERE_ARE_NPC_AROUND,
 		"ReqBullet", SKILL_USE_FAIL_NEED_MORE_BULLET
 	);
+
+	state->create_named_table("zc_notify_act_3_action_types",
+    	"Damage", (int) ZCNA3_DAMAGE,
+    	"PickupItem", (int) ZCNA3_PICKUP_ITEM,
+    	"Sit", (int) ZCNA3_SIT,
+    	"Stand", (int) ZCNA3_STAND,
+    	"EndureDamage", (int) ZCNA3_ENDURE_DAMAGE,
+    	"Splash", (int) ZCNA3_SPLASH,
+    	"Skill", (int) ZCNA3_SKILL,
+    	"RepeatDamage", (int) ZCNA3_REPEAT_DAMAGE,
+    	"MultiHitDamage", (int) ZCNA3_MULTI_HIT_DAMAGE,
+    	"MultiHitEndureDamage", (int) ZCNA3_MULTI_HIT_ENDURE_DAMAGE,
+    	"CriticalHit", (int) ZCNA3_CRITICAL_HIT,
+    	"LuckyDodge", (int) ZCNA3_LUCKY_DODGE,
+    	"TouchSkill", (int) ZCNA3_TOUCH_SKILL,
+    	"MultiHitCritical", (int) ZCNA3_MULTI_HIT_CRITICAL
+	);
 }
 
 void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
@@ -214,11 +232,29 @@ void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"weapon_type", &skill_config_data::weapon_type,
 		"ammunition_type", &skill_config_data::ammunition_type,
 		"placement_flag", &skill_config_data::placement_flag,
+		"get_cast_time", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		{
+			return skd->cast_time[skill_lv - 1];
+		},
+		"get_element", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		{
+			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
+			return skd->element[skill_lv - 1];
+		},
 		"get_use_range", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
 		{
 			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
 			return skd->use_range[skill_lv - 1];
 		}
+	);
+
+	state->new_usertype<SkillExecution>("SkillExecution", 
+		"execute_on_target", sol::resolve<void(int)>(&SkillExecution::execute),
+		"execute_on_ground", sol::resolve<void(MapCoords)>(&SkillExecution::execute),
+		"execute_on_ground_xy", sol::resolve<void(int16_t, int16_t)>(&SkillExecution::execute),
+		"execute_on_ground_with_message", sol::resolve<void(MapCoords, std::string)>(&SkillExecution::execute),
+		"execute_on_ground_xy_with_message", sol::resolve<void(int16_t, int16_t, std::string)>(&SkillExecution::execute),
+		"get_skill_cast_data", &SkillExecution::get_skill_cast_data
 	);
 }
 

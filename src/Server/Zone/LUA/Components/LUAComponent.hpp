@@ -35,15 +35,21 @@ namespace Horizon
 {
 namespace Zone
 {
+class MapContainerThread;
 class LUAComponent
 {
 public:
     LUAComponent() { }
+    LUAComponent(std::shared_ptr<MapContainerThread> container) : _map_container_thread(container) { }
     ~LUAComponent() { }
 
     virtual void sync_definitions(std::shared_ptr<sol::state> state) = 0;
     virtual void sync_data_types(std::shared_ptr<sol::state> state) = 0;
     virtual void sync_functions(std::shared_ptr<sol::state> state) = 0;
+
+    std::shared_ptr<MapContainerThread> get_container() { return _map_container_thread; }
+private:
+    std::shared_ptr<MapContainerThread> _map_container_thread;
 };
 }
 }

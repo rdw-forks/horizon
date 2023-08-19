@@ -30,17 +30,21 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_STATUS_HPP
 #define HORIZON_ZONE_GAME_TRAITS_STATUS_HPP
 
+#include "Server/Zone/Game/Entities/Traits/Attribute.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Appearance.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
  // Linux
 
+struct item_entry_data;
+struct monster_config_data;
+struct job_config_data;
+
 namespace Horizon
 {
 namespace Zone
 {
-struct job_config_data;
 class Entity;
 namespace Entities
 {

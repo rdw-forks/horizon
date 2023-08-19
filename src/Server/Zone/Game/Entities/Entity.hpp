@@ -35,10 +35,10 @@
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/StatusEffectDefinitions.hpp"
-#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
+#include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 #include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 
@@ -67,6 +67,12 @@ enum entity_walk_state
 
 #define ENTITY_STATUS_EFFECT_CHECK_TIME 1000
 
+enum grid_entity_skill_use_notification_type;
+struct s_grid_sc_apply_in_skill_area_config;
+struct s_grid_apply_in_area_config;
+struct s_entity_skill_use_notifier_config;
+struct s_grid_entity_basic_attack_config;
+
 namespace Horizon
 {
 namespace Zone
@@ -77,14 +83,14 @@ namespace Zone
 	}
 class Map;
 class Combat;
-
+class CombatRegistry;
 static int32_t _last_np_entity_guid = NPC_START_GUID;
 
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
-	Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords);
-	Entity(uint32_t guid, entity_type type);
+	Entity(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords);
+	Entity(uint32_t guid, entity_type type, entity_type_mask type_mask);
 	virtual ~Entity();
 
 	bool initialize();
@@ -145,6 +151,8 @@ public:
 	 * Entity applications
 	 */
 	entity_type type() const { return _type; }
+	entity_type_mask type_mask() const { return _type_mask; }
+	bool is_of_type(int type_mask) { return !((type_mask & (int) _type_mask) == 0); }
 
 	template <class T>
 	std::shared_ptr<T> downcast()
@@ -165,14 +173,24 @@ public:
 	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
 	void notify_nearby_players_of_spawn();
 	void notify_nearby_players_of_movement(bool new_entry = false);
-	void notify_nearby_players_of_skill_use(std::shared_ptr<Entity> target, int16_t skill_id, int cast_time, enum element_type element);
-	void notify_nearby_players_of_skill_damage(std::shared_ptr<Entity> target, uint16_t skill_id, uint16_t skill_lv, uint32_t start_time, int32_t attack_motion, int32_t attacked_motion, int32_t damage, int16_t count, uint8_t action_type);
-	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
+	void notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config);
+	void notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config);
 
+	// Essentials
+	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
 	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
-    
 	std::map<int16_t, std::shared_ptr<status_change_entry>> &get_status_effects() { return _status_effects; }
 	
+	// Skills
+	void apply_status_change_in_area(std::shared_ptr<Entity> target, s_grid_sc_apply_in_skill_area_config const &config, s_grid_apply_in_area_config const &aoe_config);
+	void remove_status_change_in_area(std::shared_ptr<Entity> target, int sc_type, s_grid_apply_in_area_config const &aoe_config);
+	void execute_skill_in_area(std::shared_ptr<Entity> target, std::shared_ptr<SkillExecution> skill_execution, s_grid_apply_in_area_config const &aoe_config);
+	void execute_skill_in_cell(std::shared_ptr<Entity> target, MapCoords cell, std::shared_ptr<SkillExecution> skill_execution, s_grid_apply_in_area_config const &aoe_config);
+	
+	void use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid);
+	void use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y);
+	void use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents);
+
 	/**
 	 * Status Effects
 	 */
@@ -195,6 +213,9 @@ public:
 
 	bool is_dead();
 
+	virtual void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage);
+	virtual void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false);
+
 	/**
 	 * Combat
 	 */
@@ -204,11 +225,19 @@ public:
 		_combat = combat;
 	}
 
+	/**
+	 * Extremely time-sensitive functions
+	 */
+	void update(uint64_t tick);
+
+	std::shared_ptr<CombatRegistry> combat_registry() { return _combat_registry; }
+
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	bool _is_attacking{false};
 	uint32_t _guid{0};
 	entity_type _type{ENTITY_UNKNOWN};
+	entity_type_mask _type_mask{ENTITY_MASK_UNKNOWN};
 	std::weak_ptr<Map> _map;
 	MapCoords _map_coords{0, 0};
 	GridCoords _grid_coords{0, 0};
@@ -231,6 +260,7 @@ private:
 
 	// Combat data
 	std::shared_ptr<Combat> _combat;
+    std::shared_ptr<CombatRegistry> _combat_registry;
 };
 }
 }

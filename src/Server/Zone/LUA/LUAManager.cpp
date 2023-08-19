@@ -46,7 +46,7 @@ LUAManager::LUAManager(std::shared_ptr<MapContainerThread> container)
 _lua_state(std::make_shared<sol::state>()),
 _player_component(std::make_shared<PlayerComponent>()),
 _npc_component(std::make_shared<NPCComponent>()),
-_monster_component(std::make_shared<MonsterComponent>()),
+_monster_component(std::make_shared<MonsterComponent>(container)),
 _map_component(std::make_shared<MapComponent>()),
 _item_component(std::make_shared<ItemComponent>()),
 _entity_component(std::make_shared<EntityComponent>()),

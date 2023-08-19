@@ -1,7 +1,7 @@
 
-local MG_COLDBOLT = require("scripts/skills/base_skill")
+local MG_LIGHTNINGBOLT = require("scripts/skills/base_skill")
 
-function MG_COLDBOLT.cast_skill(scd, skd)
+function MG_LIGHTNINGBOLT.cast_skill(scd, skd)
 	scd.cast_time = skd:get_cast_time(scd.skill_lv)
 	
 	local config = s_skill_execution_operation_config.new()
@@ -12,8 +12,8 @@ function MG_COLDBOLT.cast_skill(scd, skd)
 	config.skd = skd
 
 	config.cast_end_function = function(scd, skd)
-		if MG_COLDBOLT.validate_after_casting(scd, skd) == false then return end
-		if MG_COLDBOLT.perform_skill(scd, skd) == false then return end
+		if MG_LIGHTNINGBOLT.validate_after_casting(scd, skd) == false then return end
+		if MG_LIGHTNINGBOLT.perform_skill(scd, skd) == false then return end
 	end
 	
 	local stage = scd.source:combat_registry():create_combat_stage(os.time())
@@ -23,13 +23,13 @@ function MG_COLDBOLT.cast_skill(scd, skd)
 	print("Casting skill for skill " .. scd.skill_id .. " Cast Time of	" .. scd.cast_time .. " milliseconds")
 end
 
-function MG_COLDBOLT.perform_skill(scd, skd)
+function MG_LIGHTNINGBOLT.perform_skill(scd, skd)
 	if scd.target_type == SkillTargetType.Single then
 		local int = scd.source:status():intelligence():get()
 		local min_matk = int + math.floor(int / 7) ^ 2
 		local max_matk = int + math.floor(int / 5) ^ 2
 		local find_skill_by_name = require("scripts/modules/find_skill_by_name")
-		local sk_config = find_skill_by_name("MG_COLDBOLT")
+		local sk_config = find_skill_by_name("MG_LIGHTNINGBOLT")
 		local damage = math.random(min_matk, max_matk) * scd.skill_lv
 
 		local attack_motion = 3050
@@ -58,4 +58,4 @@ function MG_COLDBOLT.perform_skill(scd, skd)
 	return true
 end
 
-return MG_COLDBOLT
+return MG_LIGHTNINGBOLT

@@ -1,6 +1,6 @@
 local monster_id = ...
 
-local monster_id = require("db/monster_db")
+local monster_db = require("db/monster_db")
 
 local function find_monster_by_id(monster_id)
 	for k, v in pairs(monster_db) do

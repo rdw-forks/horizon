@@ -33,6 +33,7 @@
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
+#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
@@ -43,15 +44,15 @@
 
 using namespace Horizon::Zone;
 
-Entity::Entity(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords map_coords)
-: _guid(guid), _type(type), _map_coords(map_coords)
+Entity::Entity(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords)
+: _guid(guid), _type(type), _type_mask(type_mask), _map_coords(map_coords)
 {
 	set_map(map);
 }
 
 // For Player
-Entity::Entity(uint32_t guid, entity_type type)
-: _guid(guid), _type(type), _map_coords(MapCoords(0, 0))
+Entity::Entity(uint32_t guid, entity_type type, entity_type_mask type_mask)
+: _guid(guid), _type(type), _type_mask(type_mask), _map_coords(MapCoords(0, 0))
 {
 	// Map is set in player::load()
 }
@@ -63,6 +64,7 @@ Entity::~Entity()
 bool Entity::initialize()
 {
 	_status = std::make_shared<Horizon::Zone::Traits::Status>(shared_from_this(), type());
+	_combat_registry = std::make_shared<CombatRegistry>(shared_from_this());
 	_is_initialized = true;
 
 	return _is_initialized;
@@ -274,45 +276,20 @@ void Entity::notify_nearby_players_of_movement(bool new_entry)
 	map()->visit_in_range(map_coords(), entity_visitor);
 }
 
-void Entity::notify_nearby_players_of_skill_damage(std::shared_ptr<Entity> target, uint16_t skill_id, uint16_t skill_lv, uint32_t start_time, int32_t attack_motion, int32_t attacked_motion, int32_t damage, int16_t count, uint8_t action_type)
+void Entity::notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config)
 {
-	ZC_NOTIFY_SKILL2 pkt(nullptr);
+	GridEntitySkillUseNotifier notifier(shared_from_this(), notification_type, config);
+	GridReferenceContainerVisitor<GridEntitySkillUseNotifier, GridReferenceContainer<AllEntityTypes>> skill_use_notifier(notifier);
 
-	pkt._source_id = guid();
-	pkt._target_id = target->guid();
-	pkt._skill_id = skill_id;
-	pkt._level = skill_lv;
-	pkt._start_time = start_time;
-	pkt._attack_motion = attack_motion;
-	pkt._attacked_motion = attacked_motion;
-	pkt._damage = damage;
-	pkt._count = count;
-	pkt._action = action_type;
-	
-	GridPlayerNotifier notifier(pkt.serialize(), static_cast<Entity *>(this)->shared_from_this());
-	GridReferenceContainerVisitor<GridPlayerNotifier, GridReferenceContainer<AllEntityTypes>> container(notifier);
-
-	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+	map()->visit_in_range(map_coords(), skill_use_notifier, MAX_VIEW_RANGE);
 }
 
-void Entity::notify_nearby_players_of_skill_use(std::shared_ptr<Entity> target, int16_t skill_id, int cast_time, enum element_type element)
+void Entity::notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config)
 {
-	ZC_USESKILL_ACK3 pkt(nullptr);
+	GridEntityBasicAttackNotifier notifier(shared_from_this(), config);
+	GridReferenceContainerVisitor<GridEntityBasicAttackNotifier, GridReferenceContainer<AllEntityTypes>> basic_attack_notifier(notifier);
 
-	pkt._src_id = guid();
-	pkt._target_id = target->guid();
-	pkt._x = 0;
-	pkt._y = 0;
-	pkt._skill_id = skill_id;
-	pkt._element = element;
-	pkt._delay_time = cast_time;
-	pkt._disposable = 0;
-	pkt._attack_motion = 0;
-
-	GridPlayerNotifier notifier(pkt.serialize(), static_cast<Entity *>(this)->shared_from_this());
-	GridReferenceContainerVisitor<GridPlayerNotifier, GridReferenceContainer<AllEntityTypes>> container(notifier);
-
-	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+	map()->visit_in_range(map_coords(), basic_attack_notifier, MAX_VIEW_RANGE);
 }
 
 bool Entity::status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4)
@@ -394,6 +371,20 @@ bool Entity::is_dead() {
 	return status()->current_hp()->get_base() == 0; 
 }
 
+void Entity::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
+{
+	if (status()->current_hp()->total() < damage) {
+		status()->current_hp()->set_base(0);
+		on_killed(damage_dealer);
+		return;
+	}
+}
+
+void Entity::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+{
+
+}
+
 bool Entity::stop_attacking()
 {
 	if (!is_attacking())
@@ -430,7 +421,7 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 				return;
 			}
 
-			int range = target->status()->attack_range()->get_base();
+			int range = this->status()->attack_range()->get_base();
 			
 			_attackable_time = status()->attack_delay()->total();
 
@@ -464,3 +455,61 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 	return true;
 }
 
+void Entity::apply_status_change_in_area(std::shared_ptr<Entity> target, s_grid_sc_apply_in_skill_area_config const &config, s_grid_apply_in_area_config const &aoe_config)
+{
+	GridSCApplyInSkillArea sc_apply_in_skill_area(shared_from_this(), target, config, aoe_config);
+	GridReferenceContainerVisitor<GridSCApplyInSkillArea, GridReferenceContainer<AllEntityTypes>> container(sc_apply_in_skill_area);
+
+	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+}
+
+void Entity::remove_status_change_in_area(std::shared_ptr<Entity> target, int sc_type, s_grid_apply_in_area_config const &aoe_config)
+{
+	GridSCRemoveInSkillArea sc_remove_in_skill_area(shared_from_this(), target, sc_type, aoe_config);
+	GridReferenceContainerVisitor<GridSCRemoveInSkillArea, GridReferenceContainer<AllEntityTypes>> container(sc_remove_in_skill_area);
+
+	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+}
+
+void Entity::execute_skill_in_area(std::shared_ptr<Entity> target, std::shared_ptr<SkillExecution> skill_execution, s_grid_apply_in_area_config const &aoe_config)
+{
+	GridExecuteSkillInArea execute_skill_in_area(shared_from_this(), target, skill_execution, aoe_config);
+	GridReferenceContainerVisitor<GridExecuteSkillInArea, GridReferenceContainer<AllEntityTypes>> container(execute_skill_in_area);
+
+	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+}
+
+void Entity::execute_skill_in_cell(std::shared_ptr<Entity> target, MapCoords cell, std::shared_ptr<SkillExecution> skill_execution, s_grid_apply_in_area_config const &aoe_config)
+{
+	GridExecuteSkillInCell execute_skill_in_cell(shared_from_this(), cell, skill_execution, aoe_config);
+	GridReferenceContainerVisitor<GridExecuteSkillInCell, GridReferenceContainer<AllEntityTypes>> container(execute_skill_in_cell);
+
+	map()->visit_in_range(map_coords(), container, MAX_VIEW_RANGE);
+}
+
+void Entity::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
+{
+	auto ske = std::make_shared<SkillExecution>(shared_from_this(), skill_id, skill_lv);
+	ske->execute(target_guid);
+}
+
+void Entity::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y)
+{
+	auto ske = std::make_shared<SkillExecution>(shared_from_this(), skill_id, skill_lv);
+	ske->execute(pos_x, pos_y);
+}
+
+void Entity::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents)
+{
+	auto ske = std::make_shared<SkillExecution>(shared_from_this(), skill_id, skill_lv);
+	ske->execute(pos_x, pos_y, contents);
+}
+
+/**
+ * Extremely time-sensitive, do not use for any other purpose than to check for very small calculations.
+ */
+
+void Entity::update(uint64_t tick)
+{
+	combat_registry()->process_queue();
+}

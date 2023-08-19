@@ -30,6 +30,7 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
+#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
@@ -424,6 +425,16 @@ bool ZoneClientInterface::notify_required_attribute_update(status_point_type typ
 // 0x0121
 bool ZoneClientInterface::notify_cart_weight_update()
 {
+	ZC_NOTIFY_CARTITEM_COUNTINFO pkt(get_session());
+	//pkt.deliver(get_session()->player()->cart()->get_item_count(), MAX_CART_ITEMS, get_session()->player()->cart()->weight(), get_session()->player()->cart()->max_weight());
+	return true;
+}
+
+// 0x0141
+bool ZoneClientInterface::notify_attribute_update(status_point_type type, int32_t value, int32_t value2)
+{
+	ZC_COUPLESTATUS pkt(get_session());
+	pkt.deliver(type, value, value2);
 	return true;
 }
 
@@ -445,7 +456,7 @@ bool ZoneClientInterface::notify_experience_update(status_point_type type, int32
 	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20170830)
 	ZC_LONGLONGPAR_CHANGE pkt(get_session());
 #else
-	notify_compound_attribute_update(type, value);
+	ZC_LONGPAR_CHANGE pkt(get_session());
 #endif
 	pkt.deliver(type, value);
 	return true;
@@ -885,35 +896,81 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 	return true;
 }
+
 void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
 {
-	auto ske = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
-	ske->execute(target_guid);
+	std::shared_ptr<Entity> target = get_session()->player()->get_nearby_entity(target_guid);
+	
+	if (target == nullptr)
+		return;
+	
+	std::shared_ptr<const struct skill_config_data> skd = SkillDB->get_skill_by_id(skill_id);
+
+	if (skd == nullptr) {
+		HLog(error) << "Skill ID " << skill_id << " not found.";
+		return;
+	}
+
+	CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config config;
+
+	config.skill_id = skill_id;
+	config.skill_lv = skill_lv;
+	config.skd = skd;
+	config.skill_execution = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
+
+	CombatRegistry::SkillExecutionOperation::SkillExecutionOperand *operand = new CombatRegistry::SkillExecutionOperation::SkillExecutionOperand(get_session()->player(), target, config);
+	CombatRegistry::SkillExecutionOperation *operation = new CombatRegistry::SkillExecutionOperation(operand, CombatRegistry::SkillExecutionOperation::skill_execution_operation_type::SKILL_EXECUTION_OPERATION_TARGET);
+
+	int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	CombatRegistry::CombatStage *stage = get_session()->player()->combat_registry()->create_combat_stage(time);
+	stage->add_operation(operation);
+	get_session()->player()->combat_registry()->queue_combat_stage(stage);
+	
+	return;
 }
-void ZoneClientInterface::use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y)
+
+void ZoneClientInterface::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y)
 {
 	auto ske = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
 	ske->execute(pos_x, pos_y);
 }
-void ZoneClientInterface::use_ground_skill(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents)
+void ZoneClientInterface::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos_x, int16_t pos_y, std::string contents)
 {
 	auto ske = std::make_shared<SkillExecution>(get_session()->player(), skill_id, skill_lv);
 	ske->execute(pos_x, pos_y, contents);
 }
 
-void ZoneClientInterface::notify_skill_use(uint16_t skill_id, uint32_t src, uint32_t target, uint16_t target_x, uint16_t target_y, uint32_t element, int casttime)
+void ZoneClientInterface::notify_skill_cast(uint16_t skill_id, uint32_t src_guid, uint32_t target_guid, uint16_t target_x, uint16_t target_y, uint32_t element, int cast_time)
 {
 	ZC_USESKILL_ACK3 pkt(get_session());
+	pkt.deliver(skill_id, src_guid, target_guid, target_x, target_y, element, cast_time);
+	return;
+}
 
-	pkt._src_id = src;
-	pkt._target_id = target;
-	pkt._x = target_x;
-	pkt._y = target_y;
+void ZoneClientInterface::notify_safe_skill_use(int skill_id, int heal_amount, int target_guid, zc_use_skill2_result_type result)
+{
+	ZC_USE_SKILL2 pkt(get_session());
 	pkt._skill_id = skill_id;
-	pkt._element = element < 0 ? 0 : element;
-	pkt._delay_time = casttime;
-	pkt._disposable = 0;
-	pkt._attack_motion = 0;
+	pkt._heal_amount = heal_amount;
+	pkt._target_guid = target_guid;
+	pkt._result = (int) result;
+	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
+}
+
+void ZoneClientInterface::notify_hostile_skill_use(int16_t skill_id, int32_t src_guid, int32_t target_guid, int32_t start_time, int32_t attack_motion, int32_t delay_motion, int32_t damage, int16_t level, int16_t number_of_hits, int8_t action)
+{
+	ZC_NOTIFY_SKILL2 pkt(get_session());
+
+	pkt._skill_id = skill_id;
+	pkt._source_id = src_guid;
+	pkt._start_time = start_time;
+	pkt._target_id = target_guid;
+	pkt._level = level;
+	pkt._attack_motion = attack_motion;
+	pkt._attacked_motion = delay_motion;
+	pkt._damage = damage;
+	pkt._count = number_of_hits;
+	pkt._action = action;
 	
 	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
 }
@@ -936,8 +993,19 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 		case PLAYER_ACT_ATTACK:
 		{
 			std::shared_ptr<Entity> target = get_session()->player()->get_nearby_entity(target_guid);
-			get_session()->player()->attack(target, continuous);
-			break;
+			
+			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config config;
+			config.continuous = continuous;
+			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand *operand = new CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand(get_session()->player(), target, config);
+			CombatRegistry::MeleeExecutionOperation *operation = new CombatRegistry::MeleeExecutionOperation(operand, CombatRegistry::MeleeExecutionOperation::melee_execution_operation_type::MELEE_EXECUTION_OPERATION_TARGET);
+
+			int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+			
+			CombatRegistry::CombatStage *stage = get_session()->player()->combat_registry()->create_combat_stage(time);
+			
+			stage->add_operation(operation);
+
+			get_session()->player()->combat_registry()->queue_combat_stage(stage);
 		}
 		default:
 			break;
@@ -975,20 +1043,7 @@ bool ZoneClientInterface::notify_skill_fail(int16_t skill_id, int32_t message_ty
 bool ZoneClientInterface::notify_damage(int guid, int target_guid, int start_time, int delay_skill, int delay_damage, int damage, bool is_sp_damaged, int number_of_hits, int8_t action_type, int left_damage)
 {
 	ZC_NOTIFY_ACT3 pkt(get_session());
-
-	pkt._guid = guid;
-	pkt._target_guid = target_guid; 
-	pkt._start_time = start_time;
-	pkt._delay_skill = delay_skill;
-	pkt._delay_damage = delay_damage;
-	pkt._damage = damage;
-	pkt._is_sp_damaged = is_sp_damaged;
-	pkt._number_of_hits = number_of_hits;
-	pkt._action_type = action_type;
-	pkt._left_damage = left_damage; 
-
-	get_session()->player()->notify_in_area(pkt.serialize(), GRID_NOTIFY_AREA);
-
+	pkt.deliver(guid, target_guid, start_time, delay_skill, delay_damage, damage, is_sp_damaged, number_of_hits, action_type, left_damage);
 	return true;
 }
 void ZoneClientInterface::open_vend_shop(int account_id)

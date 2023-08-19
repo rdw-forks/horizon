@@ -23750,10 +23750,13 @@ public:
 	{}
 	virtual ~ZC_COUPLESTATUS() {}
 
-	void deliver();
+	void deliver(status_point_type type, int value, int value2);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _status_point_type{ 0 };
+	int32_t _value{ 0 };
+	int32_t _value2{ 0 };
 };
 
 enum {
@@ -29190,11 +29193,11 @@ public:
 	{}
 	virtual ~ZC_ITEM_PICKUP_ACK_V7() {}
 
-	void deliver(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result);
+	void deliver(struct item_entry_data id, int16_t amount, item_inventory_addition_notif_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
-	item_entry_data _id;
+	struct item_entry_data _id;
 	int16_t _amount;
 	item_inventory_addition_notif_type _result;
 };
@@ -32261,10 +32264,14 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_CARTITEM_COUNTINFO() {}
 
-	void deliver();
+	void deliver(int unique_items, int max_cart_items, int cart_weight, int cart_weight_max);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _unique_items{ 0 };
+	int16_t _max_cart_items{ 0 };
+	int32_t _cart_weight{ 0 };
+	int32_t _cart_weight_max{ 0 };
 };
 
 enum {
@@ -46385,10 +46392,14 @@ public:
 	{}
 	virtual ~ZC_USE_SKILL2() {}
 
-	void deliver();
+	void deliver(int skill_id, int heal_amount, int target_guid, zc_use_skill2_result_type result);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _skill_id{ 0 };
+	int32_t _heal_amount{ 0 };
+	int32_t _target_guid{ 0 };
+	int8_t _result{ 0 };
 };
 
 enum {

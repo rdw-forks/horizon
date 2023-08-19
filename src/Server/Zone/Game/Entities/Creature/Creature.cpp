@@ -32,11 +32,12 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
+#include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 
 using namespace Horizon::Zone::Entities;
 
-Creature::Creature(uint32_t guid, entity_type type, std::shared_ptr<Map> map, MapCoords mcoords)
-: Entity(guid, type, map, mcoords)
+Creature::Creature(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
+: Entity(guid, type, type_mask, map, mcoords)
 {
 	//
 }
@@ -56,4 +57,14 @@ bool Creature::initialize(std::shared_ptr<const monster_config_data> md)
 	}
 
 	return true;
+}
+
+void Creature::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
+{
+	Entity::on_damage_received(damage_dealer, damage);
+}
+
+void Creature::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
+{
+	Entity::on_killed(killer, with_drops, with_exp);
 }
