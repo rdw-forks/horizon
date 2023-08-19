@@ -364,13 +364,6 @@ struct GridExecuteSkillInCell
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
-enum grid_entity_skill_use_notification_type
-{
-	GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME,
-	GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
-	GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE,
-};
-
 struct s_entity_skill_use_notifier_config
 {
 	int source_guid, target_guid, skill_id, skill_lv, damage_value, display_value, start_time, attack_motion;

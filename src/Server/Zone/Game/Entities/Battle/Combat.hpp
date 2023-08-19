@@ -178,7 +178,7 @@ protected:
         explicit CombatOperation(CombatOperand *operand, int operation_type, int operation_sub_type)
         : _operand(operand), _operation_type(operation_type), _operation_sub_type(operation_sub_type) { }
 
-        ~CombatOperation() 
+        virtual ~CombatOperation() 
         {
             if (_operand != nullptr) 
                 delete _operand; 
