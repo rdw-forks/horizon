@@ -6,11 +6,21 @@ Horizon is a free software project (authored by [@sagunkho](https://gitlab.com/s
 
 Table of Contents
 ---------
-1. Prerequisites
-2. Installation
-3. Troubleshooting
+1. Hardware Requirements
+2. Software Prerequisites
+3. Installation
+4. Troubleshooting
 
-Prerequisites
+Hardware Requirements
+-------------
+Before installing Horizon, you will need to ensure -
+|| Windows  | Linux  |
+|---|---|---|
+|RAM For Compilation| 4096MB  | 1024MB   |
+|RAM For Running| 2048MB  | 2048MB  |
+|CPU Cores| 2  |  1 |
+
+Software Prerequisites
 -------------
 Before installing Horizon, you will need to install certain tools and applications.
 
