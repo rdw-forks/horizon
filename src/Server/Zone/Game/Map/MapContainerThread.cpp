@@ -266,6 +266,7 @@ void MapContainerThread::update(uint64_t diff)
 				session->player()->save();
 				if (session->player()->has_valid_grid_reference())
 					session->player()->remove_grid_reference();
+				session->player()->map()->sub_user_count();
 			}
 			remove_entity(session->player());
 			_managed_sessions.erase(session->get_session_id());
@@ -289,26 +290,26 @@ void MapContainerThread::update(uint64_t diff)
 	}
 
 	// Update the entities.
-	std::chrono::high_resolution_clock::time_point start_time_e = std::chrono::high_resolution_clock::now();
-	for (auto i = _entities.begin(); i != _entities.end();) {
-		std::shared_ptr<Entity> entity = *i;
-
-		if (entity == nullptr || entity->is_dead()) {
-			i = _entities.erase(i);
-			continue;
-		}
-
-		entity->update(diff);
-		++i;
-	}
-	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);
-	//HLog(debug) << "Entities Update time: " << elapsed_time_e.count() << "us";
-
-	// Update Monsters
-	std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
+	//std::chrono::high_resolution_clock::time_point start_time_e = std::chrono::high_resolution_clock::now();
+	//for (auto i = _entities.begin(); i != _entities.end();) {
+	//	std::shared_ptr<Entity> entity = *i;
+//
+	//	if (entity == nullptr || entity->is_dead()) {
+	//		i = _entities.erase(i);
+	//		continue;
+	//	}
+//
+	//	entity->update(diff);
+	//	++i;
+	//}
+	//std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
+	//std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);
+	////HLog(debug) << "Entities Update time: " << elapsed_time_e.count() << "us";
+//
+	//// Update Monsters
+	//std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 	getScheduler().Update();
-	std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
+	//std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
+	//std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
 	//HLog(debug) << "Scheduler Update time: " << elapsed_time.count() << "us";
 }

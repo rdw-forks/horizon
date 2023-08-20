@@ -116,7 +116,6 @@ bool Entity::schedule_walk()
 	}
 
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	std::chrono::high_resolution_clock::time_point start_time4 = std::chrono::high_resolution_clock::now();
 	on_movement_begin(); // 0us
 	notify_nearby_players_of_movement(); // 3us
 	walk(); // ~173us

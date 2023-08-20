@@ -33,7 +33,9 @@
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
+#include "Server/Zone/LUA/Components/MonsterComponent.hpp"
 #include "Server/Zone/Game/Map/Grid/Grid.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 
@@ -67,4 +69,14 @@ bool Map::has_obstruction_at(int16_t x, int16_t y)
 	return false;
 }
 
+void Map::add_user_count() {
+	_user_count++; 
+	if (sZone->config().monster_caching_enabled() && get_user_count() == 1)
+		container()->get_lua_manager()->monster()->spawn_monsters(get_name(), container()); 
+}
 
+void Map::sub_user_count() { 
+	_user_count--; 
+	if (sZone->config().monster_caching_enabled() && get_user_count() == 0)
+		container()->get_lua_manager()->monster()->despawn_monsters(get_name(), container());
+}

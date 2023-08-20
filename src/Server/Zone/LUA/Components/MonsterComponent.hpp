@@ -58,6 +58,8 @@ public:
     std::shared_ptr<Entities::Monster> get_single_spawned_monster(uint32_t guid) { return _monster_spawned_map.at(guid); }
     void deregister_single_spawned_monster(uint32_t guid);
 
+    void spawn_monsters(std::string map_name, std::shared_ptr<MapContainerThread> container);
+    void despawn_monsters(std::string map_name, std::shared_ptr<MapContainerThread> container);
     std::map<uint32_t, std::shared_ptr<monster_spawn_data>> _monster_spawn_db;
     std::map<uint32_t, std::shared_ptr<Entities::Monster>> _monster_spawned_map;
     

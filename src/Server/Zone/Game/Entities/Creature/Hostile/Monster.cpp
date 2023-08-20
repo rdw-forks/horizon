@@ -67,14 +67,14 @@ bool Monster::initialize()
 
 	map()->ensure_grid_for_entity(this, map_coords());
 
-    map()->container()->getScheduler().Schedule(
-    	Seconds(0),
-    	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
-    	[this] (TaskContext context)
-    {
-    	behavior_passive();
-    	context.Repeat(Seconds(std::rand() % 10 + 1));
-    });
+    //map()->container()->getScheduler().Schedule(
+    //	Seconds(0),
+    //	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
+    //	[this] (TaskContext context)
+    //{
+    //	behavior_passive();
+    //	context.Repeat(Milliseconds(std::rand() % MIN_RANDOM_TRAVEL_TIME + 1000));
+    //});
 
 	return true;
 }
@@ -84,8 +84,7 @@ void Monster::finalize()
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
 
-	if (has_valid_grid_reference())
-		remove_grid_reference();
+	this->~Monster();
 }
 
 // Code in this function is executed 

@@ -231,6 +231,9 @@ public:
 
 	std::shared_ptr<CombatRegistry> combat_registry() { return _combat_registry; }
 
+	std::chrono::time_point<std::chrono::steady_clock> _last_move_input_time;
+	std::chrono::time_point<std::chrono::steady_clock> _last_move_output_time;
+	
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false};
 	bool _is_attacking{false};

@@ -91,6 +91,8 @@ bool ZoneServer::read_config()
 //	config().set_entity_save_interval(tbl.get_or("entity_save_interval", 180000));
 //	HLog(info) << "Entity data will be saved to the database every " << duration_cast<minutes>(std::chrono::milliseconds(config().get_entity_save_interval())).count() << " minutes and " << duration_cast<seconds>(std::chrono::milliseconds(config().get_entity_save_interval())).count() << " seconds.";
 	
+	config().set_monster_caching_enabled(tbl.get_or("monster_caching_enabled", true));
+	
 	HLog(info) << "Maps will be managed by '" << MAX_MAP_CONTAINER_THREADS << "' thread containers.";
 
 	config().set_session_max_timeout(tbl.get_or("session_max_timeout", 60));

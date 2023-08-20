@@ -4,7 +4,22 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "name": "MapCache",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Debug-Tools\\bin\\Debug\\mapcache.exe",
+            "externalConsole": true,
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--config=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\map_list.lua",
+                "--grf-config=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\grf_list.lua",
+                "--output=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\maps.dat"
+            ]
+        },
         {
             "name": "Auth",
             "type": "cppvsdbg",
@@ -16,7 +31,6 @@
               "moduleLoad": false,
               "trace": true
             },
-            "showDisplayString": true,
             "args": [
                 "--with-config=${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\config\\auth-server.lua"
             ]
@@ -32,7 +46,6 @@
               "moduleLoad": false,
               "trace": true
             },
-            "showDisplayString": true,
             "args": [
                 "--with-config=${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\config\\char-server.lua"
             ]
@@ -48,7 +61,6 @@
               "moduleLoad": false,
               "trace": true
             },
-            "showDisplayString": true,
             "args": [
                 "--with-config=${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\config\\zone-server.lua"
             ]
