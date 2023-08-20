@@ -54,8 +54,6 @@ Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
 
 Monster::~Monster()
 {
-	if (has_valid_grid_reference())
-		remove_grid_reference();
 }
 
 bool Monster::initialize()
@@ -73,19 +71,24 @@ bool Monster::initialize()
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Seconds(std::rand() % 10 + 1));
+    	context.Repeat(Milliseconds(std::rand() % MIN_RANDOM_TRAVEL_TIME + 1000));
     });
 
 	return true;
 }
 
-void Monster::finalize()
+bool Monster::finalize()
 {
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
-		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+	if (!Creature::finalize())
+		return false;
 
 	if (has_valid_grid_reference())
 		remove_grid_reference();
+		
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+
+	return true;
 }
 
 // Code in this function is executed 
@@ -193,8 +196,6 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
-	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
-
 	switch (killer->type())
 	{
 	case ENTITY_PLAYER:
@@ -221,6 +222,8 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << guid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
+
+	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
 
 	return;
 }

@@ -58,6 +58,66 @@ namespace Traits
 class Status
 {
 public:
+	class StatusRegistry
+	{
+	public:
+        enum status_operation_type
+        {
+            STATUS_OPERATION_ADD_TO_BASE = 0,
+            STATUS_OPERATION_SUBTRACT_FROM_BASE,
+            STATUS_OPERATION_ADD_TO_EQUIP,
+            STATUS_OPERATION_SUBTRACT_FROM_EQUIP,
+            STATUS_OPERATION_ADD_TO_STATUS,
+            STATUS_OPERATION_SUBTRACT_FROM_STATUS
+        };
+
+		class StatusOperation
+		{
+		public:
+			StatusOperation(Attribute *attribute, status_operation_type type, uint16_t value)
+			: _priority(std::time(nullptr)), _attribute(attribute), _type(type), _value(value) { }
+			virtual ~StatusOperation() {}
+
+			void execute();
+
+			uint16_t get_priority() { return _priority; }
+			void set_priority(uint16_t priority) { _priority = priority; }
+
+			status_operation_type get_type() { return _type; }
+			uint16_t get_value() { return _value; }
+
+		protected:
+			Attribute *_attribute;
+			status_operation_type _type;
+			uint16_t _value;
+			uint16_t _priority;
+		};
+
+    	// Define a comparison function for the priority queue
+    	struct CompareStatusOperation {
+    	    bool operator()(StatusOperation* op1, StatusOperation* op2) {
+    	        return op1->get_priority() < op2->get_priority();
+    	    }
+    	};
+
+		StatusRegistry() { }
+		~StatusRegistry() { }
+
+		void add_to_base(Attribute *attribute, uint16_t value);
+		void subtract_from_base(Attribute *attribute, uint16_t value);
+		void add_to_equip(Attribute *attribute, uint16_t value);
+		void subtract_from_equip(Attribute *attribute, uint16_t value);
+		void add_to_status(Attribute *attribute, uint16_t value);
+		void subtract_from_status(Attribute *attribute, uint16_t value);
+
+		bool has_next_operation() { return !_status_operation_queue.empty(); }
+		StatusOperation *get_next_operation() { return _status_operation_queue.top(); }
+		void process_queue();
+
+	protected:
+    	std::priority_queue<StatusOperation *, std::vector<StatusOperation *>, CompareStatusOperation> _status_operation_queue;
+	};
+
 	Status(std::weak_ptr<Entity> entity, entity_type type);
 	~Status();
 
@@ -292,11 +352,18 @@ public:
 	std::shared_ptr<CreatureMode> creature_mode() { return _creature_mode; }
 	void set_creature_mode(std::shared_ptr<CreatureMode> m) { _creature_mode = m; }
 
+	std::shared_ptr<StatusRegistry> status_registry() { return _status_registry; }
+
+	bool is_initialized() { return _is_initialized; }
+	void set_initialized(bool b) { _is_initialized = b; }
+
 protected:
 	std::shared_ptr<Entity> entity() { return _entity.lock(); }
 	entity_type _type{ ENTITY_PLAYER };
+	bool _is_initialized{ false };
 
 private:
+	std::shared_ptr<StatusRegistry> _status_registry{ nullptr };
 	std::weak_ptr<Entity> _entity;
 	// Attributes
 	std::shared_ptr<Strength> _str;

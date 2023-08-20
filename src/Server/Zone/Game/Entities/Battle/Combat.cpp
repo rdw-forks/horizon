@@ -384,9 +384,6 @@ void CombatRegistry::SkillResultOperation::execute() const
             notifier_config.action_type = operand->get_config().action_type;
             source->notify_nearby_players_of_skill_use(GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE, notifier_config);
             HLog(debug) << "Finished skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
-            if (target->type() == ENTITY_MONSTER) {
-                target->notify_nearby_players_of_movement(true);
-            }
             target->on_damage_received(source, damage->get_damage().left_damage + damage->get_damage().right_damage);
         }
                 break;

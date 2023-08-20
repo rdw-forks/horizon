@@ -19,6 +19,26 @@
             }
         },
         {
+            "name": "Debug-Tools",
+            "displayName": "Visual Studio Community 2022 Debug Tools - amd64",
+            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
+                "WITH_TOOLS": true,
+                "WITHOUT_SERVERS": true,
+                "WITH_TESTS": false
+            }
+        },
+        {
             "name": "Release",
             "description": "",
             "displayName": "Visual Studio Community 2022 Release - amd64",
@@ -91,6 +111,12 @@
             "name": "Debug",
             "displayName": "Visual Studio Community 2022 Debug - amd64",
             "configurePreset": "Debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "Debug-Tools",
+            "displayName": "Visual Studio Community 2022 Debug Tools - amd64",
+            "configurePreset": "Debug-Tools",
             "configuration": "Debug"
         },
         {

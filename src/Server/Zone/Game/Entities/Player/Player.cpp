@@ -159,10 +159,12 @@ bool Player::save()
 			.execute();
 
 		// Status
-		status()->save(shared_from_this()->downcast<Player>());
+		if (status() != nullptr)
+			status()->save(shared_from_this()->downcast<Player>());
 
 		// Inventory
-		inventory()->save();
+		if (inventory() != nullptr)
+			inventory()->save();
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::save:" << error.what();
@@ -230,7 +232,8 @@ bool Player::load()
 		}
 
 		map->container()->manage_session(SESSION_ACTION_ADD, get_session());
-
+		map->add_user_count();
+		
 		get_session()->set_map_name(map->get_name());
 		
 		set_map(map);
@@ -413,6 +416,9 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 			dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
 
+		map()->sub_user_count();
+		dest_map->add_user_count();
+
 		get_session()->set_map_name(dest_map->get_name());
 
 		if (coords == MapCoords(0, 0))
@@ -486,6 +492,9 @@ void Player::on_map_enter()
 {
     //get_packet_handler()->Send_ZC_MAPPROPERTY_R2(get_map());
 
+	if (!is_initialized())
+		return;
+		
 	inventory()->notify_all();
 
 	// Notify Weight.

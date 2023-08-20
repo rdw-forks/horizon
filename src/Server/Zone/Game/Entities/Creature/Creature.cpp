@@ -59,6 +59,14 @@ bool Creature::initialize(std::shared_ptr<const monster_config_data> md)
 	return true;
 }
 
+bool Creature::finalize()
+{
+	if (!Entity::finalize())
+		return false;
+
+	return true;
+}
+
 void Creature::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
 {
 	Entity::on_damage_received(damage_dealer, damage);

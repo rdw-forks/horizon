@@ -86,9 +86,8 @@ namespace Traits
 			_base_val = val;
 			notify();
 		}
-
-		virtual void add_base(int32_t val) { set_base(_base_val + val); }
-		virtual void sub_base(int32_t val) { set_base(_base_val - std::min(_base_val, val)); }
+		virtual void add_base(int32_t val);
+		virtual void sub_base(int32_t val);
 		virtual int32_t get_base() const { return _base_val; }
 
 		virtual void set_equip(int32_t val)
@@ -96,17 +95,17 @@ namespace Traits
 			_equip_val = val;
 			notify();
 		}
-		virtual void add_equip(int32_t val) { set_equip(_equip_val + val); }
-		virtual void sub_equip(int32_t val) { set_equip(_equip_val - std::min(_base_val, val)); }
+		virtual void add_equip(int32_t val);
+		virtual void sub_equip(int32_t val);
 		virtual int32_t get_equip() const { return _equip_val; }
 
-		virtual void set_status(int32_t str)
+		virtual void set_status(int32_t val)
 		{
-			_status_val = str;
+			_status_val = val;
 			notify();
 		}
-		virtual void add_status(int32_t val) { set_status(_status_val + val); }
-		virtual void sub_status(int32_t val) { set_status(_status_val - std::min(_base_val, val)); }
+		virtual void add_status(int32_t val);
+		virtual void sub_status(int32_t val);
 		virtual int32_t get_status() const { return _status_val; }
 
 		virtual int32_t total() const { return _base_val + _equip_val + _status_val; }

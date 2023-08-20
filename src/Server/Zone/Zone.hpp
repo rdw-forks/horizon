@@ -68,10 +68,14 @@ struct s_zone_server_configuration
     std::time_t session_max_timeout() { return _session_max_timeout; }
     void set_session_max_timeout(std::time_t timeout) { _session_max_timeout = timeout; }
 	
+	bool monster_caching_enabled() { return _monster_caching_enabled; }
+	void set_monster_caching_enabled(bool enabled) { _monster_caching_enabled = enabled; }
+	
 	boost::filesystem::path _static_db_path;
 	boost::filesystem::path _mapcache_path;
     std::time_t _session_max_timeout;
 	boost::filesystem::path _script_root_path;
+	bool _monster_caching_enabled;
 };
 
 class ZoneServer : public Server

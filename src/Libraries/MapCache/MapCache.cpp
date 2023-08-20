@@ -172,16 +172,16 @@ bool Horizon::Libraries::MapCache::Exists()
 mcache_config_error_type Horizon::Libraries::MapCache::ReadMapListConfig()
 {
 	sol::state lua;
+	sol::table map_tbl;
 
 	// Read the file. If there is an error, report it and exit.
 	try {
-		lua.script_file(getMapListPath().string());
+		sol::load_result fx = lua.load_file(getMapListPath().string());
+		map_tbl = fx();
 	} catch(const std::exception &e) {
-		printf("Error: Parse error at %s.\n", e.what());
+		printf("MapList Config Error: Parse error at %s.\n", e.what());
 		return MCACHE_CONFIG_PARSE_ERROR;
 	}
-
-	sol::table map_tbl = lua["map_list"];
 
 	map_tbl.for_each([this](sol::object const &key, sol::object const &value) {
 		if (key.get_type() != sol::type::number)
@@ -195,22 +195,22 @@ mcache_config_error_type Horizon::Libraries::MapCache::ReadMapListConfig()
 mcache_grf_config_error_type Horizon::Libraries::MapCache::ReadGRFListConfig()
 {
 	sol::state lua;
-
+	sol::table grf_tbl;
 	if (getGRFListPath().empty())
 		return MCACHE_GRF_CONF_INVALID_FILE;
 
 	// Read the file. If there is an error, report it and exit.
 	try {
-		lua.script_file(getGRFListPath().string());
+		sol::load_result fx = lua.load_file(getGRFListPath().string());
+		grf_tbl = fx();
 	} catch(const std::exception &e) {
 		printf("Error: Parse error at %s.\n", e.what());
 		return MCACHE_GRF_CONF_PARSE_ERROR;
 	}
 
-	sol::table tbl = lua["grf_config"];
-	setResourcePath(tbl.get_or("grf_resource_path", std::string("./")));
+	setResourcePath(grf_tbl.get_or("grf_resource_path", std::string("./")));
 
-	sol::table grf_list = tbl.get<sol::table>("grf_list");
+	sol::table grf_list = grf_tbl.get<sol::table>("grf_list");
 
 	grf_list.for_each([this](sol::object const &key, sol::object const &value) {
 		int id = key.as<int>();

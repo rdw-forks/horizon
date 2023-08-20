@@ -46,10 +46,81 @@
 
 using namespace Horizon::Zone::Traits;
 
+
+void Status::StatusRegistry::add_to_base(Attribute *attribute, uint16_t value) 
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE, value);
+	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint16_t value) 
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE, value);
+	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint16_t value) 
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP, value);
+	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint16_t value) 
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP, value);
+	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::add_to_status(Attribute *attribute, uint16_t value) 
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS, value);
+	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint16_t value) 
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS, value);
+	_status_operation_queue.push(operation); 
+}
+
+void Status::StatusRegistry::StatusOperation::execute()
+{
+	switch (get_type()) {
+	case STATUS_OPERATION_ADD_TO_BASE:
+		_attribute->set_base(_attribute->get_base() + _value);
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_BASE:
+		_attribute->set_base(_attribute->get_base() - _value);
+		break;
+	case STATUS_OPERATION_ADD_TO_EQUIP:
+		_attribute->set_equip(_attribute->get_equip() + _value);
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP:
+		_attribute->set_equip(_attribute->get_equip() - _value);
+		break;
+	case STATUS_OPERATION_ADD_TO_STATUS:
+		_attribute->set_status(_attribute->get_status() + _value);
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_STATUS:
+		_attribute->set_status(_attribute->get_status() - _value);
+		break;
+	}
+	
+	// notify through walk packet of hp change.
+    if (_attribute->get_type() == STATUS_CURRENTHP && _attribute->entity()->type() == ENTITY_MONSTER && !_attribute->entity()->is_dead()) {
+        _attribute->entity()->notify_nearby_players_of_movement(true);
+    }
+}
+
+void Status::StatusRegistry::process_queue()
+{
+	while (has_next_operation()) {
+		StatusOperation *operation = get_next_operation();
+		_status_operation_queue.pop();
+		operation->execute();
+		delete operation;
+	}
+}
+
 Status::Status(std::weak_ptr<Horizon::Zone::Entity> entity, entity_type type)
 	: _entity(entity), _type(type)
 {
-
+	_status_registry = std::make_shared<StatusRegistry>();
 }
 
 Status::~Status()
@@ -228,6 +299,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 
 	player->get_session()->clif()->notify_initial_status();
 
+	set_initialized(true);
 	return true;
 }
 
@@ -245,11 +317,13 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc)
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
 	set_base_appearance(std::make_shared<BaseAppearance>(_entity, npc->job_id()));
 
+	set_initialized(true);
 	return true;
 }
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill)
 {
+	set_initialized(true);
 	return true;
 }
 
@@ -352,6 +426,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 	set_creature_element_level(std::make_shared<CreatureElementLevel>(_entity, (int) md->element_level));
 	set_creature_mode(std::make_shared<CreatureMode>(_entity, (int) md->mode));
 
+	set_initialized(true);
 	return true;
 }
 

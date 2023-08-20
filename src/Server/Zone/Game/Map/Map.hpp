@@ -147,6 +147,11 @@ public:
 		return available_cells.at(rnd);
 	}
 	
+	void set_user_count(int32_t count) { _user_count = count; }
+	int32_t get_user_count() { return _user_count; }
+	void add_user_count();
+	void sub_user_count();
+	
 private:
 	std::weak_ptr<MapContainerThread> _container;
 	std::string _name{""};
@@ -155,6 +160,7 @@ private:
 	Cell _cells[MAX_CELLS_PER_MAP][MAX_CELLS_PER_MAP]{{0}};
 	GridHolderType _gridholder;
 	AStar::Generator _pathfinder;
+	int32_t _user_count{ 0 };
 };
 }
 }
