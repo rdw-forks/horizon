@@ -354,9 +354,13 @@ public:
 
 	std::shared_ptr<StatusRegistry> status_registry() { return _status_registry; }
 
+	bool is_initialized() { return _is_initialized; }
+	void set_initialized(bool b) { _is_initialized = b; }
+
 protected:
 	std::shared_ptr<Entity> entity() { return _entity.lock(); }
 	entity_type _type{ ENTITY_PLAYER };
+	bool _is_initialized{ false };
 
 private:
 	std::shared_ptr<StatusRegistry> _status_registry{ nullptr };

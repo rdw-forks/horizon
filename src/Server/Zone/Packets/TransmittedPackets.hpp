@@ -46117,10 +46117,17 @@ public:
 	{}
 	virtual ~ZC_USESKILL_ACK() {}
 
-	void deliver();
+	void deliver(int src_guid, int dst_guid, int x, int y, int skill_id, int element, int delay_time);
 	ByteBuffer &serialize();
 
 /* Structure */
+	uint32_t _src_guid;
+	uint32_t _dst_guid;
+	uint16_t _x;
+	uint16_t _y;
+	uint16_t _skill_id;
+	uint32_t _element;
+	uint32_t _delay_time;
 };
 
 enum {

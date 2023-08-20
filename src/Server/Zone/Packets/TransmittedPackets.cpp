@@ -3259,9 +3259,29 @@ ByteBuffer &ZC_USER_COUNT::serialize()
 /**
  * ZC_USESKILL_ACK
  */
-void ZC_USESKILL_ACK::deliver() {}
+void ZC_USESKILL_ACK::deliver(int src_guid, int dst_guid, int x, int y, int skill_id, int element, int delay_time) 
+{
+	_src_guid = src_guid;
+	_dst_guid = dst_guid;
+	_x = x;
+	_y = y;
+	_skill_id = skill_id;
+	_element = element;
+	_delay_time = delay_time;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_USESKILL_ACK::serialize()
 {
+	buf() << _packet_id;
+	buf() << _src_guid;
+	buf() << _dst_guid;
+	buf() << _x;
+	buf() << _y;
+	buf() << _skill_id;
+	buf() << _element;
+	buf() << _delay_time;
+	
 	return buf();
 }
 /**

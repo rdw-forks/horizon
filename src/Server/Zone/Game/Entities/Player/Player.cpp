@@ -159,10 +159,12 @@ bool Player::save()
 			.execute();
 
 		// Status
-		status()->save(shared_from_this()->downcast<Player>());
+		if (status() != nullptr)
+			status()->save(shared_from_this()->downcast<Player>());
 
 		// Inventory
-		inventory()->save();
+		if (inventory() != nullptr)
+			inventory()->save();
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::save:" << error.what();

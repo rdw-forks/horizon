@@ -54,8 +54,6 @@ Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
 
 Monster::~Monster()
 {
-	if (has_valid_grid_reference())
-		remove_grid_reference();
 }
 
 bool Monster::initialize()
@@ -67,24 +65,30 @@ bool Monster::initialize()
 
 	map()->ensure_grid_for_entity(this, map_coords());
 
-    //map()->container()->getScheduler().Schedule(
-    //	Seconds(0),
-    //	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
-    //	[this] (TaskContext context)
-    //{
-    //	behavior_passive();
-    //	context.Repeat(Milliseconds(std::rand() % MIN_RANDOM_TRAVEL_TIME + 1000));
-    //});
+    map()->container()->getScheduler().Schedule(
+    	Seconds(0),
+    	get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK),
+    	[this] (TaskContext context)
+    {
+    	behavior_passive();
+    	context.Repeat(Milliseconds(std::rand() % MIN_RANDOM_TRAVEL_TIME + 1000));
+    });
 
 	return true;
 }
 
-void Monster::finalize()
+bool Monster::finalize()
 {
+	if (!Creature::finalize())
+		return false;
+
+	if (has_valid_grid_reference())
+		remove_grid_reference();
+		
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
 
-	this->~Monster();
+	return true;
 }
 
 // Code in this function is executed 
@@ -192,8 +196,6 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
-	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
-
 	switch (killer->type())
 	{
 	case ENTITY_PLAYER:
@@ -220,6 +222,8 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << guid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
+
+	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
 
 	return;
 }

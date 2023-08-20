@@ -942,9 +942,16 @@ void ZoneClientInterface::use_skill_on_ground(int16_t skill_lv, int16_t skill_id
 
 void ZoneClientInterface::notify_skill_cast(uint16_t skill_id, uint32_t src_guid, uint32_t target_guid, uint16_t target_x, uint16_t target_y, uint32_t element, int cast_time)
 {
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20190918)
 	ZC_USESKILL_ACK3 pkt(get_session());
 	pkt.deliver(skill_id, src_guid, target_guid, target_x, target_y, element, cast_time);
-	return;
+#elif (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20090406) || \
+	(CLIENT_TYPE == 'S' && PACKET_VERSION >= 20080618) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20080827)
+	ZC_USESKILL_ACK pkt(get_session());
+	pkt.deliver(src_guid, target_guid, target_x, target_y, skill_id, element, cast_time);
+#endif
 }
 
 void ZoneClientInterface::notify_safe_skill_use(int skill_id, int heal_amount, int target_guid, zc_use_skill2_result_type result)

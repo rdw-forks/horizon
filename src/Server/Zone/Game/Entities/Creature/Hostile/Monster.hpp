@@ -52,7 +52,7 @@ public:
 	~Monster() override;
 
 	bool initialize();
-	void finalize();
+	virtual bool finalize() override;
 
 	virtual void stop_movement() override;
 	virtual void on_pathfinding_failure() override;

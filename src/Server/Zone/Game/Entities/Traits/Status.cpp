@@ -102,7 +102,7 @@ void Status::StatusRegistry::StatusOperation::execute()
 	}
 	
 	// notify through walk packet of hp change.
-    if (_attribute->get_type() == STATUS_CURRENTHP && _attribute->entity()->type() == ENTITY_MONSTER) {
+    if (_attribute->get_type() == STATUS_CURRENTHP && _attribute->entity()->type() == ENTITY_MONSTER && !_attribute->entity()->is_dead()) {
         _attribute->entity()->notify_nearby_players_of_movement(true);
     }
 }
@@ -299,6 +299,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player)
 
 	player->get_session()->clif()->notify_initial_status();
 
+	set_initialized(true);
 	return true;
 }
 
@@ -316,11 +317,13 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc)
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
 	set_base_appearance(std::make_shared<BaseAppearance>(_entity, npc->job_id()));
 
+	set_initialized(true);
 	return true;
 }
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill)
 {
+	set_initialized(true);
 	return true;
 }
 
@@ -423,6 +426,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 	set_creature_element_level(std::make_shared<CreatureElementLevel>(_entity, (int) md->element_level));
 	set_creature_mode(std::make_shared<CreatureMode>(_entity, (int) md->mode));
 
+	set_initialized(true);
 	return true;
 }
 

@@ -59,6 +59,8 @@ Entity::Entity(uint32_t guid, entity_type type, entity_type_mask type_mask)
 
 Entity::~Entity()
 {
+	_combat = nullptr;
+	_combat_registry = nullptr;
 }
 
 bool Entity::initialize()
@@ -68,6 +70,13 @@ bool Entity::initialize()
 	_is_initialized = true;
 
 	return _is_initialized;
+}
+
+bool Entity::finalize()
+{		
+	set_finalized(true);
+
+	return _is_finalized;
 }
 
 std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e)
@@ -126,6 +135,12 @@ bool Entity::schedule_walk()
 // @NOTE This method is called when the entity is already in motion and a new destination is set.
 void Entity::walk()
 {
+	// Fixes the jumping walk bug that happens when the walk is invoked while entity is already walking.
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
+		stop_walking();
+		return;
+	}
+
 	if (status() == nullptr || status()->movement_speed() == nullptr) {
 		// HLog(error) << "Entity::walk: Status is null, cannot walk.";
 		return;
@@ -367,7 +382,7 @@ bool Entity::status_effect_end(int type)
 }
 
 bool Entity::is_dead() { 
-	return status()->current_hp()->get_base() == 0; 
+	return status()->current_hp()->get_base() <= 0; 
 }
 
 void Entity::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
@@ -509,6 +524,8 @@ void Entity::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos
  */
 void Entity::update(uint64_t tick)
 {
-	combat_registry()->process_queue();
-	status()->status_registry()->process_queue();
+	if (_combat_registry != nullptr)
+		combat_registry()->process_queue();
+	if (status() != nullptr && status()->is_initialized() != false)
+		status()->status_registry()->process_queue();
 }

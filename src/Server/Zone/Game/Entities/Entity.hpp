@@ -93,8 +93,11 @@ public:
 	virtual ~Entity();
 
 	bool initialize();
+	virtual bool finalize();
 
 	bool is_initialized() const { return _is_initialized; }
+	bool is_finalized() const { return _is_finalized; }
+	void set_finalized(bool finalized) { _is_finalized = finalized; }
 
 	/**
 	 * Movement
@@ -230,12 +233,9 @@ public:
 	void update(uint64_t tick);
 
 	std::shared_ptr<CombatRegistry> combat_registry() { return _combat_registry; }
-
-	std::chrono::time_point<std::chrono::steady_clock> _last_move_input_time;
-	std::chrono::time_point<std::chrono::steady_clock> _last_move_output_time;
 	
 private:
-	bool _is_initialized{false}, _jump_walk_stop{false};
+	bool _is_initialized{false}, _jump_walk_stop{false}, _is_finalized{ false };
 	bool _is_attacking{false};
 	uint32_t _guid{0};
 	entity_type _type{ENTITY_UNKNOWN};
