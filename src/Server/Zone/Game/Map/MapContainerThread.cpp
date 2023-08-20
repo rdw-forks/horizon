@@ -279,11 +279,7 @@ void MapContainerThread::update(uint64_t diff)
 	for (auto i = _entities.begin(); i != _entities.end();) {
 		std::shared_ptr<Entity> entity = *i;
 
-		if (entity == nullptr) {
-			entity->finalize();
-			i = _entities.erase(i);
-			continue;
-		} else if (entity->is_finalized()) {
+		if (entity == nullptr || entity->is_finalized()) {
 			i = _entities.erase(i);
 			continue;
 		} else if (entity->is_initialized() == false)
