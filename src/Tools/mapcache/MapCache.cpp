@@ -66,7 +66,7 @@ void Horizon::Tools::MapCache::parse_exec_args(int argc, const char *argv[])
 		} else if (separated_args.at(0).compare("--output") == 0) {
 			getLibrary().setMapCachePath(separated_args.at(1));
 		} else {
-			printf("Unrecognised argument '%s'\n", separated_args.at(0));
+			printf("Unrecognised argument '%s'\n", separated_args.at(0).c_str());
 		}
 	}
 }
