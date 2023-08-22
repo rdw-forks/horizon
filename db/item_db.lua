@@ -5929,7 +5929,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Knife_" ] = {
 	Id = 1202,
@@ -5963,7 +5963,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Knife__" ] = {
 	Id = 1203,
@@ -5996,7 +5996,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Cutter" ] = {
 	Id = 1204,
@@ -6030,7 +6030,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Cutter_" ] = {
 	Id = 1205,
@@ -6064,7 +6064,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Cutter__" ] = {
 	Id = 1206,
@@ -6097,7 +6097,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Main_Gauche" ] = {
 	Id = 1207,
@@ -6131,7 +6131,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Main_Gauche_" ] = {
 	Id = 1208,
@@ -6165,7 +6165,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Main_Gauche__" ] = {
 	Id = 1209,
@@ -6198,7 +6198,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Dirk" ] = {
 	Id = 1210,
@@ -6233,7 +6233,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Dirk_" ] = {
 	Id = 1211,
@@ -6268,7 +6268,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Dirk__" ] = {
 	Id = 1212,
@@ -6302,7 +6302,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Dagger" ] = {
 	Id = 1213,
@@ -6337,7 +6337,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Dagger_" ] = {
 	Id = 1214,
@@ -6372,7 +6372,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Dagger__" ] = {
 	Id = 1215,
@@ -6406,7 +6406,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Stiletto" ] = {
 	Id = 1216,
@@ -6441,7 +6441,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Stiletto_" ] = {
 	Id = 1217,
@@ -6476,7 +6476,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Stiletto__" ] = {
 	Id = 1218,
@@ -6510,7 +6510,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Gladius" ] = {
 	Id = 1219,
@@ -6544,7 +6544,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Gladius_" ] = {
 	Id = 1220,
@@ -6578,7 +6578,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Gladius__" ] = {
 	Id = 1221,
@@ -6611,7 +6611,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Damascus" ] = {
 	Id = 1222,
@@ -6645,7 +6645,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bUnbreakableWeapon,0; ]]
 },
 [ "Forturn_Sword" ] = {
@@ -6679,7 +6679,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bLuk,5;
 		bonus bFlee2,20;
@@ -6716,7 +6716,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bBreakWeaponRate,500; ]]
 },
 [ "Mail_Breaker" ] = {
@@ -6750,7 +6750,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bBreakArmorRate,500; ]]
 },
 [ "Damascus_" ] = {
@@ -6785,7 +6785,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bUnbreakableWeapon,0; ]]
 },
 [ "Weeder_Knife" ] = {
@@ -6819,7 +6819,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bIgnoreDefRace,RC_Plant;
 		bonus2 bAddRace,RC_Plant,15;
@@ -6857,7 +6857,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bIgnoreDefRace,RC_DemiPlayer;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,10;
@@ -6895,7 +6895,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bCritical,30;
 		bonus3 bAddMonsterDropItem,517,RC_Brute,5000;
@@ -6932,7 +6932,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bDefRatioAtkRace, RC_All; ]]
 },
 [ "Bazerald" ] = {
@@ -6967,7 +6967,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Fire;
 		bonus bInt,5;
@@ -6987,7 +6987,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bMaxHPrate,20;
 		bonus bMaxSPrate,15;
@@ -7026,7 +7026,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bIgnoreDefRace,RC_Demon;
 		bonus2 bAddRaceTolerance,RC_Demon,5;
@@ -7064,7 +7064,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bMaxSPrate,10;
 		bonus bSPDrainValue,3;
@@ -7084,7 +7084,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bClassChange,300; ]]
 },
 [ "Sucsamad" ] = {
@@ -7118,7 +7118,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus2 bAddEle,Ele_Earth,10;
 		bonus2 bAddEle,Ele_Wind,10;
@@ -7156,7 +7156,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bFlee,10;
 		bonus bFlee2,5;
@@ -7195,7 +7195,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus2 bGetZenyNum,100,40; ]]
 },
 [ "Poison_Knife" ] = {
@@ -7229,7 +7229,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 65,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Poison;
 		bonus2 bAddEff,Eff_Poison,3000;
@@ -7265,7 +7265,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Cursed_Dagger" ] = {
@@ -7285,7 +7285,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 85,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus2 bAddEff,Eff_Curse,5000; ]]
 },
 [ "Counter_Dagger" ] = {
@@ -7305,7 +7305,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bCritical,90; ]]
 },
 [ "Novice_Knife" ] = {
@@ -7328,7 +7328,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -7357,7 +7357,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Holy;
 		bonus bDex,1;
@@ -7384,7 +7384,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 30,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Cinquedea_" ] = {
 	Id = 1246,
@@ -7407,7 +7407,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 30,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Kindling_Dagger" ] = {
 	Id = 1247,
@@ -7440,7 +7440,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bAtkEle,Ele_Fire; ]]
 },
 [ "Obsidian_Dagger" ] = {
@@ -7474,7 +7474,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bAtkEle,Ele_Earth; ]]
 },
 [ "Fishermans_Dagger" ] = {
@@ -7508,7 +7508,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bAtkEle,Ele_Water; ]]
 },
 
@@ -93164,7 +93164,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bAtkEle,Ele_Wind; ]]
 },
 [ "Dragon_Killer" ] = {
@@ -93199,7 +93199,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 60,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bIgnoreDefRace,RC_Dragon;
 		bonus2 bExpAddRace,RC_Dragon,10;
@@ -93237,7 +93237,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Dark;
 		bonus2 bAddEff,Eff_Blind,500;
@@ -93263,7 +93263,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bDef,5; ]]
 },
 [ "Coward_" ] = {
@@ -93285,7 +93285,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bDef,5; ]]
 },
 [ "Angelwing_Short_Sword" ] = {
@@ -93309,7 +93309,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 50,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Khukri" ] = {
 	Id = 13006,
@@ -93326,7 +93326,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 65,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Dark;
 		bonus2 bAddEff,Eff_Curse,1000;
@@ -93347,7 +93347,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 35,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bBreakWeaponRate,200; ]]
 },
 [ "Jitte_" ] = {
@@ -93366,7 +93366,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 35,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bBreakWeaponRate,200; ]]
 },
 [ "Kamaitachi" ] = {
@@ -93384,7 +93384,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Wind;
 		bonus bCritical,3;
@@ -93408,7 +93408,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Asura_" ] = {
 	Id = 13011,
@@ -93427,7 +93427,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	EquipLv = 12,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Murasame" ] = {
 	Id = 13012,
@@ -93445,7 +93445,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Water;
 		bonus2 bCriticalAddRace,RC_DemiPlayer,10;
@@ -93467,7 +93467,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 24,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Water;
 		bonus2 bCriticalAddRace,RC_DemiPlayer,10;
@@ -93488,7 +93488,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 42,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bInt,2;
 		bonus3 bAutoSpell,AL_HEAL,1,10;
@@ -93510,7 +93510,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 42,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bInt,2;
 		bonus3 bAutoSpell,AL_HEAL,1,10;
@@ -93548,7 +93548,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 65,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Poison;
 		bonus2 bAddEff,Eff_Poison,3000;
@@ -93586,7 +93586,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bDefRatioAtkRace, RC_All; ]]
 },
 [ "Sucsamad_" ] = {
@@ -93621,7 +93621,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus2 bAddEle,Ele_Earth,10;
 		bonus2 bAddEle,Ele_Wind,10;
@@ -93661,7 +93661,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Dark;
 		bonus2 bAddEff,Eff_Blind,500;
@@ -93679,7 +93679,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 48,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93722,7 +93722,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93757,7 +93757,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93785,7 +93785,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93827,7 +93827,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93870,7 +93870,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93913,7 +93913,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -93988,7 +93988,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus2 bAddEff,Eff_Bleeding,500; ]]
 },
 [ "Tooth_Blade" ] = {
@@ -94050,7 +94050,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		if(getrefine()>=9) {
 			bonus3 bAutoSpell,NPC_SLOWCAST,2,70;
@@ -94088,7 +94088,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94133,7 +94133,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 60,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bIgnoreDefRace,RC_Dragon;
 		bonus2 bExpAddRace,RC_Dragon,10;
@@ -94171,7 +94171,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bBreakWeaponRate,500; ]]
 },
 [ "Mail_Breaker_" ] = {
@@ -94206,7 +94206,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bBreakArmorRate,500; ]]
 },
 [ "Assasin_Dagger_" ] = {
@@ -94224,7 +94224,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 36,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bMaxHPrate,20;
 		bonus bMaxSPrate,15;
@@ -94251,7 +94251,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Sandstorm" ] = {
 	Id = 13035,
@@ -94272,7 +94272,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "BF_Dagger1" ] = {
 	Id = 13036,
@@ -94305,7 +94305,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 80,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94355,7 +94355,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 80,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94392,7 +94392,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bStr,1;
 		bonus bAgi,2;
@@ -94460,7 +94460,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 50,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAgi,2;
 		bonus bAspdRate,3;
@@ -94499,7 +94499,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "N_Main_Gauche" ] = {
 	Id = 13041,
@@ -94532,7 +94532,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Krieger_Dagger1" ] = {
 	Id = 13042,
@@ -94565,7 +94565,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 80,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94616,7 +94616,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94658,7 +94658,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94683,7 +94683,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94718,7 +94718,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 50,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus3 bAddEffOnSkill,RG_BACKSTAP,Eff_Bleeding,1000;
 		bonus2 bSkillAtk,RG_BACKSTAP,15;
@@ -94747,7 +94747,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 50,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus3 bAddEffOnSkill,RG_RAID,Eff_Poison,1000;
 		autobonus "{ bonus2 bAddRace, RC_All, 10; }",5,5000,BF_WEAPON|BF_SHORT,"{ specialeffect(EF_POTION_BERSERK, AREA, playerattached()); }";
@@ -94782,7 +94782,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94831,7 +94831,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -94880,7 +94880,7 @@ item_db = {
 	WeaponLv = 2,
 	EquipLv = 26,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94923,7 +94923,7 @@ item_db = {
 	WeaponLv = 2,
 	EquipLv = 40,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -94965,7 +94965,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -95010,7 +95010,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "F_Combat_Knife_C" ] = {
 	Id = 13054,
@@ -95042,7 +95042,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "F_Asura_C" ] = {
 	Id = 13055,
@@ -95058,7 +95058,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "F_Counter_Dagger_C" ] = {
 	Id = 13056,
@@ -95076,7 +95076,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "E_Moonlight_Sword_C" ] = {
 	Id = 13057,
@@ -95108,7 +95108,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "E_Combat_Knife_C" ] = {
 	Id = 13058,
@@ -95140,7 +95140,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "E_Asura_C" ] = {
 	Id = 13059,
@@ -95156,7 +95156,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "E_Counter_Dagger_C" ] = {
 	Id = 13060,
@@ -95174,7 +95174,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Black_Wing" ] = {
 	Id = 13061,
@@ -95193,7 +95193,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 102,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus2 bSkillAtk,SC_FATALMENACE,30;
 		if(getrefine() >= 6) {
@@ -95261,7 +95261,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 120,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bMatk,120;
 		bonus bMaxSP,100;
@@ -95286,7 +95286,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bUnbreakableWeapon,0; ]]
 },
 [ "Academy_Knife" ] = {
@@ -95306,7 +95306,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bUnbreakableWeapon,0; ]]
 },
 [ "Academy_Eti_Knife" ] = {
@@ -95328,7 +95328,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bUnbreakableWeapon,0; ]]
 },
 [ "P_Dagger3" ] = {
@@ -95363,7 +95363,7 @@ item_db = {
 	WeaponLv = 3,
 	EquipLv = 60,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -95407,7 +95407,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 30,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus2 bHPDrainRate,20,10; ]]
 },
 [ "Saurel" ] = {
@@ -95441,7 +95441,7 @@ item_db = {
 	WeaponLv = 1,
 	EquipLv = 50,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -95507,7 +95507,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 110,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Wind;
 		bonus2 bAddEff,Eff_Freeze,100+(getrefine()*50);
@@ -95557,7 +95557,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 110,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtkEle,Ele_Fire;
 		bonus2 bAddEff,Eff_Stone,100+(getrefine()*50);
@@ -95595,7 +95595,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bBaseAtk,(getrefine()*10);
 		bonus bMatk,(getrefine()*5);
@@ -95634,7 +95634,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 95,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAspdRate,getrefine();
 		bonus4 bSetDefRace,RC_Player,10000,5000,1;
@@ -95659,7 +95659,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 55,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Ninja_Cutter" ] = {
 	Id = 13074,
@@ -95673,7 +95673,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 99,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -95700,7 +95700,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 99,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bInt,3; ]]
 },
 [ "Raksasa_Dagger" ] = {
@@ -95720,7 +95720,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 110,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[ bonus bInt,3; ]]
 },
 [ "Kagekiri" ] = {
@@ -95739,7 +95739,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 100,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Mikatsuki" ] = {
 	Id = 13078,
@@ -95758,7 +95758,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 100,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bUseSPrate,-5;
 		bonus bVariableCastrate,-5;
@@ -95780,7 +95780,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -95813,7 +95813,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 105,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "TE_Woe_Knife" ] = {
 	Id = 13083,
@@ -95831,7 +95831,7 @@ item_db = {
 	WeaponLv = 3,
 	EquipLv = 40,
 	Refine = false,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -95885,7 +95885,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 1,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "RWC_Memory_Knife" ] = {
 	Id = 13092,
@@ -95903,7 +95903,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bBaseAtk,20*(getrefine()/3);
 		bonus bMatk,20*(getrefine()/3);
@@ -95957,7 +95957,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 120,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bInt,6;
 		bonus bVit,6;
@@ -96005,7 +96005,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 100,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus2 bAddRace,RC_Demon,10;
 		bonus2 bAddRace,RC_Undead,10;
@@ -143952,7 +143952,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 100,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -143981,7 +143981,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 2,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 },
 [ "Scarlet_Dagger" ] = {
 	Id = 28705,
@@ -144016,7 +144016,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 3,
 	EquipLv = 70,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtk,((min(getrefine(),15)) ** (2));
 		bonus bMatk,((min(getrefine(),15)) ** (2))/2;
@@ -144057,7 +144057,7 @@ item_db = {
 	Loc = EquipLocationMask.Weapon,
 	WeaponLv = 4,
 	EquipLv = 160,
-	Subtype = AmmoType.ThrowableDagger,
+	Subtype = WeaponType.Dagger,
 	Script = [[
 		bonus bAtk,((min(getrefine(),15)) ** (2));
 		bonus bMatk,((min(getrefine(),15)) ** (2))/2;

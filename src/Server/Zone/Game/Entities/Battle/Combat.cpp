@@ -447,6 +447,7 @@ void CombatRegistry::MeleeResultOperation::execute() const
             config.action_type = ZCNA3_DAMAGE;
             config.left_damage = value->get_damage().left_damage;
             source->notify_nearby_players_of_basic_attack(config);
+            target->on_damage_received(source, value->get_damage().left_damage + value->get_damage().right_damage);
         }
             break;
         case MELEE_RESULT_OPERATION_HEALING:

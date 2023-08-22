@@ -43,8 +43,8 @@ struct job_config_data
 	std::string name{""};
 	int max_weight{20000};
 	std::string base_exp_group{""}, job_exp_group{""};
-	std::array<int, IT_WT_SINGLE_MAX> weapon_base_aspd;
-	std::vector<int> hp_table, sp_table;
+	std::array<int, IT_WT_SINGLE_MAX> weapon_base_aspd { 0 };
+	std::vector<int> hp_table { 0 }, sp_table { 0 };
 };
 class JobDatabase
 {
