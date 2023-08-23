@@ -677,3 +677,33 @@ template <> void GridEntityBasicAttackNotifier::Visit<Pet>(GridRefManager<Pet> &
 template <> void GridEntityBasicAttackNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntityBasicAttackNotifier::Visit<Skill>(GridRefManager<Skill> &m);
 
+
+template <class T>
+void GridEntityMovementStopNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
+
+    if (!m.get_size())
+        return;
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+        
+        tpl->get_session()->clif()->notify_movement_stop(_entity_guid, _pos_x, _pos_y);
+    }
+}
+
+void GridEntityMovementStopNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntityMovementStopNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Skill>(GridRefManager<Skill> &m);

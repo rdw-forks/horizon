@@ -199,13 +199,16 @@ void Entity::walk()
 // Stops the Entity from walking and triggers the on_movement_end event.
 // If cancel is true, the Entity will be forced to stop walking and the scheduler task will be cancelled.
 // returns true if the Entity was walking and was stopped.
-bool Entity::stop_walking(bool cancel)
+bool Entity::stop_walking(bool cancel, bool notify)
 {
 	_dest_pos = { 0, 0 };
 	_changed_dest_pos = { 0 , 0 };
 	
 	if (cancel)
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
+
+	if (notify)
+		this->notify_nearby_players_of_movement_stop(map_coords());
 
 	on_movement_end();
 
@@ -288,6 +291,14 @@ void Entity::notify_nearby_players_of_movement(bool new_entry)
 {
 	GridEntityMovementNotifier movement_notify(shared_from_this(), new_entry);
 	GridReferenceContainerVisitor<GridEntityMovementNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
+void Entity::notify_nearby_players_of_movement_stop(MapCoords stop_coords)
+{
+	GridEntityMovementStopNotifier movement_stop_notify(guid(), stop_coords.x(), stop_coords.y());
+	GridReferenceContainerVisitor<GridEntityMovementStopNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_stop_notify);
 
 	map()->visit_in_range(map_coords(), entity_visitor);
 }

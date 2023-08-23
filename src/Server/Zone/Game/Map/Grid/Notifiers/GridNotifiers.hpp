@@ -416,6 +416,24 @@ struct GridEntityBasicAttackNotifier
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
+struct GridEntityMovementStopNotifier
+{
+	int _entity_guid{ 0 };
+	int _pos_x{ 0 }, _pos_y{ 0 };
+
+	explicit GridEntityMovementStopNotifier(int entity_guid, int pos_x, int pos_y)
+	: _entity_guid(entity_guid), _pos_x(pos_x), _pos_y(pos_y)
+	{ }
+
+	template <class T>
+	void notify(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
 #undef entity_ns
 
 #endif /* HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP */
