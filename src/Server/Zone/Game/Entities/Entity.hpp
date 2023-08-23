@@ -109,7 +109,7 @@ public:
 
 	virtual void stop_movement() = 0;
 	
-	bool stop_walking(bool cancel = false);
+	bool stop_walking(bool cancel = false, bool notify = false);
 
 protected:
 	bool schedule_walk();
@@ -177,6 +177,7 @@ public:
 	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
 	void notify_nearby_players_of_spawn();
 	void notify_nearby_players_of_movement(bool new_entry = false);
+	void notify_nearby_players_of_movement_stop(MapCoords stop_coords);
 	void notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config);
 	void notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config);
 
