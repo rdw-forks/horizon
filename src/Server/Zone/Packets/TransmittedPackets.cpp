@@ -2021,9 +2021,9 @@ ByteBuffer &ZC_NOTIFY_PLAYERCHAT::serialize()
  */
 void ZC_NOTIFY_PLAYERMOVE::deliver(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
 {
-	std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+	//std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 	PackPosition(_packed_pos, from_x, from_y, to_x, to_y, 8, 8);
-	_timestamp = (int32_t) ms.count();
+	_timestamp = (int32_t) get_sys_time();
 
 	serialize();
 	transmit();
