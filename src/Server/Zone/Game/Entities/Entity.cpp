@@ -137,7 +137,6 @@ void Entity::walk()
 {
 	// Fixes the jumping walk bug that happens when the walk is invoked while entity is already walking.
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0) {
-		stop_walking();
 		return;
 	}
 
@@ -182,9 +181,11 @@ void Entity::walk()
 
 			if (_changed_dest_pos != MapCoords(0, 0)) {
 				_dest_pos = _changed_dest_pos;
+				context.CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 				schedule_walk();
 				return;
 			} else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty()) {
+				context.CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 				stop_walking();
 			}
 
@@ -201,7 +202,8 @@ void Entity::walk()
 bool Entity::stop_walking(bool cancel)
 {
 	_dest_pos = { 0, 0 };
-
+	_changed_dest_pos = { 0 , 0 };
+	
 	if (cancel)
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 

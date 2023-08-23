@@ -328,7 +328,10 @@ void CombatRegistry::SkillExecutionOperation::execute() const
             notifier_config.target_x = target->map_coords().x();
             notifier_config.target_y = target->map_coords().y();
             source->notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type::GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME, notifier_config);
-
+            
+            if (source->is_walking())
+                source->stop_walking(true);
+                
             HLog(debug) << "Casting skill: " << config.skd->name << " on target: " << target->guid() << "." << std::endl;
             source->map()->container()->getScheduler().Schedule(
 			    Milliseconds(config.cast_time), 

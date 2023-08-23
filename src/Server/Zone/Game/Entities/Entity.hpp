@@ -108,10 +108,12 @@ public:
 	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)) || ((_changed_dest_pos) != MapCoords(0, 0)); }
 
 	virtual void stop_movement() = 0;
+	
+	bool stop_walking(bool cancel = false);
+
 protected:
 	bool schedule_walk();
 	void walk();
-	bool stop_walking(bool cancel = false);
 	
 	virtual void on_pathfinding_failure() = 0;
 	virtual void on_movement_begin() = 0;
