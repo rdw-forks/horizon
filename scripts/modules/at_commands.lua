@@ -1,4 +1,8 @@
 -- At command functions!
+local function zeny(player, args)
+	status = player:entity():status()
+	status:zeny():set(tonumber(args[2]))
+end
 -- @statpoint
 local function statpoint(player, args)
 	status = player:entity():status()
@@ -231,7 +235,8 @@ local at_commands = {
 		["statpoint"] = statpoint,
 		["skillpoint"] = skillpoint,
 		["resetskillpoints"] = resetskillpoints,
-		["go"] = go
+		["go"] = go,
+		["zeny"] = zeny
 	}
 }
 
