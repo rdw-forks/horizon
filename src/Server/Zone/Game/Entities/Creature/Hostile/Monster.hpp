@@ -30,8 +30,8 @@
 #ifndef HORIZON_ZONE_GAME_ENTITIES_MONSTER_HPP
 #define HORIZON_ZONE_GAME_ENTITIES_MONSTER_HPP
 
+#include "Server/Zone/Game/GridObject.hpp"
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
 

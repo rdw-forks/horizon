@@ -32,8 +32,8 @@
 
 using namespace Horizon::Zone::Entities;
 
-Pet::Pet(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_PET, ENTITY_MASK_PET, map, mcoords)
+Pet::Pet(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords)
+: Creature(uuid, ENTITY_PET, ENTITY_MASK_PET, map, mcoords)
 {
 	//
 }

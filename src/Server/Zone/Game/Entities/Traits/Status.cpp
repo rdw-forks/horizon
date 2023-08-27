@@ -37,7 +37,6 @@
 #include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
-#include "Server/Zone/Game/Entities/Skill/Skill.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
@@ -317,12 +316,6 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc)
 	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
 	set_base_appearance(std::make_shared<BaseAppearance>(_entity, npc->job_id()));
 
-	set_initialized(true);
-	return true;
-}
-
-bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill)
-{
 	set_initialized(true);
 	return true;
 }

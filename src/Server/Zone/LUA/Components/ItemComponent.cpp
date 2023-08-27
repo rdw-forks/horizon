@@ -30,6 +30,7 @@
 
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 
 #include "ItemDefinitions.hpp"
 
@@ -327,6 +328,19 @@ void ItemComponent::sync_data_types(std::shared_ptr<sol::state> state)
 			return item.config.drop_announce ? 1 :0;
 		})
 	);
+
+	sol::usertype<s_grid_notify_item_drop_entry> item_drop = state->new_usertype<s_grid_notify_item_drop_entry>("s_grid_notify_item_drop_entry");
+	item_drop["guid"] = &s_grid_notify_item_drop_entry::guid;
+	item_drop["item_id"] = &s_grid_notify_item_drop_entry::item_id;
+	item_drop["type"] = &s_grid_notify_item_drop_entry::type;
+	item_drop["is_identified"] = &s_grid_notify_item_drop_entry::is_identified;
+	item_drop["x"] = &s_grid_notify_item_drop_entry::x;
+	item_drop["y"] = &s_grid_notify_item_drop_entry::y;
+	item_drop["x_area"] = &s_grid_notify_item_drop_entry::x_area;
+	item_drop["y_area"] = &s_grid_notify_item_drop_entry::y_area;
+	item_drop["amount"] = &s_grid_notify_item_drop_entry::amount;
+	item_drop["show_drop_effect"] = &s_grid_notify_item_drop_entry::show_drop_effect;
+	item_drop["drop_effect_mode"] = &s_grid_notify_item_drop_entry::drop_effect_mode;
 }
 
 void ItemComponent::sync_functions(std::shared_ptr<sol::state> state)

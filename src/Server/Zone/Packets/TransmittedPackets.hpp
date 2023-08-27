@@ -28788,10 +28788,11 @@ public:
 	{}
 	virtual ~ZC_ITEM_DISAPPEAR() {}
 
-	void deliver();
+	void deliver(int32_t guid);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _guid{ 0 };
 };
 
 enum {
@@ -28834,10 +28835,11 @@ public:
 	{}
 	virtual ~ZC_ITEM_ENTRY() {}
 
-	void deliver();
+	void deliver(item_viewport_entry entry);
 	ByteBuffer &serialize();
 
 /* Structure */
+	item_viewport_entry _entry;
 };
 
 enum {
@@ -28853,14 +28855,14 @@ ID_ZC_ITEM_FALL_ENTRY = 0x009e
 	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
 	|| PACKET_VERSION >= 20170913)
 ID_ZC_ITEM_FALL_ENTRY = 0x0add
-#elif CLIENT_TYPE == 'R' &&  \
-	PACKET_VERSION >= 20080000
-ID_ZC_ITEM_FALL_ENTRY = 0x009e
 #elif CLIENT_TYPE == 'R' && ( \
 	PACKET_VERSION >= 20210000 \
 	|| (PACKET_VERSION >= 20200000 && PACKET_VERSION < 20210000) \
 	|| PACKET_VERSION >= 20170913)
 ID_ZC_ITEM_FALL_ENTRY = 0x0add
+#elif CLIENT_TYPE == 'R' &&  \
+	PACKET_VERSION >= 20080000
+ID_ZC_ITEM_FALL_ENTRY = 0x009e
 #elif CLIENT_TYPE == 'S' &&  \
 	PACKET_VERSION >= 20030000
 ID_ZC_ITEM_FALL_ENTRY = 0x009e
@@ -28889,10 +28891,32 @@ public:
 	{}
 	virtual ~ZC_ITEM_FALL_ENTRY() {}
 
-	void deliver();
+	void deliver(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount);
+	void deliver(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount, int show_drop_effect, int drop_effect_mode);
 	ByteBuffer &serialize();
 
 /* Structure */
+	uint32_t _guid{0};
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	uint32_t _item_id{0};
+#else
+	uint16_t _item_id{0};
+#endif
+#if PACKET_VERSION >= 20130000 /* not sure of date */
+	uint16_t _type{ 0 };
+#endif
+	uint8_t _is_identified{ 0 };
+	int16_t _x{ 0 };
+	int16_t _y{ 0 };
+	uint8_t _x_area{ 0 };
+	uint8_t _y_area{ 0 };
+	int16_t _amount{ 0 };
+#if (CLIENT_TYPE == 'Z') || (PACKET_VERSION >= 20180418)
+	int8_t _show_drop_effect{ 0 };
+	int16_t _drop_effect_mode{ 0 };
+#endif
 };
 
 enum {
@@ -31901,9 +31925,11 @@ public:
 	virtual ~ZC_NOTIFY_ACT() {}
 
 	void deliver(int8_t action);
+	void deliver(int32_t target_guid, int8_t action);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _target_guid{ 0 };
 	int8_t _unused_bytes[20];
 	int8_t _action_type{2};
 	int8_t _unused_bytes2[2];

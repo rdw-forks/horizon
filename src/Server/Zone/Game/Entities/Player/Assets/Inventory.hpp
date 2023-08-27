@@ -39,6 +39,7 @@ namespace Zone
 namespace Entities
 {
 	class Player;
+	class Item;
 }
 namespace Assets
 {
@@ -72,7 +73,11 @@ public:
 //	std::shared_ptr<PacketHandler> get_packet_handler() { return _packet_handler.lock(); }
 
 	std::shared_ptr<Horizon::Zone::Entities::Player> player() { return _player.lock(); }
+	inventory_addition_result_type add_item(std::shared_ptr<Horizon::Zone::Entities::Item> floor_item);
 	inventory_addition_result_type add_item(uint32_t item_id, uint16_t amount, bool is_identified = false);
+	inventory_addition_result_type add_item(std::shared_ptr<item_entry_data> item, int amount);
+	std::shared_ptr<item_entry_data> get_item(uint32_t inventory_index);
+	void drop_item(uint32_t inventory_index, uint16_t amount);
 
 	void initialize();
 	
@@ -87,7 +92,7 @@ public:
 	void notify_all();
 	void notify_without_equipments();
 	void notify_only_equipments();
-	void notify_add(item_entry_data const &data, uint16_t amount, inventory_addition_result_type fail);
+	void notify_add(std::shared_ptr<item_entry_data> const &item, uint16_t amount, inventory_addition_result_type fail);
 	void notify_deletion(uint16_t idx, uint16_t amount, inventory_deletion_reason_type reason);
 	void notify_drop(uint16_t idx, uint16_t amount);
 	void notify_move_fail(uint16_t idx, bool silent);

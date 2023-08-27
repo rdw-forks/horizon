@@ -263,7 +263,7 @@ void MonsterComponent::despawn_monsters(std::string map_name, std::shared_ptr<Ma
 	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end(); i++)
 		if ((*i).second->map()->get_name() == map_name) {
 			(*i).second->finalize();
-			// Remove the entity from the containers.
+			container->remove_entity((*i).second);
 			_monster_spawned_map.erase(i);
 			return;
 		}

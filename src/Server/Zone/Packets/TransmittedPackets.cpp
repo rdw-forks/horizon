@@ -1503,25 +1503,85 @@ ByteBuffer &ZC_ITEMIDENTIFY_LIST::serialize()
 /**
  * ZC_ITEM_DISAPPEAR
  */
-void ZC_ITEM_DISAPPEAR::deliver() {}
+void ZC_ITEM_DISAPPEAR::deliver(int32_t guid)
+{
+	_guid = guid;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ITEM_DISAPPEAR::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
 	return buf();
 }
 /**
  * ZC_ITEM_ENTRY
  */
-void ZC_ITEM_ENTRY::deliver() {}
+void ZC_ITEM_ENTRY::deliver(item_viewport_entry entry)
+{
+	_entry = entry;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ITEM_ENTRY::serialize()
 {
+	buf() << _packet_id;
+	buf() << _entry.guid;
+	buf() << _entry.item_id;
+	buf() << _entry.is_identified;
+	buf() << _entry.x;
+	buf() << _entry.y;
+	buf() << _entry.amount;
+	buf() << _entry.x_area;
+	buf() << _entry.y_area;
+
 	return buf();
 }
 /**
  * ZC_ITEM_FALL_ENTRY
  */
-void ZC_ITEM_FALL_ENTRY::deliver() {}
+void ZC_ITEM_FALL_ENTRY::deliver(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount)
+{
+	deliver(guid, item_id, type, identified, x, y, x_area, y_area, amount, 0, 0);
+}
+void ZC_ITEM_FALL_ENTRY::deliver(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount, int show_drop_effect, int drop_effect_mode)
+{
+	_guid = guid;
+	_item_id = item_id;
+	_type = type;
+	_is_identified = identified;
+	_x = x;
+	_y = y;
+	_x_area = x_area;
+	_y_area = y_area;
+	_amount = amount;
+	_show_drop_effect = show_drop_effect;
+	_drop_effect_mode = drop_effect_mode;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_ITEM_FALL_ENTRY::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _item_id;
+#if PACKET_VERSION >= 20130000 /* not sure of date */
+	buf() << _type;
+#endif
+	buf() << _is_identified;
+	buf() << _x;
+	buf() << _y;
+	buf() << _x_area;
+	buf() << _y_area;
+	buf() << _amount;
+#if (CLIENT_TYPE == 'Z') || (PACKET_VERSION >= 20180418)
+	buf() << _show_drop_effect;
+	buf() << _drop_effect_mode;
+#endif
+	
 	return buf();
 }
 /**
@@ -1793,11 +1853,26 @@ void ZC_NOTIFY_ACT::deliver(int8_t action)
 	transmit();
 }
 
+void ZC_NOTIFY_ACT::deliver(int32_t target_guid, int8_t action) 
+{
+	_action_type = action;
+	_target_guid = target_guid;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_NOTIFY_ACT::serialize()
 {
 	buf() << _packet_id;
 	buf() << get_session()->player()->guid();
-	buf().append(_unused_bytes, 20);
+	if (_target_guid != 0) {
+		char unused_bytes[16]{0};
+		buf() << _target_guid;
+		buf().append(unused_bytes, sizeof(unused_bytes));
+	} else {
+		buf().append(_unused_bytes, 20);
+	}
 	buf() << _action_type;
 	buf().append(_unused_bytes2, 2);
 

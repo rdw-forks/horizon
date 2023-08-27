@@ -60,7 +60,7 @@ void PlayerComponent::sync_definitions(std::shared_ptr<sol::state> state)
 void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {   
     state->new_usertype<Assets::Inventory>("Inventory",
-        "add_item", &Assets::Inventory::add_item
+        "add_item", sol::resolve<enum Horizon::Zone::Assets::inventory_addition_result_type(uint32_t, uint16_t, bool)>(&Assets::Inventory::add_item)
     );
 
     state->new_usertype<Horizon::Zone::Entities::Player>("Player",

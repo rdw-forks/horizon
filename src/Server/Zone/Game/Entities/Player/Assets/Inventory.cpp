@@ -33,6 +33,7 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
@@ -83,8 +84,6 @@ void Inventory::initialize()
 	for (auto item : _inventory_items) {
 		player()->status()->current_weight()->add_base(item->config->weight * item->amount);
 	}
-
-	player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, player()->status()->current_weight()->total());
 }
 
 bool Inventory::use_item(uint32_t inventory_index, uint32_t guid)
@@ -289,51 +288,53 @@ void Inventory::notify_only_equipments()
 	player()->get_session()->clif()->notify_equipment_item_list(equipments);
 }
 
-inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t amount, bool is_identified)
+inventory_addition_result_type Inventory::add_item(std::shared_ptr<Horizon::Zone::Entities::Item> floor_item)
 {
-	item_entry_data data;
-	std::shared_ptr<const item_config_data> item = ItemDB->get_item_by_id(item_id);
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(player()->job_id());
-	std::shared_ptr<Horizon::Zone::Traits::CurrentWeight> current_weight = player()->status()->current_weight();
-	std::shared_ptr<Horizon::Zone::Traits::MaxWeight> max_weight = player()->status()->max_weight();
+	if (floor_item->entry() == nullptr)
+		return add_item(floor_item->config()->item_id, floor_item->amount(), floor_item->is_identified());
 
+	return add_item(floor_item->entry(), floor_item->amount());
+}
+
+inventory_addition_result_type Inventory::add_item(std::shared_ptr<item_entry_data> item, int amount)
+{
 	if (item == nullptr)
 		return INVENTORY_ADD_INVALID;
 
-	if (*current_weight + (amount * item->weight) > max_weight->total()) {
-		notify_add(data, amount, INVENTORY_ADD_OVER_WEIGHT);
+	if (item->config == nullptr)
+		return INVENTORY_ADD_INVALID;
+
+	std::shared_ptr<Horizon::Zone::Traits::CurrentWeight> current_weight = player()->status()->current_weight();
+	std::shared_ptr<Horizon::Zone::Traits::MaxWeight> max_weight = player()->status()->max_weight();
+
+	if (amount <= 0)
+		return INVENTORY_ADD_INVALID;
+
+	if (*current_weight + (amount * item->config->weight) > max_weight->total()) {
+		notify_add(item, item->amount, INVENTORY_ADD_OVER_WEIGHT);
 		return INVENTORY_ADD_OVER_WEIGHT;
 	}
 
-	if (item->stack.inventory > 0 && (amount > item->stack.inventory)) {
-		notify_add(data, amount, INVENTORY_ADD_OVER_STACK_LIMIT);
+	if (item->config->stack.inventory > 0 && (amount > item->config->stack.inventory)) {
+		notify_add(item, amount, INVENTORY_ADD_OVER_STACK_LIMIT);
 		return INVENTORY_ADD_OVER_STACK_LIMIT;
 	}
 
 	if (amount > MAX_INVENTORY_STACK_LIMIT) {
-		notify_add(data, amount, INVENTORY_ADD_OVER_QUANTITY);
+		notify_add(item, amount, INVENTORY_ADD_OVER_QUANTITY);
 		return INVENTORY_ADD_OVER_QUANTITY;
 	}
 
-	// Copy item properties from static db entry.
-	data.item_id = item->item_id;
-	data.type = item->type;
-	data.actual_equip_location_mask = item->equip_location_mask;
-	data.bind_type = IT_BIND_NONE;
-	data.info.is_identified = is_identified;
-	data.info.is_favorite = 0;
-	data.config = item;
-
 	if (_inventory_items.size() >= max_storage()) {
-		notify_add(data, amount, INVENTORY_ADD_NO_INV_SPACE);
+		notify_add(item, amount, INVENTORY_ADD_NO_INV_SPACE);
 		return INVENTORY_ADD_NO_INV_SPACE;
 	}
 
 	// Check if item is stackable
-	if (data.is_stackable()) {
+	if (item->is_stackable()) {
 		// Check if item exists in inventory.
 		auto invitem = std::find_if(_inventory_items.begin(), _inventory_items.end(), 
-			[&data] (std::shared_ptr<item_entry_data> invit) { return (invit->amount < MAX_INVENTORY_STACK_LIMIT && *invit == data); }
+			[&item] (std::shared_ptr<item_entry_data> invit) { return (invit->amount < MAX_INVENTORY_STACK_LIMIT && *invit == *item); }
 		);
 		// If item was found in inventory...
 		if (invitem != _inventory_items.end()) {
@@ -342,41 +343,94 @@ inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t am
 				// Add appropriately
 				int left_amt = (*invitem)->amount - MAX_INVENTORY_STACK_LIMIT;
 				(*invitem)->amount += left_amt;
-				amount -= left_amt;
-				add_item(item_id, amount, is_identified);
+				item->amount -= left_amt;
+				add_item(item->item_id, amount, item->info.is_identified);
 			} else {
 				(*invitem)->amount += amount;
-				notify_add(*(*invitem), amount, INVENTORY_ADD_SUCCESS);
+				notify_add(*invitem, amount, INVENTORY_ADD_SUCCESS);
 
-				current_weight->add_base(item->weight * amount);
-				player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+				current_weight->add_base(item->config->weight * amount);
 			}
 		} else {
-			data.amount += amount;
-			data.inventory_index = _inventory_items.size() + 2;
-			_inventory_items.push_back(std::make_shared<item_entry_data>(data));
-			notify_add(data, amount, INVENTORY_ADD_SUCCESS);
+			item->amount += amount;
+			item->inventory_index = _inventory_items.size() + 2;
+			_inventory_items.push_back(item);
+			notify_add(item, amount, INVENTORY_ADD_SUCCESS);
 
-			current_weight->add_base(item->weight * amount);
-			player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+			current_weight->add_base(item->config->weight * amount);
 		}
 	} else {
-		for (int i = 0; i < amount; i++) {
-			std::shared_ptr<item_entry_data> itd = std::make_shared<item_entry_data>(data);
-			itd->unique_id = player()->new_unique_id();
-			itd->amount = 1;
-			itd->inventory_index = _inventory_items.size() + 2;
-			_inventory_items.push_back(itd);
-			notify_add(*itd, itd->amount, INVENTORY_ADD_SUCCESS);
-		}
-		current_weight->add_base(item->weight * amount);
-		player()->get_session()->clif()->notify_compound_attribute_update(STATUS_CURRENT_WEIGHT, current_weight->total());
+		std::shared_ptr<item_entry_data> it_entry = std::make_shared<item_entry_data>(*item);
+		it_entry->unique_id = player()->new_unique_id();
+		it_entry->amount = 1;
+		it_entry->inventory_index = _inventory_items.size() + 2;
+		_inventory_items.push_back(it_entry);
+		notify_add(it_entry, it_entry->amount, INVENTORY_ADD_SUCCESS);
+		current_weight->add_base(item->config->weight);
+		if (--amount)
+			add_item(item, amount);
 	}
 
 	return INVENTORY_ADD_SUCCESS;
 }
 
-void Inventory::notify_add(item_entry_data const &data, uint16_t amount, inventory_addition_result_type result)
+inventory_addition_result_type Inventory::add_item(uint32_t item_id, uint16_t amount, bool is_identified)
+{
+	item_entry_data data;
+
+	std::shared_ptr<const item_config_data> item_d = ItemDB->get_item_by_id(item_id);
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(player()->job_id());
+
+	if (item_d == nullptr)
+		return INVENTORY_ADD_INVALID;
+
+	// Copy item properties from static db entry.
+	data.item_id = item_id;
+	data.type = item_d->type;
+	data.actual_equip_location_mask = item_d->equip_location_mask;
+	data.bind_type = IT_BIND_NONE;
+	data.info.is_identified = is_identified;
+	data.info.is_favorite = 0;
+	data.config = item_d;
+
+	std::shared_ptr<item_entry_data> inv_item = std::make_shared<item_entry_data>(data);
+
+	return add_item(inv_item, amount);
+}
+
+std::shared_ptr<item_entry_data> Inventory::get_item(uint32_t inventory_index)
+{
+	if (inventory_index < 2)
+		return nullptr;
+
+	return _inventory_items.at(inventory_index - 2);
+}
+
+void Inventory::drop_item(uint32_t inventory_index, uint16_t amount)
+{
+	std::shared_ptr<item_entry_data> inv_item = get_item(inventory_index);
+
+	if (inv_item == nullptr)
+		return;
+
+	if (inv_item->config == nullptr)
+		return;
+
+	if (inv_item->amount < amount)
+		return;
+
+	player()->status()->current_weight()->sub_base(inv_item->config->weight * amount);
+
+	if (inv_item->amount == amount) {
+		inv_item = nullptr;
+		notify_drop(inventory_index, amount);
+	} else {
+		inv_item->amount -= amount;
+		notify_drop(inventory_index, amount);
+	}
+}
+
+void Inventory::notify_add(std::shared_ptr<item_entry_data> const &item, uint16_t amount, inventory_addition_result_type result)
 {
 	item_inventory_addition_notif_type notif_type;
 
@@ -390,7 +444,7 @@ void Inventory::notify_add(item_entry_data const &data, uint16_t amount, invento
 	case INVENTORY_ADD_OVER_STACK_LIMIT: notif_type = ITEM_INV_ADD_OVER_STACK_LIMIT; break;
 	}
 
-	player()->get_session()->clif()->notify_pickup_item(data, amount, notif_type);
+	player()->get_session()->clif()->notify_pickup_item(item, amount, notif_type);
 }
 
 void Inventory::notify_deletion(uint16_t idx, uint16_t amount, inventory_deletion_reason_type reason)
@@ -400,7 +454,7 @@ void Inventory::notify_deletion(uint16_t idx, uint16_t amount, inventory_deletio
 
 void Inventory::notify_drop(uint16_t idx, uint16_t amount)
 {
-
+	player()->get_session()->clif()->notify_throw_item(idx, amount);
 }
 
 void Inventory::notify_move_fail(uint16_t idx, bool silent)

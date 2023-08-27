@@ -27,24 +27,72 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#include "Skill.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Item.hpp"
+#include "Server/Zone/Game/Map/Map.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone::Entities;
 
-Skill::Skill(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Entity(uuid, ENTITY_SKILL, ENTITY_MASK_SKILL, map, mcoords)
+Item::Item(int64_t uuid, std::shared_ptr<item_entry_data> entry, int32_t amount, std::shared_ptr<Map> map, MapCoords mcoords)
+    : Entity(uuid, ENTITY_ITEM, ENTITY_MASK_ITEM, map, mcoords), _entry(entry), _config(entry->config), _amount(amount),
+    _is_identified(entry->info.is_identified)
 {
-	//
+    _entry->amount = amount;
 }
 
-Skill::~Skill()
+Item::Item(int64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords, int is_identified, int amount, std::shared_ptr<const item_config_data> item_d)
+    : Entity(uuid, ENTITY_ITEM, ENTITY_MASK_ITEM, map, mcoords), _entry(nullptr), _is_identified(is_identified), _amount(amount), _config(item_d)
 {
-	//
 }
 
-void Skill::stop_movement() { }
-void Skill::on_pathfinding_failure() { }
-void Skill::on_movement_begin() { }
-void Skill::on_movement_step() { }
-void Skill::on_movement_end() { }
+Item::~Item()
+{
+
+}
+
+void Item::initialize()
+{
+    if (!Entity::initialize())
+        return;
+
+    map()->ensure_grid_for_entity(this, map_coords());
+}
+
+bool Item::finalize()
+{
+    return true;
+}
+
+void Item::stop_movement()
+{
+
+}
+void Item::on_pathfinding_failure() 
+{
+    
+}
+void Item::on_movement_begin() 
+{
+    
+}
+void Item::on_movement_step() 
+{
+    
+}
+void Item::on_movement_end() 
+{
+    
+}
+
+void Item::on_status_effect_start(std::shared_ptr<status_change_entry> sce) 
+{
+    
+}
+void Item::on_status_effect_end(std::shared_ptr<status_change_entry> sce) 
+{
+    
+}
+void Item::on_status_effect_change(std::shared_ptr<status_change_entry> sce) 
+{
+    
+}

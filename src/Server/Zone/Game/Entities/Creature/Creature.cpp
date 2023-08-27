@@ -36,8 +36,8 @@
 
 using namespace Horizon::Zone::Entities;
 
-Creature::Creature(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
-: Entity(guid, type, type_mask, map, mcoords)
+Creature::Creature(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
+: Entity(uuid, type, type_mask, map, mcoords)
 {
 	//
 }

@@ -31,20 +31,18 @@
 #define HORIZON_ZONE_GAME_ENTITIES_SKILL_HPP
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
-
+#include "Server/Zone/Game/GridObject.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
-class Map;
 namespace Entities
 {
 class Skill : public Entity, public GridObject<Skill>
 {
 public:
-	Skill(uint32_t guid,std::shared_ptr<Map> map, MapCoords mcoords);
+	Skill(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Skill();
 
     void stop_movement() override;
@@ -52,11 +50,6 @@ public:
     void on_movement_begin() override;
     void on_movement_step() override;
     void on_movement_end() override;
-
-    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
-    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
-    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
-private:
 };
 }
 }
