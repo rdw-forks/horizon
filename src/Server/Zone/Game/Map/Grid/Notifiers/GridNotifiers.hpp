@@ -54,6 +54,7 @@ struct GridViewPortUpdater
 	void Visit(GridRefManager<entity_ns(Pet)> &m);
 	void Visit(GridRefManager<entity_ns(Monster)> &m);
 	void Visit(GridRefManager<entity_ns(Skill)> &m);
+	void Visit(GridRefManager<entity_ns(Item)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -134,6 +135,7 @@ struct GridEntitySearcher
 	void Visit(GridRefManager<entity_ns(Pet)> &m);
 	void Visit(GridRefManager<entity_ns(Monster)> &m);
 	void Visit(GridRefManager<entity_ns(Skill)> &m);
+	void Visit(GridRefManager<entity_ns(Item)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -171,7 +173,6 @@ struct GridMonsterAIActiveSearchTarget
 	void Visit(GridRefManager<entity_ns(Elemental)> &m);
 	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
 	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }	
@@ -192,7 +193,6 @@ struct GridMonsterAIChangeChaseTarget
 	void Visit(GridRefManager<entity_ns(Elemental)> &m);
 	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
 	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }	
@@ -268,7 +268,6 @@ struct GridSCApplyInSkillArea
 	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
 	void Visit(GridRefManager<entity_ns(Pet)> &m);
 	void Visit(GridRefManager<entity_ns(Monster)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -296,7 +295,6 @@ struct GridSCRemoveInSkillArea
 	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
 	void Visit(GridRefManager<entity_ns(Pet)> &m);
 	void Visit(GridRefManager<entity_ns(Monster)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -327,7 +325,6 @@ struct GridExecuteSkillInArea
 	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
 	void Visit(GridRefManager<entity_ns(Pet)> &m);
 	void Visit(GridRefManager<entity_ns(Monster)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -358,7 +355,6 @@ struct GridExecuteSkillInCell
 	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
 	void Visit(GridRefManager<entity_ns(Pet)> &m);
 	void Visit(GridRefManager<entity_ns(Monster)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -423,6 +419,29 @@ struct GridEntityMovementStopNotifier
 
 	explicit GridEntityMovementStopNotifier(int entity_guid, int pos_x, int pos_y)
 	: _entity_guid(entity_guid), _pos_x(pos_x), _pos_y(pos_y)
+	{ }
+
+	template <class T>
+	void notify(GridRefManager<T> &m);
+
+	void Visit(GridRefManager<entity_ns(Player)> &m);
+
+	template<class NOT_INTERESTED>
+	void Visit(GridRefManager<NOT_INTERESTED> &) { }
+};
+
+struct s_grid_notify_item_drop_entry
+{
+	int guid{ 0 }, item_id{ 0 }, type{ 0 }, is_identified{ 0 }, x{ 0 }, y{ 0 }, x_area{ 0 }, y_area{ 0 }, amount{ 0 };
+	int show_drop_effect{ 0 }, drop_effect_mode{ 0 };
+};
+
+struct GridEntityItemDropNotifier
+{
+	s_grid_notify_item_drop_entry _entry;
+
+	explicit GridEntityItemDropNotifier(s_grid_notify_item_drop_entry entry)
+	: _entry(entry)
 	{ }
 
 	template <class T>

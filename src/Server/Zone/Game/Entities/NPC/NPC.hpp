@@ -32,7 +32,7 @@
 
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/GridObject.hpp"
 
 
 

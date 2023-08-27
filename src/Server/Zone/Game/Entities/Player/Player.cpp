@@ -38,6 +38,7 @@
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 
@@ -48,8 +49,8 @@
 
 using namespace Horizon::Zone::Entities;
 
-Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid)
-: Entity(guid, ENTITY_PLAYER, ENTITY_MASK_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
+Player::Player(std::shared_ptr<ZoneSession> session, uint64_t uuid)
+: Entity(uuid, ENTITY_PLAYER, ENTITY_MASK_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
 {
 }
 
@@ -301,23 +302,15 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	if (entity_is_in_viewport(entity))
 		return;
 
-	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
-	get_session()->clif()->notify_viewport_add_entity(entry);
+	if (entity->type() == ENTITY_ITEM) {
+		item_viewport_entry entry = get_session()->clif()->create_viewport_item_entry(entity->downcast<Item>());
+		get_session()->clif()->notify_viewport_item_entry(entry);
+	} else {
+		entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
+		get_session()->clif()->notify_viewport_add_entity(entry);
+	}
 	
 	_viewport_entities.push_back(entity);
-
-	// if (entity->type() == ENTITY_MONSTER) {
-	// 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
-	// 		map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
-	// 			[this] (TaskContext context)
-	// 			{
-	// 				GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
-	// 				GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
-
-	// 				map()->visit_in_range(map_coords(), ai_executor_caller);
-	// 				context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
-	// 			});
-	// }
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -341,7 +334,10 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_
 		}
 	), _viewport_entities.end());
 
-	get_session()->clif()->notify_viewport_remove_entity(entity, type);
+	if (entity->type() == ENTITY_ITEM)
+		get_session()->clif()->notify_item_removal_from_floor(entity->guid());
+	else
+		get_session()->clif()->notify_viewport_remove_entity(entity, type);
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -467,6 +463,34 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 	status()->on_equipment_changed(false, item);
 }
 
+void Player::pickup_item(int32_t guid)
+{
+	std::shared_ptr<Horizon::Zone::Entity> entity = get_nearby_entity(guid);
+
+	if (entity == nullptr)
+		return;
+
+	if (entity->type() != ENTITY_ITEM)
+		return;
+
+	if (entity->is_in_range_of(shared_from_this(), 1) == false)
+		return;
+
+	std::shared_ptr<Item> item = entity->downcast<Item>();
+
+	if (inventory()->add_item(item) == Horizon::Zone::Assets::inventory_addition_result_type::INVENTORY_ADD_SUCCESS) {	
+		item->finalize();
+		std::shared_ptr<MapContainerThread> container = item->map()->container();
+		container->remove_entity(item);
+		get_session()->clif()->notify_item_removal_from_floor(item->guid());
+		get_session()->clif()->notify_action(item->guid(), PLAYER_ACT_ITEM_PICKUP);
+	}
+}
+void Player::throw_item(std::shared_ptr<item_entry_data> item, int32_t amount)
+{	
+	inventory()->drop_item(item->inventory_index, amount);
+	map()->add_item_drop(item, amount, map_coords());
+}
 void Player::notify_map_properties()
 {
 	zc_map_properties mp;

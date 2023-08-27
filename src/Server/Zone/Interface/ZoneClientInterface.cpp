@@ -34,6 +34,7 @@
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
@@ -55,6 +56,7 @@ ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
 ZoneClientInterface::~ZoneClientInterface()
 {
 }
+
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
 	mysqlx::Session session = sZone->database_pool()->get_connection();
@@ -89,8 +91,9 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		.bind("Z", account_id, auth_code)
 		.execute();
 
-	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), account_id);
-	
+	uint64_t uuid = sZone->to_uuid((int8_t) ENTITY_PLAYER, account_id, char_id, 0);
+	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), uuid);
+
 	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
 
 	ZC_AID zc_aid(get_session());
@@ -228,7 +231,24 @@ bool ZoneClientInterface::stop_attack()
 	get_session()->player()->stop_attack();
 	return true;
 }
+item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_ptr<Entities::Item> item)
+{
+	item_viewport_entry entry;
 
+	if (item == nullptr)
+		return entry;
+	
+	entry.guid = item->guid();
+	entry.item_id = item->config()->item_id;
+	entry.x = item->map_coords().x();
+	entry.y = item->map_coords().y();
+	entry.amount = item->amount();
+	entry.is_identified = item->is_identified();
+	entry.x_area = item->x_area();
+	entry.y_area = item->y_area();
+
+	return entry;
+}
 entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<Entity> entity)
 {
 	entity_viewport_entry entry;
@@ -329,6 +349,12 @@ bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry en
 	ZC_NOTIFY_MOVEENTRY11 pkt(get_session());
 	pkt.deliver(entry);
 #endif
+	return true;
+}
+bool ZoneClientInterface::notify_viewport_item_entry(item_viewport_entry entry)
+{
+	ZC_ITEM_ENTRY pkt(get_session());
+	pkt.deliver(entry);
 	return true;
 }
 bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCoords to)
@@ -661,11 +687,19 @@ void ZoneClientInterface::unequip_item(int16_t inventory_index)
 }
 void ZoneClientInterface::pickup_item(int guid)
 {
-
+	get_session()->player()->pickup_item(guid);
 }
 void ZoneClientInterface::throw_item(int16_t inventory_index, int16_t amount)
 {
+	std::shared_ptr<item_entry_data> item = get_session()->player()->inventory()->get_item(inventory_index);
 
+	if (item == nullptr)
+		return;
+
+	if (item->amount < amount)
+		return;
+	
+	get_session()->player()->throw_item(item, amount);
 }
 void ZoneClientInterface::move_item_from_inventory_to_cart(int16_t inventory_index, int amount)
 {
@@ -703,10 +737,10 @@ void ZoneClientInterface::repair_item(int inventory_index, int item_id, int refi
 {
 
 }
-bool ZoneClientInterface::notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
+bool ZoneClientInterface::notify_pickup_item(std::shared_ptr<item_entry_data> item, int16_t amount, item_inventory_addition_notif_type result)
 {
 	ZC_ITEM_PICKUP_ACK_V7 pkt(get_session());
-	pkt.deliver(id, amount, result);
+	pkt.deliver(*item, amount, result);
 	return true;
 }
 bool ZoneClientInterface::notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
@@ -803,6 +837,18 @@ bool ZoneClientInterface::notify_item_merge(int inventory_index, int amount, zc_
 {
 	ZC_ACK_MERGE_ITEM pkt(get_session());
 	pkt.deliver(inventory_index, amount, reason);
+	return true;
+}
+bool ZoneClientInterface::notify_item_drop(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount, int show_drop_effect, int drop_effect_mode)
+{
+	ZC_ITEM_FALL_ENTRY pkt(get_session());
+	pkt.deliver(guid, item_id, type, identified, x, y, x_area, y_area, amount, show_drop_effect, drop_effect_mode);
+	return true;
+}
+bool ZoneClientInterface::notify_item_removal_from_floor(int32_t guid)
+{
+	ZC_ITEM_DISAPPEAR pkt(get_session());
+	pkt.deliver(guid);
 	return true;
 }
 void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
@@ -1018,6 +1064,12 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 			break;
 	};
 	
+}
+bool ZoneClientInterface::notify_action(int32_t guid, player_action_type action)
+{
+	ZC_NOTIFY_ACT na(get_session());
+	na.deliver(guid, (int8_t) action);
+	return true;
 }
 bool ZoneClientInterface::notify_action(player_action_type action)
 {

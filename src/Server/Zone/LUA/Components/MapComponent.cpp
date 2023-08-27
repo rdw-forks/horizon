@@ -62,7 +62,9 @@ void MapComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"height", sol::readonly_property(&Map::get_height),
 		"has_obstruction_at", &Map::has_obstruction_at,
 		"get_random_coordinates_in_walkable_range", &Map::get_random_coordinates_in_walkable_range,
-		"get_random_coordinates_in_walkable_area", &Map::get_random_coordinates_in_walkable_area
+		"get_random_coordinates_in_walkable_area", &Map::get_random_coordinates_in_walkable_area,
+		"add_new_item_drop", sol::resolve<void(int, MapCoords, int, int)>(&Map::add_item_drop),
+		"add_unique_item_drop", sol::resolve<void(std::shared_ptr<item_entry_data>, int32_t, MapCoords)>(&Map::add_item_drop)
 	);
 }
 

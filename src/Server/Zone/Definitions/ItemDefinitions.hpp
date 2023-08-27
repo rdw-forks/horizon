@@ -402,6 +402,8 @@ struct item_config_data
  */
 struct item_entry_data
 {
+	item_entry_data() { memset(this, 0, sizeof(*this)); }
+	
 	bool is_equipment() { return type == IT_TYPE_WEAPON || type == IT_TYPE_ARMOR; }
 
 	bool is_stackable()
@@ -428,6 +430,67 @@ struct item_entry_data
 		return true;
 	}
 
+	bool operator != (item_entry_data const &right)
+	{
+		return !(*this == right);
+	}
+
+	// Assignment operator copy constructor
+	item_entry_data operator = (item_entry_data const &right)
+	{
+		inventory_index = right.inventory_index;
+		item_id = right.item_id;
+		type = right.type;
+		amount = right.amount;
+		current_equip_location_mask = right.current_equip_location_mask;
+		actual_equip_location_mask = right.actual_equip_location_mask;
+		refine_level = right.refine_level;
+
+		for (int i = 0; i < MAX_ITEM_SLOTS; ++i)
+			slot_item_id[i] = right.slot_item_id[i];
+		
+		hire_expire_date = right.hire_expire_date;
+		option_count = right.option_count;
+		ele_type = right.ele_type;
+
+		for (int i = 0; i < MAX_ITEM_OPTIONS; ++i)
+		{
+			option_data[i].index = right.option_data[i].index;
+			option_data[i].value = right.option_data[i].value;
+			option_data[i].param = right.option_data[i].param;
+		}
+		bind_type = right.bind_type;
+		info.is_favorite = right.info.is_favorite;
+		info.is_broken = right.info.is_broken;
+		info.is_identified = right.info.is_identified;
+		sprite_id = right.sprite_id;
+		
+		unique_id = right.unique_id;
+		config = right.config;
+		return *this;
+	}
+
+	bool is_favorite() { return info.is_favorite; }
+	void set_favorite(bool val) { info.is_favorite = val; }
+
+	bool is_broken() { return info.is_broken; }
+	void set_broken(bool val) { info.is_broken = val; }
+
+	bool is_identified() { return info.is_identified; }
+	void set_identified(bool val) { info.is_identified = val; }
+
+	uint32_t get_item_id() { return item_id; }
+	void set_item_id(uint32_t id) { item_id = id; }
+
+	uint16_t get_amount() { return amount; }
+	void set_amount(uint16_t amt) { amount = amt; }
+
+	uint32_t get_current_equip_location_mask() { return current_equip_location_mask; }
+	void set_current_equip_location_mask(uint32_t mask) { current_equip_location_mask = mask; }
+
+	uint32_t get_actual_equip_location_mask() { return actual_equip_location_mask; }
+	void set_actual_equip_location_mask(uint32_t mask) { actual_equip_location_mask = mask; }
+
 	uint8_t get_refine_level() { return refine_level; }
 	void set_refine_level(int lvl) { refine_level = lvl; }
 
@@ -441,6 +504,7 @@ struct item_entry_data
 	void set_option_count(uint8_t count) { option_count = count; }
 
 	uint16_t get_sprite_id() { return sprite_id; }
+	void set_sprite_id(uint16_t id) { sprite_id = id; }
 
 	uint16_t inventory_index{0};
 	uint32_t item_id{0};

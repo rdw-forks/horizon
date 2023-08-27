@@ -27,39 +27,63 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_ENTITIES_MERCENARY_HPP
-#define HORIZON_ZONE_GAME_ENTITIES_MERCENARY_HPP
+#ifndef HORIZON_ZONE_GAME_ENTITIES_ITEM_HPP
+#define HORIZON_ZONE_GAME_ENTITIES_ITEM_HPP
 
-#include "Server/Zone/Game/Entities/Creature/Creature.hpp"
 #include "Server/Zone/Game/GridObject.hpp"
-
+#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
+#include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
+class MapContainerThread;
 class Map;
 namespace Entities
 {
-class Mercenary : public Creature, public GridObject<Mercenary>
+class Item : public Entity, public GridObject<Item>
 {
 public:
-	Mercenary(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords);
-	~Mercenary();
+    explicit Item(int64_t uuid, std::shared_ptr<item_entry_data> entry, int32_t amount, std::shared_ptr<Map> map, MapCoords mcoords);
+	explicit Item(int64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords, int is_identified, int amount, std::shared_ptr<const item_config_data> item_d);
+	~Item();
+
+    void initialize();
+    bool finalize();
+
+    std::shared_ptr<item_entry_data> entry() { return _entry; }
+    std::shared_ptr<const item_config_data> config() const { return _config; }
+    
+    int is_identified() const { return _is_identified; }
+    int amount() const { return _amount; }
+    
+    int x_area() const { return _x_area; }
+    int y_area() const { return _y_area; }
+
+    void set_x_area(int x) { _x_area = x; }
+    void set_y_area(int y) { _y_area = y; }
 
     void stop_movement() override;
     void on_pathfinding_failure() override;
     void on_movement_begin() override;
     void on_movement_step() override;
     void on_movement_end() override;
-
-    void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
-    void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
-    void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
+    
+	virtual void on_status_effect_start(std::shared_ptr<status_change_entry> sce) override;
+	virtual void on_status_effect_end(std::shared_ptr<status_change_entry> sce) override;
+	virtual void on_status_effect_change(std::shared_ptr<status_change_entry> sce) override;
+    
 private:
+    std::shared_ptr<item_entry_data> _entry{ nullptr };
+    std::shared_ptr<const item_config_data> _config{ nullptr };
+	int _is_identified{ 0 };
+    int _amount{ 0 };
+    int _x_area{ 0 }, _y_area{ 0 };
 };
 }
 }
 }
 
-#endif /* HORIZON_ZONE_GAME_ENTITIES_MERCENARY_HPP */
+#endif //HORIZON_ZONE_GAME_ENTITIES_ITEM_HPP

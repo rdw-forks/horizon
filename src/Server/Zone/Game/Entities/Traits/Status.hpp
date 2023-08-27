@@ -50,7 +50,6 @@ namespace Entities
 {
 	class Player;
 	class NPC;
-	class Skill;
 	class Creature;
 }
 namespace Traits
@@ -124,7 +123,6 @@ public:
 	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creature, std::shared_ptr<const monster_config_data> md);
 	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Player> player);
 	bool initialize(std::shared_ptr<Horizon::Zone::Entities::NPC> npc);
-	bool initialize(std::shared_ptr<Horizon::Zone::Entities::Skill> skill);
 	
 	uint32_t get_required_statpoints(uint16_t from, uint16_t to);
 	uint32_t get_status_base(status_point_type type);

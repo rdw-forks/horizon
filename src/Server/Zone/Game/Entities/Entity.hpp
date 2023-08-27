@@ -41,6 +41,7 @@
 #include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 #include "Server/Zone/LUA/LUAManager.hpp"
 #include "Utility/TaskScheduler.hpp"
+#include <atomic>
 
 #define MIN_RANDOM_TRAVEL_TIME 4000
 #define MOB_LAZY_MOVE_RATE 1000
@@ -71,6 +72,18 @@ struct s_grid_sc_apply_in_skill_area_config;
 struct s_grid_apply_in_area_config;
 struct s_entity_skill_use_notifier_config;
 struct s_grid_entity_basic_attack_config;
+struct s_grid_notify_item_drop_entry;
+
+// UUID parts
+struct entity_uuid
+{
+	uint8_t type{ 0 };
+	uint32_t guid{ 0 };
+	uint16_t uid2{ 0 };
+	uint8_t uid3{ 0 };
+};
+
+static std::atomic<int32_t> _last_np_entity_guid(NPC_START_GUID);
 
 namespace Horizon
 {
@@ -83,13 +96,12 @@ namespace Zone
 class Map;
 class Combat;
 class CombatRegistry;
-static int32_t _last_np_entity_guid = NPC_START_GUID;
 
 class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
-	Entity(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords);
-	Entity(uint32_t guid, entity_type type, entity_type_mask type_mask);
+	Entity(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords);
+	Entity(uint64_t uuid, entity_type type, entity_type_mask type_mask);
 	virtual ~Entity();
 
 	bool initialize();
@@ -124,8 +136,11 @@ protected:
 	 * Unit Data
 	 */
 public:
-	uint32_t guid() const { return _guid; }
-	void set_guid(uint32_t guid) { _guid = guid; }
+	uint64_t uuid() const { return _uuid; }
+	entity_uuid s_uuid() const { return _s_uuid; }
+	void set_uuid(uint64_t uuid);
+	
+	uint32_t guid() { return _s_uuid.guid; }
 
 	uint16_t job_id() const { return _job_id; }
 	void set_job_id(uint16_t job_id) { _job_id = job_id; }
@@ -174,12 +189,14 @@ public:
 	void set_grid_coords(GridCoords const &coords) { _grid_coords = coords; }
 
 	bool is_in_range_of(std::shared_ptr<Entity> entity, uint8_t range = MAX_VIEW_RANGE);
+
 	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
 	void notify_nearby_players_of_spawn();
 	void notify_nearby_players_of_movement(bool new_entry = false);
 	void notify_nearby_players_of_movement_stop(MapCoords stop_coords);
 	void notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config);
 	void notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config);
+	void notify_nearby_players_of_item_drop(s_grid_notify_item_drop_entry entry);
 
 	// Essentials
 	std::shared_ptr<Entity> get_nearby_entity(uint32_t guid);
@@ -236,11 +253,12 @@ public:
 	void update(uint64_t tick);
 
 	std::shared_ptr<CombatRegistry> combat_registry() { return _combat_registry; }
-	
+
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false}, _is_finalized{ false };
 	bool _is_attacking{false};
-	uint32_t _guid{0};
+	uint64_t _uuid{0};
+	entity_uuid _s_uuid{ 0 };
 	entity_type _type{ENTITY_UNKNOWN};
 	entity_type_mask _type_mask{ENTITY_MASK_UNKNOWN};
 	std::weak_ptr<Map> _map;

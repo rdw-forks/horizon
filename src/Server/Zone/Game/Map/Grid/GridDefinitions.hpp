@@ -46,6 +46,7 @@ namespace Horizon
 			class Mercenary;
 			class Pet;
 			class Monster;
+			class Item;
 			class Skill;
 		}
 	}
@@ -66,14 +67,15 @@ class GridReferenceContainer;
 #define MAX_CELLS_PER_MAP MAX_CELLS_PER_GRID * MAX_GRIDS_PER_MAP
 
 #define entity_ns(e) Horizon::Zone::Entities::e
-typedef TYPELIST_8(entity_ns(Player),
+typedef TYPELIST_9(entity_ns(Player),
 	entity_ns(NPC),
 	entity_ns(Elemental),
 	entity_ns(Homunculus),
 	entity_ns(Mercenary),
 	entity_ns(Pet),
 	entity_ns(Monster),
-	entity_ns(Skill)) AllEntityTypes;
+	entity_ns(Skill),
+	entity_ns(Item)) AllEntityTypes;
 typedef GridHolder<AllEntityTypes> GridHolderType;
 #undef entity_ns
 
