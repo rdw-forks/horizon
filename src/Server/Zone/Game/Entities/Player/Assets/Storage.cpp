@@ -295,7 +295,7 @@ int32_t Storage::save()
 	
 	sZone->database_pool()->release_connection(std::move(session));
 
-	HLog(info) << "Saved Storage (" << _name << ") for " << player()->account()._account_id << " with " << changes << " changes.";
+	HLog(info) << "Saved Storage (" << _name << ") for (Account ID: " << player()->account()._account_id << ") with " << changes << " changes.";
 
 	return changes;
 }
@@ -400,7 +400,7 @@ int32_t Storage::load()
 
 	sZone->database_pool()->release_connection(std::move(session));
 	
-	HLog(info) << "Loaded Storage (" << _name << ") for " << player()->account()._account_id << " with " << _storage_items.size() << " items.";
+	HLog(info) << "Loaded Storage (" << _name << ") for (Account ID: " << player()->account()._account_id << ") with " << _storage_items.size() << " items.";
 
 	return _storage_items.size();
 }

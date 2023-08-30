@@ -576,7 +576,7 @@ int32_t Inventory::save()
 	
 	sZone->database_pool()->release_connection(std::move(session));
 
-	HLog(info) << "Saved inventory for character " << player()->character()._character_id << " with " << changes << " changes.";
+	HLog(info) << "Saved inventory for (Character ID: " << player()->account()._account_id << ") with " << changes << " changes.";
 	return changes;
 }
 
@@ -683,7 +683,7 @@ int32_t Inventory::load()
 
 	sZone->database_pool()->release_connection(std::move(session));
 	
-	HLog(info) << "Loaded inventory for character " << player()->character()._character_id << " with " << _inventory_items.size() << " items.";
-	
+	HLog(info) << "Loaded inventory for (Character ID: " << player()->account()._account_id << ") with " << _inventory_items.size() << " items.";
+
 	return _inventory_items.size();
 }
