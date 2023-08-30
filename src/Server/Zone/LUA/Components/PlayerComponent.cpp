@@ -32,6 +32,7 @@
 #include "Server/Zone/Definitions/PlayerDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Entities/Player/Assets/Storage.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -62,6 +63,10 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
     state->new_usertype<Assets::Inventory>("Inventory",
         "add_item", sol::resolve<enum Horizon::Zone::Assets::inventory_addition_result_type(uint32_t, uint16_t, bool)>(&Assets::Inventory::add_item)
     );
+    
+    state->new_usertype<Assets::Storage>("Storage",
+        "notify_all", &Assets::Storage::notify_all
+    );
 
     state->new_usertype<Horizon::Zone::Entities::Player>("Player",
         "entity", [](std::shared_ptr<Horizon::Zone::Entities::Player> player) { return player->shared_from_this(); },
@@ -71,6 +76,7 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "send_npc_menu_list", &Horizon::Zone::Entities::Player::send_npc_menu_list,
         "move_to_map", &Horizon::Zone::Entities::Player::move_to_map,
         "inventory", &Horizon::Zone::Entities::Player::inventory,
+        "storage", &Horizon::Zone::Entities::Player::get_storage,
         "message", [] (std::shared_ptr<Horizon::Zone::Entities::Player> player, std::string const &message)
         {
             player->get_session()->clif()->notify_chat(message);

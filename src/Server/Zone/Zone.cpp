@@ -37,6 +37,7 @@
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
+#include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 
 using namespace std;
 using namespace Horizon::Zone;
@@ -210,6 +211,7 @@ void ZoneServer::initialize_core()
 	StatusEffectDB->load();
 	SkillDB->load();
 	MonsterDB->load();
+	StorageDB->load();
 
 	/**
 	 * Map Manager.

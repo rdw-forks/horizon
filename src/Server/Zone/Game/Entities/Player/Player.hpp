@@ -53,6 +53,7 @@ class ZoneSession;
 namespace Assets
 {
 	class Inventory;
+	class Storage;
 }
 class Map;
 namespace Entities
@@ -201,11 +202,18 @@ public:
 
     bool attack(std::shared_ptr<Entity> e, bool continuous = false) override;
     bool stop_attack();
+
+	std::shared_ptr<Assets::Storage> get_storage(int32_t storage_id);
+
+	int32_t get_current_storage_id() { return _current_storage_id; }
+	void set_current_storage_id(int32_t id) { _current_storage_id = id; }
 private:
 	bool _is_initialized{ false };
 	std::weak_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;
 	std::shared_ptr<Assets::Inventory> _inventory;
+	std::vector<std::shared_ptr<Assets::Storage>> _storages;
+	int32_t _current_storage_id{ 0 };
 	std::atomic<bool> _is_logged_in{false};
 	int32_t _npc_contact_guid{0};
 

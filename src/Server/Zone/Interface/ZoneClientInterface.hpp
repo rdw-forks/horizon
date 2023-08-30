@@ -179,7 +179,7 @@ public:
 	void move_item_from_inventory_to_storage(int16_t inventory_index, int amount);
 	void move_item_from_cart_to_inventory(int16_t inventory_index, int amount);
 	void move_item_from_cart_to_storage(int16_t inventory_index, int amount);
-	void move_item_from_storage_to_inventory(int16_t inventory_index, int amount);
+	void move_item_from_storage_to_inventory(int16_t storage_index, int amount);
 	void move_item_from_storage_to_cart(int16_t inventory_index, int amount);
 	void display_item_card_composition(int card_index, int equip_index = 0);
 	void repair_item(int inventory_index, int item_id, int refine, int card1, int card2, int card3, int card4);
@@ -203,6 +203,17 @@ public:
 	bool notify_item_merge(int inventory_index, int amount, zc_ack_merge_item_reason_type reason);
 	bool notify_item_drop(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount, int show_drop_effect = 0, int drop_effect_mode = 0);
 	bool notify_item_removal_from_floor(int guid);
+	
+	/**
+	 * Storage
+	 */
+	void storage_close();
+	bool notify_storage_size(int16_t total_size, int16_t max_size);
+	bool notify_storage_normal_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items);
+	bool notify_storage_equip_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items);
+	bool notify_storage_close();
+	bool notify_storage_add_item(std::shared_ptr<const item_entry_data> entry, int amount);
+	bool notify_storage_remove_item(int16_t storage_index, int amount);
 	
 	/**
 	 * Skills

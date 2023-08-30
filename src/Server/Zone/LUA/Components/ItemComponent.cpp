@@ -240,7 +240,13 @@ void ItemComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"is_equipment", &item_entry_data::is_equipment,
 		"is_stackable", &item_entry_data::is_stackable,
 		"is_same_as", &item_entry_data::operator ==,
-		"inventory_index", sol::readonly(&item_entry_data::inventory_index),
+		"storage_type", &item_entry_data::storage_type,
+		"storage_index", [] (item_entry_data &item) {
+			return std::ref(item.index.storage);
+		},
+		"inventory_index", [] (item_entry_data &item) {
+			return std::ref(item.index.inventory);
+		},
 		"item_id", sol::readonly(&item_entry_data::item_id),
 		"type", sol::readonly(&item_entry_data::type),
 		"amount", sol::readonly(&item_entry_data::amount),

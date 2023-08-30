@@ -19363,10 +19363,11 @@ public:
 	{}
 	virtual ~ZC_ADD_ITEM_TO_STORE() {}
 
-	void deliver();
+	void deliver(std::shared_ptr<const item_entry_data> entry);
 	ByteBuffer &serialize();
 
 /* Structure */
+	std::shared_ptr<const item_entry_data> _entry;
 };
 
 enum {
@@ -19409,10 +19410,11 @@ public:
 	{}
 	virtual ~ZC_ADD_ITEM_TO_STORE2() {}
 
-	void deliver();
+	void deliver(std::shared_ptr<const item_entry_data> entry);
 	ByteBuffer &serialize();
 
 /* Structure */
+	std::shared_ptr<const item_entry_data> _entry;
 };
 
 enum {
@@ -19449,10 +19451,12 @@ public:
 	{}
 	virtual ~ZC_ADD_ITEM_TO_STORE3() {}
 
-	void deliver();
+	void deliver(std::shared_ptr<const item_entry_data> entry, int amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	std::shared_ptr<const item_entry_data> _entry;
+	int _amount;
 };
 
 enum {
@@ -24212,10 +24216,12 @@ public:
 	{}
 	virtual ~ZC_DELETE_ITEM_FROM_STORE() {}
 
-	void deliver();
+	void deliver(int16_t storage_index, int amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _storage_index{ 0 };
+	int _amount{ 0 };
 };
 
 enum {
@@ -35114,10 +35120,12 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_STOREITEM_COUNTINFO() {}
 
-	void deliver();
+	void deliver(int16_t current_amount, int16_t max_amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _current_amount{ 0 };
+	int16_t _max_amount{ 0 };
 };
 
 enum {
@@ -44758,10 +44766,23 @@ public:
 	{}
 	virtual ~ZC_STORE_ITEMLIST_EQUIP_V6() {}
 
-	void deliver();
+	void deliver(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	int8_t _inventory_type{ 0 };
+#endif
+#if (PACKET_VERSION >= 20120925 && \
+	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
+	char _name[MAX_UNIT_NAME_LENGTH];
+#endif
+	std::vector<std::shared_ptr<const item_entry_data>> _items;
 };
 
 enum {
@@ -44878,10 +44899,30 @@ public:
 	{}
 	virtual ~ZC_STORE_ITEMLIST_NORMAL_V5() {}
 
-	void deliver();
+#if (PACKET_VERSION >= 20120925 && \
+	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
+	void deliver(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items);
+#else
+	void deliver(std::vector<std::shared_ptr<const item_entry_data>> const &items);
+#endif
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _packet_length{ 0 };
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	int8_t _inventory_type{ 0 };
+#endif
+#if (PACKET_VERSION >= 20120925 && \
+	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
+	char _name[MAX_UNIT_NAME_LENGTH];
+#endif
+	std::vector<std::shared_ptr<const item_entry_data>> _items;
 };
 
 enum {
