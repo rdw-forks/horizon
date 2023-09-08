@@ -188,11 +188,13 @@ Horizon::Zone::storage_remove_item_result_type Storage::remove_item(int32_t stor
 
 void Storage::notify_all()
 {
+	player()->get_session()->clif()->notify_inventory_start(INVTYPE_STORAGE, _name);
     if (_storage_items.size()) {
         notify_normal();
         notify_equips();
     }
     player()->get_session()->clif()->notify_storage_size(_storage_items.size(), _max_storage);
+	player()->get_session()->clif()->notify_inventory_end(INVTYPE_STORAGE);
     player()->set_current_storage_id(_storage_id);
 }
 
@@ -201,6 +203,8 @@ void Storage::notify_normal()
 	std::vector<std::shared_ptr<const item_entry_data>> normal_items;
 
 	for (auto nit = _storage_items.begin(); nit != _storage_items.end(); nit++) {
+		if ((*nit) == nullptr)
+			continue;
 		if ((*nit)->is_equipment() == false)
 			normal_items.push_back(*nit);
 	}
@@ -213,6 +217,8 @@ void Storage::notify_equips()
 	std::vector<std::shared_ptr<const item_entry_data>> equipments;
 
 	for (auto eit = _storage_items.begin(); eit != _storage_items.end(); eit++) {
+		if ((*eit) == nullptr)
+			continue;
 		if ((*eit)->is_equipment())
 			equipments.push_back(*eit);
 	}

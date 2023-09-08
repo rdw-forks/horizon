@@ -4730,16 +4730,28 @@ ByteBuffer &ZC_INVENTORY_ITEMLIST_EQUIP_V5::serialize()
 void ZC_INVENTORY_ITEMLIST_NORMAL_V5::deliver(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
 	_items = items;
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	_packet_length = ((items.size() * 24) + 5);
+	_inventory_type = INVTYPE_INVENTORY;
+#else
+	_packet_length = ((items.size() * 24) + 4);
+#endif
 	serialize();
 	transmit();
 }
 
 ByteBuffer &ZC_INVENTORY_ITEMLIST_NORMAL_V5::serialize()
 {
-	int size = 4;
 	
 	buf() << _packet_id;
-	buf() << (int16_t) ((_items.size() * 24) + 4);
+	buf() << _packet_length;
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	buf() << _inventory_type;
+#endif
 
 	for (auto it = _items.begin(); it != _items.end(); it++) {
 		std::shared_ptr<const item_entry_data> id = *it;
@@ -4791,6 +4803,7 @@ void ZC_STORE_ITEMLIST_NORMAL_V5::deliver(std::string name, std::vector<std::sha
 	serialize();
 	transmit();
 }
+
 ByteBuffer &ZC_STORE_ITEMLIST_NORMAL_V5::serialize()
 {
 	buf() << _packet_id;
@@ -4802,19 +4815,19 @@ ByteBuffer &ZC_STORE_ITEMLIST_NORMAL_V5::serialize()
 		uint8_t config = 0;
 
 		buf() << id->index.inventory;
-		buf() << ((uint16_t) id->item_id);
-		buf() << ((uint8_t) id->type);
+		buf() << id->item_id; // 4 / > 2019: 6
+		buf() << (uint8_t) id->type;
 		buf() << id->amount;
-		buf() << id->current_equip_location_mask; // 11
+		buf() << id->current_equip_location_mask; // 11 / 13
 
 		for (int i = 0; i < MAX_ITEM_SLOTS; i++)
-			buf() << id->slot_item_id[i]; // 4 * 2
+			buf() << id->slot_item_id[i]; // 4 * 2 / > 2019: 4 * 4
 
 		buf() << id->hire_expire_date; // 23
 
 		config |= id->info.is_identified;
 		config |= id->info.is_favorite << 1;
-		buf() << config; // 24
+		buf() << config; // 24 / 34
 	}
 
 	return buf();
@@ -5512,6 +5525,14 @@ ByteBuffer &ZC_BATTLEFIELD_NOTIFY_HP2::serialize()
 void ZC_INVENTORY_ITEMLIST_EQUIP_V6::deliver(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
 	_items = items;
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	_packet_length = ((67 * items.size()) + 5);
+	_inventory_type = INVTYPE_INVENTORY;
+#else
+	_packet_length = ((57 * items.size()) + 4);
+#endif
 	serialize();
 	transmit();
 }
@@ -5519,21 +5540,26 @@ void ZC_INVENTORY_ITEMLIST_EQUIP_V6::deliver(std::vector<std::shared_ptr<const i
 ByteBuffer &ZC_INVENTORY_ITEMLIST_EQUIP_V6::serialize()
 {
 	buf() << _packet_id;
-	buf() << (int16_t) ((57 * _items.size()) + 4);
+	buf() << _packet_length;
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	buf() << _inventory_type;
+#endif
 
 	for (auto it = _items.begin(); it != _items.end(); it++) {
 		std::shared_ptr<const item_entry_data> id = *it;
 		uint8_t config = 0;
 		buf() << id->index.inventory; // 2
-		buf() << (int16_t) id->item_id; // 4
+		buf() << id->item_id; // 4 / > 2019: 6
 		buf() << (int8_t) id->type; // 5
 		buf() << id->actual_equip_location_mask; // 9
 		buf() << id->current_equip_location_mask; // 13
 		buf() << id->refine_level; //14
-		for (int i = 0; i < MAX_ITEM_SLOTS; i++) // 14 + 8 = 22
+		for (int i = 0; i < MAX_ITEM_SLOTS; i++) // 14 + 8 = 22 / > 2019: 16 + 16 = 32
 			buf() << id->slot_item_id[i];
 		buf() << id->hire_expire_date; // 26
-		buf() << (int16_t) id->bind_type; // 28
+		buf() << id->bind_type; // 28
 		buf() << id->sprite_id; // 30
 
 		buf() << id->option_count; // 31
@@ -5548,7 +5574,7 @@ ByteBuffer &ZC_INVENTORY_ITEMLIST_EQUIP_V6::serialize()
 		config |= id->info.is_broken << 1;
 		config |= id->info.is_favorite << 2;
 
-		buf() << config; // 57
+		buf() << config; // 57 / > 2019: 57 + 10 = 67
 	}
 
 	return buf();
@@ -5594,10 +5620,17 @@ void ZC_STORE_ITEMLIST_EQUIP_V6::deliver(std::string name, std::vector<std::shar
 	transmit();
 }
 #else
-void ZC_STORE_ITEMLIST_EQUIP_V6::deliver(std::vector<std::shared_ptr<const item_entry_data>> const &items)
+void ZC_STORE_ITEMLIST_EQUIP_V6::deliver(inventory_type type, std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
 	_items = items;
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	_packet_length = (int16_t) ((67 * _items.size()) + 5);
+	_inventory_type = type;
+#else
 	_packet_length = (int16_t) ((57 * _items.size()) + 4);
+#endif
 
 	serialize();
 	transmit();
@@ -5607,6 +5640,11 @@ ByteBuffer &ZC_STORE_ITEMLIST_EQUIP_V6::serialize()
 {
 	buf() << _packet_id;
 	buf() << _packet_length;
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180912) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	buf() << _inventory_type;
+#endif
 #if (PACKET_VERSION >= 20120925 && \
 	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
 	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
@@ -5617,12 +5655,12 @@ ByteBuffer &ZC_STORE_ITEMLIST_EQUIP_V6::serialize()
 		std::shared_ptr<const item_entry_data> id = *it;
 		uint8_t config = 0;
 		buf() << id->index.inventory; // 2
-		buf() << (int16_t) id->item_id; // 4
+		buf() << id->item_id; // 4 / > 2019: 6
 		buf() << (int8_t) id->type; // 5
 		buf() << id->actual_equip_location_mask; // 9
 		buf() << id->current_equip_location_mask; // 13
 		buf() << id->refine_level; //14
-		for (int i = 0; i < MAX_ITEM_SLOTS; i++) // 14 + 8 = 22
+		for (int i = 0; i < MAX_ITEM_SLOTS; i++) // 14 + 8 = 22 / > 2019: 16 + 16 = 32
 			buf() << id->slot_item_id[i];
 		buf() << id->hire_expire_date; // 26
 		buf() << (int16_t) id->bind_type; // 28
@@ -5640,7 +5678,7 @@ ByteBuffer &ZC_STORE_ITEMLIST_EQUIP_V6::serialize()
 		config |= id->info.is_broken << 1;
 		config |= id->info.is_favorite << 2;
 
-		buf() << config; // 57
+		buf() << config; // 57 / > 2019: 57 + 10 = 67
 	}
 	return buf();
 }
@@ -5816,17 +5854,58 @@ ByteBuffer &ZC_EQUIPWIN_MICROSCOPE_V7::serialize()
 /**
  * ZC_STORE_ITEMLIST_NORMAL_V6
  */
-void ZC_STORE_ITEMLIST_NORMAL_V6::deliver() {}
+void ZC_STORE_ITEMLIST_NORMAL_V6::deliver(inventory_type type, std::vector<std::shared_ptr<const item_entry_data>> const &items)
+{
+	_packet_length = 5 + (items.size() * 34);
+	_items = items;
+	_inventory_type = type;
+
+	serialize();
+	transmit();
+}
+
 ByteBuffer &ZC_STORE_ITEMLIST_NORMAL_V6::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << _inventory_type;
+
+	for (auto it = _items.begin(); it != _items.end(); it++) {
+		std::shared_ptr<const item_entry_data> id = *it;
+		uint8_t config = 0;
+
+		buf() << id->index.inventory;
+		buf() << id->item_id; // 4 / > 2019: 6
+		buf() << (uint8_t) id->type;
+		buf() << id->amount;
+		buf() << id->current_equip_location_mask; // 11 / 13
+
+		for (int i = 0; i < MAX_ITEM_SLOTS; i++)
+			buf() << id->slot_item_id[i]; // 4 * 2 / > 2019: 4 * 4
+
+		buf() << id->hire_expire_date; // 23
+
+		config |= id->info.is_identified;
+		config |= id->info.is_favorite << 1;
+		buf() << config; // 24 / 34
+	}
+
 	return buf();
 }
 /**
  * ZC_INVENTORY_END
  */
-void ZC_INVENTORY_END::deliver() {}
+void ZC_INVENTORY_END::deliver(inventory_type type) 
+{
+	_inventory_type = type;
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_INVENTORY_END::serialize()
 {
+	buf() << _packet_id;
+	buf() << _inventory_type;
+	buf() << (int8_t) 0; // unknown flag;
 	return buf();
 }
 /**
@@ -5848,9 +5927,20 @@ ByteBuffer &ZC_REMOVE_EFFECT::serialize()
 /**
  * ZC_INVENTORY_START
  */
-void ZC_INVENTORY_START::deliver() {}
+void ZC_INVENTORY_START::deliver(inventory_type type, std::string name) 
+{
+	_inventory_type = type;
+	std::strncpy(_name, name.c_str(), MAX_UNIT_NAME_LENGTH);
+	_packet_length = (int16_t) (5 + MAX_UNIT_NAME_LENGTH);
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_INVENTORY_START::serialize()
 {
+	buf() << _packet_id;
+	buf() << _packet_length;
+	buf() << (int8_t) _inventory_type;
+	buf().append(_name, MAX_UNIT_NAME_LENGTH);
 	return buf();
 }
 /**
@@ -6094,7 +6184,7 @@ ByteBuffer &ZC_ITEM_PICKUP_ACK_V7::serialize()
 	buf() << _packet_id;
 	buf() << _id.index.inventory;
 	buf() << _amount;
-	buf() << (int16_t) _id.item_id;
+	buf() << _id.item_id;
 	buf() << (int8_t) (_id.info.is_identified ? 1 : 0);
 	buf() << (int8_t) (_id.info.is_broken ? 1 : 0 );
 	buf() << _id.refine_level;

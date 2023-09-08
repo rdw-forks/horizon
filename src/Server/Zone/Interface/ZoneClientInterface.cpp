@@ -750,14 +750,28 @@ bool ZoneClientInterface::notify_pickup_item(std::shared_ptr<item_entry_data> it
 }
 bool ZoneClientInterface::notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_STORE_ITEMLIST_NORMAL_V6 pkt(get_session());
+	pkt.deliver(INVTYPE_INVENTORY, items);
+#else
 	ZC_INVENTORY_ITEMLIST_NORMAL_V5 pkt(get_session());
 	pkt.deliver(items);
+#endif
 	return true;
 }
 bool ZoneClientInterface::notify_equipment_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_STORE_ITEMLIST_EQUIP_V6 pkt(get_session());
+	pkt.deliver(INVTYPE_INVENTORY, items);
+#else
 	ZC_INVENTORY_ITEMLIST_EQUIP_V6 pkt(get_session());
 	pkt.deliver(items);
+#endif
 	return true;
 }
 bool ZoneClientInterface::notify_throw_item(int16_t inventory_index, int16_t amount)
@@ -856,6 +870,28 @@ bool ZoneClientInterface::notify_item_removal_from_floor(int32_t guid)
 	pkt.deliver(guid);
 	return true;
 }
+
+bool ZoneClientInterface::notify_inventory_start(inventory_type type, std::string name)
+{
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_INVENTORY_START pkt(get_session());
+	pkt.deliver(type, name);
+#endif
+	return true;
+}
+bool ZoneClientInterface::notify_inventory_end(inventory_type type)
+{
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_INVENTORY_END pkt(get_session());
+	pkt.deliver(type);
+#endif
+	return true;
+}
+
 void ZoneClientInterface::storage_close()
 {
 	notify_storage_close();
@@ -887,14 +923,17 @@ bool ZoneClientInterface::notify_storage_remove_item(int16_t storage_index, int 
 }
 bool ZoneClientInterface::notify_storage_normal_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
-	ZC_STORE_ITEMLIST_NORMAL_V5 pkt(get_session());
 #if (PACKET_VERSION >= 20120925 && \
 	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
 	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
 	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
+	ZC_STORE_ITEMLIST_NORMAL_V5 pkt(get_session());
 	pkt.deliver(name, items);
-#else
-	pkt.deliver(items);
+#elif (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_STORE_ITEMLIST_NORMAL_V6 pkt(get_session());
+	pkt.deliver(INVTYPE_STORAGE, items);
 #endif
 	return true;
 }
@@ -907,7 +946,7 @@ bool ZoneClientInterface::notify_storage_equip_items(std::string name, std::vect
 	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
 	pkt.deliver(name, items);
 #else
-	pkt.deliver(items);
+	pkt.deliver(INVTYPE_STORAGE, items);
 #endif
 	return true;
 }

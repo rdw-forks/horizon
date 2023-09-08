@@ -205,6 +205,11 @@ public:
 	bool notify_item_removal_from_floor(int guid);
 	
 	/**
+	 * Inventory Start / End 
+	 */
+	bool notify_inventory_start(inventory_type type, std::string name);
+	bool notify_inventory_end(inventory_type type);
+	/**
 	 * Storage
 	 */
 	void storage_close();

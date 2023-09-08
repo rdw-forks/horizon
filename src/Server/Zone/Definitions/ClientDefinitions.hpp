@@ -898,4 +898,15 @@ enum zc_use_skill2_result_type
 	ZC_USESKILL2_FAILURE = 1
 };
 
+/**
+ * Inventory type for clients 2018-09-12 RE +
+ **/
+enum inventory_type
+{
+	INVTYPE_INVENTORY = 0,
+	INVTYPE_CART = 1,
+	INVTYPE_STORAGE = 2,
+	INVTYPE_GUILD_STORAGE = 3,
+};
+
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

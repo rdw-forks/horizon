@@ -259,8 +259,10 @@ void Inventory::print_inventory()
 
 void Inventory::notify_all()
 {
+	player()->get_session()->clif()->notify_inventory_start(INVTYPE_INVENTORY, "Inventory");
 	notify_only_equipments();
 	notify_without_equipments();
+	player()->get_session()->clif()->notify_inventory_end(INVTYPE_INVENTORY);
 }
 
 void Inventory::notify_without_equipments()
