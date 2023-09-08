@@ -396,6 +396,12 @@ struct item_config_data
 	bool trade_restriction_partner_override{0};
 };
 
+enum item_storage_type
+{
+	ITEM_STORE_INVENTORY,
+	ITEM_STORE_STORAGE
+};
+
 /**
  * Structure used to store and convey item data in the state machine
  * and in communication with the client.
@@ -438,7 +444,11 @@ struct item_entry_data
 	// Assignment operator copy constructor
 	item_entry_data operator = (item_entry_data const &right)
 	{
-		inventory_index = right.inventory_index;
+		if (storage_type == ITEM_STORE_INVENTORY)
+			index.inventory = right.index.inventory;
+		else if (storage_type == ITEM_STORE_STORAGE)
+			index.storage = right.index.storage;
+	
 		item_id = right.item_id;
 		type = right.type;
 		amount = right.amount;
@@ -506,14 +516,31 @@ struct item_entry_data
 	uint16_t get_sprite_id() { return sprite_id; }
 	void set_sprite_id(uint16_t id) { sprite_id = id; }
 
-	uint16_t inventory_index{0};
+	union {
+		uint16_t inventory;
+		uint16_t storage;
+	} index{0};
+
+	item_storage_type storage_type{ITEM_STORE_INVENTORY};
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
 	uint32_t item_id{0};
+#else
+	uint16_t item_id{0};
+#endif
 	item_type type{IT_TYPE_ETC};
 	uint16_t amount{0};
 	uint32_t current_equip_location_mask{0};
 	uint32_t actual_equip_location_mask{0};
 	uint8_t refine_level{0};
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
 	uint32_t slot_item_id[MAX_ITEM_SLOTS]{0};
+#else
+	uint16_t slot_item_id[MAX_ITEM_SLOTS]{0};
+#endif
 	uint32_t hire_expire_date{0};
 	uint16_t sprite_id{0};
 

@@ -32,10 +32,12 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Entities/Player/Assets/Storage.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
+#include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/Item/Item.hpp"
@@ -78,7 +80,6 @@ void Player::create(int char_id, std::string account_gender, int group_id)
 
 	load();
 }
-
 bool Player::initialize()
 {
 	if (Entity::initialize() == false)
@@ -87,6 +88,13 @@ bool Player::initialize()
 	// Inventory.
 	_inventory = std::make_shared<Assets::Inventory>(downcast<Player>(), get_max_inventory_size());
 	_inventory->load();
+
+	for (auto s : StorageDB->get_storage_db()) {
+		std::shared_ptr<const storage_config_data> storage_config = s.second;
+		std::shared_ptr<Assets::Storage> storage = std::make_shared<Assets::Storage>(downcast<Player>(), storage_config->storage_id, storage_config->name, storage_config->capacity);
+		storage->load();
+		_storages.push_back(storage);
+	}
 
 	// Initialize Status, after inventory is loaded to compute EquipAtk etc.
 	status()->initialize(shared_from_this()->downcast<Player>());
@@ -166,6 +174,12 @@ bool Player::save()
 		// Inventory
 		if (inventory() != nullptr)
 			inventory()->save();
+
+		// Storages
+		if (_storages.size() > 0) {
+			for (auto s : _storages)
+				s->save();
+		}
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::save:" << error.what();
@@ -255,6 +269,16 @@ bool Player::load()
 	sZone->database_pool()->release_connection(std::move(session));
 
 	return true;
+}
+
+std::shared_ptr<Horizon::Zone::Assets::Storage> Player::get_storage(int32_t storage_id) 
+{ 
+	for (auto s : _storages) {
+		if (s->get_storage_id() == storage_id)
+			return s;
+	}
+
+	return nullptr;
 }
 
 void Player::on_pathfinding_failure()
@@ -488,7 +512,7 @@ void Player::pickup_item(int32_t guid)
 }
 void Player::throw_item(std::shared_ptr<item_entry_data> item, int32_t amount)
 {	
-	inventory()->drop_item(item->inventory_index, amount);
+	inventory()->drop_item(item->index.inventory, amount);
 	map()->add_item_drop(item, amount, map_coords());
 }
 void Player::notify_map_properties()

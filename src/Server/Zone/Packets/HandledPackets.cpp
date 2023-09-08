@@ -3173,8 +3173,15 @@ void CZ_PING::deserialize(ByteBuffer &buf) {}
 /**
  * CZ_CLOSE_STORE
  */
-void CZ_CLOSE_STORE::handle(ByteBuffer &&buf) {}
-void CZ_CLOSE_STORE::deserialize(ByteBuffer &buf) {}
+void CZ_CLOSE_STORE::handle(ByteBuffer &&buf) 
+{
+	deserialize(buf);
+	get_session()->clif()->storage_close();
+}
+void CZ_CLOSE_STORE::deserialize(ByteBuffer &buf) 
+{
+	buf >> _packet_id;
+}
 /**
  * CZ_USE_ITEM
  */

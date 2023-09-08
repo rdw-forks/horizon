@@ -52,6 +52,13 @@ enum inventory_addition_result_type
 	INVENTORY_ADD_OVER_QUANTITY    = 4, /// Max amount reached
 	INVENTORY_ADD_OVER_STACK_LIMIT = 5, /// Stack limitation
 };
+
+enum inventory_removal_result_type
+{
+	INVENTORY_REMOVE_SUCCESS          = 0, /// Success
+	INVENTORY_REMOVE_INVALID          = 1, /// Invalid itemid not found or negative amount
+};
+
 enum inventory_deletion_reason_type
 {
 	INVENTORY_DEL_NORMAL         = 0, /// Normal
@@ -65,18 +72,19 @@ enum inventory_deletion_reason_type
 };
 class Inventory
 {
-	typedef std::vector<std::shared_ptr<item_entry_data>> inventory_storage_type;
+	typedef std::vector<std::shared_ptr<item_entry_data>> storage_type;
 public:
 	Inventory(std::shared_ptr<Horizon::Zone::Entities::Player> player, uint32_t max_storage);
 	virtual ~Inventory();
 
-//	std::shared_ptr<PacketHandler> get_packet_handler() { return _packet_handler.lock(); }
-
+	int16_t get_free_index();
+	
 	std::shared_ptr<Horizon::Zone::Entities::Player> player() { return _player.lock(); }
 	inventory_addition_result_type add_item(std::shared_ptr<Horizon::Zone::Entities::Item> floor_item);
 	inventory_addition_result_type add_item(uint32_t item_id, uint16_t amount, bool is_identified = false);
 	inventory_addition_result_type add_item(std::shared_ptr<item_entry_data> item, int amount);
 	std::shared_ptr<item_entry_data> get_item(uint32_t inventory_index);
+	inventory_removal_result_type remove_item(int16_t inventory_index, int amount, item_deletion_reason_type reason = ITEM_DEL_NORMAL);
 	void drop_item(uint32_t inventory_index, uint16_t amount);
 
 	void initialize();
@@ -111,7 +119,7 @@ private:
 	int32_t _max_storage;
 	std::weak_ptr<Horizon::Zone::Entities::Player> _player;
 	EquipmentListType _equipments;
-	inventory_storage_type _inventory_items, _saved_inventory_items;
+	storage_type _inventory_items, _saved_inventory_items;
 };
 }
 }

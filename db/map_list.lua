@@ -1059,3 +1059,5 @@ map_list = {
 	"gl_cas01_",
 	"1@gl_prq"
 }
+
+return map_list
