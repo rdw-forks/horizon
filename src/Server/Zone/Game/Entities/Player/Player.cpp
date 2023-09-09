@@ -139,6 +139,11 @@ bool Player::initialize()
 		return false;
 	}
 
+
+	// Ensure grid for entity.
+	map()->ensure_grid_for_entity(this, map_coords());
+	map()->add_user_count();
+	
 	set_initialized(true);
 	
 	return true;
@@ -245,17 +250,11 @@ bool Player::load()
 			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
 			map = MapMgr->get_map("prontera");
 		}
-
-		map->container()->manage_session(SESSION_ACTION_ADD, get_session());
-		map->add_user_count();
 		
 		get_session()->set_map_name(map->get_name());
 		
 		set_map(map);
 		set_map_coords(mcoords);
-
-		// Ensure grid for entity.
-		map->ensure_grid_for_entity(this, map_coords());
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::load:" << error.what();

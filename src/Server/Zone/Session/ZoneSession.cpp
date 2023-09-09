@@ -142,6 +142,5 @@ void ZoneSession::update(uint32_t /*diff*/)
  */
 void ZoneSession::perform_cleanup()
 {
-	if (player() != nullptr)
-		MapMgr->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
+	MapMgr->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
 }

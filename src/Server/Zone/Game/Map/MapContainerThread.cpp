@@ -241,7 +241,7 @@ void MapContainerThread::update(uint64_t diff)
 			continue;
 
 		if (action == SESSION_ACTION_ADD) {
-			if (session->is_initialized() && session->player() != nullptr && session->player()->is_initialized() == false) {
+			if (session && session->player() != nullptr && session->player()->is_initialized() == false) {
 				// Intialized player upon loading.
 				session->player()->initialize();
 			}
