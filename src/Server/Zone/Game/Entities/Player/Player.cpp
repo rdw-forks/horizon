@@ -139,6 +139,11 @@ bool Player::initialize()
 		return false;
 	}
 
+
+	// Ensure grid for entity.
+	map()->ensure_grid_for_entity(this, map_coords());
+	map()->add_user_count();
+	
 	set_initialized(true);
 	
 	return true;
@@ -250,9 +255,6 @@ bool Player::load()
 		
 		set_map(map);
 		set_map_coords(mcoords);
-
-		// Ensure grid for entity.
-		map->ensure_grid_for_entity(this, map_coords());
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::load:" << error.what();

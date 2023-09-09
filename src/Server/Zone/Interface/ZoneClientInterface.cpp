@@ -109,7 +109,6 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	// This is done to prevent the player from being added to the map container before being added to the session.
 	// The player is initialized within the map container, so the player must be added to the session first.
 	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
-	pl->map()->add_user_count();
 	
 	ClientSocktMgr->set_socket_for_removal(get_session()->get_socket());
 	
