@@ -245,9 +245,6 @@ bool Player::load()
 			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
 			map = MapMgr->get_map("prontera");
 		}
-
-		map->container()->manage_session(SESSION_ACTION_ADD, get_session());
-		map->add_user_count();
 		
 		get_session()->set_map_name(map->get_name());
 		
