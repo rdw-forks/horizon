@@ -71,7 +71,7 @@ bool Monster::initialize()
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Milliseconds(std::rand() % MIN_RANDOM_TRAVEL_TIME + 1000));
+    	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
     });
 
 	return true;
@@ -98,17 +98,17 @@ void Monster::behavior_passive()
 		&& (next_walk_time() - std::time(nullptr) < 0)
 		&& !is_walking()) {
 	    try {
-			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 			MapCoords move_c = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
+			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 			if (walk_to_coordinates(move_c.x(), move_c.y()) == false) {
 				//HLog(error) << "Monster (" << guid() << ") " << name() << " could not move to coordinates.";
 				return;
 			}
-			set_next_walk_time(std::time(nullptr) + std::rand() % 5 + 1);
 			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 			std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-			//HLog(debug) << "Monster::behavior_passive: script invocation time " << duration.count() << "us";
-			// Invocation time: ~915us
+			//HLog(debug) << "Monster::behavior_passive: behavior invocation time " << duration.count() << "us";
+			//HLog(debug) << "Monster::behavior_passive: Monster (" << guid() << ") " << name() << " is walking to (" << move_c.x() << ", " << move_c.y() << ").";
+			set_next_walk_time(std::time(nullptr) + std::rand() % (MIN_RANDOM_TRAVEL_TIME / 1000) + 1);
 	    } catch (sol::error &e) {
 	        HLog(error) << "Monster::behavior_passive: " << e.what();
 	    }
