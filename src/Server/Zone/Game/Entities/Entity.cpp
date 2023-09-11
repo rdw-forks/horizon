@@ -128,8 +128,10 @@ bool Entity::schedule_walk()
 		return false;
 	}
 
+	/// ~1us
 	std::reverse(_walk_path.begin(), _walk_path.end());
 	_walk_path.erase(_walk_path.begin());
+	///
 
 	if (_walk_path.empty())
 	{
@@ -142,7 +144,7 @@ bool Entity::schedule_walk()
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
 	on_movement_begin();				 // 0us
 	notify_nearby_players_of_movement(); // 3us
-	walk();								 // ~173us
+	walk();								 // 3~6 us
 	return true;
 }
 
@@ -151,10 +153,8 @@ bool Entity::schedule_walk()
 void Entity::walk()
 {
 	// Fixes the jumping walk bug that happens when the walk is invoked while entity is already walking.
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0)
-	{
+	if ( type() == ENTITY_PLAYER && map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0)
 		return;
-	}
 
 	if (status() == nullptr || status()->movement_speed() == nullptr)
 	{
@@ -201,13 +201,11 @@ void Entity::walk()
 			if (_changed_dest_pos != MapCoords(0, 0))
 			{
 				_dest_pos = _changed_dest_pos;
-				context.CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 				schedule_walk();
 				return;
 			}
 			else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty())
 			{
-				context.CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
 				stop_walking();
 			}
 

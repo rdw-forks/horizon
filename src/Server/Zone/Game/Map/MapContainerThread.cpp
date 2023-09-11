@@ -212,11 +212,16 @@ void MapContainerThread::start_internal()
 		update_count++;
 
 		int new_time = 0;
-		if ((new_time = std::time(nullptr)) - updates_per_second_timer >= 1) {
-			updates_per_second_timer = new_time;
-			average_update_per_second = update_count + (update_count <= 1 ? 0 : average_update_per_second) / update_count;
+		int diff_time = (new_time = std::time(nullptr)) - updates_per_second_timer;
+		if (diff_time >= 1) {
+			if (diff_time > 1)
+				average_update_per_second = (double) update_count / diff_time;
+			else
+				average_update_per_second = update_count + (update_count <= 1 ? 0 : average_update_per_second) / update_count;
+
         	HLog(info) << "Map Container " << (void*) this << " update rate: " << average_update_per_second << " update(s) per second.";
         	update_count = 0;
+			updates_per_second_timer = new_time;
    		}
 		
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));

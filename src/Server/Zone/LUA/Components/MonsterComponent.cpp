@@ -190,8 +190,35 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 			register_monster_spawn_info(_last_monster_spawn_id++, std::make_shared<monster_spawn_data>(spwd));
 
-			if (!sZone->config().monster_caching_enabled()) {
-				spawn_monsters(map_name, container);
+			if (sZone->config().monster_caching_enabled() == false) {
+				std::shared_ptr<const monster_config_data> md = MonsterDB->get_monster_by_id(spwd.monster_id);
+
+
+				if (md == nullptr) {
+					HLog(warning) << "Monster " << spwd.monster_id << " set for spawn in " << map_name << " does not exist in the database.";
+					return;
+				}
+
+				std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(spwd.monster_id);
+
+				for (int i = 0; i < spwd.amount; i++) {
+					MapCoords mcoords = MapCoords(spwd.x, spwd.y);
+					if (mcoords == MapCoords(0, 0))
+						mcoords = map->get_random_accessible_coordinates();
+					else if (spwd.x_area && spwd.y_area) {
+						if ((mcoords = map->get_random_coordinates_in_walkable_area(spwd.x, spwd.y, spwd.x_area, spwd.y_area)) == MapCoords(0, 0)) {
+							HLog(warning) << "Couldn't spawn monster " << md->name << " in area, spawning it on random co-ordinates.";
+							mcoords = map->get_random_accessible_coordinates();
+						}
+					}
+					std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, md, mskd);
+
+					monster->initialize();
+
+					get_container()->add_entity(monster);
+
+					register_single_spawned_monster(monster->guid(), monster);
+				}
 			}
 		});
 }

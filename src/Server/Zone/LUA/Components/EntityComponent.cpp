@@ -493,7 +493,8 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "hair_style", &Horizon::Zone::Traits::Status::hair_style,
         "body_style", &Horizon::Zone::Traits::Status::body_style,
         "status_point", &Horizon::Zone::Traits::Status::status_point,
-        "skill_point", &Horizon::Zone::Traits::Status::skill_point
+        "skill_point", &Horizon::Zone::Traits::Status::skill_point,
+		"zeny", &Horizon::Zone::Traits::Status::zeny
     );
 
 	state->new_usertype<Combat>("Combat",
