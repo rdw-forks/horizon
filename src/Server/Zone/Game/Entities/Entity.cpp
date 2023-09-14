@@ -153,14 +153,11 @@ bool Entity::schedule_walk()
 void Entity::walk()
 {
 	// Fixes the jumping walk bug that happens when the walk is invoked while entity is already walking.
-	if ( type() == ENTITY_PLAYER && map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0)
+	if (type() == ENTITY_PLAYER && map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0)
 		return;
 
 	if (status() == nullptr || status()->movement_speed() == nullptr)
-	{
-		// HLog(error) << "Entity::walk: Status is null, cannot walk.";
 		return;
-	}
 
 	if (is_attacking())
 		stop_attacking();

@@ -42,10 +42,10 @@
 
 using namespace Horizon::Zone::Entities;
 
-Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+Monster::Monster(int16_t spawn_dataset_id, int8_t spawn_id, std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
-: Creature(sZone->to_uuid((uint8_t) ENTITY_MONSTER, ++_last_np_entity_guid, 0, 0), ENTITY_MONSTER, ENTITY_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
+: Creature(sZone->to_uuid((uint8_t) ENTITY_MONSTER, ++_last_np_entity_guid, spawn_dataset_id, spawn_id), ENTITY_MONSTER, ENTITY_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
 	set_name(md->name);
 	set_job_id(md->monster_id);
@@ -209,21 +209,19 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 			if (!result.valid()) {
 				sol::error err = result;
 				HLog(error) << "Monster::on_killed: " << err.what();
-				return;
 			}
 		}
 		catch (sol::error& e) {
 			HLog(error) << "Monster::on_killed: " << e.what();
-			return;
 		}
 	}
 		break;
 	default:
-		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << guid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
+		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << uuid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
 
-	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
+	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(uuid());
 
 	return;
 }

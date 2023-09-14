@@ -46,7 +46,7 @@ class Player;
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
-	explicit Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+	explicit Monster(int16_t spawn_dataset_id, int8_t spawn_id, std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd);
 	~Monster() override;

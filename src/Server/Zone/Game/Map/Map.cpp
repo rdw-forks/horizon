@@ -73,13 +73,13 @@ bool Map::has_obstruction_at(int16_t x, int16_t y)
 
 void Map::add_user_count() {
 	_user_count++; 
-	if (sZone->config().monster_caching_enabled() && get_user_count() == 1)
+	if (get_user_count() == 1)
 		container()->get_lua_manager()->monster()->spawn_monsters(get_name(), container()); 
 }
 
 void Map::sub_user_count() { 
 	_user_count--; 
-	if (sZone->config().monster_caching_enabled() && get_user_count() == 0)
+	if (get_user_count() == 0)
 		container()->get_lua_manager()->monster()->despawn_monsters(get_name(), container());
 }
 
