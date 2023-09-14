@@ -164,6 +164,7 @@ enum monster_skill_cast_condition_type {
 };
 
 struct monster_spawn_data {
+	int spawn_dataset_id{ 0 };
 	int monster_id{0};
 	std::string map_name{""};
 	MapCoords coords{0,0};
@@ -171,6 +172,12 @@ struct monster_spawn_data {
 	std::string mob_name{""};
 	int16_t amount{0};
 	int32_t spawn_delay_base{0}, spawn_delay_variance{0};
+	int16_t dead_amount{ 0 };
+	struct s_monster_spawn_time_cache {
+		int64_t dead_time{ 0 };
+		int64_t spawn_time{ 0 };
+	};
+	std::unordered_map<int64_t, s_monster_spawn_time_cache> dead_spawn_time_list;
 };
 
 struct monster_skill_config_data {
