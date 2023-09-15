@@ -219,9 +219,9 @@ void MonsterComponent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::
 	std::shared_ptr<Map> map = monster->map();
 
 	msd->dead_amount++;
+	// Set the spawn time cache. This is used to calculate the time to spawn the monster.
 	monster_spawn_data::s_monster_spawn_time_cache spawn_time_cache;
 	spawn_time_cache.dead_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	// get time in milliseconds using std::time(nullptr)
 
 	spawn_time_cache.spawn_time = msd->spawn_delay_base + std::rand() % (msd->spawn_delay_variance + 1);
 	msd->dead_spawn_time_list.emplace(monster->uuid(), spawn_time_cache);
@@ -329,11 +329,10 @@ void MonsterComponent::despawn_monsters(std::string map_name, std::shared_ptr<Ma
 	
 	MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
-	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end(); i++)
+	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end();)
 		if ((*i).second->map()->get_name() == map_name) {
 			(*i).second->finalize();
 			container->remove_entity((*i).second);
-			_monster_spawned_map.erase(i);
-			return;
+			i = _monster_spawned_map.erase(i);
 		}
 }
