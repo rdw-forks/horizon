@@ -11,7 +11,7 @@
 
 HorizonXYZ/Horizon is a robust and versatile C++ project designed to supersede older Ragnarok Online emulators, namely from the eAthena family. 
 
-![https://i.ibb.co/D92qCTZ/Screenshot-2023-05-28-060532.png](https://i.ibb.co/D92qCTZ/Screenshot-2023-05-28-060532.png)
+<img src="https://i.imgur.com/x1wyrJA.gif" width="100%" height="100%">
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@ Built with the need for more customizability in mind, Horizon offers a comprehen
 - Combat and damage components
 - In-game **At-commands**
 - Development oriented **Script-commands** 
-- Administration based **Console-commands**
+- Server Administration based **Console-commands**
 - Game Administration based **Web-commands**
 
 #### 2. High Performance and Maintainability
