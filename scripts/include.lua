@@ -147,9 +147,6 @@ scripts = {
 	"npcs/re/warps/other/dimensional_gap.lua",
 	"npcs/re/warps/other/arena.lua",
 
-	-- NPC
-	"npcs/npcs.lua",
-
 	-- Monster
 	"monsters/dungeons/gefenia.lua",
 	"monsters/dungeons/lou_dun.lua",
