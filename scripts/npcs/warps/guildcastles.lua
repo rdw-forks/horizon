@@ -28,7 +28,6 @@
 ---------------------------------------------------------------------------
 
 Warp("prtg01_NorthField", "prt_gld", 159, 298, "s:move_to_map('prt_fild01', 199, 30)", 2)
-Warp("prtg02_Castle", "prt_gld", 159, 25, "s:move_to_map('prt_castle', 102, 178)", 2)
 Warp("prtg-1_prtg-1-01", "prt_gld", 129, 65, "s:move_to_map('prtg_cas01', 99, 32)", 2)
 Warp("prtg-2_prtg-2", "prt_gld", 240, 124, "s:move_to_map('prtg_cas02', 43, 229)", 2)
 Warp("prtg-3_prtg-3", "prt_gld", 153, 141, "s:move_to_map('prtg_cas03', 168, 12)", 2)
