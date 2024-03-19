@@ -1,4 +1,12 @@
 -- At command functions!
+
+-- @storage
+local function storage(player, args)
+	storage = player:storage(tonumber(args[2]))
+	storage:notify_all()
+end
+
+-- @zeny
 local function zeny(player, args)
 	status = player:entity():status()
 	status:zeny():set(tonumber(args[2]))

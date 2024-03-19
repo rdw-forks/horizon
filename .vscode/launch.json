@@ -9,7 +9,7 @@
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Debug-Tools\\bin\\Debug\\mapcache.exe",
-            "externalConsole": true,
+            "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
               "trace": true
@@ -18,7 +18,8 @@
                 "--config=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\map_list.lua",
                 "--grf-config=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\grf_list.lua",
                 "--output=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\maps.dat"
-            ]
+            ],
+            "cwd": "C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Debug-Tools\\bin\\Debug\\"
         },
         {
             "name": "Auth",
@@ -26,14 +27,15 @@
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\auth.exe",
             "symbolSearchPath": "${workspaceFolder}\\out\\build\\Debug\\binDebug\\",
-            "externalConsole": true,
+            "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
               "trace": true
             },
             "args": [
-                "--with-config=${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\config\\auth-server.lua"
-            ]
+                "--with-config=config\\auth-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\"
         },
         {
             "name": "Char",
@@ -41,14 +43,15 @@
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\char.exe",
             "symbolSearchPath": "${workspaceFolder}\\out\\build\\Debug\\binDebug\\",
-            "externalConsole": true,
+            "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
               "trace": true
             },
             "args": [
-                "--with-config=${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\config\\char-server.lua"
-            ]
+                "--with-config=config\\char-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\"
         },
         {
             "name": "Zone",
@@ -56,14 +59,15 @@
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\zone.exe",
             "symbolSearchPath": "${workspaceFolder}\\out\\build\\Debug\\binDebug\\",
-            "externalConsole": true,
+            "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
               "trace": true
             },
             "args": [
-                "--with-config=${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\config\\zone-server.lua"
-            ]
+                "--with-config=config\\zone-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Debug\\bin\\Debug\\"
         }
     ]
 }
