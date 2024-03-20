@@ -32,7 +32,6 @@
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Zone/Game/Entities/Skill/Skill.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
 #include "Server/Zone/Game/Entities/Creature/Companion/Pet.hpp"
@@ -40,6 +39,8 @@
 #include "Server/Zone/Game/Entities/Creature/Companion/Mercenary.hpp"
 #include "Server/Zone/Game/Entities/Creature/Companion/Elemental.hpp"
 #include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
+#include "Server/Zone/Game/Entities/Skill/Skill.hpp"
 #include "Server/Zone/Game/Map/Grid/GridRefManager.hpp"
 #include "Server/Zone/Game/Map/Path/AStar.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -76,6 +77,7 @@ template<> void GridPlayerNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &
 template<> void GridPlayerNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template<> void GridPlayerNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template<> void GridPlayerNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template<> void GridPlayerNotifier::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridViewPortUpdater::update(GridRefManager<T> &m)
@@ -94,12 +96,13 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
         if (pl->get_session() == nullptr || pl->get_session()->clif() == nullptr)
             continue;
 
-        std::shared_ptr<Horizon::Zone::Entity> vp_e = iter->source()->shared_from_this();
 
-        if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
-            pl->add_entity_to_viewport(vp_e);
-        else if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
-            pl->remove_entity_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
+            std::shared_ptr<Horizon::Zone::Entity> vp_e = iter->source()->shared_from_this();
+    
+            if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
+                pl->add_entity_to_viewport(vp_e);
+            else if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
+                pl->remove_entity_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
     }
 }
 
@@ -111,6 +114,7 @@ void GridViewPortUpdater::Visit(GridRefManager<Mercenary> &m) { update(m); }
 void GridViewPortUpdater::Visit(GridRefManager<Pet> &m) { update(m); }
 void GridViewPortUpdater::Visit(GridRefManager<Monster> &m) { update(m); }
 void GridViewPortUpdater::Visit(GridRefManager<Skill> &m) { update(m); }
+void GridViewPortUpdater::Visit(GridRefManager<Item> &m) { update(m); }
 
 template <class T>
 void GridEntityExistenceNotifier::notify(GridRefManager<T> &m)
@@ -165,6 +169,7 @@ template <> void GridEntityExistenceNotifier::Visit<Mercenary>(GridRefManager<Me
 template <> void GridEntityExistenceNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridEntityExistenceNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntityExistenceNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntityExistenceNotifier::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridEntitySpawnNotifier::notify(GridRefManager<T> &m)
@@ -200,6 +205,7 @@ template <> void GridEntitySpawnNotifier::Visit<Mercenary>(GridRefManager<Mercen
 template <> void GridEntitySpawnNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridEntitySpawnNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntitySpawnNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntitySpawnNotifier::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridEntityMovementNotifier::notify(GridRefManager<T> &m)
@@ -242,6 +248,7 @@ template <> void GridEntityMovementNotifier::Visit<Mercenary>(GridRefManager<Mer
 template <> void GridEntityMovementNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridEntityMovementNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntityMovementNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntityMovementNotifier::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridEntitySearcher::search(GridRefManager<T> &m)
@@ -273,6 +280,7 @@ void GridEntitySearcher::Visit(GridRefManager<Mercenary> &m) { search<Mercenary>
 void GridEntitySearcher::Visit(GridRefManager<Pet> &m) { search<Pet>(m); }
 void GridEntitySearcher::Visit(GridRefManager<Monster> &m) { search<Monster>(m); }
 void GridEntitySearcher::Visit(GridRefManager<Skill> &m) { search<Skill>(m); }
+void GridEntitySearcher::Visit(GridRefManager<Item> &m) { search<Item>(m); }
 
 template <class T>
 void GridMonsterActiveAIExecutor::perform(GridRefManager<T> &m)
@@ -302,6 +310,7 @@ template <> void GridMonsterActiveAIExecutor::Visit<Mercenary>(GridRefManager<Me
 template <> void GridMonsterActiveAIExecutor::Visit<Pet>(GridRefManager<Pet> &m);
 void GridMonsterActiveAIExecutor::Visit(GridRefManager<Monster> &m) { perform<Monster>(m); }
 template <> void GridMonsterActiveAIExecutor::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridMonsterActiveAIExecutor::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridMonsterAIActiveSearchTarget::search(GridRefManager<T> &m)
@@ -354,7 +363,8 @@ void GridMonsterAIActiveSearchTarget::Visit(GridRefManager<Homunculus> &m) { sea
 void GridMonsterAIActiveSearchTarget::Visit(GridRefManager<Mercenary> &m) { search<Mercenary>(m); }
 template <> void GridMonsterAIActiveSearchTarget::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridMonsterAIActiveSearchTarget::Visit<Monster>(GridRefManager<Monster> &m);
-void GridMonsterAIActiveSearchTarget::Visit(GridRefManager<Skill> &m) { search<Skill>(m); }
+template <> void GridMonsterAIActiveSearchTarget::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridMonsterAIActiveSearchTarget::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridMonsterAIChangeChaseTarget::search(GridRefManager<T> &m)
@@ -391,7 +401,8 @@ void GridMonsterAIChangeChaseTarget::Visit(GridRefManager<Homunculus> &m) { sear
 void GridMonsterAIChangeChaseTarget::Visit(GridRefManager<Mercenary> &m) { search<Mercenary>(m); }
 template <> void GridMonsterAIChangeChaseTarget::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridMonsterAIChangeChaseTarget::Visit<Monster>(GridRefManager<Monster> &m);
-void GridMonsterAIChangeChaseTarget::Visit(GridRefManager<Skill> &m) { search<Skill>(m); }
+template <> void GridMonsterAIChangeChaseTarget::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridMonsterAIChangeChaseTarget::Visit<Item>(GridRefManager<Item> &m);
 
 
 template <class T>
@@ -422,6 +433,7 @@ template<> void GridNPCTrigger::Visit<Mercenary>(GridRefManager<Mercenary> &m);
 template<> void GridNPCTrigger::Visit<Pet>(GridRefManager<Pet> &m);
 template<> void GridNPCTrigger::Visit<Monster>(GridRefManager<Monster> &m);
 template<> void GridNPCTrigger::Visit<Skill>(GridRefManager<Skill> &m);
+template<> void GridNPCTrigger::Visit<Item>(GridRefManager<Item> &m);
 
 // Searches a skillarea for an entity that is within the splash range of the target.
 // If found, the status change is applied to the entity.
@@ -462,7 +474,8 @@ void GridSCApplyInSkillArea::Visit(GridRefManager<Homunculus> &m) { apply(m); }
 void GridSCApplyInSkillArea::Visit(GridRefManager<Mercenary> &m) { apply(m); }
 void GridSCApplyInSkillArea::Visit(GridRefManager<Pet> &m) { apply(m); }
 void GridSCApplyInSkillArea::Visit(GridRefManager<Monster> &m) { apply(m); }
-void GridSCApplyInSkillArea::Visit(GridRefManager<Skill> &m) { apply(m); }
+template <> void GridSCApplyInSkillArea::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridSCApplyInSkillArea::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridSCRemoveInSkillArea::apply(GridRefManager<T> &m)
@@ -502,7 +515,8 @@ void GridSCRemoveInSkillArea::Visit(GridRefManager<Homunculus> &m) { apply(m); }
 void GridSCRemoveInSkillArea::Visit(GridRefManager<Mercenary> &m) { apply(m); }
 void GridSCRemoveInSkillArea::Visit(GridRefManager<Pet> &m) { apply(m); }
 void GridSCRemoveInSkillArea::Visit(GridRefManager<Monster> &m) { apply(m); }
-void GridSCRemoveInSkillArea::Visit(GridRefManager<Skill> &m) { apply(m); }
+template <> void GridSCRemoveInSkillArea::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridSCRemoveInSkillArea::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridExecuteSkillInArea::apply(GridRefManager<T> &m)
@@ -542,7 +556,8 @@ void GridExecuteSkillInArea::Visit(GridRefManager<Homunculus> &m) { apply(m); }
 void GridExecuteSkillInArea::Visit(GridRefManager<Mercenary> &m) { apply(m); }
 void GridExecuteSkillInArea::Visit(GridRefManager<Pet> &m) { apply(m); }
 void GridExecuteSkillInArea::Visit(GridRefManager<Monster> &m) { apply(m); }
-void GridExecuteSkillInArea::Visit(GridRefManager<Skill> &m) { apply(m); }
+template <> void GridExecuteSkillInArea::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridExecuteSkillInArea::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridExecuteSkillInCell::apply(GridRefManager<T> &m)
@@ -579,7 +594,8 @@ void GridExecuteSkillInCell::Visit(GridRefManager<Homunculus> &m) { apply(m); }
 void GridExecuteSkillInCell::Visit(GridRefManager<Mercenary> &m) { apply(m); }
 void GridExecuteSkillInCell::Visit(GridRefManager<Pet> &m) { apply(m); }
 void GridExecuteSkillInCell::Visit(GridRefManager<Monster> &m) { apply(m); }
-void GridExecuteSkillInCell::Visit(GridRefManager<Skill> &m) { apply(m); }
+template <> void GridExecuteSkillInCell::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridExecuteSkillInCell::Visit<Item>(GridRefManager<Item> &m);
 
 template <class T>
 void GridEntitySkillUseNotifier::notify(GridRefManager<T> &m)
@@ -642,6 +658,7 @@ template <> void GridEntitySkillUseNotifier::Visit<Mercenary>(GridRefManager<Mer
 template <> void GridEntitySkillUseNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridEntitySkillUseNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntitySkillUseNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntitySkillUseNotifier::Visit<Item>(GridRefManager<Item> &m);
 
 
 template <class T>
@@ -676,4 +693,68 @@ template <> void GridEntityBasicAttackNotifier::Visit<Mercenary>(GridRefManager<
 template <> void GridEntityBasicAttackNotifier::Visit<Pet>(GridRefManager<Pet> &m);
 template <> void GridEntityBasicAttackNotifier::Visit<Monster>(GridRefManager<Monster> &m);
 template <> void GridEntityBasicAttackNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntityBasicAttackNotifier::Visit<Item>(GridRefManager<Item> &m);
 
+template <class T>
+void GridEntityMovementStopNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
+
+    if (!m.get_size())
+        return;
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+        
+        tpl->get_session()->clif()->notify_movement_stop(_entity_guid, _pos_x, _pos_y);
+    }
+}
+
+void GridEntityMovementStopNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntityMovementStopNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntityMovementStopNotifier::Visit<Item>(GridRefManager<Item> &m);
+
+template <class T>
+void GridEntityItemDropNotifier::notify(GridRefManager<T> &m)
+{
+    using namespace Horizon::Zone::Entities;
+
+    if (!m.get_size())
+        return;
+
+    for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
+        if (iter->source() == nullptr)
+            continue;
+
+        std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
+
+        if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
+            continue;
+        
+        tpl->get_session()->clif()->notify_item_drop(_entry.guid, 
+            _entry.item_id, _entry.type, _entry.is_identified, _entry.x, _entry.y, _entry.x_area, _entry.y_area,
+            _entry.amount, _entry.show_drop_effect, _entry.drop_effect_mode);
+    }
+}
+
+void GridEntityItemDropNotifier::Visit(GridRefManager<Player> &m) { notify<Player>(m); }
+template <> void GridEntityItemDropNotifier::Visit<NPC>(GridRefManager<NPC> &m);
+template <> void GridEntityItemDropNotifier::Visit<Elemental>(GridRefManager<Elemental> &m);
+template <> void GridEntityItemDropNotifier::Visit<Homunculus>(GridRefManager<Homunculus> &m);
+template <> void GridEntityItemDropNotifier::Visit<Mercenary>(GridRefManager<Mercenary> &m);
+template <> void GridEntityItemDropNotifier::Visit<Pet>(GridRefManager<Pet> &m);
+template <> void GridEntityItemDropNotifier::Visit<Monster>(GridRefManager<Monster> &m);
+template <> void GridEntityItemDropNotifier::Visit<Skill>(GridRefManager<Skill> &m);
+template <> void GridEntityItemDropNotifier::Visit<Item>(GridRefManager<Item> &m);

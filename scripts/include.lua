@@ -121,6 +121,7 @@ scripts = {
 	"npcs/re/warps/cities/dicastes.lua",
 	"npcs/re/warps/cities/dewata.lua",
 	"npcs/re/warps/cities/brasilis.lua",
+	"npcs/re/warps/cities/prontera.lua",
 	-- Warps: Renewal: Dungeons
 	"npcs/re/warps/dungeons/moc_pryd.lua",
 	"npcs/re/warps/dungeons/ecl_dun.lua",
@@ -146,6 +147,7 @@ scripts = {
 	"npcs/re/warps/other/dimensional_gap.lua",
 	"npcs/re/warps/other/arena.lua",
 
+	-- Monster
 	"monsters/dungeons/gefenia.lua",
 	"monsters/dungeons/lou_dun.lua",
 	"monsters/dungeons/mag_dun.lua",

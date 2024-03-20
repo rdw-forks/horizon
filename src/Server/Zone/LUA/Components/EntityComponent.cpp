@@ -90,13 +90,11 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 		"NorthEast", (int) DIR_NORTH_EAST
 	);
 
-
 	state->create_named_table("Posture",
 		"Standing", (int) POSTURE_STANDING,
 		"Dead", (int) POSTURE_DEAD,
 		"Sitting", (int) POSTURE_SITTING
 	);
-
 	state->create_named_table("zc_notify_act_3_action_types",
     	"Damage", (int) ZCNA3_DAMAGE,
     	"PickupItem", (int) ZCNA3_PICKUP_ITEM,
@@ -117,9 +115,9 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 	state->create_named_table("grid_entity_skill_use_notification_type",
 		"GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME", GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME,
 		"GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
-    "GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE
+    	"GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE", GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE
 	);
-  
+
 	sol::table tbl = state->create_named_table("Job");
 
 	tbl["Novice"] = (int) JOB_NOVICE;
@@ -450,7 +448,6 @@ void EntityComponent::sync_definitions(std::shared_ptr<sol::state> state)
 	job_mask_table["Ninja"] = (int) JMASK_NINJA;
 	job_mask_table["KagerouOrOboro"] = (int) JMASK_KAGEROUOBORO;
 	job_mask_table["All"] = (int) JMASK_ALL;
-
 }
 
 void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
@@ -496,7 +493,8 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "hair_style", &Horizon::Zone::Traits::Status::hair_style,
         "body_style", &Horizon::Zone::Traits::Status::body_style,
         "status_point", &Horizon::Zone::Traits::Status::status_point,
-        "skill_point", &Horizon::Zone::Traits::Status::skill_point
+        "skill_point", &Horizon::Zone::Traits::Status::skill_point,
+		"zeny", &Horizon::Zone::Traits::Status::zeny
     );
 
 	state->new_usertype<Combat>("Combat",
@@ -680,12 +678,22 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "get", &Horizon::Zone::Traits::Virtue::get_base,
         "set", &Horizon::Zone::Traits::Virtue::set_base
     );
+
+	sol::usertype<entity_uuid> uuid = state->new_usertype<entity_uuid>("EntityUUID");
+	uuid["type"] = &entity_uuid::type;
+	uuid["guid"] = &entity_uuid::guid;
+	uuid["uid2"] = &entity_uuid::uid2;
+	uuid["uid3"] = &entity_uuid::uid3;
+
 	state->new_usertype<Entity>("Entity",
+		"guid", &Entity::guid,
+		"uuid", &Entity::uuid,
+		"s_uuid", &Entity::s_uuid,
+		"set_uuid", &Entity::set_uuid,
 		"dest_coords", &Entity::dest_coords,
 		"walk_to_coordinates", &Entity::walk_to_coordinates,
 		"is_walking", &Entity::is_walking,
 		"stop_movement", &Entity::stop_movement,
-		"guid", &Entity::guid,
 		"job_id", &Entity::job_id,
 		"posture", &Entity::posture,
 		"set_posture", &Entity::set_posture,
@@ -701,11 +709,12 @@ void EntityComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"notify_nearby_players_of_existence", &Entity::notify_nearby_players_of_existence,
 		"notify_nearby_players_of_movement", &Entity::notify_nearby_players_of_movement,
 		"notify_nearby_players_of_spawn", &Entity::notify_nearby_players_of_spawn,
+		"notify_nearby_players_of_skill_use", &Entity::notify_nearby_players_of_skill_use,
+		"notify_nearby_players_of_item_drop", &Entity::notify_nearby_players_of_item_drop,
 		"get_nearby_entity", &Entity::get_nearby_entity,
 		"status_effect_start", &Entity::status_effect_start,
 		"status_effect_end", &Entity::status_effect_end,
 		"get_walk_path", &Entity::get_walk_path,
-		"notify_nearby_players_of_skill_use", &Entity::notify_nearby_players_of_skill_use,
 		"is_dead", &Entity::is_dead,
 		"combat", &Entity::combat,
 		"combat_registry", &Entity::combat_registry,

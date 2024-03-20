@@ -328,6 +328,9 @@ void CombatRegistry::SkillExecutionOperation::execute() const
             notifier_config.target_x = target->map_coords().x();
             notifier_config.target_y = target->map_coords().y();
             source->notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type::GRID_ENTITY_SKILL_USE_NOTIFY_CASTTIME, notifier_config);
+            
+            if (source->is_walking())
+                source->stop_walking(true, true);
 
             HLog(debug) << "Casting skill: " << config.skd->name << " on target: " << target->guid() << "." << std::endl;
             source->map()->container()->getScheduler().Schedule(
@@ -384,9 +387,6 @@ void CombatRegistry::SkillResultOperation::execute() const
             notifier_config.action_type = operand->get_config().action_type;
             source->notify_nearby_players_of_skill_use(GRID_ENTITY_SKILL_USE_NOTIFY_SUCCESS_DAMAGE, notifier_config);
             HLog(debug) << "Finished skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
-            if (target->type() == ENTITY_MONSTER) {
-                target->notify_nearby_players_of_movement(true);
-            }
             target->on_damage_received(source, damage->get_damage().left_damage + damage->get_damage().right_damage);
         }
                 break;
@@ -450,6 +450,7 @@ void CombatRegistry::MeleeResultOperation::execute() const
             config.action_type = ZCNA3_DAMAGE;
             config.left_damage = value->get_damage().left_damage;
             source->notify_nearby_players_of_basic_attack(config);
+            target->on_damage_received(source, value->get_damage().left_damage + value->get_damage().right_damage);
         }
             break;
         case MELEE_RESULT_OPERATION_HEALING:

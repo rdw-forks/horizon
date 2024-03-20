@@ -204,25 +204,24 @@ void MapContainerThread::start_internal()
 	npc_count = _lua_mgr->npc()->_npc_db.size();
 	HLog(info) << "Total monsters spawned: " << monster_count << " Total NPCs spawned: " << npc_count;
 
-	int updates_per_second_timer = 0;
 	int update_count = 0;
 	double average_update_per_second = 0;
+	int updates_per_second_timer = std::time(nullptr);
 	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-		std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 		update(std::time(nullptr));
 		update_count++;
-		std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
-    
-		std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
 
-		// Check updates per second.
-    	updates_per_second_timer += elapsed_time.count();
+		int new_time = 0;
+		int diff_time = (new_time = std::time(nullptr)) - updates_per_second_timer;
+		if (diff_time >= 1) {
+			if (diff_time > 1)
+				average_update_per_second = (double) update_count / diff_time;
+			else
+				average_update_per_second = update_count + (update_count <= 1 ? 0 : average_update_per_second) / update_count;
 
-		if (updates_per_second_timer / 1000 >= 1000) {
-			average_update_per_second = update_count + (update_count <= 1 ? 0 : average_update_per_second) / update_count;
         	HLog(info) << "Map Container " << (void*) this << " update rate: " << average_update_per_second << " update(s) per second.";
-			updates_per_second_timer = 0;
         	update_count = 0;
+			updates_per_second_timer = new_time;
    		}
 		
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
@@ -247,7 +246,7 @@ void MapContainerThread::update(uint64_t diff)
 			continue;
 
 		if (action == SESSION_ACTION_ADD) {
-			if (session->is_initialized() && session->player() != nullptr && session->player()->is_initialized() == false) {
+			if (session && session->player() != nullptr && session->player()->is_initialized() == false) {
 				// Intialized player upon loading.
 				session->player()->initialize();
 			}
@@ -266,12 +265,23 @@ void MapContainerThread::update(uint64_t diff)
 				session->player()->save();
 				if (session->player()->has_valid_grid_reference())
 					session->player()->remove_grid_reference();
+				session->player()->map()->sub_user_count();
 			}
 			remove_entity(session->player());
 			_managed_sessions.erase(session->get_session_id());
 			HLog(debug) << "Session " << session->get_session_id() << " was logged out and removed from managed sessions in map container " << (void *) this;
 		}
 	}
+
+	// Update the entities.
+	std::chrono::high_resolution_clock::time_point start_time_e = std::chrono::high_resolution_clock::now();
+	for (auto entity : _entities)
+		if(entity != nullptr)
+			entity->update(diff);
+		
+	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);
+	//HLog(debug) << "Entities Update time: " << elapsed_time_e.count() << "us";
 
 	// Update sessions
 	std::map<int64_t, std::shared_ptr<ZoneSession>> smap = _managed_sessions.get_map();
@@ -287,24 +297,7 @@ void MapContainerThread::update(uint64_t diff)
 		session->update(diff);
 		si++;
 	}
-
-	// Update the entities.
-	std::chrono::high_resolution_clock::time_point start_time_e = std::chrono::high_resolution_clock::now();
-	for (auto i = _entities.begin(); i != _entities.end();) {
-		std::shared_ptr<Entity> entity = *i;
-
-		if (entity == nullptr || entity->is_dead()) {
-			i = _entities.erase(i);
-			continue;
-		}
-
-		entity->update(diff);
-		++i;
-	}
-	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);
-	//HLog(debug) << "Entities Update time: " << elapsed_time_e.count() << "us";
-
+	
 	// Update Monsters
 	std::chrono::high_resolution_clock::time_point start_time = std::chrono::high_resolution_clock::now();
 	getScheduler().Update();

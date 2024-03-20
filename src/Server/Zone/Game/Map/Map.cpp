@@ -33,7 +33,11 @@
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
+#include "Server/Zone/LUA/Components/MonsterComponent.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Grid/Grid.hpp"
+#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 
@@ -67,4 +71,78 @@ bool Map::has_obstruction_at(int16_t x, int16_t y)
 	return false;
 }
 
+void Map::add_user_count() {
+	_user_count++; 
+	if (get_user_count() == 1)
+		container()->get_lua_manager()->monster()->spawn_monsters(get_name(), container()); 
+}
 
+void Map::sub_user_count() { 
+	_user_count--; 
+	if (get_user_count() == 0)
+		container()->get_lua_manager()->monster()->despawn_monsters(get_name(), container());
+}
+
+
+void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int identified)
+{
+	std::shared_ptr<const item_config_data> item_d = ItemDB->get_item_by_id(item_id);
+
+	if (item_d == nullptr) {
+		HLog(warning) << "Map::add_item_drop: Tried to drop non-existent item with ID: " << item_id << ".";
+		return;
+	}
+
+	int r = std::rand();
+	
+	int64_t uuid = sZone->to_uuid(ENTITY_ITEM, ++_last_np_entity_guid, 0, 0);
+	std::shared_ptr<Horizon::Zone::Entities::Item> item = std::make_shared<Horizon::Zone::Entities::Item>(uuid, shared_from_this(), map_coords, identified, amount, item_d);
+	item->initialize();
+
+	s_grid_notify_item_drop_entry entry;
+	entry.guid = item->guid();
+	entry.item_id = item->config()->item_id;
+	entry.type = item->config()->type;
+	entry.is_identified = identified;
+	entry.x = item->map_coords().x();
+	entry.y = item->map_coords().y();
+	entry.amount = amount;
+	item->set_x_area((r & 3) * 3 + 3);
+	item->set_y_area(((r >> 2) & 3) * 3 + 3);
+	entry.x_area = item->x_area();
+	entry.y_area = item->y_area();
+	entry.show_drop_effect = item->config()->config.show_drop_effect;
+	entry.drop_effect_mode = item->config()->drop_effect_mode;
+	item->notify_nearby_players_of_item_drop(entry);
+
+	this->container()->add_entity(item);
+}
+
+void Map::add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, MapCoords map_coords)
+{	
+	int64_t uuid = sZone->to_uuid(ENTITY_ITEM, ++_last_np_entity_guid, 0, 0);
+	std::shared_ptr<Horizon::Zone::Entities::Item> floor_item = std::make_shared<Horizon::Zone::Entities::Item>(uuid, entry, amount, shared_from_this(), map_coords);
+	floor_item->initialize();
+
+	s_grid_notify_item_drop_entry notif_config;
+
+	int r = std::rand();
+
+	notif_config.guid = floor_item->guid();
+	notif_config.item_id = floor_item->config()->item_id;
+	notif_config.type = floor_item->config()->type;
+	notif_config.is_identified = floor_item->is_identified();
+	notif_config.x = floor_item->map_coords().x();
+	notif_config.y = floor_item->map_coords().y();
+	notif_config.amount = amount;
+	floor_item->set_x_area((r & 3) * 3 + 3);
+	floor_item->set_y_area(((r >> 2) & 3) * 3 + 3);
+	notif_config.x_area = floor_item->x_area();
+	notif_config.y_area = floor_item->y_area();
+	notif_config.show_drop_effect = floor_item->config()->config.show_drop_effect;
+	notif_config.drop_effect_mode = floor_item->config()->drop_effect_mode;
+
+	floor_item->notify_nearby_players_of_item_drop(notif_config);
+
+	this->container()->add_entity(floor_item);
+}

@@ -34,6 +34,7 @@
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
@@ -43,6 +44,10 @@ namespace Horizon
 {
 namespace Zone
 {
+	namespace Entities
+	{
+		class Item;
+	}
 //! @brief The class Map is the representation of a map in the game. It contains all the cells and the grid holder. It also contains the A* pathfinder. 
 //! It is the main class for the map. It is used to get the cells, the grid holder and the pathfinder, and perform a variety of operations on them.
 //! @param _container The container that contains this map.
@@ -53,7 +58,7 @@ namespace Zone
 //! @param _gridholder The grid holder of the map.
 //! @param _pathfinder The A* pathfinder of the map.
 //! @param _obstructions The obstructions of the map.
-class Map
+class Map : public std::enable_shared_from_this<Map>
 {
 friend class MapManager;
 public:
@@ -147,6 +152,14 @@ public:
 		return available_cells.at(rnd);
 	}
 	
+	void set_user_count(int32_t count) { _user_count = count; }
+	int32_t get_user_count() { return _user_count; }
+
+	void add_user_count();
+	void sub_user_count();
+
+	void add_item_drop(int item_id, MapCoords map_coords, int amount, int identified);
+	void add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, MapCoords map_coords);
 private:
 	std::weak_ptr<MapContainerThread> _container;
 	std::string _name{""};
@@ -155,6 +168,7 @@ private:
 	Cell _cells[MAX_CELLS_PER_MAP][MAX_CELLS_PER_MAP]{{0}};
 	GridHolderType _gridholder;
 	AStar::Generator _pathfinder;
+	int32_t _user_count{ 0 };
 };
 }
 }

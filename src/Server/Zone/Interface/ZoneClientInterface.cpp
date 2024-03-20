@@ -32,8 +32,10 @@
 
 #include "Server/Zone/Game/Entities/Battle/Combat.hpp"
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Entities/Player/Assets/Storage.hpp"
 #include "Server/Zone/Game/Entities/Player/Player.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
@@ -55,6 +57,7 @@ ZoneClientInterface::ZoneClientInterface(std::shared_ptr<ZoneSession> s)
 ZoneClientInterface::~ZoneClientInterface()
 {
 }
+
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
 	mysqlx::Session session = sZone->database_pool()->get_connection();
@@ -89,8 +92,9 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		.bind("Z", account_id, auth_code)
 		.execute();
 
-	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), account_id);
-	
+	uint64_t uuid = sZone->to_uuid((int8_t) ENTITY_PLAYER, account_id, char_id, 0);
+	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), uuid);
+
 	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
 
 	ZC_AID zc_aid(get_session());
@@ -100,6 +104,11 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	zc_ae2.deliver(pl->map_coords().x(), pl->map_coords().y(), DIR_SOUTH, pl->character()._font); // edit third argument to saved font.
 	
 	get_session()->set_player(pl);
+
+	// Add the player to the map after the player has been created and added to the session.
+	// This is done to prevent the player from being added to the map container before being added to the session.
+	// The player is initialized within the map container, so the player must be added to the session first.
+	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
 	
 	ClientSocktMgr->set_socket_for_removal(get_session()->get_socket());
 	
@@ -228,7 +237,24 @@ bool ZoneClientInterface::stop_attack()
 	get_session()->player()->stop_attack();
 	return true;
 }
+item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_ptr<Entities::Item> item)
+{
+	item_viewport_entry entry;
 
+	if (item == nullptr)
+		return entry;
+	
+	entry.guid = item->guid();
+	entry.item_id = item->config()->item_id;
+	entry.x = item->map_coords().x();
+	entry.y = item->map_coords().y();
+	entry.amount = item->amount();
+	entry.is_identified = item->is_identified();
+	entry.x_area = item->x_area();
+	entry.y_area = item->y_area();
+
+	return entry;
+}
 entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<Entity> entity)
 {
 	entity_viewport_entry entry;
@@ -329,6 +355,12 @@ bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry en
 	ZC_NOTIFY_MOVEENTRY11 pkt(get_session());
 	pkt.deliver(entry);
 #endif
+	return true;
+}
+bool ZoneClientInterface::notify_viewport_item_entry(item_viewport_entry entry)
+{
+	ZC_ITEM_ENTRY pkt(get_session());
+	pkt.deliver(entry);
 	return true;
 }
 bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCoords to)
@@ -661,11 +693,19 @@ void ZoneClientInterface::unequip_item(int16_t inventory_index)
 }
 void ZoneClientInterface::pickup_item(int guid)
 {
-
+	get_session()->player()->pickup_item(guid);
 }
 void ZoneClientInterface::throw_item(int16_t inventory_index, int16_t amount)
 {
+	std::shared_ptr<item_entry_data> item = get_session()->player()->inventory()->get_item(inventory_index);
 
+	if (item == nullptr)
+		return;
+
+	if (item->amount < amount)
+		return;
+	
+	get_session()->player()->throw_item(item, amount);
 }
 void ZoneClientInterface::move_item_from_inventory_to_cart(int16_t inventory_index, int amount)
 {
@@ -673,7 +713,9 @@ void ZoneClientInterface::move_item_from_inventory_to_cart(int16_t inventory_ind
 }
 void ZoneClientInterface::move_item_from_inventory_to_storage(int16_t inventory_index, int amount)
 {
-
+	int32_t current_storage_id = get_session()->player()->get_current_storage_id();
+	std::shared_ptr<Assets::Storage> storage = get_session()->player()->get_storage(current_storage_id);
+	storage->add_item_from_inventory(inventory_index, amount);
 }
 void ZoneClientInterface::move_item_from_cart_to_inventory(int16_t inventory_index, int amount)
 {
@@ -683,9 +725,11 @@ void ZoneClientInterface::move_item_from_cart_to_storage(int16_t inventory_index
 {
 
 }
-void ZoneClientInterface::move_item_from_storage_to_inventory(int16_t inventory_index, int amount)
+void ZoneClientInterface::move_item_from_storage_to_inventory(int16_t storage_index, int amount)
 {
-
+	int32_t current_storage_id = get_session()->player()->get_current_storage_id();
+	std::shared_ptr<Assets::Storage> storage = get_session()->player()->get_storage(current_storage_id);
+	storage->add_item_to_inventory(storage_index, amount);
 }
 void ZoneClientInterface::move_item_from_storage_to_cart(int16_t inventory_index, int amount)
 {
@@ -703,22 +747,36 @@ void ZoneClientInterface::repair_item(int inventory_index, int item_id, int refi
 {
 
 }
-bool ZoneClientInterface::notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result)
+bool ZoneClientInterface::notify_pickup_item(std::shared_ptr<item_entry_data> item, int16_t amount, item_inventory_addition_notif_type result)
 {
 	ZC_ITEM_PICKUP_ACK_V7 pkt(get_session());
-	pkt.deliver(id, amount, result);
+	pkt.deliver(*item, amount, result);
 	return true;
 }
 bool ZoneClientInterface::notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_STORE_ITEMLIST_NORMAL_V6 pkt(get_session());
+	pkt.deliver(INVTYPE_INVENTORY, items);
+#else
 	ZC_INVENTORY_ITEMLIST_NORMAL_V5 pkt(get_session());
 	pkt.deliver(items);
+#endif
 	return true;
 }
 bool ZoneClientInterface::notify_equipment_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items)
 {
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_STORE_ITEMLIST_EQUIP_V6 pkt(get_session());
+	pkt.deliver(INVTYPE_INVENTORY, items);
+#else
 	ZC_INVENTORY_ITEMLIST_EQUIP_V6 pkt(get_session());
 	pkt.deliver(items);
+#endif
 	return true;
 }
 bool ZoneClientInterface::notify_throw_item(int16_t inventory_index, int16_t amount)
@@ -748,25 +806,25 @@ bool ZoneClientInterface::notify_bind_on_equip(int16_t inventory_index)
 bool ZoneClientInterface::notify_use_item(std::shared_ptr<item_entry_data> inv_item, bool success)
 {
 	ZC_USE_ITEM_ACK pkt(get_session());
-	pkt.deliver(inv_item->inventory_index, inv_item->amount, success);
+	pkt.deliver(inv_item->index.inventory, inv_item->amount, success);
 	return true;
 }
 bool ZoneClientInterface::notify_equip_item(std::shared_ptr<const item_entry_data> item, item_equip_result_type result)
 {
 	ZC_ACK_WEAR_EQUIP_V5 pkt(get_session());
-	pkt.deliver(item->inventory_index, item->current_equip_location_mask, item->sprite_id, result);
+	pkt.deliver(item->index.inventory, item->current_equip_location_mask, item->sprite_id, result);
 	return true;
 }
 bool ZoneClientInterface::notify_unequip_item(std::shared_ptr<const item_entry_data> item, item_unequip_result_type result)
 {
 	ZC_ACK_TAKEOFF_EQUIP_V5 pkt(get_session());
-	pkt.deliver(item->inventory_index, item->current_equip_location_mask, result);
+	pkt.deliver(item->index.inventory, item->current_equip_location_mask, result);
 	return true;
 }
 bool ZoneClientInterface::notify_equip_arrow(std::shared_ptr<const item_entry_data> item)
 {
 	ZC_EQUIP_ARROW pkt(get_session());
-	pkt.deliver(item->inventory_index);
+	pkt.deliver(item->index.inventory);
 	return true;
 }
 bool ZoneClientInterface::notify_action_failure(int16_t message_type)
@@ -805,6 +863,99 @@ bool ZoneClientInterface::notify_item_merge(int inventory_index, int amount, zc_
 	pkt.deliver(inventory_index, amount, reason);
 	return true;
 }
+bool ZoneClientInterface::notify_item_drop(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount, int show_drop_effect, int drop_effect_mode)
+{
+	ZC_ITEM_FALL_ENTRY pkt(get_session());
+	pkt.deliver(guid, item_id, type, identified, x, y, x_area, y_area, amount, show_drop_effect, drop_effect_mode);
+	return true;
+}
+bool ZoneClientInterface::notify_item_removal_from_floor(int32_t guid)
+{
+	ZC_ITEM_DISAPPEAR pkt(get_session());
+	pkt.deliver(guid);
+	return true;
+}
+
+bool ZoneClientInterface::notify_inventory_start(inventory_type type, std::string name)
+{
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_INVENTORY_START pkt(get_session());
+	pkt.deliver(type, name);
+#endif
+	return true;
+}
+bool ZoneClientInterface::notify_inventory_end(inventory_type type)
+{
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_INVENTORY_END pkt(get_session());
+	pkt.deliver(type);
+#endif
+	return true;
+}
+
+void ZoneClientInterface::storage_close()
+{
+	notify_storage_close();
+	get_session()->player()->set_current_storage_id(0);
+}
+bool ZoneClientInterface::notify_storage_size(int16_t total_size, int16_t max_size)
+{
+	ZC_NOTIFY_STOREITEM_COUNTINFO pkt(get_session());
+	pkt.deliver(total_size, max_size);
+	return true;
+}
+bool ZoneClientInterface::notify_storage_close()
+{
+	ZC_CLOSE_STORE pkt(get_session());
+	pkt.deliver();
+	return true;
+}
+bool ZoneClientInterface::notify_storage_add_item(std::shared_ptr<const item_entry_data> entry, int amount)
+{
+	ZC_ADD_ITEM_TO_STORE3 pkt(get_session());
+	pkt.deliver(entry, amount);
+	return true;
+}
+bool ZoneClientInterface::notify_storage_remove_item(int16_t storage_index, int amount)
+{
+	ZC_DELETE_ITEM_FROM_STORE pkt(get_session());
+	pkt.deliver(storage_index, amount);
+	return true;
+}
+bool ZoneClientInterface::notify_storage_normal_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items)
+{
+#if (PACKET_VERSION >= 20120925 && \
+	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
+	ZC_STORE_ITEMLIST_NORMAL_V5 pkt(get_session());
+	pkt.deliver(name, items);
+#elif (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181002)
+	ZC_STORE_ITEMLIST_NORMAL_V6 pkt(get_session());
+	pkt.deliver(INVTYPE_STORAGE, items);
+#endif
+	return true;
+}
+bool ZoneClientInterface::notify_storage_equip_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items)
+{
+	ZC_STORE_ITEMLIST_EQUIP_V6 pkt(get_session());
+#if (PACKET_VERSION >= 20120925 && \
+	((CLIENT_TYPE == 'R' && PACKET_VERSION < 20180829) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION < 20180919) || \
+	(CLIENT_TYPE == 'M' && PACKET_VERSION < 20181002)))
+	pkt.deliver(name, items);
+#else
+	pkt.deliver(INVTYPE_STORAGE, items);
+#endif
+	return true;
+}
+
 void ZoneClientInterface::upgrade_skill_level(int16_t skill_id)
 {
 	ZC_SKILLINFO_UPDATE pkt(get_session());
@@ -942,9 +1093,16 @@ void ZoneClientInterface::use_skill_on_ground(int16_t skill_lv, int16_t skill_id
 
 void ZoneClientInterface::notify_skill_cast(uint16_t skill_id, uint32_t src_guid, uint32_t target_guid, uint16_t target_x, uint16_t target_y, uint32_t element, int cast_time)
 {
+#if (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20190807) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20190918)
 	ZC_USESKILL_ACK3 pkt(get_session());
 	pkt.deliver(skill_id, src_guid, target_guid, target_x, target_y, element, cast_time);
-	return;
+#elif (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20090406) || \
+	(CLIENT_TYPE == 'S' && PACKET_VERSION >= 20080618) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20080827)
+	ZC_USESKILL_ACK pkt(get_session());
+	pkt.deliver(src_guid, target_guid, target_x, target_y, skill_id, element, cast_time);
+#endif
 }
 
 void ZoneClientInterface::notify_safe_skill_use(int skill_id, int heal_amount, int target_guid, zc_use_skill2_result_type result)
@@ -1011,6 +1169,12 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 			break;
 	};
 	
+}
+bool ZoneClientInterface::notify_action(int32_t guid, player_action_type action)
+{
+	ZC_NOTIFY_ACT na(get_session());
+	na.deliver(guid, (int8_t) action);
+	return true;
 }
 bool ZoneClientInterface::notify_action(player_action_type action)
 {

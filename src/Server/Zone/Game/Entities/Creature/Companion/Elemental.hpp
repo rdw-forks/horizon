@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_GAME_ENTITIES_ELEMENTAL_HPP
 
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/GridObject.hpp"
 
 namespace Horizon
 {
@@ -43,7 +43,7 @@ namespace Entities
 class Elemental : public Creature, public GridObject<Elemental>
 {
 public:
-	Elemental(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	Elemental(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Elemental();
 
     void stop_movement() override;

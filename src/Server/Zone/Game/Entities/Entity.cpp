@@ -28,12 +28,12 @@
  **************************************************/
 
 #include "Entity.hpp"
-#include "GridObject.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Entities/NPC/NPC.hpp"
 #include "Server/Zone/Game/Entities/Battle/Combat.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
@@ -41,28 +41,42 @@
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Zone.hpp"
 
-
 using namespace Horizon::Zone;
 
-Entity::Entity(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords)
-: _guid(guid), _type(type), _type_mask(type_mask), _map_coords(map_coords)
+Entity::Entity(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords)
+	: _type(type), _type_mask(type_mask), _map_coords(map_coords)
 {
+	set_uuid(uuid);
 	set_map(map);
 }
 
 // For Player
-Entity::Entity(uint32_t guid, entity_type type, entity_type_mask type_mask)
-: _guid(guid), _type(type), _type_mask(type_mask), _map_coords(MapCoords(0, 0))
+Entity::Entity(uint64_t uuid, entity_type type, entity_type_mask type_mask)
+	: _type(type), _type_mask(type_mask), _map_coords(MapCoords(0, 0))
 {
+	set_uuid(uuid);
 	// Map is set in player::load()
+}
+
+void Entity::set_uuid(uint64_t uuid)
+{
+	sZone->from_uuid(uuid, _s_uuid.type, _s_uuid.guid, _s_uuid.uid2, _s_uuid.uid3);
+	_uuid = uuid;
 }
 
 Entity::~Entity()
 {
+	_combat = nullptr;
+	_combat_registry = nullptr;
 }
 
 bool Entity::initialize()
 {
+	if (type() == ENTITY_ITEM || type() == ENTITY_SKILL) {
+		_is_initialized = true;
+		return _is_initialized;
+	}
+		
 	_status = std::make_shared<Horizon::Zone::Traits::Status>(shared_from_this(), type());
 	_combat_registry = std::make_shared<CombatRegistry>(shared_from_this());
 	_is_initialized = true;
@@ -70,11 +84,18 @@ bool Entity::initialize()
 	return _is_initialized;
 }
 
+bool Entity::finalize()
+{
+	set_finalized(true);
+
+	return _is_finalized;
+}
+
 std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e)
 {
 	std::shared_ptr<AStar::CoordinateList> wp = std::make_shared<AStar::CoordinateList>(map()->get_pathfinder().findPath(map_coords(), e->map_coords()));
 
-	if (wp->size() == 0 || wp->empty()) 
+	if (wp->size() == 0 || wp->empty())
 		return nullptr;
 
 	return std::move(wp);
@@ -82,14 +103,15 @@ std::shared_ptr<AStar::CoordinateList> Entity::path_to(std::shared_ptr<Entity> e
 
 bool Entity::schedule_walk()
 {
-	MapCoords source_pos = { map_coords().x(), map_coords().y() };
+	MapCoords source_pos = {map_coords().x(), map_coords().y()};
 
 	if (!_walk_path.empty())
 		_walk_path.clear();
 
-	if (!map()) {
+	if (!map())
+	{
 		// HLog(error) << "Reference to map object has been lost for entity " << (void *) this << ".";
-		_dest_pos = { 0, 0 };
+		_dest_pos = {0, 0};
 		return false;
 	}
 
@@ -99,27 +121,30 @@ bool Entity::schedule_walk()
 	_changed_dest_pos = {0, 0};
 
 	// If destination was a collision, nothing is returned.
-	if (_walk_path.size() == 0) {
+	if (_walk_path.size() == 0)
+	{
 		// HLog(warning) << "Entity::schedule_walk: Destination was a collision, no walk path available.";
-		_dest_pos = { 0, 0 };
+		_dest_pos = {0, 0};
 		return false;
 	}
 
+	/// ~1us
 	std::reverse(_walk_path.begin(), _walk_path.end());
 	_walk_path.erase(_walk_path.begin());
+	///
 
-	if (_walk_path.empty()) {
+	if (_walk_path.empty())
+	{
 		on_pathfinding_failure();
 		// HLog(warning) << "Entity::schedule_walk: Path too short or empty, failed to schedule movement.";
-		_dest_pos = { 0, 0 };
+		_dest_pos = {0, 0};
 		return false;
 	}
 
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	std::chrono::high_resolution_clock::time_point start_time4 = std::chrono::high_resolution_clock::now();
-	on_movement_begin(); // 0us
+	on_movement_begin();				 // 0us
 	notify_nearby_players_of_movement(); // 3us
-	walk(); // ~173us
+	walk();								 // 3~6 us
 	return true;
 }
 
@@ -127,29 +152,33 @@ bool Entity::schedule_walk()
 // @NOTE This method is called when the entity is already in motion and a new destination is set.
 void Entity::walk()
 {
-	if (status() == nullptr || status()->movement_speed() == nullptr) {
-		// HLog(error) << "Entity::walk: Status is null, cannot walk.";
+	// Fixes the jumping walk bug that happens when the walk is invoked while entity is already walking.
+	if (type() == ENTITY_PLAYER && map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_WALK)) > 0)
 		return;
-	}
+
+	if (status() == nullptr || status()->movement_speed() == nullptr)
+		return;
 
 	if (is_attacking())
 		stop_attacking();
 
 	MapCoords c = _walk_path.at(0); // for the first step.
 
-	map()->container()->getScheduler().Schedule(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
-		[this] (TaskContext context)
+	map()->container()->getScheduler().Schedule(
+		Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(ENTITY_SCHEDULE_WALK),
+		[this](TaskContext context)
 		{
 			if (_walk_path.size() == 0) // to fix the "invalid vector subscript" error.
 				return;
-	
+
 			MapCoords c = _walk_path.at(0);
 
-			// Force stop as the current coordinates might asynchronously update after map has changed 
+			// Force stop as the current coordinates might asynchronously update after map has changed
 			// and co-ordinates are reset to something in a previous walk path.
-			// This force stop will return before changing co-ordinates and 
+			// This force stop will return before changing co-ordinates and
 			// prevent further movement updates after map has changed.
-			if (_jump_walk_stop) {
+			if (_jump_walk_stop)
+			{
 				stop_walking(true);
 				force_movement_stop_internal(false);
 				return;
@@ -166,30 +195,36 @@ void Entity::walk()
 
 			_walk_path.erase(_walk_path.begin());
 
-			if (_changed_dest_pos != MapCoords(0, 0)) {
+			if (_changed_dest_pos != MapCoords(0, 0))
+			{
 				_dest_pos = _changed_dest_pos;
 				schedule_walk();
 				return;
-			} else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty()) {
+			}
+			else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty())
+			{
 				stop_walking();
 			}
 
 			if (!_walk_path.empty())
 				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
 		});
-
 }
 
 // Walking cancel and stopping algorithm.
 // Stops the Entity from walking and triggers the on_movement_end event.
 // If cancel is true, the Entity will be forced to stop walking and the scheduler task will be cancelled.
 // returns true if the Entity was walking and was stopped.
-bool Entity::stop_walking(bool cancel)
+bool Entity::stop_walking(bool cancel, bool notify)
 {
-	_dest_pos = { 0, 0 };
+	_dest_pos = {0, 0};
+	_changed_dest_pos = {0, 0};
 
 	if (cancel)
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_WALK));
+
+	if (notify)
+		this->notify_nearby_players_of_movement_stop(map_coords());
 
 	on_movement_end();
 
@@ -203,17 +238,19 @@ void Entity::on_attack_end()
 
 bool Entity::walk_to_coordinates(int16_t x, int16_t y)
 {
-	if (_dest_pos.x() != 0 && _dest_pos.y() != 0 && _dest_pos.x() != x && _dest_pos.y() != y) {
-		_changed_dest_pos = { x, y };
+	if (_dest_pos.x() != 0 && _dest_pos.y() != 0 && _dest_pos.x() != x && _dest_pos.y() != y)
+	{
+		_changed_dest_pos = {x, y};
 		return true;
 	}
 
 	if (is_attacking())
 		stop_attacking();
 
-	_dest_pos = { x, y };
+	_dest_pos = {x, y};
 
-	if (schedule_walk() == false) {
+	if (schedule_walk() == false)
+	{
 		// HLog(warning) << "Entity (" << guid() << ") could not schedule movement.";
 		return false;
 	}
@@ -225,14 +262,14 @@ bool Entity::walk_to_entity(std::shared_ptr<Entity> entity)
 	if (entity == nullptr)
 		return false;
 
-	if (walk_to_coordinates(entity->map_coords().x(), entity->map_coords().y())){
+	if (walk_to_coordinates(entity->map_coords().x(), entity->map_coords().y()))
+	{
 		// HLog(warning) << "Entity (" << guid() << ") could not walk to (" << entity->guid() << ").";
 		return false;
 	}
 
 	return true;
 }
-
 
 bool Entity::is_in_range_of(std::shared_ptr<Entity> e, uint8_t range)
 {
@@ -276,12 +313,20 @@ void Entity::notify_nearby_players_of_movement(bool new_entry)
 	map()->visit_in_range(map_coords(), entity_visitor);
 }
 
+void Entity::notify_nearby_players_of_movement_stop(MapCoords stop_coords)
+{
+	GridEntityMovementStopNotifier movement_stop_notify(guid(), stop_coords.x(), stop_coords.y());
+	GridReferenceContainerVisitor<GridEntityMovementStopNotifier, GridReferenceContainer<AllEntityTypes>> entity_visitor(movement_stop_notify);
+
+	map()->visit_in_range(map_coords(), entity_visitor);
+}
+
 void Entity::notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config)
 {
 	GridEntitySkillUseNotifier notifier(shared_from_this(), notification_type, config);
 	GridReferenceContainerVisitor<GridEntitySkillUseNotifier, GridReferenceContainer<AllEntityTypes>> skill_use_notifier(notifier);
 
-	map()->visit_in_range(map_coords(), skill_use_notifier, MAX_VIEW_RANGE);
+	map()->visit_in_range(map_coords(), skill_use_notifier);
 }
 
 void Entity::notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config)
@@ -289,14 +334,23 @@ void Entity::notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_co
 	GridEntityBasicAttackNotifier notifier(shared_from_this(), config);
 	GridReferenceContainerVisitor<GridEntityBasicAttackNotifier, GridReferenceContainer<AllEntityTypes>> basic_attack_notifier(notifier);
 
-	map()->visit_in_range(map_coords(), basic_attack_notifier, MAX_VIEW_RANGE);
+	map()->visit_in_range(map_coords(), basic_attack_notifier);
+}
+
+void Entity::notify_nearby_players_of_item_drop(s_grid_notify_item_drop_entry entry)
+{
+	GridEntityItemDropNotifier notifier(entry);
+	GridReferenceContainerVisitor<GridEntityItemDropNotifier, GridReferenceContainer<AllEntityTypes>> item_drop_notifier(notifier);
+
+	map()->visit_in_range(map_coords(), item_drop_notifier);
 }
 
 bool Entity::status_effect_start(int type, int total_time, int val1, int val2, int val3, int val4)
 {
 	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
 
-	if (it == get_status_effects().end()) {
+	if (it == get_status_effects().end())
+	{
 		std::shared_ptr<status_change_entry> sce = std::make_shared<status_change_entry>();
 		sce->type = type;
 		sce->val1 = val1;
@@ -304,18 +358,23 @@ bool Entity::status_effect_start(int type, int total_time, int val1, int val2, i
 		sce->val3 = val3;
 		sce->val4 = val4;
 
-		if (total_time < 0) {
+		if (total_time < 0)
+		{
 			sce->infinite_duration = true;
 			sce->current_time = 0;
 			sce->total_time = 0;
-		} else {
+		}
+		else
+		{
 			sce->current_time = std::time(nullptr) + total_time;
 			sce->total_time = total_time;
 		}
 
 		get_status_effects().insert(std::pair(type, sce));
 		on_status_effect_start(sce);
-	} else {
+	}
+	else
+	{
 		std::shared_ptr<status_change_entry> sce = it->second;
 		sce->current_time = std::time(nullptr) + total_time;
 		sce->total_time = total_time;
@@ -325,17 +384,19 @@ bool Entity::status_effect_start(int type, int total_time, int val1, int val2, i
 
 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR)) == 0)
 		map()->container()->getScheduler().Schedule(
-			Milliseconds(ENTITY_STATUS_EFFECT_CHECK_TIME), 
+			Milliseconds(ENTITY_STATUS_EFFECT_CHECK_TIME),
 			get_scheduler_task_id(ENTITY_SCHEDULE_STATUS_EFFECT_CLEAR),
-			[this] (TaskContext context)
+			[this](TaskContext context)
 			{
 				std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().begin();
 
 				int infinite_statuses = 0;
-				for (; it != get_status_effects().end(); it++) {
+				for (; it != get_status_effects().end(); it++)
+				{
 					std::shared_ptr<status_change_entry> sce = it->second;
-					
-					if (sce->infinite_duration == false) {
+
+					if (sce->infinite_duration == false)
+					{
 						infinite_statuses++;
 						continue;
 					}
@@ -355,7 +416,8 @@ bool Entity::status_effect_end(int type)
 {
 	std::map<int16_t, std::shared_ptr<status_change_entry>>::iterator it = get_status_effects().find(type);
 
-	if (it == get_status_effects().end()) {
+	if (it == get_status_effects().end())
+	{
 		HLog(warning) << "Trying to end status effect that doesn't exist. ID " << type << ", ignoring...";
 		return false;
 	}
@@ -367,13 +429,18 @@ bool Entity::status_effect_end(int type)
 	return true;
 }
 
-bool Entity::is_dead() { 
-	return status()->current_hp()->get_base() == 0; 
+bool Entity::is_dead()
+{
+	if (status() == nullptr)
+		return true;
+		
+	return status()->current_hp()->get_base() <= 0;
 }
 
 void Entity::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage)
 {
-	if (status()->current_hp()->total() < damage) {
+	if (status()->current_hp()->total() < damage)
+	{
 		status()->current_hp()->set_base(0);
 		on_killed(damage_dealer);
 		return;
@@ -382,7 +449,6 @@ void Entity::on_damage_received(std::shared_ptr<Entity> damage_dealer, int damag
 
 void Entity::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool with_exp)
 {
-
 }
 
 bool Entity::stop_attacking()
@@ -403,29 +469,34 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 
 	set_combat(std::make_shared<Combat>(shared_from_this(), target));
 
-	map()->container()->getScheduler().Schedule(Milliseconds(0), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
-		[this, continuous, target] (TaskContext context) {
-
-			if (target == nullptr) { 
+	map()->container()->getScheduler().Schedule(
+		Milliseconds(0), get_scheduler_task_id(ENTITY_SCHEDULE_ATTACK),
+		[this, continuous, target](TaskContext context)
+		{
+			if (target == nullptr)
+			{
 				on_attack_end();
 				return;
 			}
 
-			if (target->is_dead()) {
+			if (target->is_dead())
+			{
 				on_attack_end();
 				return;
 			}
 
-			if (path_to(target)->size() == 0) {
+			if (path_to(target)->size() == 0)
+			{
 				on_attack_end();
 				return;
 			}
 
 			int range = this->status()->attack_range()->get_base();
-			
+
 			_attackable_time = status()->attack_delay()->total();
 
-			if (!is_in_range_of(target, range) && !is_walking()) {
+			if (!is_in_range_of(target, range) && !is_walking())
+			{
 
 				walk_to_entity(target);
 
@@ -435,14 +506,15 @@ bool Entity::attack(std::shared_ptr<Entity> target, bool continuous)
 				return;
 			}
 
-			if (!is_in_range_of(target, range) && is_walking()) {
+			if (!is_in_range_of(target, range) && is_walking())
+			{
 				context.Repeat(Milliseconds(_attackable_time));
 				return;
 			}
 
 			if (is_in_range_of(target, range) && is_walking())
 				stop_walking();
-			
+
 			if (!is_attacking())
 				set_attacking(true);
 
@@ -508,8 +580,10 @@ void Entity::use_skill_on_ground(int16_t skill_lv, int16_t skill_id, int16_t pos
 /**
  * Extremely time-sensitive, do not use for any other purpose than to check for very small calculations.
  */
-
 void Entity::update(uint64_t tick)
 {
-	combat_registry()->process_queue();
+	if (_combat_registry != nullptr)
+		combat_registry()->process_queue();
+	if (status() != nullptr && status()->is_initialized() != false)
+		status()->status_registry()->process_queue();
 }

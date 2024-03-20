@@ -32,6 +32,7 @@
 #include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
@@ -172,39 +173,11 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 
 			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
 
-			std::shared_ptr<const monster_config_data> md = MonsterDB->get_monster_by_id(monster_id);
-
-			if (md == nullptr) {
-				HLog(warning) << "Monster " << monster_id << " set for spawn in " << map_name << " does not exist in the database.";
-				return;
-			}
-
-			std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(monster_id);
-
 			HLog(info) << "Monster spawn set (" << name << ") in " << map_name << " at (" << x << "," << y << ")[" << x_area << "," << y_area << "]" " for a total of " << amount << " monsters is initializing...";
-
-			for (int i = 0; i < amount; i++) {
-				MapCoords mcoords = MapCoords(x, y);
-
-				if (mcoords == MapCoords(0, 0))
-					mcoords = map->get_random_accessible_coordinates();
-				else if (x_area && y_area) {
-					if ((mcoords = map->get_random_coordinates_in_walkable_area(x, y, x_area, y_area)) == MapCoords(0, 0)) {
-						HLog(warning) << "Couldn't spawn monster " << md->name << " in area, spawning it on random co-ordinates.";
-						mcoords = map->get_random_accessible_coordinates();
-					}
-				}
-
-				std::shared_ptr<Monster> monster = std::make_shared<Monster>(map, mcoords, md, mskd);
-				monster->initialize();
-
-				get_container()->add_entity(monster);
-				
-				register_single_spawned_monster(monster->guid(), monster);
-			}
 
 			monster_spawn_data spwd;
 
+			spwd.spawn_dataset_id = _last_monster_spawn_id++;
 			spwd.map_name = map_name;
 			spwd.x = x;
 			spwd.y = y;
@@ -216,16 +189,150 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::sh
 			spwd.spawn_delay_base = spawn_delay_base;
 			spwd.spawn_delay_variance = spawn_delay_variance;
 
-			register_monster_spawn_info(_last_monster_spawn_id++, std::make_shared<monster_spawn_data>(spwd));
+			register_monster_spawn_info(spwd.spawn_dataset_id, std::make_shared<monster_spawn_data>(spwd));
 		});
 }
 
-void MonsterComponent::deregister_single_spawned_monster(uint32_t guid) {
+void MonsterComponent::deregister_single_spawned_monster(uint64_t uuid) {
 	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end(); i++)
-		if ((*i).second->guid() == guid) {
+		if ((*i).second->uuid() == uuid) {
+			reschedule_single_monster_spawn((*i).second);
 			(*i).second->finalize();
 			// Remove the entity from the containers.
+			std::shared_ptr<MapContainerThread> container = (*i).second->map()->container();
+			container->remove_entity((*i).second);
 			_monster_spawned_map.erase(i);
 			return;
+		}
+}
+
+void MonsterComponent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::Zone::Entities::Monster> monster) 
+{
+	uint8_t type = 0;
+	uint32_t guid = 0;
+	uint16_t spawn_dataset_id = 0;
+	uint8_t spawn_id = 0;
+
+	sZone->from_uuid(monster->uuid(), type, guid, spawn_dataset_id, spawn_id);
+
+	std::shared_ptr<monster_spawn_data> msd = get_monster_spawn_info(spawn_dataset_id);
+	std::shared_ptr<Map> map = monster->map();
+
+	msd->dead_amount++;
+	// Set the spawn time cache. This is used to calculate the time to spawn the monster.
+	monster_spawn_data::s_monster_spawn_time_cache spawn_time_cache;
+	spawn_time_cache.dead_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+	spawn_time_cache.spawn_time = msd->spawn_delay_base + std::rand() % (msd->spawn_delay_variance + 1);
+	msd->dead_spawn_time_list.emplace(monster->uuid(), spawn_time_cache);
+
+	get_container()->getScheduler().Schedule(
+		Milliseconds(spawn_time_cache.spawn_time), 
+		monster->get_scheduler_task_id(ENTITY_SCHEDULE_MONSTER_RESPAWN),
+		[this, monster, map, msd](TaskContext /*&context*/) {
+			if (map->get_user_count() == 0)
+				return;
+
+			this->spawn_monster(map, msd->spawn_dataset_id, msd->monster_id, 1, msd->x, msd->y, msd->x_area, msd->y_area);
+			msd->dead_spawn_time_list.erase(monster->uuid());
+			msd->dead_amount--;
+		});
+}
+
+void MonsterComponent::spawn_monsters(std::string map_name, std::shared_ptr<MapContainerThread> container)
+{
+	if (container == nullptr)
+		return;
+	
+	std::shared_ptr<Map> map;
+	
+	MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
+
+	for (auto i = _monster_spawn_db.begin(); i != _monster_spawn_db.end(); i++) {
+		std::shared_ptr<monster_spawn_data> msd = (*i).second;
+		if (map_name.compare(msd->map_name) == 0) {
+			if (msd->dead_amount > 0) {
+				for (auto dead_it = msd->dead_spawn_time_list.begin(); dead_it != msd->dead_spawn_time_list.end();) {
+					int64_t dead_monster_spawn_uuid = dead_it->first;
+					monster_spawn_data::s_monster_spawn_time_cache dead_stc = dead_it->second;
+					
+					uint8_t type = 0;
+					uint32_t guid = 0;
+					uint16_t spawn_dataset_id = 0;
+					uint8_t spawn_id = 0;
+
+					sZone->from_uuid(dead_monster_spawn_uuid, type, guid, spawn_dataset_id, spawn_id);
+
+					int64_t since_death_ms = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - dead_stc.dead_time);
+
+					int64_t time_to_spawn_ms = dead_stc.spawn_time - since_death_ms;
+
+					if (time_to_spawn_ms < 0)
+						time_to_spawn_ms = 0;
+
+					map->container()->getScheduler().Schedule(
+						Milliseconds(time_to_spawn_ms),
+						((uint64_t) guid << 32) + (int) ENTITY_SCHEDULE_MONSTER_RESPAWN,
+						[this, map, msd](TaskContext /*&context*/) {
+							if (map->get_user_count() == 0)
+								return;
+							this->spawn_monster(map, msd->spawn_dataset_id, msd->monster_id, 1, msd->x, msd->y, msd->x_area, msd->y_area);
+						});
+
+					dead_it = msd->dead_spawn_time_list.erase(dead_it);
+					msd->dead_amount--;
+				}
+			}
+
+			spawn_monster(map, msd->spawn_dataset_id, msd->monster_id, msd->amount - msd->dead_amount, msd->x, msd->y, msd->x_area, msd->y_area);
+		}
+	}
+}
+
+void MonsterComponent::spawn_monster(std::shared_ptr<Map> map, int spawn_dataset_id, int monster_id, int16_t amount, int16_t x, int16_t y, int16_t x_area, int16_t y_area)
+{
+	std::shared_ptr<const monster_config_data> md = MonsterDB->get_monster_by_id(monster_id);
+	
+	if (md == nullptr) {
+		HLog(warning) << "Monster " << monster_id << " set for spawn in " << map->get_name() << " does not exist in the database.";
+		return;
+	}
+
+	std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(monster_id);
+	
+	for (int i = 0; i < amount; i++) {
+		MapCoords mcoords = MapCoords(x, y);
+		if (mcoords == MapCoords(0, 0))
+			mcoords = map->get_random_accessible_coordinates();
+		else if (x_area && y_area) {
+			if ((mcoords = map->get_random_coordinates_in_walkable_area(x, y, x_area, y_area)) == MapCoords(0, 0)) {
+				HLog(warning) << "Couldn't spawn monster " << md->name << " in area, spawning it on random co-ordinates.";
+				mcoords = map->get_random_accessible_coordinates();
+			}
+		}
+		std::shared_ptr<Monster> monster = std::make_shared<Monster>(spawn_dataset_id, i, map, mcoords, md, mskd);
+		
+		monster->initialize();
+		get_container()->add_entity(monster);
+		register_single_spawned_monster(monster->uuid(), monster);
+	}
+
+	return;
+}
+
+void MonsterComponent::despawn_monsters(std::string map_name, std::shared_ptr<MapContainerThread> container)
+{
+	if (container == nullptr)
+		return;
+	
+	std::shared_ptr<Map> map;
+	
+	MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
+
+	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end();)
+		if ((*i).second->map()->get_name() == map_name) {
+			(*i).second->finalize();
+			container->remove_entity((*i).second);
+			i = _monster_spawned_map.erase(i);
 		}
 }

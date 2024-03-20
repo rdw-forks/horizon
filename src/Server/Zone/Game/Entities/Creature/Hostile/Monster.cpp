@@ -42,10 +42,10 @@
 
 using namespace Horizon::Zone::Entities;
 
-Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+Monster::Monster(int16_t spawn_dataset_id, int8_t spawn_id, std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
-: Creature(_last_np_entity_guid++, ENTITY_MONSTER, ENTITY_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
+: Creature(sZone->to_uuid((uint8_t) ENTITY_MONSTER, ++_last_np_entity_guid, spawn_dataset_id, spawn_id), ENTITY_MONSTER, ENTITY_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
 	set_name(md->name);
 	set_job_id(md->monster_id);
@@ -54,8 +54,6 @@ Monster::Monster(std::shared_ptr<Map> map, MapCoords mcoords,
 
 Monster::~Monster()
 {
-	if (has_valid_grid_reference())
-		remove_grid_reference();
 }
 
 bool Monster::initialize()
@@ -73,19 +71,24 @@ bool Monster::initialize()
     	[this] (TaskContext context)
     {
     	behavior_passive();
-    	context.Repeat(Seconds(std::rand() % 10 + 1));
+    	context.Repeat(Milliseconds(MOB_MIN_THINK_TIME_LAZY));
     });
 
 	return true;
 }
 
-void Monster::finalize()
+bool Monster::finalize()
 {
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
-		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+	if (!Creature::finalize())
+		return false;
 
 	if (has_valid_grid_reference())
 		remove_grid_reference();
+		
+	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK)))
+		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(ENTITY_SCHEDULE_AI_THINK));
+
+	return true;
 }
 
 // Code in this function is executed 
@@ -95,17 +98,17 @@ void Monster::behavior_passive()
 		&& (next_walk_time() - std::time(nullptr) < 0)
 		&& !is_walking()) {
 	    try {
-			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 			MapCoords move_c = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
+			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 			if (walk_to_coordinates(move_c.x(), move_c.y()) == false) {
 				//HLog(error) << "Monster (" << guid() << ") " << name() << " could not move to coordinates.";
 				return;
 			}
-			set_next_walk_time(std::time(nullptr) + std::rand() % 5 + 1);
 			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 			std::chrono::microseconds duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-			//HLog(debug) << "Monster::behavior_passive: script invocation time " << duration.count() << "us";
-			// Invocation time: ~915us
+			//HLog(debug) << "Monster::behavior_passive: behavior invocation time " << duration.count() << "us";
+			//HLog(debug) << "Monster::behavior_passive: Monster (" << guid() << ") " << name() << " is walking to (" << move_c.x() << ", " << move_c.y() << ").";
+			set_next_walk_time(std::time(nullptr) + std::rand() % (MIN_RANDOM_TRAVEL_TIME / 1000) + 1);
 	    } catch (sol::error &e) {
 	        HLog(error) << "Monster::behavior_passive: " << e.what();
 	    }
@@ -193,8 +196,6 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
-	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(guid());
-
 	switch (killer->type())
 	{
 	case ENTITY_PLAYER:
@@ -208,19 +209,19 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 			if (!result.valid()) {
 				sol::error err = result;
 				HLog(error) << "Monster::on_killed: " << err.what();
-				return;
 			}
 		}
 		catch (sol::error& e) {
 			HLog(error) << "Monster::on_killed: " << e.what();
-			return;
 		}
 	}
 		break;
 	default:
-		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << guid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
+		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << uuid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
+
+	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(uuid());
 
 	return;
 }

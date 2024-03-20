@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_GAME_ENTITIES_PET_HPP
 
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/GridObject.hpp"
 
 
 namespace Horizon
@@ -44,8 +44,8 @@ namespace Entities
 class Pet : public Creature, public GridObject<Pet>
 {
 public:
-	Pet(uint32_t guid);
-	Pet(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	Pet(uint64_t uuid);
+	Pet(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Pet();
 
     void stop_movement() override;

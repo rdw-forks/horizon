@@ -30,8 +30,8 @@
 #ifndef HORIZON_ZONE_GAME_ENTITIES_MONSTER_HPP
 #define HORIZON_ZONE_GAME_ENTITIES_MONSTER_HPP
 
+#include "Server/Zone/Game/GridObject.hpp"
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 
 
@@ -46,13 +46,13 @@ class Player;
 class Monster : public Creature, public GridObject<Monster>
 {
 public:
-	explicit Monster(std::shared_ptr<Map> map, MapCoords mcoords,
+	explicit Monster(int16_t spawn_dataset_id, int8_t spawn_id, std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd);
 	~Monster() override;
 
 	bool initialize();
-	void finalize();
+	virtual bool finalize() override;
 
 	virtual void stop_movement() override;
 	virtual void on_pathfinding_failure() override;

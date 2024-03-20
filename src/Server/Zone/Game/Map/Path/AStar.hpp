@@ -87,7 +87,7 @@ struct Node
 		G = H = 0;
 	}
 
-	uint32_t getScore() const { return G + H; }
+	uint32_t getFScore() const { return G + H; }
 };
 
 using NodeSet = std::vector<std::shared_ptr<Node>>;
@@ -154,7 +154,7 @@ public:
 
 			for (auto it = openSet.begin(); it != openSet.end(); it++) {
 				auto node = *it;
-				if (node->getScore() <= current->getScore()) {
+				if (node->getFScore() <= current->getFScore()) {
 					current = node;
 					current_it = it;
 				}
@@ -167,7 +167,6 @@ public:
 			openSet.erase(current_it);
 
 			for (uint32_t i = 0; i < directions; ++i) {
-				
 				MapCoords newCoordinates(current->coordinates + direction[i]);
 
 				if (check_collision(newCoordinates.x(), newCoordinates.y()) 

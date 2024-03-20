@@ -47,30 +47,26 @@ void Horizon::Tools::MapCache::parse_exec_args(int argc, const char *argv[])
 	for (int i = 1; i < argc; ++i) {
 		std::string arg(argv[i]);
 		std::vector<std::string> separated_args;
-		boost::split(separated_args, arg, boost::is_any_of(" "));
+		boost::split(separated_args, arg, boost::is_any_of("="));
 
-		for (auto it = separated_args.begin(); it != separated_args.end(); ++it) {
-			std::vector<std::string> arg_parts;
-			boost::split(arg_parts, *it, boost::is_any_of("="));
-
-			if (arg_parts.at(0).compare("--grf-config") == 0) {
-				getLibrary().setGRFListPath(arg_parts.at(1));
-			} else if (arg_parts.at(0).compare("--config") == 0) {
-				getLibrary().setMapListPath(arg_parts.at(1));
-			} else if (arg_parts.at(0).compare("--compression-level") == 0) {
-				int level = atoi(arg_parts.at(1).c_str());
-				if (level > 9 || level < 1) {
-					printf("Error: Invalid compression level set, defaulting to 6.");
-				} else {
-					getLibrary().setCompressionLevel(level);
-				}
-			} else if (arg_parts.at(0).compare("--verbose") == 0) {
-				getLibrary().setVerbose();
-			} else if (arg_parts.at(0).compare("--output") == 0) {
-				getLibrary().setMapCachePath(arg_parts.at(1));
+		printf("Argument: %s\n", arg.c_str());
+		if (separated_args.at(0).compare("--grf-config") == 0) {
+			getLibrary().setGRFListPath(separated_args.at(1));
+		} else if (separated_args.at(0).compare("--config") == 0) {
+			getLibrary().setMapListPath(separated_args.at(1));
+		} else if (separated_args.at(0).compare("--compression-level") == 0) {
+			int level = atoi(separated_args.at(1).c_str());
+			if (level > 9 || level < 1) {
+				printf("Error: Invalid compression level set, defaulting to 6.");
 			} else {
-				printf("Unrecognised argument '%s'\n", it->c_str());
+				getLibrary().setCompressionLevel(level);
 			}
+		} else if (separated_args.at(0).compare("--verbose") == 0) {
+			getLibrary().setVerbose();
+		} else if (separated_args.at(0).compare("--output") == 0) {
+			getLibrary().setMapCachePath(separated_args.at(1));
+		} else {
+			printf("Unrecognised argument '%s'\n", separated_args.at(0).c_str());
 		}
 	}
 }

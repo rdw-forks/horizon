@@ -37,6 +37,7 @@
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
+#include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 
 using namespace std;
 using namespace Horizon::Zone;
@@ -157,6 +158,19 @@ void ZoneServer::update(uint64_t time)
 	}
 }
 
+uint64_t ZoneServer::to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3)
+{
+	return ((uint64_t)uid3 << 56 | ((uint64_t)uid2 << 8) | ((uint64_t)uid << 40) | (uint64_t) type);
+}
+
+void ZoneServer::from_uuid(uint64_t entity_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3)
+{
+    type = (uint8_t) entity_uuid;
+    uid = (uint32_t) (entity_uuid >> 40);
+    uid2 = (uint16_t) (entity_uuid >> 8);
+    uid3 = (uint8_t) (entity_uuid >> 56);
+}
+
 /**
  * Signal Handler for the Zone-Server main thread.
  * @param error
@@ -195,6 +209,7 @@ void ZoneServer::initialize_core()
 	StatusEffectDB->load();
 	SkillDB->load();
 	MonsterDB->load();
+	StorageDB->load();
 
 	/**
 	 * Map Manager.

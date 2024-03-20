@@ -32,12 +32,15 @@
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
 
 #include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Entities/Player/Assets/Storage.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
+#include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 #include "Server/Zone/Game/Entities/Traits/AttributesImpl.hpp"
 #include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 
@@ -48,8 +51,8 @@
 
 using namespace Horizon::Zone::Entities;
 
-Player::Player(std::shared_ptr<ZoneSession> session, uint32_t guid)
-: Entity(guid, ENTITY_PLAYER, ENTITY_MASK_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
+Player::Player(std::shared_ptr<ZoneSession> session, uint64_t uuid)
+: Entity(uuid, ENTITY_PLAYER, ENTITY_MASK_PLAYER), _session(session), _lua_state(std::make_shared<sol::state>())
 {
 }
 
@@ -77,7 +80,6 @@ void Player::create(int char_id, std::string account_gender, int group_id)
 
 	load();
 }
-
 bool Player::initialize()
 {
 	if (Entity::initialize() == false)
@@ -86,6 +88,13 @@ bool Player::initialize()
 	// Inventory.
 	_inventory = std::make_shared<Assets::Inventory>(downcast<Player>(), get_max_inventory_size());
 	_inventory->load();
+
+	for (auto s : StorageDB->get_storage_db()) {
+		std::shared_ptr<const storage_config_data> storage_config = s.second;
+		std::shared_ptr<Assets::Storage> storage = std::make_shared<Assets::Storage>(downcast<Player>(), storage_config->storage_id, storage_config->name, storage_config->capacity);
+		storage->load();
+		_storages.push_back(storage);
+	}
 
 	// Initialize Status, after inventory is loaded to compute EquipAtk etc.
 	status()->initialize(shared_from_this()->downcast<Player>());
@@ -130,6 +139,11 @@ bool Player::initialize()
 		return false;
 	}
 
+
+	// Ensure grid for entity.
+	map()->ensure_grid_for_entity(this, map_coords());
+	map()->add_user_count();
+	
 	set_initialized(true);
 	
 	return true;
@@ -159,10 +173,18 @@ bool Player::save()
 			.execute();
 
 		// Status
-		status()->save(shared_from_this()->downcast<Player>());
+		if (status() != nullptr)
+			status()->save(shared_from_this()->downcast<Player>());
 
 		// Inventory
-		inventory()->save();
+		if (inventory() != nullptr)
+			inventory()->save();
+
+		// Storages
+		if (_storages.size() > 0) {
+			for (auto s : _storages)
+				s->save();
+		}
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::save:" << error.what();
@@ -228,16 +250,11 @@ bool Player::load()
 			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
 			map = MapMgr->get_map("prontera");
 		}
-
-		map->container()->manage_session(SESSION_ACTION_ADD, get_session());
-
+		
 		get_session()->set_map_name(map->get_name());
 		
 		set_map(map);
 		set_map_coords(mcoords);
-
-		// Ensure grid for entity.
-		map->ensure_grid_for_entity(this, map_coords());
 	}
 	catch (mysqlx::Error& error) {
 		HLog(error) << "Player::load:" << error.what();
@@ -251,6 +268,16 @@ bool Player::load()
 	sZone->database_pool()->release_connection(std::move(session));
 
 	return true;
+}
+
+std::shared_ptr<Horizon::Zone::Assets::Storage> Player::get_storage(int32_t storage_id) 
+{ 
+	for (auto s : _storages) {
+		if (s->get_storage_id() == storage_id)
+			return s;
+	}
+
+	return nullptr;
 }
 
 void Player::on_pathfinding_failure()
@@ -298,23 +325,15 @@ void Player::add_entity_to_viewport(std::shared_ptr<Entity> entity)
 	if (entity_is_in_viewport(entity))
 		return;
 
-	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
-	get_session()->clif()->notify_viewport_add_entity(entry);
+	if (entity->type() == ENTITY_ITEM) {
+		item_viewport_entry entry = get_session()->clif()->create_viewport_item_entry(entity->downcast<Item>());
+		get_session()->clif()->notify_viewport_item_entry(entry);
+	} else {
+		entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
+		get_session()->clif()->notify_viewport_add_entity(entry);
+	}
 	
 	_viewport_entities.push_back(entity);
-
-	// if (entity->type() == ENTITY_MONSTER) {
-	// 	if (map()->container()->getScheduler().Count(get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE)) == 0)
-	// 		map()->container()->getScheduler().Schedule(Milliseconds(MOB_MIN_THINK_TIME), get_scheduler_task_id(ENTITY_SCHEDULE_AI_ACTIVE),
-	// 			[this] (TaskContext context)
-	// 			{
-	// 				GridMonsterActiveAIExecutor ai_executor(shared_from_this()->downcast<Player>());
-	// 				GridReferenceContainerVisitor<GridMonsterActiveAIExecutor, GridReferenceContainer<AllEntityTypes>> ai_executor_caller(ai_executor);
-
-	// 				map()->visit_in_range(map_coords(), ai_executor_caller);
-	// 				context.Repeat(Milliseconds(MOB_MIN_THINK_TIME));
-	// 			});
-	// }
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -338,7 +357,10 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_
 		}
 	), _viewport_entities.end());
 
-	get_session()->clif()->notify_viewport_remove_entity(entity, type);
+	if (entity->type() == ENTITY_ITEM)
+		get_session()->clif()->notify_item_removal_from_floor(entity->guid());
+	else
+		get_session()->clif()->notify_viewport_remove_entity(entity, type);
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -413,6 +435,9 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 			dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
 
+		map()->sub_user_count();
+		dest_map->add_user_count();
+
 		get_session()->set_map_name(dest_map->get_name());
 
 		if (coords == MapCoords(0, 0))
@@ -461,6 +486,34 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 	status()->on_equipment_changed(false, item);
 }
 
+void Player::pickup_item(int32_t guid)
+{
+	std::shared_ptr<Horizon::Zone::Entity> entity = get_nearby_entity(guid);
+
+	if (entity == nullptr)
+		return;
+
+	if (entity->type() != ENTITY_ITEM)
+		return;
+
+	if (entity->is_in_range_of(shared_from_this(), 1) == false)
+		return;
+
+	std::shared_ptr<Item> item = entity->downcast<Item>();
+
+	if (inventory()->add_item(item) == Horizon::Zone::Assets::inventory_addition_result_type::INVENTORY_ADD_SUCCESS) {	
+		item->finalize();
+		std::shared_ptr<MapContainerThread> container = item->map()->container();
+		container->remove_entity(item);
+		get_session()->clif()->notify_item_removal_from_floor(item->guid());
+		get_session()->clif()->notify_action(item->guid(), PLAYER_ACT_ITEM_PICKUP);
+	}
+}
+void Player::throw_item(std::shared_ptr<item_entry_data> item, int32_t amount)
+{	
+	inventory()->drop_item(item->index.inventory, amount);
+	map()->add_item_drop(item, amount, map_coords());
+}
 void Player::notify_map_properties()
 {
 	zc_map_properties mp;
@@ -486,6 +539,9 @@ void Player::on_map_enter()
 {
     //get_packet_handler()->Send_ZC_MAPPROPERTY_R2(get_map());
 
+	if (!is_initialized())
+		return;
+		
 	inventory()->notify_all();
 
 	// Notify Weight.

@@ -44,11 +44,12 @@ namespace Entities
 class Creature : public Entity
 {
 public:
-	Creature(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords);
+	Creature(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Creature() override;
 
 	bool initialize(std::shared_ptr<const monster_config_data> md);
-	
+	virtual bool finalize() override;
+
 	virtual void on_damage_received(std::shared_ptr<Entity> damage_dealer, int damage) override;
 	virtual void on_killed(std::shared_ptr<Entity> killer, bool with_drops = false, bool with_exp = false) override;
 };

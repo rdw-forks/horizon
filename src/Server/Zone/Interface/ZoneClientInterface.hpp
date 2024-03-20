@@ -43,10 +43,11 @@ namespace Zone
 {
 namespace Entities
 {
-namespace Traits
-{
-	class Status;
-}
+	namespace Traits
+	{
+		class Status;
+	}
+	class Item;
 }
 class Entity;
 class ZoneSession;
@@ -104,11 +105,14 @@ public:
 	bool notify_movement_stop(int32_t guid, int16_t x, int16_t y);
 	bool notify_entity_move(int32_t guid, MapCoords from, MapCoords to);
 
+	item_viewport_entry create_viewport_item_entry(std::shared_ptr<Entities::Item> item);
 	entity_viewport_entry create_viewport_entry(std::shared_ptr<Entity> entity);
+
 	bool notify_viewport_add_entity(entity_viewport_entry entry);
 	bool notify_viewport_remove_entity(std::shared_ptr<Entity> entity, entity_viewport_notification_type type);
 	bool notify_viewport_moving_entity(entity_viewport_entry entry);
 	bool notify_viewport_spawn_entity(entity_viewport_entry entry);
+	bool notify_viewport_item_entry(item_viewport_entry entry);
 	
 	/**
 	 * NPC
@@ -175,12 +179,12 @@ public:
 	void move_item_from_inventory_to_storage(int16_t inventory_index, int amount);
 	void move_item_from_cart_to_inventory(int16_t inventory_index, int amount);
 	void move_item_from_cart_to_storage(int16_t inventory_index, int amount);
-	void move_item_from_storage_to_inventory(int16_t inventory_index, int amount);
+	void move_item_from_storage_to_inventory(int16_t storage_index, int amount);
 	void move_item_from_storage_to_cart(int16_t inventory_index, int amount);
 	void display_item_card_composition(int card_index, int equip_index = 0);
 	void repair_item(int inventory_index, int item_id, int refine, int card1, int card2, int card3, int card4);
 	void identify_item(int inventory_index);
-	bool notify_pickup_item(item_entry_data id, int16_t amount, item_inventory_addition_notif_type result);
+	bool notify_pickup_item(std::shared_ptr<item_entry_data> item, int16_t amount, item_inventory_addition_notif_type result);
 	bool notify_normal_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items);
 	bool notify_equipment_item_list(std::vector<std::shared_ptr<const item_entry_data>> const &items);
 	bool notify_throw_item(int16_t inventory_index, int16_t amount);
@@ -197,6 +201,25 @@ public:
 	bool notify_item_refining(zc_ack_itemrefining_result_type result, int16_t inventory_index, int16_t refine_lv);
 	bool notify_item_repair(int inventory_index, zc_ack_itemrepair_result_type result);
 	bool notify_item_merge(int inventory_index, int amount, zc_ack_merge_item_reason_type reason);
+	bool notify_item_drop(int guid, int item_id, int type, int identified, int x, int y, int x_area, int y_area, int amount, int show_drop_effect = 0, int drop_effect_mode = 0);
+	bool notify_item_removal_from_floor(int guid);
+	
+	/**
+	 * Inventory Start / End 
+	 */
+	bool notify_inventory_start(inventory_type type, std::string name);
+	bool notify_inventory_end(inventory_type type);
+	/**
+	 * Storage
+	 */
+	void storage_close();
+	bool notify_storage_size(int16_t total_size, int16_t max_size);
+	bool notify_storage_normal_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items);
+	bool notify_storage_equip_items(std::string name, std::vector<std::shared_ptr<const item_entry_data>> const &items);
+	bool notify_storage_close();
+	bool notify_storage_add_item(std::shared_ptr<const item_entry_data> entry, int amount);
+	bool notify_storage_remove_item(int16_t storage_index, int amount);
+	
 	/**
 	 * Skills
 	 */
@@ -213,6 +236,7 @@ public:
 	/* UI Requests */
 	void action_request(int32_t target_guid, player_action_type action);
 	bool notify_action(player_action_type action);
+	bool notify_action(int32_t target_guid, player_action_type action);
 
 	/**
 	 * Status

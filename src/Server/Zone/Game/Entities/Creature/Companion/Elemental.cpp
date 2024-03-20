@@ -32,8 +32,8 @@
 
 using namespace Horizon::Zone::Entities;
 
-Elemental::Elemental(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords)
-: Creature(guid, ENTITY_ELEMENTAL, ENTITY_MASK_ELEMENTAL, map, mcoords)
+Elemental::Elemental(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords)
+: Creature(uuid, ENTITY_ELEMENTAL, ENTITY_MASK_ELEMENTAL, map, mcoords)
 {
 	//
 }

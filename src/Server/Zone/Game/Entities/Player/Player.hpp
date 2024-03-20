@@ -34,7 +34,7 @@
 #include "Server/Zone/Definitions/PlayerDefinitions.hpp"
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Entities/Entity.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp" // entity_gender_types
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
@@ -53,6 +53,7 @@ class ZoneSession;
 namespace Assets
 {
 	class Inventory;
+	class Storage;
 }
 class Map;
 namespace Entities
@@ -88,7 +89,7 @@ class Player : public Entity, public GridObject<Player>
 	};
 	
 public:
-	Player(std::shared_ptr<ZoneSession> session, uint32_t guid);
+	Player(std::shared_ptr<ZoneSession> session, uint64_t uuid);
 	~Player();
 
 	std::shared_ptr<ZoneSession> get_session() { return _session.lock(); }
@@ -109,6 +110,7 @@ public:
 	 */
 	void realize_entity_movement(std::shared_ptr<Entity> entity);
 	void realize_entity_movement_entry(std::shared_ptr<Entity> entity);
+	void realize_nearby_items(entity_viewport_notification_type notif_type);
 
 	void add_entity_to_viewport(std::shared_ptr<Entity> entity);
 	void remove_entity_from_viewport(std::shared_ptr<Entity> entity, entity_viewport_notification_type type);
@@ -154,7 +156,8 @@ public:
 	void on_item_equip(std::shared_ptr<const item_entry_data> item);
 	void on_item_unequip(std::shared_ptr<const item_entry_data> item);
 	std::shared_ptr<Assets::Inventory> inventory() { return _inventory; }
-
+	void pickup_item(int32_t guid);
+	void throw_item(std::shared_ptr<item_entry_data> item, int32_t amount);
 	/**
 	 * NPC / Script applications
 	 */
@@ -199,11 +202,18 @@ public:
 
     bool attack(std::shared_ptr<Entity> e, bool continuous = false) override;
     bool stop_attack();
+
+	std::shared_ptr<Assets::Storage> get_storage(int32_t storage_id);
+
+	int32_t get_current_storage_id() { return _current_storage_id; }
+	void set_current_storage_id(int32_t id) { _current_storage_id = id; }
 private:
 	bool _is_initialized{ false };
 	std::weak_ptr<ZoneSession> _session;
 	std::shared_ptr<sol::state> _lua_state;
 	std::shared_ptr<Assets::Inventory> _inventory;
+	std::vector<std::shared_ptr<Assets::Storage>> _storages;
+	int32_t _current_storage_id{ 0 };
 	std::atomic<bool> _is_logged_in{false};
 	int32_t _npc_contact_guid{0};
 

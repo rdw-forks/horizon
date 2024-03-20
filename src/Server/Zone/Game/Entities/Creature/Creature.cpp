@@ -36,8 +36,8 @@
 
 using namespace Horizon::Zone::Entities;
 
-Creature::Creature(uint32_t guid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
-: Entity(guid, type, type_mask, map, mcoords)
+Creature::Creature(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
+: Entity(uuid, type, type_mask, map, mcoords)
 {
 	//
 }
@@ -55,6 +55,14 @@ bool Creature::initialize(std::shared_ptr<const monster_config_data> md)
 		HLog(error) << "Status::initialize: failed to initialize status for creature with monster id " << md->monster_id << ".";
 		return false;
 	}
+
+	return true;
+}
+
+bool Creature::finalize()
+{
+	if (!Entity::finalize())
+		return false;
 
 	return true;
 }

@@ -26,3 +26,9 @@
  -- You should have received a copy of the GNU General Public License
  -- along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ----------------------------------------------------
+ Monster("int_land", 0, 0, 0, 0, "Poring", 2401, 40, 5000, 0)
+ Monster("int_land01", 0, 0, 0, 0, "Poring", 2401, 40, 5000, 0)
+ Monster("int_land02", 0, 0, 0, 0, "Poring", 2401, 40, 5000, 0)
+ Monster("int_land03", 0, 0, 0, 0, "Poring", 2401, 40, 5000, 0)
+ Monster("int_land04", 0, 0, 0, 0, "Poring", 2401, 40, 5000, 0)
+ 

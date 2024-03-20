@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_GAME_ENTITIES_MERCENARY_HPP
 
 #include "Server/Zone/Game/Entities/Creature/Creature.hpp"
-#include "Server/Zone/Game/Entities/GridObject.hpp"
+#include "Server/Zone/Game/GridObject.hpp"
 
 
 namespace Horizon
@@ -44,7 +44,7 @@ namespace Entities
 class Mercenary : public Creature, public GridObject<Mercenary>
 {
 public:
-	Mercenary(uint32_t guid, std::shared_ptr<Map> map, MapCoords mcoords);
+	Mercenary(uint64_t uuid, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Mercenary();
 
     void stop_movement() override;

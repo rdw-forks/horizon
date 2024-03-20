@@ -91,6 +91,14 @@ public:
 
 		return Coordinates<BOUNDS>(x, y);
 	}
+
+	// d=√((x2 – x1)² + (y2 – y1)²)
+	template<int16_t BOUNDS>
+	int distance_from(Coordinates<BOUNDS> const &bounds) const
+	{
+		int distance = std::sqrt(std::pow(bounds.x() - _x, 2) + std::pow(bounds.y() - _y, 2));
+		return distance;
+	}
 	
 	template<int16_t BLOCK_SIZE, int16_t BLOCK_COUNT>
 	Coordinates<BLOCK_COUNT> scale() const

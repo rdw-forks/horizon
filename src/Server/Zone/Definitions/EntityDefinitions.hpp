@@ -577,7 +577,13 @@ enum entity_viewport_notification_type
 	EVP_NOTIFY_TRICKDEAD         = 4
 };
 
-struct entity_viewport_entry
+struct viewport_entry
+{
+	entity_type unit_type{ENTITY_PLAYER};
+	uint32_t guid{ 0 };
+};
+
+struct entity_viewport_entry : public viewport_entry
 {
 	virtual entity_viewport_entry operator = (entity_viewport_entry const &right)
 	{
@@ -623,8 +629,6 @@ struct entity_viewport_entry
 		return *this;
 	}
 
-	entity_type unit_type{ENTITY_PLAYER};
-	int32_t guid{0};
 	int32_t character_id{0};
 	int16_t speed{150};
 	int16_t body_state{0};
@@ -664,6 +668,37 @@ struct entity_viewport_entry
 	int16_t body_style_id{0};
 	char name[MAX_UNIT_NAME_LENGTH]{0};
 	int32_t move_start_time;
+};
+
+struct item_viewport_entry : public viewport_entry
+{
+	item_viewport_entry operator = (item_viewport_entry const &right)
+	{
+		unit_type = right.unit_type;
+		guid = right.guid;
+		item_id = right.item_id;
+		is_identified = right.is_identified;
+		x = right.x;
+		y = right.y;
+		amount = right.amount;
+		x_area = right.x_area;
+		y_area = right.y_area;
+		return *this;
+	}
+
+#if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) || \
+	(CLIENT_TYPE == 'R' && PACKET_VERSION >= 20180704) || \
+	(CLIENT_TYPE == 'Z' && PACKET_VERSION >= 20181114)
+	uint32_t item_id{ 0 };
+#else
+	uint16_t item_id{ 0 };
+#endif
+	uint8_t is_identified{ 0 };
+	uint16_t x{ 0 };
+	uint16_t y{ 0 };
+	uint16_t amount{ 0 };
+	uint8_t x_area{ 0 };
+	uint8_t y_area{ 0 };
 };
 
 enum element_type : uint8_t
