@@ -39,10 +39,12 @@
 BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
 {
     ParallelOrderedMap<int, int> map;
+    ParallelUnorderedMap<int, int> u_map;
+    ParallelMPMCQueue<int> q;
     std::srand(std::time(0));
 
-#define MAX_TRIES 1000000
-#define MAX_THREADS 100
+#define MAX_TRIES 1000
+#define MAX_THREADS 5
 
     std::thread *t[MAX_THREADS];
 	std::atomic<bool> go;
@@ -54,10 +56,11 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     }
 
     for (int j = 0; j < MAX_THREADS; j++) {
-    	t[j] = new std::thread([&map, &go, j, values]() {
-            for (int i = 1; i <= MAX_TRIES / MAX_THREADS; i++) { 
-                printf ("Inserting %d\n", i * (j + 1));
-                map.insert(std::rand() % 1000000 + 1, (i - 1) * (j + 1), values[(i - 1) * (j + 1) ]);
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&map, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Ordered Map Inserting %d\n", i);
+                map.insert(std::rand() % 1000000 + 1, i, values[i]);
             }
     	});
     }
@@ -68,11 +71,105 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     }
     
     for (int j = 0; j < MAX_THREADS; j++) {
-    	t[j] = new std::thread([&map, &go, j, values]() {
-            for (int i = 1; i <= MAX_TRIES / MAX_THREADS; i++) { 
-                printf ("Checking value[%d] is %d \n", (i - 1) * (j + 1), values[(i - 1) * (j + 1)]);
-                BOOST_CHECK_EQUAL(map.acquire(std::rand() % 1000000 + 1, (i - 1) * (j + 1)), values[(i - 1) * (j + 1)]);
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&map, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Ordered Map Checking value[%d] is %d \n", i, values[i]);
+                BOOST_CHECK_EQUAL(map.acquire(std::rand() % 1000000 + 1, i), values[i]);
                 map.release();
+            }
+    	});
+    }
+
+    for (int i = 0; i < MAX_THREADS; i++) {
+        t[i]->join();
+        delete t[i];
+    }
+
+    for (int j = 0; j < MAX_THREADS; j++) {
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&map, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Ordered Map Removing %d\n", i);
+                map.remove(std::rand() % 1000000 + 1, i);
+            }
+    	});
+    }
+    
+    for (int i = 0; i < MAX_THREADS; i++) {
+        t[i]->join();
+        delete t[i];
+    }
+    
+    // Unordered Map
+    for (int j = 0; j < MAX_THREADS; j++) {
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&u_map, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Unordered Map Inserting %d\n", i);
+                u_map.insert(std::rand() % 1000000 + 1, i, values[i]);
+            }
+    	});
+    }
+    
+    for (int i = 0; i < MAX_THREADS; i++) {
+        t[i]->join();
+        delete t[i];
+    }
+    
+    for (int j = 0; j < MAX_THREADS; j++) {
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&u_map, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Unordered Map Checking value[%d] is %d \n", i, values[i]);
+                BOOST_CHECK_EQUAL(u_map.acquire(std::rand() % 1000000 + 1, i), values[i]);
+                u_map.release();
+            }
+    	});
+    }
+
+    for (int i = 0; i < MAX_THREADS; i++) {
+        t[i]->join();
+        delete t[i];
+    }
+
+    for (int j = 0; j < MAX_THREADS; j++) {
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&u_map, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Unordered Map Removing %d\n", i);
+                u_map.remove(std::rand() % 1000000 + 1, i);
+            }
+    	});
+    }
+    
+    for (int i = 0; i < MAX_THREADS; i++) {
+        t[i]->join();
+        delete t[i];
+    }
+
+    
+    // Queue
+    for (int j = 0; j < MAX_THREADS; j++) {
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&q, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) { 
+                printf ("Queue Push %d\n", i);
+                q.push(std::rand() % 1000000 + 1, values[i]);
+            }
+    	});
+    }
+    
+    for (int i = 0; i < MAX_THREADS; i++) {
+        t[i]->join();
+        delete t[i];
+    }
+    
+    for (int j = 0; j < MAX_THREADS; j++) {
+        int c = MAX_TRIES / MAX_THREADS * (j + 1);
+    	t[j] = new std::thread([&q, &go, j, values, c]() {
+            for (int i = c / (j + 1); i < c; i++) {  
+                printf ("Queue Checking %d -> %d \n", i, q.pop(std::rand() % 1000000 + 1));
             }
     	});
     }

@@ -35,9 +35,9 @@
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread.hpp>
 #include <memory>
-#include <list>
-#include <vector>
+#include <queue>
 #include <map>
+#include <unordered_map>
 
 class ParallelDataLockDesign
 {
@@ -103,6 +103,98 @@ public:
 
 private:
     std::map<Key, Value> _map; 
+};
+
+template<typename Key, typename Value>
+class ParallelUnorderedMap : public ParallelDataLockDesign
+{
+public:
+    ParallelUnorderedMap() : ParallelDataLockDesign(0) { }
+    ~ParallelUnorderedMap() { }
+
+    bool insert(uint64_t txn_id, Key key, Value value)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _condition.wait(lock, [this] { return _txn_id == 0; });
+        _txn_id = txn_id;
+        _map.insert(std::make_pair(key, value));
+        release();
+        return true;
+    }
+
+    bool remove(uint64_t txn_id, Key key)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _condition.wait(lock, [this] { return _txn_id == 0; });
+        _txn_id = txn_id;
+        _map.erase(key);
+        release();
+        return true;
+    }
+
+    Value get(uint64_t txn_id, Key key)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _condition.wait(lock, [this] { return _txn_id == 0; });
+        _txn_id = txn_id;
+        return _map.at(key);
+    }
+
+    Value acquire(uint64_t txn_id, Key key)
+    {
+        return get(txn_id, key);
+    }
+
+    void release()
+    {
+        _txn_id = 0;
+        _condition.notify_one();
+    }
+
+private:
+    std::unordered_map<Key, Value> _map; 
+};
+
+template <typename T, typename DataStore = std::queue<T>> // Alternatively std::list<T> or std::deque<T>
+class ParallelMPMCQueue : public ParallelDataLockDesign
+{
+public:
+    ParallelMPMCQueue() : ParallelDataLockDesign(0) { }
+    ~ParallelMPMCQueue() { }
+
+    void push(uint64_t txn_id, T value)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _condition.wait(lock, [this] { return _txn_id == 0; });
+        _txn_id = txn_id;
+        _queue.push(value);
+        release();
+    }
+
+    T pop(uint64_t txn_id)
+    {
+        std::unique_lock<std::mutex> lock(_mutex);
+        _condition.wait(lock, [this] { return _txn_id == 0; });
+        _txn_id = txn_id;
+        T value = _queue.front();
+        _queue.pop();
+        release();
+        return value;
+    }
+
+    T acquire(uint64_t txn_id)
+    {
+        return pop(txn_id);
+    }
+
+    void release()
+    {
+        _txn_id = 0;
+        _condition.notify_one();
+    }
+
+private:
+    DataStore _queue;
 };
 
 #endif /* HORIZON_CORE_MULTITHREADING_PARALLELDATALOCKDESIGN_HPP */
