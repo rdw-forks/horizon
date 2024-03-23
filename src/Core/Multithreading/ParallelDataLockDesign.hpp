@@ -155,7 +155,7 @@ private:
     std::unordered_map<Key, Value> _map; 
 };
 
-template <typename T, typename DataStore = std::queue<T>> // Alternatively std::list<T> or std::deque<T>
+template <typename T>
 class ParallelMPMCQueue : public ParallelDataLockDesign
 {
 public:
@@ -194,7 +194,7 @@ public:
     }
 
 private:
-    DataStore _queue;
+    std::queue<T> _queue;
 };
 
 #endif /* HORIZON_CORE_MULTITHREADING_PARALLELDATALOCKDESIGN_HPP */

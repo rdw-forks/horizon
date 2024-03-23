@@ -43,8 +43,8 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     ParallelMPMCQueue<int> q;
     std::srand(std::time(0));
 
-#define MAX_TRIES 1000
-#define MAX_THREADS 5
+#define MAX_TRIES 10000
+#define MAX_THREADS 2
 
     std::thread *t[MAX_THREADS];
 	std::atomic<bool> go;
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&map, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Ordered Map Inserting %d\n", i);
                 map.insert(std::rand() % 1000000 + 1, i, values[i]);
             }
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&map, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Ordered Map Checking value[%d] is %d \n", i, values[i]);
                 BOOST_CHECK_EQUAL(map.acquire(std::rand() % 1000000 + 1, i), values[i]);
                 map.release();
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&map, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Ordered Map Removing %d\n", i);
                 map.remove(std::rand() % 1000000 + 1, i);
             }
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&u_map, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Unordered Map Inserting %d\n", i);
                 u_map.insert(std::rand() % 1000000 + 1, i, values[i]);
             }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&u_map, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Unordered Map Checking value[%d] is %d \n", i, values[i]);
                 BOOST_CHECK_EQUAL(u_map.acquire(std::rand() % 1000000 + 1, i), values[i]);
                 u_map.release();
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&u_map, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Unordered Map Removing %d\n", i);
                 u_map.remove(std::rand() % 1000000 + 1, i);
             }
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&q, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) { 
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) { 
                 printf ("Queue Push %d\n", i);
                 q.push(std::rand() % 1000000 + 1, values[i]);
             }
@@ -168,8 +168,8 @@ BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
     for (int j = 0; j < MAX_THREADS; j++) {
         int c = MAX_TRIES / MAX_THREADS * (j + 1);
     	t[j] = new std::thread([&q, &go, j, values, c]() {
-            for (int i = c / (j + 1); i < c; i++) {  
-                printf ("Queue Checking %d -> %d \n", i, q.pop(std::rand() % 1000000 + 1));
+            for (int i = j == 0 ? 1 : c / (j + 1); i < c; i++) {  
+                printf ("Queue Pop %d -> %d \n", i, q.pop(std::rand() % 1000000 + 1));
             }
     	});
     }
