@@ -56,24 +56,24 @@
             }
         },
         {
-            "name": "Horizon Debug (x64 architecture) - Visual Studio Community 2022",
-            "description": "",
+            "name": "Horizon Debug",
+            "description": "Horizon Debug (x64 architecture) - Visual Studio Community 2022",
             "displayName": "",
             "inherits": [
                 "Horizon"
             ]
         },
         {
-            "name": "Horizon Tools Debug (x64 architecture) - Visual Studio Community 2022",
-            "description": "",
+            "name": "Horizon Tools Debug",
+            "description": "Horizon Tools Debug (x64 architecture) - Visual Studio Community 2022",
             "displayName": "",
             "inherits": [
                 "Horizon-Tools"
             ]
         },
         {
-            "name": "Horizon Tests Debug (x64 architecture) - Visual Studio Community 2022",
-            "description": "",
+            "name": "Horizon Tests Debug",
+            "description": "Horizon Tests Debug (x64 architecture) - Visual Studio Community 2022",
             "displayName": "",
             "inherits": [
                 "Horizon-Tests"

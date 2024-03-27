@@ -189,9 +189,8 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
  */
 void AuthServer::initialize_cli_commands()
 {
-	add_cli_command_func("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
-	add_cli_command_func("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
-	Server::initialize_cli_commands();
+	get_command_line_process().add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
+	get_command_line_process().add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
 }
 
 /**
@@ -202,14 +201,14 @@ void AuthServer::initialize_cli_commands()
 void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 {
 	if (!error) {
-		sAuth->set_shutdown_stage(SHUTDOWN_INITIATED);
-		sAuth->set_shutdown_signal(SIGTERM);
+		set_shutdown_stage(SHUTDOWN_INITIATED);
+		set_shutdown_signal(SIGTERM);
 	}
 }
 
 void AuthServer::update(uint64_t time)
 {
-	process_cli_commands();
+	get_command_line_process().process();
 
 	getScheduler().Update();
 	
@@ -241,7 +240,7 @@ void AuthServer::initialize_core()
 						  MAX_NETWORK_THREADS);
 
 	// Initialize core.
-	Server::initialize_core();
+	Server::initialize();
 	
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
@@ -258,7 +257,7 @@ void AuthServer::initialize_core()
 	/**
 	 * Server shutdown routine begins here...
 	 */
-	Server::finalize_core();
+	Server::finalize();
 
 	/**
 	 * Stop all networks

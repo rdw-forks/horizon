@@ -35,7 +35,7 @@
 
 using boost::asio::ip::tcp;
 
-enum shutdown_stages
+extern enum shutdown_stages
 {
 	SHUTDOWN_NOT_STARTED      = 0,
 	SHUTDOWN_INITIATED        = 1,
@@ -43,7 +43,84 @@ enum shutdown_stages
 	SHUTDOWN_COMPLETE         = 3
 };
 
-class Server
+extern std::atomic<shutdown_stages> _shutdown_stage;
+extern std::atomic<int> _shutdown_signal;
+
+extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(signal); }
+extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
+extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
+
+class CommandLineProcess
+{
+public:
+	CommandLineProcess() { }
+	~CommandLineProcess() { }
+
+	void process();
+	void queue(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
+	void add_function(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
+
+	/* CLI Function getter */
+	std::function<bool(std::string)> find(std::string &cmd)
+	{
+		auto it = _cli_function_map.find(cmd);
+		return (it != _cli_function_map.end()) ? it->second : nullptr;
+	}
+
+	void initialize();
+	void finalize();
+
+	/**
+	 * CLI Commands
+	 */
+	bool clicmd_shutdown(std::string /*cmd*/);
+
+private:
+	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
+	// CLI command holder to be thread safe
+	ThreadSafeQueue<CLICommand> _cli_cmd_queue;
+	std::thread _cli_thread;
+};
+
+class DatabaseProcess
+{
+public:
+	DatabaseProcess() { }
+	~DatabaseProcess() { }
+
+	void initialize(std::string host, int port, std::string user, std::string pass, std::string database, int threads) 
+	{
+		_mysql_connections = std::make_shared<ConnectionPool>(host, port, user, pass, database, threads);
+	}
+	std::shared_ptr<ConnectionPool> pool() { return _mysql_connections; }
+protected:
+	std::shared_ptr<ConnectionPool> _mysql_connections;
+};
+
+class Mainframe
+{
+public:
+	Mainframe(general_server_configuration &config);
+	~Mainframe();
+
+	virtual void initialize() = 0; //< Mainframe initialization routine
+	virtual void finalize() = 0;   //< Mainframe finalization routine
+
+	struct general_server_configuration &general_conf() { return this->_config; }
+
+	CommandLineProcess &get_command_line_process() { return _cmd_line_process; }
+	DatabaseProcess &get_databse_process() { return _database_process; }
+
+	/* Command Line Interface */
+	void initialize_command_line();
+
+protected:
+	CommandLineProcess _cmd_line_process;
+	DatabaseProcess _database_process;
+	general_server_configuration _config;
+};
+
+class Server : public Mainframe
 {
 public:
 	Server();
@@ -51,11 +128,10 @@ public:
 
 	void parse_exec_args(const char *argv[], int argc);
 
-	/* Shutting Down Flags */
-	shutdown_stages get_shutdown_stage() const { return _shutdown_stage.load(); };
-	void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
-
-	void set_shutdown_signal(int signal) { _shutdown_signal.exchange(signal); }
+	void initialize();
+	void finalize();
+	
+	void print_help();
 
 	/* Core I/O Service*/
 	boost::asio::io_service &get_io_service();
@@ -64,42 +140,12 @@ public:
 	struct general_server_configuration &general_conf() { return this->general_config; }
 	/* Common Configuration */
 	bool parse_common_configs(sol::table &cfg);
-
-	/* Initialize Core */
-	virtual void initialize_core();
-	virtual void finalize_core();
-
-	/* Command Line Interface */
-	void initialize_command_line();
-	virtual void initialize_cli_commands();
-	void process_cli_commands();
-	void queue_cli_command(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
-	void add_cli_command_func(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
-
-	/* CLI Function getter */
-	std::function<bool(std::string)> get_cli_command_func(std::string &cmd)
-	{
-		auto it = _cli_function_map.find(cmd);
-		return (it != _cli_function_map.end()) ? it->second : nullptr;
-	}
-
-	/**
-	 * CLI Commands
-	 */
-	bool clicmd_shutdown(std::string /*cmd*/);
     
-	std::shared_ptr<ConnectionPool> database_pool() { return _mysql_connections; }
-    
+	std::shared_ptr<ConnectionPool> database_pool() { return _database_process.pool(); }
+	
 protected:
 	/* General Configuration */
 	struct general_server_configuration general_config;
-	// CLI command holder to be thread safe
-	ThreadSafeQueue<CLICommand> _cli_cmd_queue;
-	std::thread _cli_thread;
-	std::atomic<shutdown_stages> _shutdown_stage;
-	std::atomic<int> _shutdown_signal;
-	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
-	std::shared_ptr<ConnectionPool> _mysql_connections;
     
 	/**
 	 * Core IO Service

@@ -35,8 +35,62 @@
 
 #include <readline/readline.h>
 
+std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
+std::atomic<int> _shutdown_signal = 0;
+
+Mainframe::Mainframe(general_server_configuration &conf) : _cmd_line_process(), _database_process(), _config(conf) { }
+Mainframe::~Mainframe() { }
+
+void Mainframe::initialize_command_line()
+{
+	_cmd_line_process.initialize();
+}
+
+bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
+{
+	set_shutdown_stage(SHUTDOWN_INITIATED);
+	set_shutdown_signal(SIGTERM);
+	return true;
+}
+
+void CommandLineProcess::initialize()
+{
+	_cli_thread = std::thread(std::bind(&cli_thread_start, this));
+
+	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
+}
+
+void CommandLineProcess::finalize()
+{
+	if (!_cli_thread.joinable())
+		_cli_thread.detach();
+	_cli_thread.join();
+}
+
+void CommandLineProcess::process()
+{
+	std::shared_ptr<CLICommand> command;
+
+	while ((command = _cli_cmd_queue.try_pop())) {
+		bool ret = false;
+		std::vector<std::string> separated_args;
+		boost::algorithm::split(separated_args, command->m_command, boost::algorithm::is_any_of(" "));
+
+		std::function<bool(std::string)> cmd_func = find(separated_args[0]);
+
+		if (cmd_func) {
+			ret = cmd_func(command->m_command);
+		} else {
+			HLog(info) << "Command '" << command->m_command << "' not found!";
+		}
+
+		if (command->m_finish_func != nullptr)
+			command->m_finish_func(command, ret);
+	}
+}
+
 /* Public */
-Server::Server()
+Server::Server() : Mainframe(general_conf())
 {
 	HLog(info) << "   _   _            _                  ";
 	HLog(info) << "  | | | |          (_)                 ";
@@ -60,6 +114,11 @@ Server::~Server()
 {
 }
 
+void Server::print_help()
+{
+	HLog(error) << "usage: <server> [--version] [--help] [--with-config=<file_with_path>]";
+}
+
 void Server::parse_exec_args(const char *argv[], int argc)
 {
 	std::string started_with_args;
@@ -75,8 +134,15 @@ void Server::parse_exec_args(const char *argv[], int argc)
             if (arg.compare("--test-run") == 0) {
                 HLog(info) << "Horizon test mode intiated.";
                 general_conf().set_test_run();
-            }
-        } else {
+            } else if (arg.compare("--help") == 0) {
+				print_help();
+			} else if (arg.compare("--version") == 0) {
+				HLog(info) << "Version: " << VER_PRODUCTVERSION_STR;
+			}
+        } else if (separated_args.size() == 0) { 
+			HLog(error) << "Horizon started with no command line arguments.";
+			print_help();
+		} else {
             std::string arg = separated_args.at(0);
             std::string val = separated_args.at(1);
             
@@ -121,14 +187,14 @@ bool Server::parse_common_configs(sol::table &tbl)
 
 		general_conf().set_db_threads(tbl.get_or<uint8_t>("database_threads", 5));
 		
-		_mysql_connections = std::make_shared<ConnectionPool>(general_conf().get_db_host(), 
+		_database_process.initialize(general_conf().get_db_host(), 
 			general_conf().get_db_port(), 
 			general_conf().get_db_user(), 
 			general_conf().get_db_pass(), 
 			general_conf().get_db_database(), 
 			general_conf().get_db_threads());
 
-		mysqlx::Session session = database_pool()->get_connection();
+		mysqlx::Session session = _database_process.pool()->get_connection();
 
 		HLog(info) << "Database tcp://" << general_conf().get_db_user()
 			<< ":" << general_conf().get_db_pass()
@@ -139,7 +205,7 @@ bool Server::parse_common_configs(sol::table &tbl)
 
 		session.sql(std::string("USE ").append(general_conf().get_db_database())).execute();
 
-		database_pool()->release_connection(std::move(session));
+		_database_process.pool()->release_connection(std::move(session));
 	}
 	catch (const mysqlx::Error& error) {
 		HLog(error) << error.what() << ".";
@@ -155,63 +221,22 @@ bool Server::parse_common_configs(sol::table &tbl)
 
 #undef core_config_error
 
-void Server::initialize_command_line()
-{
-	if (general_conf().is_test_run()) {
-		HLog(info) << "Command line not supported during test-runs... skipping.";
-		return;
-	}
-
-	_cli_thread = std::thread(std::bind(&cli_thread_start, this));
-	initialize_cli_commands();
-}
-
-bool Server::clicmd_shutdown(std::string /*cmd*/)
-{
-	set_shutdown_stage(SHUTDOWN_INITIATED);
-	set_shutdown_signal(SIGTERM);
-	return true;
-}
-
-void Server::initialize_cli_commands()
-{
-	add_cli_command_func("shutdown", std::bind(&Server::clicmd_shutdown, this, std::placeholders::_1));
-}
-
-void Server::process_cli_commands()
-{
-	std::shared_ptr<CLICommand> command;
-
-	while ((command = _cli_cmd_queue.try_pop())) {
-		bool ret = false;
-		std::vector<std::string> separated_args;
-		boost::algorithm::split(separated_args, command->m_command, boost::algorithm::is_any_of(" "));
-
-		std::function<bool(std::string)> cmd_func = get_cli_command_func(separated_args[0]);
-
-		if (cmd_func) {
-			ret = cmd_func(command->m_command);
-		} else {
-			HLog(info) << "Command '" << command->m_command << "' not found!";
-		}
-
-		if (command->m_finish_func != nullptr)
-			command->m_finish_func(command, ret);
-	}
-}
-
-void Server::initialize_core()
+void Server::initialize()
 {
 	/**
 	 * Initialize Commandline Interface
 	 */
-	initialize_command_line();
+	if (general_conf().is_test_run()) {
+		HLog(info) << "Command line not supported during test-runs... skipping.";
+	} else {
+		HLog(info) << "Initializing command line.";
+		_cmd_line_process.initialize();
+	}
 }
 
-void Server::finalize_core()
+void Server::finalize()
 {
-	if (_cli_thread.joinable())
-		_cli_thread.join();
+	_cmd_line_process.finalize();
 }
 
 boost::asio::io_service &Server::get_io_service()

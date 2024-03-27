@@ -138,7 +138,7 @@ void ZoneServer::verify_connected_sessions()
 
 void ZoneServer::update(uint64_t time)
 {
-	process_cli_commands();
+	this->get_command_line_process().process();
 
 	/**
 	 * Task Scheduler Update.
@@ -182,8 +182,8 @@ void SignalHandler(int signal)
 		|| signal == SIGQUIT
 #endif
 		) {
-		sZone->set_shutdown_stage(SHUTDOWN_INITIATED);
-		sZone->set_shutdown_signal(signal);
+		set_shutdown_stage(SHUTDOWN_INITIATED);
+		set_shutdown_signal(signal);
 	}
 }
 
@@ -222,7 +222,7 @@ void ZoneServer::initialize_core()
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
 
-	Server::initialize_core();
+	Server::initialize();
 
 	_task_scheduler.Schedule(Seconds(60), [this] (TaskContext context) {
 		verify_connected_sessions();
@@ -245,15 +245,7 @@ void ZoneServer::initialize_core()
 
 	ClientSocktMgr->stop_network();
 	
-	Server::finalize_core();
-}
-
-/**
- * Initialize Zone-Server CLI Commands.
- */
-void ZoneServer::initialize_cli_commands()
-{
-	Server::initialize_cli_commands();
+	Server::finalize();
 }
 
 /**

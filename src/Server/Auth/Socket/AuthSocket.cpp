@@ -97,7 +97,7 @@ void AuthSocket::on_error()
  */
 bool AuthSocket::update()
 {
-	if (sAuth->get_shutdown_stage() >= SHUTDOWN_INITIATED)
+	if (get_shutdown_stage() >= SHUTDOWN_INITIATED)
 		ClientSocktMgr->set_socket_for_removal(shared_from_this());
 
 	return BaseSocket::update();

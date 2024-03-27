@@ -169,11 +169,16 @@ void MapContainerThread::finalize()
 
 //		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
 	}
-
-	if (_thread.joinable())
-		_thread.join();
-
+	
 	_managed_maps.clear();
+
+	get_lua_manager()->finalize();
+
+
+	if (!_thread.joinable())
+		_thread.detach();
+	else
+		_thread.join();
 
 	HLog(info) << "Map container " << (void *) this << " has shut down.";
 }
@@ -207,7 +212,11 @@ void MapContainerThread::start_internal()
 	int update_count = 0;
 	double average_update_per_second = 0;
 	int updates_per_second_timer = std::time(nullptr);
-	while (!sZone->general_conf().is_test_run() && sZone->get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+	int shutdown_stage = 0;
+	while (!sZone->general_conf().is_test_run() && (shutdown_stage = get_shutdown_stage()) == SHUTDOWN_NOT_STARTED) {
+		if (shutdown_stage != SHUTDOWN_NOT_STARTED)
+			HLog(info) << "Shutdown initiated...";
+
 		update(std::time(nullptr));
 		update_count++;
 
@@ -226,8 +235,6 @@ void MapContainerThread::start_internal()
 		
 		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	};
-
-	get_lua_manager()->finalize();
 }
 
 //! @brief World update loop for a MapContainerThread.

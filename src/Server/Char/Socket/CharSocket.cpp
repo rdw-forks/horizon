@@ -93,7 +93,7 @@ void CharSocket::on_error()
  */
 bool CharSocket::update()
 {
-	if (sChar->get_shutdown_stage() > SHUTDOWN_NOT_STARTED)
+	if (get_shutdown_stage() > SHUTDOWN_NOT_STARTED)
 		ClientSocktMgr->set_socket_for_removal(shared_from_this());
 
 	return BaseSocket::update();

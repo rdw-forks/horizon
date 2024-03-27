@@ -177,7 +177,6 @@ bool CharServer::read_config()
 /* Initialize Char-Server CLI Commands */
 void CharServer::initialize_cli_commands()
 {
-	Server::initialize_cli_commands();
 }
 
 /**
@@ -188,8 +187,8 @@ void CharServer::initialize_cli_commands()
 void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 {
 	if (!error) {
-		sChar->set_shutdown_stage(SHUTDOWN_INITIATED);
-		sChar->set_shutdown_signal(SIGINT);
+		set_shutdown_stage(SHUTDOWN_INITIATED);
+		set_shutdown_signal(SIGINT);
 	}
 }
 
@@ -230,7 +229,7 @@ void CharServer::verify_connected_sessions()
 
 void CharServer::update(uint64_t time)
 {
-	process_cli_commands();
+	get_command_line_process().process();
 	
 	getScheduler().Update();
 
@@ -256,7 +255,7 @@ void CharServer::initialize_core()
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
 
-	Server::initialize_core();
+	Server::initialize();
 
 	getScheduler().Schedule(Seconds(60), [this] (TaskContext context) {
 		verify_connected_sessions();
@@ -278,7 +277,7 @@ void CharServer::initialize_core()
 	/**
 	 * Server shutdown routine begins here...
 	 */
-	Server::finalize_core();
+	Server::finalize();
 
 	/**
 	 * Stop all networks

@@ -102,7 +102,7 @@ public:
     }
 
 private:
-    std::map<Key, Value> _map; 
+    std::map<Key, Value> _map;
 };
 
 template<typename Key, typename Value>

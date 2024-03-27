@@ -56,6 +56,11 @@ Map::Map(std::weak_ptr<MapContainerThread> container, std::string const &name, u
 
 Map::~Map()
 {
+	for (int y = _height - 1; y >= 0; --y) {
+		for (int x = 0; x < _width; ++x) {
+			_cells[x][y].~Cell();
+		}
+	}
 }
 
 bool Map::has_obstruction_at(int16_t x, int16_t y)
