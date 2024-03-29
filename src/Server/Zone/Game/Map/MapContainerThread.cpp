@@ -169,11 +169,10 @@ void MapContainerThread::finalize()
 
 //		player->get_packet_handler()->Send_ZC_ACK_REQ_DISCONNECT(true);
 	}
-	
+
 	_managed_maps.clear();
 
 	get_lua_manager()->finalize();
-
 
 	if (!_thread.joinable())
 		_thread.detach();
@@ -212,11 +211,7 @@ void MapContainerThread::start_internal()
 	int update_count = 0;
 	double average_update_per_second = 0;
 	int updates_per_second_timer = std::time(nullptr);
-	int shutdown_stage = 0;
-	while (!sZone->general_conf().is_test_run() && (shutdown_stage = get_shutdown_stage()) == SHUTDOWN_NOT_STARTED) {
-		if (shutdown_stage != SHUTDOWN_NOT_STARTED)
-			HLog(info) << "Shutdown initiated...";
-
+	while (!sZone->general_conf().is_test_run() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 		update(std::time(nullptr));
 		update_count++;
 

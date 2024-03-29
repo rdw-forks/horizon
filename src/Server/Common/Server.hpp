@@ -110,7 +110,7 @@ public:
 
 	CommandLineProcess &get_command_line_process() { return _cmd_line_process; }
 	DatabaseProcess &get_databse_process() { return _database_process; }
-
+	
 	/* Command Line Interface */
 	void initialize_command_line();
 
