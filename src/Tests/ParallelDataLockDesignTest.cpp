@@ -35,6 +35,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <thread>
 
 BOOST_AUTO_TEST_CASE(ParallelDataLockDesignTest)
 {
