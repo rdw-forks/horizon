@@ -117,7 +117,6 @@ std::shared_ptr<ZoneSession> MapContainerThread::get_session(int64_t session_id)
 //! This is mainly for members that can't be initialized from the constructor method.
 void MapContainerThread::initialize()
 {
-	_lua_mgr = std::make_shared<LUAManager>(shared_from_this());
 }
 
 //! @brief Add entity to vector of entities to be updated.
@@ -172,7 +171,8 @@ void MapContainerThread::finalize()
 
 	_managed_maps.clear();
 
-	get_lua_manager()->finalize();
+	//@TODO finalize lua manager
+	//get_lua_manager()->finalize();
 
 	if (!_thread.joinable())
 		_thread.detach();
@@ -198,15 +198,11 @@ void MapContainerThread::start()
 //! @thread MapContainerThread
 void MapContainerThread::start_internal()
 {
-	get_lua_manager()->initialize_for_container();
+	//@TODO initialize lua manager for container
+	//get_lua_manager()->initialize_for_container();
 
 	HLog(info) << "Map container " << (void *) this << " has initialized.";
 	HLog(info) << "Total maps: " << _managed_maps.size() << " Total sessions: " << _managed_sessions.size();
-	int monster_count = 0, npc_count = 0;
-	for (auto i = _lua_mgr->monster()->_monster_spawn_db.begin(); i != _lua_mgr->monster()->_monster_spawn_db.end(); i++)
-		monster_count += i->second->amount;
-	npc_count = _lua_mgr->npc()->_npc_db.size();
-	HLog(info) << "Total monsters spawned: " << monster_count << " Total NPCs spawned: " << npc_count;
 
 	int update_count = 0;
 	double average_update_per_second = 0;

@@ -26,23 +26,24 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_COMBAT_LUA_COMPONENT_HPP
-#define HORIZON_ZONE_COMBAT_LUA_COMPONENT_HPP
+#ifndef HORIZON_ZONE_ITEM_LUA_COMPONENT_HPP
+#define HORIZON_ZONE_ITEM_LUA_COMPONENT_HPP
 
-#include "Server/Zone/LUA/Components/LUAComponent.hpp"
+#include "Server/Zone/Script/Components/LUAComponent.hpp"
+
 
 namespace Horizon
 {
 namespace Zone
 {
 class MapContainerThread;
-class CombatComponent : public LUAComponent
+class ItemComponent : public LUAComponent
 {
 public:
-    CombatComponent() { }
-    CombatComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
-    ~CombatComponent() { }
-    
+    ItemComponent() { }
+    ItemComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
+    ~ItemComponent() { }
+
     void sync_definitions(std::shared_ptr<sol::state> state);
     void sync_data_types(std::shared_ptr<sol::state> state);
     void sync_functions(std::shared_ptr<sol::state> state);
@@ -50,4 +51,4 @@ public:
 }
 }
 
-#endif /* HORIZON_ZONE_COMBAT_LUA_COMPONENT_HPP */
+#endif /* HORIZON_ZONE_ITEM_LUA_COMPONENT_HPP */

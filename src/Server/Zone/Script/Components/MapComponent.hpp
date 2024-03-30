@@ -7,7 +7,6 @@
  *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
- *
  * Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
  * Copyright (c) 2019 Horizon Dev Team.
  *
@@ -27,35 +26,28 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-/* This is an auto-generated file, please do not edit manually. */
+#ifndef HORIZON_ZONE_MAP_LUA_COMPONENT_HPP
+#define HORIZON_ZONE_MAP_LUA_COMPONENT_HPP
 
-#ifndef HORIZON_ZONE_CLIENTSOCKETMGR_HPP
-#define HORIZON_ZONE_CLIENTSOCKETMGR_HPP
-
-#include "Libraries/Networking/AcceptSocketMgr.hpp"
-#include "Server/Zone/Socket/ZoneSocket.hpp"
+#include "Server/Zone/Script/Components/LUAComponent.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
-/**
- * Manager of client sockets
- */
-class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>
+class MapContainerThread;
+class MapComponent : public LUAComponent
 {
-	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket> BaseSocketMgr;
 public:
+    MapComponent() { }
+    MapComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
+    ~MapComponent() { }
 
-	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
-	{
-		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
-			return false;
-
-		return true;
-	}
+    void sync_definitions(std::shared_ptr<sol::state> state);
+    void sync_data_types(std::shared_ptr<sol::state> state);
+    void sync_functions(std::shared_ptr<sol::state> state);
 };
 }
 }
 
-#endif /* HORIZON_ZONE_CLIENTSOCKETMGR_HPP */
+#endif /* HORIZON_ZONE_MAP_LUA_COMPONENT_HPP */

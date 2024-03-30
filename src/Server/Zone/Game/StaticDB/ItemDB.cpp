@@ -29,8 +29,8 @@
 
 #include "ItemDB.hpp"
 #include "Server/Zone/Definitions/EntityDefinitions.hpp"
-#include "Server/Zone/LUA/Components/ItemComponent.hpp"
-#include "Server/Zone/LUA/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/ItemComponent.hpp"
+#include "Server/Zone/Script/Components/EntityComponent.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
 

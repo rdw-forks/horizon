@@ -32,9 +32,12 @@
 
 #include "Server/pch.hpp"
 
+#include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
+#include "Server/Zone/Persistence/PersistenceManager.hpp"
+#include "Server/Zone/Script/ScriptManager.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Server.hpp"
-#include "Server/Zone/Socket/ZoneSocket.hpp"
 
 namespace Horizon
 {
@@ -74,7 +77,38 @@ struct s_zone_server_configuration
 	boost::filesystem::path _script_root_path;
 };
 
-class ZoneServer : public Server
+class ZoneMainframe : public Server
+{
+public:
+	ZoneMainframe(s_zone_server_configuration &config);
+	~ZoneMainframe();
+
+	void initialize();
+	void finalize();
+
+	s_zone_server_configuration &config() { return _config; }
+
+	ClientSocketMgr &get_network_process() { return _client_socket_manager; }
+	GameLogicProcess &get_game_logic_process() { return _game_logic_process; }
+	PersistenceManager &get_persistence_process() { return _persistence_manager; }
+	ScriptManager &get_script_process() { return _script_manager; }
+
+	TaskScheduler &getScheduler() { return _task_scheduler; }
+
+	void update(uint64_t diff);
+	void verify_connected_sessions();
+
+protected:
+	TaskScheduler _task_scheduler;
+	boost::asio::deadline_timer _update_timer;
+	s_zone_server_configuration _config;
+	ClientSocketMgr _client_socket_manager;
+	GameLogicProcess _game_logic_process;
+	PersistenceManager _persistence_manager;
+	ScriptManager _script_manager;
+};
+
+class ZoneServer : public ZoneMainframe
 {
 public:
 	ZoneServer();
@@ -87,23 +121,15 @@ public:
 	}
 
 	bool read_config();
-	void initialize_core();
-	void initialize_cli_commands();
-	void verify_connected_sessions();
-	void update(uint64_t diff);
+	void initialize();
 
 	s_zone_server_configuration &config() { return _zone_server_config; }
-
-	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 	uint64_t to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3);
 	void from_uuid(uint64_t entity_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3);
 
-
 private:
 	s_zone_server_configuration _zone_server_config;
-	TaskScheduler _task_scheduler;
-	boost::asio::deadline_timer _update_timer;
 };
 }
 }

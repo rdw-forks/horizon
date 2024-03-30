@@ -3,10 +3,10 @@
 #include "Server/Zone/Game/Entities/Entity.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
-#include "Server/Zone/LUA/Components/CombatComponent.hpp"
-#include "Server/Zone/LUA/Components/ItemComponent.hpp"
-#include "Server/Zone/LUA/Components/SkillComponent.hpp"
-#include "Server/Zone/LUA/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/CombatComponent.hpp"
+#include "Server/Zone/Script/Components/ItemComponent.hpp"
+#include "Server/Zone/Script/Components/SkillComponent.hpp"
+#include "Server/Zone/Script/Components/EntityComponent.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Zone.hpp"
 
@@ -34,43 +34,44 @@ void SkillExecution::start_execution(enum skill_target_type target_type)
 		return;
 	}
 
-	try {
-		sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string() + "skills/" + skd->name + ".lua");
-		sol::protected_function_result result = fx();
-		if (!result.valid()) {
-			sol::error err = result;
-			HLog(error) << "SkillExecution::start_execution: " << err.what();
-			return;
-		}
-
-		sol::table skill_functions = result;
-		sol::protected_function initiate_skill_use = skill_functions["initiate_skill_use"];
-
-		_scd = lua_state()->create_table();
-		_scd["skill_execution"] = shared_from_this(); // ptr to self.
-		_scd["initial_source"] = _initial_source;
-		_scd["skill_id"] = _skill_id;
-		_scd["skill_lv"] = _skill_lv;
-		_scd["target_type"] = target_type;
-
-		if (target_type == SKTT_SINGLE_TARGETED) {
-			_scd["initial_target"] = _initial_target;
-		} else {
-			_scd["map_coords"] = _map_coords;
-			if (_message.empty() == false)
-				_scd["message"] = _message;
-		}
-
-		result = initiate_skill_use(_scd, skd);
-		if (!result.valid()) {
-			sol::error err = result;
-			HLog(error) << "SkillExecution::start_execution: Error on initiate_skill_use function: " << err.what();
-			return;
-		}
-	} catch (sol::error &e) {
-		HLog(error) << "SkillExecution::start_execution: " << e.what();
-		return;
-	}
+	// @TODO Skills
+	//try {
+	//	sol::load_result fx = lua_state()->load_file(sZone->config().get_script_root_path().string() + "skills/" + skd->name + ".lua");
+	//	sol::protected_function_result result = fx();
+	//	if (!result.valid()) {
+	//		sol::error err = result;
+	//		HLog(error) << "SkillExecution::start_execution: " << err.what();
+	//		return;
+	//	}
+//
+	//	sol::table skill_functions = result;
+	//	sol::protected_function initiate_skill_use = skill_functions["initiate_skill_use"];
+//
+	//	_scd = lua_state()->create_table();
+	//	_scd["skill_execution"] = shared_from_this(); // ptr to self.
+	//	_scd["initial_source"] = _initial_source;
+	//	_scd["skill_id"] = _skill_id;
+	//	_scd["skill_lv"] = _skill_lv;
+	//	_scd["target_type"] = target_type;
+//
+	//	if (target_type == SKTT_SINGLE_TARGETED) {
+	//		_scd["initial_target"] = _initial_target;
+	//	} else {
+	//		_scd["map_coords"] = _map_coords;
+	//		if (_message.empty() == false)
+	//			_scd["message"] = _message;
+	//	}
+//
+	//	result = initiate_skill_use(_scd, skd);
+	//	if (!result.valid()) {
+	//		sol::error err = result;
+	//		HLog(error) << "SkillExecution::start_execution: Error on initiate_skill_use function: " << err.what();
+	//		return;
+	//	}
+	//} catch (sol::error &e) {
+	//	HLog(error) << "SkillExecution::start_execution: " << e.what();
+	//	return;
+	//}
 }
 
 void SkillExecution::execute(int initial_target_guid)

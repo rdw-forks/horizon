@@ -417,11 +417,13 @@ void GridNPCTrigger::check_and_trigger(GridRefManager<T> &m)
         if (npc == nullptr)
             continue;
 
-        std::shared_ptr<npc_db_data> const &nd = npc->map()->container()->get_lua_manager()->npc()->get_npc_from_db(npc->guid());
-        if (nd != nullptr && nd->trigger_range && _predicate(npc, nd->trigger_range)) {
-            std::shared_ptr<Player> player = _source.lock()->downcast<Player>();
-            _source.lock()->map()->container()->get_lua_manager()->npc()->contact_npc_for_player(player, npc->guid());
-        }
+
+    	//@TODO npc check and trigger script for npc in range
+        //std::shared_ptr<npc_db_data> const &nd = npc->map()->container()->get_lua_manager()->npc()->get_npc_from_db(npc->guid());
+        //if (nd != nullptr && nd->trigger_range && _predicate(npc, nd->trigger_range)) {
+        //    std::shared_ptr<Player> player = _source.lock()->downcast<Player>();
+        //    _source.lock()->map()->container()->get_lua_manager()->npc()->contact_npc_for_player(player, npc->guid());
+        //}
     }
 }
 

@@ -55,15 +55,6 @@ class Map;
 class MapManager
 {
 public:
-	MapManager() { };
-	~MapManager();
-
-	static MapManager *getInstance()
-	{
-		static MapManager map_mgr;
-		return &map_mgr;
-	}
-
 	bool initialize();
 	bool finalize();
 	bool LoadMapCache();
@@ -84,7 +75,5 @@ private:
 };
 }
 }
-
-#define MapMgr Horizon::Zone::MapManager::getInstance()
 
 #endif /* HORIZON_GAME_MAP_MAPMGR_HPP */

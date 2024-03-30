@@ -221,7 +221,8 @@ void Monster::on_killed(std::shared_ptr<Entity> killer, bool with_drops, bool wi
 		break;
 	}
 
-	map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(uuid());
+	//@TODO Deregister spawned monster on monster death
+	//map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(uuid());
 
 	return;
 }

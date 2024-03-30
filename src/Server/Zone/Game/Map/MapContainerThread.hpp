@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_GAME_MAPCONTAINERTHREAD_HPP
 
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
-#include "Server/Zone/LUA/LUAManager.hpp"
+#include "Server/Zone/Script/ScriptManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 
 namespace Horizon
@@ -105,9 +105,7 @@ public:
 	//! responsible for calling. The internal start function deals with actual data loading/initializing,
 	//! world update loop and finalization of the same on shutdown.
 	void start();
-
-	std::shared_ptr<LUAManager> get_lua_manager() { return _lua_mgr; }
-
+	
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 	//! @brief Add entity to vector of entities to be updated.
@@ -129,7 +127,6 @@ private:
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
 	ThreadSafeQueue<std::pair<map_container_session_action, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
 	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
-	std::shared_ptr<LUAManager> _lua_mgr;                                                   ///< Non-thread-safe shared pointer and owner of a script manager.
 	TaskScheduler _task_scheduler;
 	std::vector<std::shared_ptr<Entity>> _entities;                                                        ///< Non-thread-safe vector of entities within this container.
 };

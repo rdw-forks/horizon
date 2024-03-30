@@ -30,7 +30,7 @@
 #define HORIZON_ZONE_PLAYER_LUA_COMPONENT_HPP
 
 
-#include "Server/Zone/LUA/Components/LUAComponent.hpp"
+#include "Server/Zone/Script/Components/LUAComponent.hpp"
 
 namespace Horizon
 {

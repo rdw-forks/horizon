@@ -75,11 +75,14 @@ public:
 	 */
 	bool clicmd_shutdown(std::string /*cmd*/);
 
+	bool is_initialized() { return _is_initialized; }
+
 private:
 	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
 	// CLI command holder to be thread safe
 	ThreadSafeQueue<CLICommand> _cli_cmd_queue;
 	std::thread _cli_thread;
+	std::atomic<bool> _is_initialized;
 };
 
 class DatabaseProcess

@@ -29,24 +29,169 @@
 
 #include "Zone.hpp"
 
-#include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
-#include "Server/Zone/Game/StaticDB/ExpDB.hpp"
-#include "Server/Zone/Game/StaticDB/JobDB.hpp"
-#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
-#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
-#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
-#include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
-#include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 
 using namespace std;
 using namespace Horizon::Zone;
+
+ZoneMainframe::ZoneMainframe(s_zone_server_configuration &config) 
+: Server(), _update_timer(_io_service), _config(config)
+{
+
+}
+
+ZoneMainframe::~ZoneMainframe()
+{
+
+}
+
+void ZoneMainframe::initialize()
+{
+	_task_scheduler.Schedule(Seconds(60), [this] (TaskContext context) {
+		verify_connected_sessions();
+		context.Repeat();
+	});
+
+	Server::initialize();
+
+	// Start Network
+	get_network_process().start(get_io_service(),
+						  general_conf().get_listen_ip(),
+						  general_conf().get_listen_port(),
+						  MAX_NETWORK_THREADS);
+	
+	get_game_logic_process().initialize();
+
+	get_persistence_process().initialize();
+
+	get_script_process().initialize();
+	
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+	
+	int count = 0;
+	bool print[5] = { false, false, false, false, false };
+	while((get_command_line_process().is_initialized() == false && general_conf().is_test_run() == false) ||
+		get_network_process().is_initialized() == false ||
+		get_game_logic_process().is_initialized() == false ||
+		get_persistence_process().is_initialized() == false ||
+		get_script_process().is_initialized() == false)
+	{
+		if (count > 0) std::cout << "\r\r\r\r\r";
+		if (get_command_line_process().is_initialized() == false && general_conf().is_test_run() == false) {
+			HLog(info) << "Command-Line: Offline";
+		} else if (general_config.is_test_run() == true) {
+			HLog(info) << "Command-Line: Offline (Disabed in Test-Run)";
+		} else if (print[0] == false) {
+			HLog(info) << "Command-Line: Online";
+			print[0] = true;
+		}
+		
+		if (get_network_process().is_initialized() == false) {
+			HLog(info) << "Network: Offline";
+		} else if (print[1] == false) {
+			HLog(info) << "Network: Online";
+			print[1] = true;
+		}
+		
+		if (get_game_logic_process().is_initialized() == false) {
+			HLog(info) << "Game: Offline";
+		} else if (print[2] == false) {
+			HLog(info) << "Game: Online";
+			print[2] = true;
+		}
+		
+		if (get_persistence_process().is_initialized() == false) {
+			HLog(info) << "Persistence: Offline";
+		} else if (print[3] == false) {
+			HLog(info) << "Persistence: Online";
+			print[3] = true;
+		}
+		
+		if (get_script_process().is_initialized() == false) {
+			HLog(info) << "Script: Offline";
+		} else if (print[4] == false) {
+			HLog(info) << "Script: Online";
+			print[4] = true;
+		}
+		count++;
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	};
+
+	HLog(info) << "Horizon Mainframe: Online";
+
+	get_io_service().run();
+
+	HLog(info) << "Server shutdown initiated ...";
+
+	get_script_process().finalize();
+	get_persistence_process().finalize();	
+	get_game_logic_process().finalize();
+	get_network_process().stop_network();
+
+
+	/**
+	 * Server shutdown routine begins here...
+	 */
+	_task_scheduler.CancelAll();
+	
+	Server::finalize();
+}
+
+void ZoneMainframe::finalize()
+{
+
+}
+
+void ZoneMainframe::update(uint64_t time)
+{
+	get_command_line_process().process();
+
+	/**
+	 * Process Packets.
+	 */
+	get_network_process().update_socket_sessions(time);
+	
+	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(std::bind(&ZoneServer::update, this, std::time(nullptr)));
+	} else {
+		get_io_service().stop();
+	}
+}
+
+void ZoneMainframe::verify_connected_sessions()
+{	
+	mysqlx::Session session = sZone->database_pool()->get_connection();
+
+	try {
+		session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
+			.bind("Z", std::time(nullptr) - config().session_max_timeout())
+			.execute();
+
+		mysqlx::RowResult rr = session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
+			.bind("Z")
+			.execute();
+		
+		mysqlx::Row r = rr.fetchOne();
+
+		int32_t count = r[0].get<int>();
+
+		HLog(info) << count << " connected session(s).";
+	} catch (const mysqlx::Error &err) {
+		HLog(error) << "Error while verifying connected sessions: " << err.what();
+		sZone->database_pool()->release_connection(std::move(session));
+		return;
+	}
+
+	sZone->database_pool()->release_connection(std::move(session));
+}
 
 /**
  * Zone Main server constructor.
  */
 ZoneServer::ZoneServer()
-: Server(), _update_timer(_io_service)
+: ZoneMainframe(_zone_server_config)
 {
 }
 
@@ -109,55 +254,6 @@ bool ZoneServer::read_config()
 	return true;
 }
 
-void ZoneServer::verify_connected_sessions()
-{	
-	mysqlx::Session session = sZone->database_pool()->get_connection();
-
-	try {
-		session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
-			.bind("Z", std::time(nullptr) - config().session_max_timeout())
-			.execute();
-
-		mysqlx::RowResult rr = session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
-			.bind("Z")
-			.execute();
-		
-		mysqlx::Row r = rr.fetchOne();
-
-		int32_t count = r[0].get<int>();
-
-		HLog(info) << count << " connected session(s).";
-	} catch (const mysqlx::Error &err) {
-		HLog(error) << "Error while verifying connected sessions: " << err.what();
-		sZone->database_pool()->release_connection(std::move(session));
-		return;
-	}
-
-	sZone->database_pool()->release_connection(std::move(session));
-}
-
-void ZoneServer::update(uint64_t time)
-{
-	this->get_command_line_process().process();
-
-	/**
-	 * Task Scheduler Update.
-	 */
-	getScheduler().Update();
-
-	/**
-	 * Process Packets.
-	 */
-	ClientSocktMgr->update_socket_sessions(time);
-	
-	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&ZoneServer::update, this, std::time(nullptr)));
-	} else {
-		get_io_service().stop();
-	}
-}
-
 uint64_t ZoneServer::to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3)
 {
 	return ((uint64_t)uid3 << 56 | ((uint64_t)uid2 << 8) | ((uint64_t)uid << 40) | (uint64_t) type);
@@ -187,7 +283,7 @@ void SignalHandler(int signal)
 	}
 }
 
-void ZoneServer::initialize_core()
+void ZoneServer::initialize()
 {
 	// Install a signal handler
 	signal(SIGINT, SignalHandler);
@@ -196,56 +292,9 @@ void ZoneServer::initialize_core()
 #endif
 	signal(SIGTERM, SignalHandler);
 
-	/**
-	 * Static Databases
-	 */
-	ExpDB->load();
-	ExpDB->load_status_point_table();
-	JobDB->load();
-	ItemDB->load();
-	ItemDB->load_refine_db();
-	ItemDB->load_weapon_target_size_modifiers_db();
-	ItemDB->load_weapon_attribute_modifiers_db();
-	StatusEffectDB->load();
-	SkillDB->load();
-	MonsterDB->load();
-	StorageDB->load();
+	ZoneMainframe::initialize();
 
-	/**
-	 * Map Manager.
-	 */
-	MapMgr->initialize();
-	
-	// Start Network
-	ClientSocktMgr->start(get_io_service(),
-						  general_conf().get_listen_ip(),
-						  general_conf().get_listen_port(),
-						  MAX_NETWORK_THREADS);
-
-	Server::initialize();
-
-	_task_scheduler.Schedule(Seconds(60), [this] (TaskContext context) {
-		verify_connected_sessions();
-		context.Repeat();
-	});
-	
-	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
-	_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
-	
-	get_io_service().run();
-
-	HLog(info) << "Server shutdown initiated ...";
-	
-	MapMgr->finalize();
-
-	/**
-	 * Server shutdown routine begins here...
-	 */
-	_task_scheduler.CancelAll();
-
-	ClientSocktMgr->stop_network();
-	
-	Server::finalize();
+	ZoneMainframe::finalize();
 }
 
 /**
@@ -271,7 +320,7 @@ int main(int argc, const char * argv[])
 	/**
 	 * Initialize the Common Core
 	 */
-	sZone->initialize_core();
+	sZone->initialize();
 
 	/*
 	 * Core Cleanup

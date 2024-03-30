@@ -172,7 +172,7 @@ void NPCComponent::contact_npc_for_player(std::shared_ptr<Entities::Player> play
 		sol::protected_function_result result = fx(player, nd->_npc, nd->script, nd->script_is_file);
 		if (!result.valid()) {
 			sol::error err = result;
-			HLog(error) << "LUAManager::contact_npc_for_player: " << err.what();
+			HLog(error) << "ScriptManager::contact_npc_for_player: " << err.what();
 		}
 	} catch (sol::error &e) {
 		HLog(error) << e.what();
@@ -191,6 +191,6 @@ void NPCComponent::continue_npc_script_for_player(std::shared_ptr<Entities::Play
 	sol::protected_function_result result = cr(cr_state["script_commands"]);
 	if (!result.valid()) {
 		sol::error err = result;
-		HLog(error) << "LUAManager::continue_npc_script_for_player: " << err.what();
+		HLog(error) << "ScriptManager::continue_npc_script_for_player: " << err.what();
 	}
 }

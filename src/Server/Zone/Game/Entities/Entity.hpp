@@ -39,7 +39,7 @@
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
-#include "Server/Zone/LUA/LUAManager.hpp"
+#include "Server/Zone/Script/ScriptManager.hpp"
 #include "Utility/TaskScheduler.hpp"
 #include <atomic>
 

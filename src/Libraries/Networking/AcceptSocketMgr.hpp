@@ -82,6 +82,9 @@ public:
 		HLog(info) << "Networking initialized, listening on " << listen_ip << "@" << port << ".";
 		HLog(info) << "Maximum Network Threads: " << threads;
 
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
+
 		return true;
 	}
 
@@ -97,6 +100,8 @@ public:
 		BaseSocketMgr::stop_network();
 
 		_socket_map.clear();
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false);
 	}
 
 	/**
@@ -157,10 +162,13 @@ public:
 		}
 	}
 
+	bool is_initialized() { return _is_initialized.load(); }
+
 private:
 	std::unique_ptr<AsyncAcceptor> _acceptor;       ///< unique pointer to an AsyncAcceptor object.
 	SocketMap _socket_map;                          ///< std::map of all connected and handled sockets.
 	ThreadSafeQueue<std::pair<bool, std::shared_ptr<SocketType>>> _socket_management_queue;
+	std::atomic<bool> _is_initialized;
 };
 }
 }

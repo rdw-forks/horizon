@@ -29,7 +29,7 @@
 #ifndef HORIZON_ZONE_MONSTER_LUA_COMPONENT_HPP
 #define HORIZON_ZONE_MONSTER_LUA_COMPONENT_HPP
 
-#include "Server/Zone/LUA/Components/LUAComponent.hpp"
+#include "Server/Zone/Script/Components/LUAComponent.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 
 

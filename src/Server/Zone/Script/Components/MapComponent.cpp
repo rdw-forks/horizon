@@ -31,6 +31,7 @@
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 
@@ -73,13 +74,13 @@ void MapComponent::sync_functions(std::shared_ptr<sol::state> state)
 	state->set_function("get_map_by_name",
 		[] (std::string const &name)
 		{
-			return MapMgr->get_map(name);
+			return sZone->get_game_logic_process().get_map_process().get_map(name);
 		});
 
 	state->set_function("get_map_for_container",
 		[this] (std::string const &name)
 		{
-			std::shared_ptr<Map> map = MapMgr->get_map(name);
+			std::shared_ptr<Map> map = sZone->get_game_logic_process().get_map_process().get_map(name);
 
 			if (map == nullptr)
 				return std::shared_ptr<Map>();

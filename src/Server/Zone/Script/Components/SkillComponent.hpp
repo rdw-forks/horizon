@@ -26,44 +26,29 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_NPC_LUA_COMPONENT_HPP
-#define HORIZON_ZONE_NPC_LUA_COMPONENT_HPP
+#ifndef HORIZON_ZONE_SKILL_LUA_COMPONENT_HPP
+#define HORIZON_ZONE_SKILL_LUA_COMPONENT_HPP
 
 
-#include "Server/Zone/LUA/Components/LUAComponent.hpp"
-
-#include "Server/Zone/Definitions/NPCDefinitions.hpp"
+#include "Server/Zone/Script/Components/LUAComponent.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
 class MapContainerThread;
-class NPCComponent : public LUAComponent
+class SkillComponent : public LUAComponent
 {
 public:
-    NPCComponent() { }
-    NPCComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
-    ~NPCComponent() {}
+    SkillComponent() { }
+    SkillComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
+    ~SkillComponent() { }
     
     void sync_definitions(std::shared_ptr<sol::state> state);
     void sync_data_types(std::shared_ptr<sol::state> state);
-    void sync_functions(std::shared_ptr<sol::state> state) { }
-    void sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container);
-
-    void add_npc_to_db(uint32_t guid, std::shared_ptr<npc_db_data> const &data) { _npc_db.insert(guid, data); }
-    std::shared_ptr<npc_db_data> get_npc_from_db(uint32_t guid) { return _npc_db.at(guid); }
-
-    void contact_npc_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
-    void continue_npc_script_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid, uint32_t select_idx = 0);
-
-    // void send_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid, std::string const &HLog);
-    // void send_next_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
-    // void send_close_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
-
-    LockedLookupTable<uint32_t, std::shared_ptr<npc_db_data>> _npc_db;
+    void sync_functions(std::shared_ptr<sol::state> state);
 };
 }
 }
 
-#endif /* HORIZON_ZONE_NPC_LUA_COMPONENT_HPP */
+#endif /* HORIZON_ZONE_SKILL_LUA_COMPONENT_HPP */

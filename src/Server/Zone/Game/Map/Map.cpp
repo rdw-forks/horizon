@@ -33,7 +33,7 @@
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
-#include "Server/Zone/LUA/Components/MonsterComponent.hpp"
+#include "Server/Zone/Script/Components/MonsterComponent.hpp"
 #include "Server/Zone/Game/Entities/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Grid/Grid.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
@@ -78,14 +78,16 @@ bool Map::has_obstruction_at(int16_t x, int16_t y)
 
 void Map::add_user_count() {
 	_user_count++; 
-	if (get_user_count() == 1)
-		container()->get_lua_manager()->monster()->spawn_monsters(get_name(), container()); 
+	// @TODO Map user count
+	//if (get_user_count() == 1)
+	//	container()->get_lua_manager()->monster()->spawn_monsters(get_name(), container()); 
 }
 
 void Map::sub_user_count() { 
 	_user_count--; 
-	if (get_user_count() == 0)
-		container()->get_lua_manager()->monster()->despawn_monsters(get_name(), container());
+	// @TODO Map user count
+	//if (get_user_count() == 0)
+	//	container()->get_lua_manager()->monster()->despawn_monsters(get_name(), container());
 }
 
 

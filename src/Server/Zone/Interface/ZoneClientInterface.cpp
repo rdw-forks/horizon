@@ -110,7 +110,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	// The player is initialized within the map container, so the player must be added to the session first.
 	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
 	
-	ClientSocktMgr->set_socket_for_removal(get_session()->get_socket());
+	sZone->get_network_process().set_socket_for_removal(get_session()->get_socket());
 	
 	sZone->database_pool()->release_connection(std::move(session));
 	
@@ -161,7 +161,7 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	MapMgr->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
+	sZone->get_game_logic_process().get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
 bool ZoneClientInterface::update_session(int32_t account_id)
@@ -627,10 +627,11 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int guid = get_session()->player()->guid();
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
-	if (message[msg_first_char] == '@') {
-		get_session()->player()->map()->container()->get_lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
-		return;
-	}
+	// @TODO @commands
+	//if (message[msg_first_char] == '@') {
+	//	get_session()->player()->map()->container()->get_lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+	//	return;
+	//}
 
 	ByteBuffer buf;
 
@@ -668,7 +669,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 
 	HLog(debug) << name << " : " << message;
 
-	std::shared_ptr<Horizon::Zone::Entities::Player> player = MapMgr->find_player(name);
+	std::shared_ptr<Horizon::Zone::Entities::Player> player = sZone->get_game_logic_process().get_map_process().find_player(name);
 
 	ZC_ACK_WHISPER02 pkt(get_session());
 	if (player != nullptr)

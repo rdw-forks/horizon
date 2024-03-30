@@ -38,11 +38,6 @@
 
 using namespace Horizon::Zone;
 
-MapManager::~MapManager()
-{
-
-}
-
 bool MapManager::initialize()
 {
 	return LoadMapCache();

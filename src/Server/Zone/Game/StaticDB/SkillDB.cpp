@@ -29,10 +29,10 @@
 
 #include "SkillDB.hpp"
 
-#include "Server/Zone/LUA/Components/CombatComponent.hpp"
-#include "Server/Zone/LUA/Components/ItemComponent.hpp"
-#include "Server/Zone/LUA/Components/SkillComponent.hpp"
-#include "Server/Zone/LUA/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/CombatComponent.hpp"
+#include "Server/Zone/Script/Components/ItemComponent.hpp"
+#include "Server/Zone/Script/Components/SkillComponent.hpp"
+#include "Server/Zone/Script/Components/EntityComponent.hpp"
 
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"

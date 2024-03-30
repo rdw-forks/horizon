@@ -29,7 +29,8 @@
 
 add_subdirectory(Game)
 add_subdirectory(Packets)
-add_subdirectory(LUA)
+add_subdirectory(Script)
+add_subdirectory(Persistence)
 add_subdirectory(Interface)
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -42,7 +43,6 @@ set(PRIVATE_SOURCES
 	${DIR}/Session/ZoneSession.hpp
 	${DIR}/Socket/ZoneSocket.cpp
 	${DIR}/Socket/ZoneSocket.hpp
-	${DIR}/SocketMgr/ClientSocketMgr.cpp
 	${DIR}/SocketMgr/ClientSocketMgr.hpp
 )
 
@@ -57,7 +57,8 @@ add_executable(zone
 	${PACKET_SOURCES}
 	${PACKET_HEADERS}
 	${GAME_SOURCES}
-	${LUA_SOURCES}
+	${SCRIPT_SOURCES}
+	${PERSISTENCE_SOURCES}
 	${INTERFACE_SOURCES}
 	${DATABASE_SOURCES}
 )

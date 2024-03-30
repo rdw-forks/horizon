@@ -31,9 +31,9 @@
 
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
-#include "Server/Zone/LUA/Components/MonsterComponent.hpp"
-#include "Server/Zone/LUA/Components/EntityComponent.hpp"
-#include "Server/Zone/LUA/Components/ItemComponent.hpp"
+#include "Server/Zone/Script/Components/MonsterComponent.hpp"
+#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/ItemComponent.hpp"
 
 #include "Server/Zone/Zone.hpp"
 

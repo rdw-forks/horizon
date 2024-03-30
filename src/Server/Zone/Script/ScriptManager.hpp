@@ -27,21 +27,21 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_LUAMANAGER
-#define HORIZON_ZONE_LUAMANAGER
+#ifndef HORIZON_ZONE_SCRIPTMANAGER
+#define HORIZON_ZONE_SCRIPTMANAGER
 
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 
-#include "Server/Zone/LUA/Components/StatusEffectComponent.hpp"
-#include "Server/Zone/LUA/Components/SkillComponent.hpp"
-#include "Server/Zone/LUA/Components/CombatComponent.hpp"
-#include "Server/Zone/LUA/Components/EntityComponent.hpp"
-#include "Server/Zone/LUA/Components/ItemComponent.hpp"
-#include "Server/Zone/LUA/Components/MapComponent.hpp"
-#include "Server/Zone/LUA/Components/MonsterComponent.hpp"
-#include "Server/Zone/LUA/Components/NPCComponent.hpp"
-#include "Server/Zone/LUA/Components/PlayerComponent.hpp"
+#include "Server/Zone/Script/Components/StatusEffectComponent.hpp"
+#include "Server/Zone/Script/Components/SkillComponent.hpp"
+#include "Server/Zone/Script/Components/CombatComponent.hpp"
+#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/ItemComponent.hpp"
+#include "Server/Zone/Script/Components/MapComponent.hpp"
+#include "Server/Zone/Script/Components/MonsterComponent.hpp"
+#include "Server/Zone/Script/Components/NPCComponent.hpp"
+#include "Server/Zone/Script/Components/PlayerComponent.hpp"
 
 namespace Horizon
 {
@@ -53,15 +53,11 @@ namespace Entities
 	class Player;
 	class Monster;
 }
-class MapContainerThread;
-class LUAManager
+class ScriptManager
 {
-friend class MapContainerThread;
 public:
-	explicit LUAManager(std::shared_ptr<MapContainerThread> container);
-	~LUAManager();
-
-	std::shared_ptr<MapContainerThread> get_map_container() { return _container.lock(); }
+	ScriptManager();
+	~ScriptManager();
 
 	void initialize_basic_state(std::shared_ptr<sol::state> state);
 	void initialize_player_state(std::shared_ptr<sol::state> state);
@@ -79,11 +75,16 @@ public:
 	std::shared_ptr<CombatComponent> combat() { return _combat_component; }
 
 	std::shared_ptr<sol::state> lua_state() { return _lua_state; }
-protected:
-	void initialize_for_container();
+
+	bool is_initialized() { return _is_initialized.load(); }
+
+	void initialize();
 	void finalize();
 	void prepare_lua_state(std::shared_ptr<sol::state> &lua);
 
+	void start();
+	void update(uint64_t diff);
+	
 private:
 	void load_constants();
 	void load_scripts();
@@ -91,7 +92,6 @@ private:
 
 	std::vector<std::string> _script_files;
 	std::shared_ptr<sol::state> _lua_state;
-	std::weak_ptr<MapContainerThread> _container;
 
 	std::shared_ptr<PlayerComponent> _player_component;
 	std::shared_ptr<NPCComponent> _npc_component;
@@ -102,9 +102,11 @@ private:
 	std::shared_ptr<SkillComponent> _skill_component;
 	std::shared_ptr<StatusEffectComponent> _status_effect_component;
 	std::shared_ptr<CombatComponent> _combat_component;
-	
+
+	std::thread _thread;
+	std::atomic<bool> _is_initialized;
 };
 }
 }
 
-#endif /* HORIZON_ZONE_LUAMANAGER */
+#endif /* HORIZON_ZONE_SCRIPTMANAGER */

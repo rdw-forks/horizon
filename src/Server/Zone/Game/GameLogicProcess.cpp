@@ -7,10 +7,11 @@
  *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
+ *
  * Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
  * Copyright (c) 2019 Horizon Dev Team.
  *
- * Base Author - Sagun K. (sagunxp@gmail.com)
+ * Base Author - Sxyz <sagunxp@gmail.com>
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,28 +27,45 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_ENTITY_LUA_COMPONENT_HPP
-#define HORIZON_ZONE_ENTITY_LUA_COMPONENT_HPP
+#include "GameLogicProcess.hpp"
 
-#include "Server/Zone/LUA/Components/LUAComponent.hpp"
+#include "Server/Zone/Game/StaticDB/ExpDB.hpp"
+#include "Server/Zone/Game/StaticDB/JobDB.hpp"
+#include "Server/Zone/Game/StaticDB/ItemDB.hpp"
+#include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
+#include "Server/Zone/Game/StaticDB/SkillDB.hpp"
+#include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
+#include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 
-namespace Horizon
-{
-namespace Zone
-{
-class MapContainerThread;
-class EntityComponent : public LUAComponent
-{
-public:
-    EntityComponent() { }
-    EntityComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
-    ~EntityComponent() { }
+using namespace Horizon::Zone;
 
-    void sync_definitions(std::shared_ptr<sol::state> state);
-    void sync_data_types(std::shared_ptr<sol::state> state);
-    void sync_functions(std::shared_ptr<sol::state> state);
-};
-}    
+void GameLogicProcess::initialize()
+{
+	/**
+	 * Static Databases
+	 */
+	ExpDB->load();
+	ExpDB->load_status_point_table();
+	JobDB->load();
+	ItemDB->load();
+	ItemDB->load_refine_db();
+	ItemDB->load_weapon_target_size_modifiers_db();
+	ItemDB->load_weapon_attribute_modifiers_db();
+	StatusEffectDB->load();
+	SkillDB->load();
+	MonsterDB->load();
+	StorageDB->load();
+
+    get_map_process().initialize();
+
+    bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, true);
 }
 
-#endif /* HORIZON_ZONE_ENTITY_LUA_COMPONENT_HPP */
+void GameLogicProcess::finalize()
+{
+    get_map_process().finalize();
+
+    bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, false);
+}

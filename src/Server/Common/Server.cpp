@@ -58,13 +58,18 @@ void CommandLineProcess::initialize()
 	_cli_thread = std::thread(std::bind(&cli_thread_start, this));
 
 	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
+
+	bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, true);
 }
 
 void CommandLineProcess::finalize()
 {
-	if (!_cli_thread.joinable())
+	if (_cli_thread.joinable())
 		_cli_thread.detach();
-	_cli_thread.join();
+
+	bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, false);
 }
 
 void CommandLineProcess::process()

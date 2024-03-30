@@ -27,35 +27,30 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-/* This is an auto-generated file, please do not edit manually. */
+#ifndef HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP
+#define HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP
 
-#ifndef HORIZON_ZONE_CLIENTSOCKETMGR_HPP
-#define HORIZON_ZONE_CLIENTSOCKETMGR_HPP
-
-#include "Libraries/Networking/AcceptSocketMgr.hpp"
-#include "Server/Zone/Socket/ZoneSocket.hpp"
+#include "Server/Zone/Game/Map/MapManager.hpp"
 
 namespace Horizon
 {
 namespace Zone
 {
-/**
- * Manager of client sockets
- */
-class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>
+class GameLogicProcess
 {
-	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket> BaseSocketMgr;
 public:
+    void initialize();
+    void finalize();
 
-	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
-	{
-		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
-			return false;
+    MapManager &get_map_process() { return _map_manager; }
 
-		return true;
-	}
+	bool is_initialized() { return _is_initialized.load(); }
+    
+protected:
+    MapManager _map_manager;
+    std::atomic<bool> _is_initialized;
 };
 }
 }
 
-#endif /* HORIZON_ZONE_CLIENTSOCKETMGR_HPP */
+#endif /* HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP */

@@ -31,16 +31,17 @@ private:
 	{
 		_map = map;
 		_map_container_thread = map->container();
-		_lua_mgr = map->container()->get_lua_manager();
-		_lua_state = lua_manager()->lua_state();
+		// @TODO Skills
+		//_lua_mgr = map->container()->get_lua_manager();
+		//_lua_state = lua_manager()->lua_state();
 	}
 	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
-	std::shared_ptr<LUAManager> lua_manager() { return _lua_mgr.lock(); }
+	std::shared_ptr<ScriptManager> lua_manager() { return _lua_mgr.lock(); }
 	std::shared_ptr<sol::state> lua_state() { return _lua_state.lock(); }
 
 	std::weak_ptr<Map> _map;
 	std::weak_ptr<MapContainerThread> _map_container_thread;
-	std::weak_ptr<LUAManager> _lua_mgr;
+	std::weak_ptr<ScriptManager> _lua_mgr;
 	std::weak_ptr<sol::state> _lua_state;
 	std::shared_ptr<Entity> _initial_source{nullptr};
 	std::shared_ptr<Entity> _initial_target{nullptr};

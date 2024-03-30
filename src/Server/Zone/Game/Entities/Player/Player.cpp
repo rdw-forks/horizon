@@ -117,13 +117,14 @@ bool Player::initialize()
 	// On map entry processing.
 	on_map_enter();
 
-	map()->container()->get_lua_manager()->initialize_player_state(lua_state());
+	// @TODO Initialize Player, npc and monster components for player's lua state.
+	//map()->container()->get_lua_manager()->initialize_player_state(lua_state());
 
 	// required for npc component definitions upon triggering
-	map()->container()->get_lua_manager()->initialize_npc_state(lua_state());
+	//map()->container()->get_lua_manager()->initialize_npc_state(lua_state());
 
 	// required for triggering monster components upon monster kill events etc.
-	map()->container()->get_lua_manager()->initialize_monster_state(lua_state());
+	//map()->container()->get_lua_manager()->initialize_monster_state(lua_state());
 
 	try {
 		std::string script_root_path = sZone->config().get_script_root_path().string();
@@ -244,11 +245,11 @@ bool Player::load()
 		 * Set map and coordinates for entity.
 		 */
 		MapCoords mcoords(r[11].get<int>(), r[12].get<int>());
-		std::shared_ptr<Map> map = MapMgr->get_map(r[10].get<std::string>());
+		std::shared_ptr<Map> map = sZone->get_game_logic_process().get_map_process().get_map(r[10].get<std::string>());
 
 		if (map == nullptr) { 
 			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
-			map = MapMgr->get_map("prontera");
+			map = sZone->get_game_logic_process().get_map_process().get_map("prontera");
 		}
 		
 		get_session()->set_map_name(map->get_name());

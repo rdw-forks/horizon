@@ -7,6 +7,7 @@
  *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
+ *
  * Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
  * Copyright (c) 2019 Horizon Dev Team.
  *
@@ -26,29 +27,35 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_SKILL_LUA_COMPONENT_HPP
-#define HORIZON_ZONE_SKILL_LUA_COMPONENT_HPP
+#include "PersistenceManager.hpp"
+#include "Server/Zone/Zone.hpp"
+#include <thread>
 
+using namespace Horizon::Zone;
 
-#include "Server/Zone/LUA/Components/LUAComponent.hpp"
+void PersistenceManager::initialize()
+{
+	_thread = std::thread(&PersistenceManager::start, this);
+}
 
-namespace Horizon
+void PersistenceManager::finalize()
 {
-namespace Zone
-{
-class MapContainerThread;
-class SkillComponent : public LUAComponent
-{
-public:
-    SkillComponent() { }
-    SkillComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
-    ~SkillComponent() { }
+    _thread.join();
     
-    void sync_definitions(std::shared_ptr<sol::state> state);
-    void sync_data_types(std::shared_ptr<sol::state> state);
-    void sync_functions(std::shared_ptr<sol::state> state);
-};
-}
+    bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, false);
 }
 
-#endif /* HORIZON_ZONE_SKILL_LUA_COMPONENT_HPP */
+void PersistenceManager::start()
+{
+    bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, true);
+	
+	while (!sZone->general_conf().is_test_run() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+		update(std::time(nullptr));
+	}
+}
+
+void PersistenceManager::update(uint64_t diff)
+{
+}
