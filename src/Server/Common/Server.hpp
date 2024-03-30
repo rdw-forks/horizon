@@ -35,7 +35,7 @@
 
 using boost::asio::ip::tcp;
 
-extern enum shutdown_stages
+enum shutdown_stages
 {
 	SHUTDOWN_NOT_STARTED      = 0,
 	SHUTDOWN_INITIATED        = 1,
