@@ -51,8 +51,6 @@ class SocketMgr
 {
 	typedef std::shared_ptr<NetworkThread<SocketType>> NetworkThreadPtr;
 public:
-	SocketMgr() { }
-
 	virtual ~SocketMgr()
 	{
 		assert(_thread_map.empty());
@@ -84,7 +82,7 @@ public:
 	/**
 	 * @brief Stops network threads and clears the thread map.
 	 */
-	virtual void stop_network()
+	virtual bool stop_network()
 	{
 		/* Clear the thread map. */
 		for (auto it = _thread_map.begin(); it != _thread_map.end();) {
@@ -97,6 +95,8 @@ public:
 			HLog(info) << "Finalized network thread " << (void *) thr.get();
 			it = _thread_map.erase(it);
 		}
+
+		return true;
 	}
 
 	/**

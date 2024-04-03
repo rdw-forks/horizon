@@ -58,4 +58,5 @@ void PersistenceManager::start()
 
 void PersistenceManager::update(uint64_t diff)
 {
+	
 }

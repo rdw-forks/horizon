@@ -38,7 +38,7 @@
 
 #define TERMINAL_STR "Horizon $> "
 
-void command_complete(std::shared_ptr<CLICommand> /*cmd*/, bool /*success*/)
+void command_complete(CLICommand /*cmd*/, bool /*success*/)
 {
 	fflush(stdout);
 }

@@ -39,7 +39,7 @@
 #define CLIENT_BIRTHDATE_STRING_LENGTH 6
 #define MAX_BIRTHDATE_STRING_LENGTH CLIENT_BIRTHDATE_STRING_LENGTH + 5 // YYYY-MM-DD
 #define MAX_PINCODE_STRING_LENGTH 5
-#define MAX_EMAIL_LENGTH 40
+#define CLIENT_MAX_EMAIL_LENGTH 40
 #define MAX_IP_ADDRESS_STR_LENGTH 16
 // For Map Names, which the client considers to be 16 in length including the .gat extension.
 #define MAP_NAME_LENGTH (11 + 1)

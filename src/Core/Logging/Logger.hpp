@@ -39,10 +39,6 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
 
 class Logger
 {
@@ -50,9 +46,6 @@ private:
     typedef boost::log::sources::severity_logger<boost::log::trivial::severity_level> logtype;
 
 public:
-	Logger();
-	~Logger();
-
 	static Logger *getInstance()
 	{
 		static Logger instance;
@@ -73,7 +66,6 @@ public:
 protected:
     logtype _core_log;
     std::atomic<bool> _initialized;
-
 };
 
 #define HLog(type) BOOST_LOG_SEV(Logger().getInstance()->get_core_log(), boost::log::trivial::type)

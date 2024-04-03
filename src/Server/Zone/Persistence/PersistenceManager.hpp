@@ -28,12 +28,14 @@
 
 #ifndef HORIZON_ZONE_PERSISTENCE_PERSISTENCEMANAGER
 #define HORIZON_ZONE_PERSISTENCE_PERSISTENCEMANAGER
+#include "Server/Common/Server.hpp"
+
 
 namespace Horizon
 {
 namespace Zone
 {
-class PersistenceManager
+class PersistenceManager : public MainframeComponent
 {
 public:
     void initialize();

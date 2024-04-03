@@ -38,12 +38,12 @@
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
-Mainframe::Mainframe(general_server_configuration &conf) : _cmd_line_process(), _database_process(), _config(conf) { }
+Mainframe::Mainframe(general_server_configuration &conf) : _config(conf) { }
 Mainframe::~Mainframe() { }
 
 void Mainframe::initialize_command_line()
 {
-	_cmd_line_process.initialize();
+	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->initialize();
 }
 
 bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
@@ -74,29 +74,33 @@ void CommandLineProcess::finalize()
 
 void CommandLineProcess::process()
 {
-	std::shared_ptr<CLICommand> command;
 
-	while ((command = _cli_cmd_queue.try_pop())) {
+	while (_cli_cmd_queue.size()) {
+		CLICommand command = _cli_cmd_queue.front();
+		_cli_cmd_queue.pop();
 		bool ret = false;
 		std::vector<std::string> separated_args;
-		boost::algorithm::split(separated_args, command->m_command, boost::algorithm::is_any_of(" "));
+		boost::algorithm::split(separated_args, command.m_command, boost::algorithm::is_any_of(" "));
 
 		std::function<bool(std::string)> cmd_func = find(separated_args[0]);
 
 		if (cmd_func) {
-			ret = cmd_func(command->m_command);
+			ret = cmd_func(command.m_command);
 		} else {
-			HLog(info) << "Command '" << command->m_command << "' not found!";
+			HLog(info) << "Command '" << command.m_command << "' not found!";
 		}
 
-		if (command->m_finish_func != nullptr)
-			command->m_finish_func(command, ret);
+		if (command.m_finish_func != nullptr)
+			command.m_finish_func(command, ret);
 	}
 }
 
 /* Public */
 Server::Server() : Mainframe(general_conf())
-{
+{   
+	auto now = std::chrono::system_clock::now();
+    auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
 	HLog(info) << "   _   _            _                  ";
 	HLog(info) << "  | | | |          (_)                 ";
 	HLog(info) << "  | |_| | ___  _ __ _ _______  _ __    ";
@@ -105,6 +109,8 @@ Server::Server() : Mainframe(general_conf())
 	HLog(info) << "  \\_| |_/\\___/|_|  |_/___\\___/|_| |_|  ";
     HLog(info) << "";
 
+	HLog(info) << "Copyright (c) https://github.com/horizonxyz/horizon";
+	HLog(info) << "Date: " << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d");
 	HLog(info) << "Compile CXX Flags: " << _CMAKE_CXX_FLAGS;
 	HLog(info) << "Version: " << VER_PRODUCTVERSION_STR;
 	HLog(info) << "Last Update: " << _DATE;
@@ -189,30 +195,24 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_database(db_tbl.get_or<std::string>("db", "horizon"));
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
-
-		general_conf().set_db_threads(tbl.get_or<uint8_t>("database_threads", 5));
 		
-		_database_process.initialize(general_conf().get_db_host(), 
+		register_component(DATABASE_MAINFRAME, std::make_shared<DatabaseProcess>(get_io_service()));
+		
+		get_component<DatabaseProcess>(DATABASE_MAINFRAME)->initialize(
+			general_conf().get_db_host(), 
 			general_conf().get_db_port(), 
 			general_conf().get_db_user(), 
 			general_conf().get_db_pass(), 
-			general_conf().get_db_database(), 
-			general_conf().get_db_threads());
-
-		mysqlx::Session session = _database_process.pool()->get_connection();
+			general_conf().get_db_database());
 
 		HLog(info) << "Database tcp://" << general_conf().get_db_user()
 			<< ":" << general_conf().get_db_pass()
 			<< "@" << general_conf().get_db_host()
 			<< ":" << general_conf().get_db_port()
 			<< "/" << general_conf().get_db_database()
-			<< (session.getSchema(general_conf().get_db_database()).existsInDatabase() ? " (connected)" : "(not connected)");
-
-		session.sql(std::string("USE ").append(general_conf().get_db_database())).execute();
-
-		_database_process.pool()->release_connection(std::move(session));
+			<< (test_database_connection() ? " (connected)" : "(not connected)");
 	}
-	catch (const mysqlx::Error& error) {
+	catch (const boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what() << ".";
 		return false;
 	}
@@ -235,13 +235,23 @@ void Server::initialize()
 		HLog(info) << "Command line not supported during test-runs... skipping.";
 	} else {
 		HLog(info) << "Initializing command line.";
-		_cmd_line_process.initialize();
+		register_component(CONSOLE_MAINFRAME, std::make_shared<CommandLineProcess>());
+		get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->initialize();
+	}
+
+	for (auto i = _components.begin(); i != _components.end(); i++) {
+		while (i->second->is_initialized() == false) {
+			HLog(error) << "Mainframe component '" << i->first << "': Offline";
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+
+		HLog(info) << "Mainframe component '" << i->first << "': Online";
 	}
 }
 
 void Server::finalize()
 {
-	_cmd_line_process.finalize();
+	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->finalize();
 }
 
 boost::asio::io_service &Server::get_io_service()

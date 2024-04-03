@@ -51,11 +51,7 @@ target_link_libraries(char
         ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		${MYSQL_LIBRARIES}
-		$<$<BOOL:${WIN32}>:unofficial::mysql-connector-cpp::connector>
-		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_LIBRARIES}>
-		$<$<BOOL:${UNIX}>:-lssl>
-		$<$<BOOL:${UNIX}>:-lcrypto>
-		$<$<BOOL:${UNIX}>:-lresolv>
+		OpenSSL::SSL
 )
 
 set(INCLUDE_DIRS

@@ -79,7 +79,7 @@ void CharSocket::on_close()
 	HLog(info) << "Closed connection from " << remote_ip_address() << ".";
 
 	/* Perform socket manager cleanup. */
-	ClientSocktMgr->set_socket_for_removal(shared_from_this());
+	sChar->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(shared_from_this());
 }
 
 void CharSocket::on_error()
@@ -94,7 +94,7 @@ void CharSocket::on_error()
 bool CharSocket::update()
 {
 	if (get_shutdown_stage() > SHUTDOWN_NOT_STARTED)
-		ClientSocktMgr->set_socket_for_removal(shared_from_this());
+		sChar->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(shared_from_this());
 
 	return BaseSocket::update();
 }

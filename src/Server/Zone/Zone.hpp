@@ -39,6 +39,10 @@
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Server.hpp"
 
+#define PERSISTENCE_MAINFRAME "persistence"
+#define SCRIPT_MAINFRAME "script"
+#define GAME_LOGIC_MAINFRAME "game_logic"
+
 namespace Horizon
 {
 	namespace Zone
@@ -88,11 +92,6 @@ public:
 
 	s_zone_server_configuration &config() { return _config; }
 
-	ClientSocketMgr &get_network_process() { return _client_socket_manager; }
-	GameLogicProcess &get_game_logic_process() { return _game_logic_process; }
-	PersistenceManager &get_persistence_process() { return _persistence_manager; }
-	ScriptManager &get_script_process() { return _script_manager; }
-
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 	void update(uint64_t diff);
@@ -102,10 +101,6 @@ protected:
 	TaskScheduler _task_scheduler;
 	boost::asio::deadline_timer _update_timer;
 	s_zone_server_configuration _config;
-	ClientSocketMgr _client_socket_manager;
-	GameLogicProcess _game_logic_process;
-	PersistenceManager _persistence_manager;
-	ScriptManager _script_manager;
 };
 
 class ZoneServer : public ZoneMainframe

@@ -74,12 +74,7 @@ target_link_libraries(zone
 		mcache
 		${Readline_LIBRARY}
 		${LUA_LIBRARIES}
-		${MYSQL_LIBRARIES}
-		$<$<BOOL:${WIN32}>:unofficial::mysql-connector-cpp::connector>
-		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_LIBRARIES}>
-		$<$<BOOL:${UNIX}>:-lssl>
-		$<$<BOOL:${UNIX}>:-lcrypto>
-		$<$<BOOL:${UNIX}>:-lresolv>
+		OpenSSL::SSL
 )
 
 set(INCLUDE_DIRS
@@ -91,7 +86,6 @@ CollectIncludeDirectories(
 	PUBLIC_INCLUDES
 )
 
-message(status ${MYSQL_INCLUDE_DIR})
 target_include_directories(zone
 	PUBLIC
 		${Boost_INCLUDE_DIRS}

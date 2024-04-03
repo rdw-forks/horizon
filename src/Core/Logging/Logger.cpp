@@ -31,24 +31,16 @@
 #include <iostream>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/console.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/log/support/date_time.hpp>
-#include <boost/log/utility/setup/console.hpp>
-
-Logger::Logger()
-{
-}
-
-Logger::~Logger()
-{
-	//
-}
 
 std::string Logger::color(uint16_t color) { return "\033[" + std::to_string(color) + "m"; }
  
 void Logger::colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm)
 {
-    static auto date_time_formatter = boost::log::expressions::stream << boost::log::expressions::format_date_time<boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f");
+    static auto date_time_formatter = boost::log::expressions::stream << boost::log::expressions::format_date_time<boost::posix_time::ptime >("TimeStamp", "%H:%M:%S");
 
     strm << "[";
     date_time_formatter(rec, strm);

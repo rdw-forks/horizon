@@ -50,9 +50,6 @@ class AcceptSocketMgr : public SocketMgr<SocketType>
 	typedef std::map<uint32_t, std::shared_ptr<SocketType>> SocketMap;
 	typedef SocketMgr<SocketType> BaseSocketMgr;
 public:
-	AcceptSocketMgr() { }
-	~AcceptSocketMgr() { }
-
 	/**
 	 * @brief Initialize and start accepting connections asynchronously.
 	 *        This method also starts the networking threads for accepted sockets.
@@ -82,9 +79,6 @@ public:
 		HLog(info) << "Networking initialized, listening on " << listen_ip << "@" << port << ".";
 		HLog(info) << "Maximum Network Threads: " << threads;
 
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, true);
-
 		return true;
 	}
 
@@ -92,7 +86,7 @@ public:
 	 * @brief Stop the Acceptor network and clear the client socket map.
 	 * - Called from the main thread only.
 	 */
-	virtual void stop_network() override
+	virtual bool stop_network() override
 	{
 		if (_acceptor->is_open())
 			_acceptor->close();
@@ -100,8 +94,8 @@ public:
 		BaseSocketMgr::stop_network();
 
 		_socket_map.clear();
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, false);
+
+		return true;
 	}
 
 	/**
@@ -161,8 +155,6 @@ public:
 			}
 		}
 	}
-
-	bool is_initialized() { return _is_initialized.load(); }
 
 private:
 	std::unique_ptr<AsyncAcceptor> _acceptor;       ///< unique pointer to an AsyncAcceptor object.

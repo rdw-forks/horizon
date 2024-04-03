@@ -158,20 +158,22 @@ void Player::stop_movement()
 
 bool Player::save()
 {
-	mysqlx::Session session = sZone->database_pool()->get_connection();
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
+	
 	try {
-		session.sql("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
+		boost::mysql::statement stmt = conn->prepare_statement("UPDATE `characters` SET `account_id` = ?, `slot` = ?, `name` = ?, `online` = ?, `gender` = ?, `unban_time` = ?, `rename_count` = ?,"
 			"`last_unique_id` = ?, `hotkey_row_index` = ?, `change_slot_count` = ?, `font` = ?, `show_equip` = ?, `allow_party` = ?, `partner_aid` = ?, `father_aid` = ?, `mother_aid` = ?,"
 			"`child_aid` = ?, `party_id` = ?, `guild_id` = ?, `pet_id` = ?, `homun_id` = ?, `elemental_id` = ?, `current_map` = ?, `current_x` = ?, `current_y` = ?,"
 			"`saved_map` = ?, `saved_x` = ?, `saved_y` = ? "
-			"WHERE `id` = ?")
-			.bind(account()._account_id, character()._slot, name(), character()._online, character()._gender == ENTITY_GENDER_MALE ? "M" : "F", character()._unban_time, character()._rename_count,
+			"WHERE `id` = ?");
+		auto b1 = stmt.bind(account()._account_id, character()._slot, name(), character()._online, character()._gender == ENTITY_GENDER_MALE ? "M" : "F", character()._unban_time, character()._rename_count,
 				character()._last_unique_id, character()._hotkey_row_index, character()._change_slot_count, character()._font, character()._show_equip, character()._allow_party,
 				character()._partner_aid, character()._father_aid, character()._mother_aid, character()._child_aid, character()._party_id, character()._guild_id, character()._pet_id,
 				character()._homun_id, character()._elemental_id, map()->get_name(), map_coords().x(), map_coords().y(), character()._saved_map, character()._saved_x, character()._saved_y,
 				character()._character_id
-			)
-			.execute();
+			);
+		boost::mysql::results results;
+		conn->execute(b1, results);
 
 		// Status
 		if (status() != nullptr)
@@ -187,69 +189,65 @@ bool Player::save()
 				s->save();
 		}
 	}
-	catch (mysqlx::Error& error) {
+	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "Player::save:" << error.what();
-		sZone->database_pool()->release_connection(std::move(session));
 		return false;
 	}
 	catch (std::exception& error) {
 		HLog(error) << "Player::save:" << error.what();
-		sZone->database_pool()->release_connection(std::move(session));
 		return false;
 	}
-	
-	sZone->database_pool()->release_connection(std::move(session));
 	
 	return true;
 }
 
 bool Player::load()
 {
-	mysqlx::Session session = sZone->database_pool()->get_connection();
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 	
 	try {
-		mysqlx::RowResult rr = session.sql("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
-			"`current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?")
-			.bind(character()._character_id)
-			.execute();
+		boost::mysql::statement stmt = conn->prepare_statement("SELECT `id`, `account_id`, `slot`, `name`, `font`, `gender`, `last_unique_id`, `saved_map`, `saved_x`, `saved_y`, "
+			"`current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?");
+		auto b1 = stmt.bind(character()._character_id);
+		boost::mysql::results results;
+		conn->execute(b1, results);
 
-		mysqlx::Row r = rr.fetchOne();
-
-		if (r.isNull()) {
+		if (results.rows().empty()) {
 			HLog(error) << "Error loading player, character with ID " << character()._character_id << " does not exist.";
 			return false;
 		}
 
+		auto r = results.rows()[0];
 		/* Initialize Player Model */
-		character()._character_id = r[0].get<int>();
-		account()._account_id = r[1].get<int>();
-		character()._slot = r[2].get<int>();
-		set_name(r[3].get<std::string>());
+		character()._character_id = r[0].as_uint64();
+		account()._account_id = r[1].as_uint64();
+		character()._slot = r[2].as_int64();
+		set_name(r[3].as_string());
 		set_posture(POSTURE_STANDING);
-		character()._font = r[4].get<int>();
+		character()._font = r[4].as_uint64();
 
-		std::string char_gender = r[5].get<std::string>();
+		std::string char_gender = r[5].as_string();
 
 		character()._gender = strcmp(char_gender.c_str(), "U") == 0
 			? (strcmp(account()._account_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE)
 			: strcmp(char_gender.c_str(), "M") == 0 ? ENTITY_GENDER_MALE : ENTITY_GENDER_FEMALE;
 
 		character()._online = 1;
-		set_last_unique_id((uint64_t)r[6].get<int64_t>());
+		set_last_unique_id((uint64_t)r[6].as_uint64());
 
-		character()._saved_map = r[7].get<std::string>();;
-		character()._saved_x = r[8].get<int>();
-		character()._saved_y = r[9].get<int>();
+		character()._saved_map = r[7].as_string();
+		character()._saved_x = r[8].as_uint64();
+		character()._saved_y = r[9].as_uint64();
 
 		/**
 		 * Set map and coordinates for entity.
 		 */
-		MapCoords mcoords(r[11].get<int>(), r[12].get<int>());
-		std::shared_ptr<Map> map = sZone->get_game_logic_process().get_map_process().get_map(r[10].get<std::string>());
+		MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
+		std::shared_ptr<Map> map = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map(r[10].as_string());
 
 		if (map == nullptr) { 
-			HLog(warning) << "Player::load: Map " << r[10].get<std::string>() << " does not exist, setting to default map.";
-			map = sZone->get_game_logic_process().get_map_process().get_map("prontera");
+			HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
+			map = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map("prontera");
 		}
 		
 		get_session()->set_map_name(map->get_name());
@@ -257,7 +255,7 @@ bool Player::load()
 		set_map(map);
 		set_map_coords(mcoords);
 	}
-	catch (mysqlx::Error& error) {
+	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "Player::load:" << error.what();
 		return false;
 	}
@@ -265,8 +263,6 @@ bool Player::load()
 		HLog(error) << "Player::load:" << error.what();
 		return false;
 	}
-	
-	sZone->database_pool()->release_connection(std::move(session));
 
 	return true;
 }

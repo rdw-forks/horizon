@@ -44,16 +44,11 @@ add_executable(auth
 
 target_link_libraries(auth
 	PUBLIC
-        ${Boost_LIBRARIES}
+		${Boost_LIBRARIES}
         networking
         ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
-		${MYSQL_LIBRARIES}
-		$<$<BOOL:${WIN32}>:unofficial::mysql-connector-cpp::connector>
-		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_LIBRARIES}>
-		$<$<BOOL:${UNIX}>:-lssl>
-		$<$<BOOL:${UNIX}>:-lcrypto>
-		$<$<BOOL:${UNIX}>:-lresolv>
+		OpenSSL::SSL
 )
 
 target_precompile_headers(auth
@@ -84,10 +79,6 @@ target_include_directories(auth
         ${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
-		${SQLPP11_INCLUDE_DIR}
-		${MYSQL_INCLUDE_DIR}
-		$<$<BOOL:${WIN32}>:${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}>
-		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_INCLUDE_DIR}>
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 )

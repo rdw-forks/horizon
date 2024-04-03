@@ -43,7 +43,11 @@
 #include <boost/filesystem.hpp>
 #include <boost/bind/placeholders.hpp>
 
-#include <mysqlx/xdevapi.h>
+#include <boost/mysql/error_with_diagnostics.hpp>
+#include <boost/mysql/handshake_params.hpp>
+#include <boost/mysql/results.hpp>
+#include <boost/mysql/static_results.hpp>
+#include <boost/mysql/tcp_ssl.hpp>
 
 #ifndef SOL_ALL_SAFETIES_ON
 #define SOL_ALL_SAFETIES_ON 1

@@ -60,42 +60,46 @@ ZoneClientInterface::~ZoneClientInterface()
 
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
-	mysqlx::Session session = sZone->database_pool()->get_connection();
-	mysqlx::RowResult rr = session.sql("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?")
-		.bind(account_id, auth_code)
-		.execute();
-	mysqlx::Row r = rr.fetchOne();
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 
-	if (r.isNull()) {
+	boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?");
+	auto b1 = stmt.bind(account_id, auth_code);
+	boost::mysql::results results;
+	conn->execute(b1, results);
+
+	if (results.rows().empty()) {
 		HLog(error) << "Login error! Session data for game account " << account_id << " and authentication code " << auth_code << " does not exist.";
 		return false;
 	}
 
-	std::string current_server = r[0].get<std::string>();
+	auto r = results.rows()[0];
+
+	std::string current_server = r[0].as_string();
 	if (current_server.compare("Z") == 0) { // Already on Zone.
 		ZC_REFUSE_ENTER pkt(get_session());
 		pkt.deliver(ZONE_SERV_ERROR_REJECT);
 		return false;
 	}
 
-	mysqlx::RowResult rr2 = session.sql("SELECT `gender`, `group_id` FROM `game_accounts` WHERE `id` = ?")
-		.bind(account_id)
-		.execute();
-	mysqlx::Row r2 = rr2.fetchOne();
+	stmt = conn->prepare_statement("SELECT `gender`, `group_id` FROM `game_accounts` WHERE `id` = ?");
+	auto b2 = stmt.bind(account_id);
+	conn->execute(b2, results);
 	
-	if (r2.isNull()) {
+	if (results.rows().empty()) {
 		HLog(error) << "Login error! Game account with id " << account_id << " does not exist.";
 		return false;
 	}
 	
-	session.sql("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?")
-		.bind("Z", account_id, auth_code)
-		.execute();
+	auto r2 = results.rows()[0];
+
+	stmt = conn->prepare_statement("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?");
+	auto b3 = stmt.bind("Z", account_id, auth_code);
+	conn->execute(b3, results);
 
 	uint64_t uuid = sZone->to_uuid((int8_t) ENTITY_PLAYER, account_id, char_id, 0);
 	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), uuid);
 
-	pl->create(char_id, r2[0].get<std::string>(), r2[1].get<int>());
+	pl->create(char_id, r2[0].as_string(), r2[1].as_int64());
 
 	ZC_AID zc_aid(get_session());
 	zc_aid.deliver(pl->guid());
@@ -110,9 +114,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	// The player is initialized within the map container, so the player must be added to the session first.
 	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
 	
-	sZone->get_network_process().set_socket_for_removal(get_session()->get_socket());
-	
-	sZone->database_pool()->release_connection(std::move(session));
+	sZone->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(get_session()->get_socket());
 	
 	HLog(info) << "Player (" << pl->guid() << ") " << pl->name() << " has logged in.";
 	return true;
@@ -161,27 +163,30 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	sZone->get_game_logic_process().get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
+	sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
 bool ZoneClientInterface::update_session(int32_t account_id)
 {
-	mysqlx::Session session = sZone->database_pool()->get_connection();
-	mysqlx::RowResult rr = session.sql("SELECT `current_server` FROM `session_data` WHERE `id` = ?")
-		.bind(account_id)
-		.execute();
-	mysqlx::Row r = rr.fetchOne();
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 
+	boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `id` = ?");
+	auto b1 = stmt.bind(account_id);
+	boost::mysql::results results;
+	conn->execute(b1, results);
+	
 	HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
 
-	if (r.isNull()) {
+	if (results.rows().empty()) {
 		ZC_ACK_REQ_DISCONNECT pkt(get_session());
 		HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
 		pkt.deliver(0);
 		return false;
 	}
 
-	std::string current_server = r[0].get<std::string>();
+	auto r = results.rows()[0];
+
+	std::string current_server = r[0].as_string();
 
 	if (current_server.compare("C") != 0) {
 		ZC_ACK_REQ_DISCONNECT pkt(get_session());
@@ -190,11 +195,10 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 		return false;
 	}
 	
-	session.sql("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?")
-		.bind(account_id, std::time(nullptr))
-		.execute();
+	stmt = conn->prepare_statement("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?");
+	auto b2 = stmt.bind(account_id, std::time(nullptr));
+	conn->execute(b2, results);
 
-	sZone->database_pool()->release_connection(std::move(session));
 	return true;
 }
 bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t dir)
@@ -669,7 +673,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 
 	HLog(debug) << name << " : " << message;
 
-	std::shared_ptr<Horizon::Zone::Entities::Player> player = sZone->get_game_logic_process().get_map_process().find_player(name);
+	std::shared_ptr<Horizon::Zone::Entities::Player> player = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().find_player(name);
 
 	ZC_ACK_WHISPER02 pkt(get_session());
 	if (player != nullptr)

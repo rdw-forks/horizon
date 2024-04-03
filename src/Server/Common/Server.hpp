@@ -31,7 +31,11 @@
 #define HORIZON_SERVER_HPP
 
 #include "CLI/CLICommand.hpp"
-#include "Core/Database/ConnectionPool.hpp"
+
+#define MAX_MAINFRAME_COMPONENTS 5
+#define DATABASE_MAINFRAME "database"
+#define CONSOLE_MAINFRAME "console"
+#define NETWORK_MAINFRAME "network"
 
 using boost::asio::ip::tcp;
 
@@ -50,12 +54,18 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
-class CommandLineProcess
+class MainframeComponent
 {
 public:
-	CommandLineProcess() { }
-	~CommandLineProcess() { }
+	virtual void initialize() { }
+	virtual void finalize() { }
 
+	virtual bool is_initialized() { return false; }
+};
+
+class CommandLineProcess : public MainframeComponent
+{
+public:
 	void process();
 	void queue(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
 	void add_function(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
@@ -67,8 +77,8 @@ public:
 		return (it != _cli_function_map.end()) ? it->second : nullptr;
 	}
 
-	void initialize();
-	void finalize();
+	void initialize() override;
+	void finalize() override;
 
 	/**
 	 * CLI Commands
@@ -80,28 +90,52 @@ public:
 private:
 	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
 	// CLI command holder to be thread safe
-	ThreadSafeQueue<CLICommand> _cli_cmd_queue;
+	std::queue<CLICommand> _cli_cmd_queue;
 	std::thread _cli_thread;
 	std::atomic<bool> _is_initialized;
 };
 
-class DatabaseProcess
+class DatabaseProcess : public MainframeComponent
 {
 public:
-	DatabaseProcess() { }
-	~DatabaseProcess() { }
-
-	void initialize(std::string host, int port, std::string user, std::string pass, std::string database, int threads) 
+	DatabaseProcess(boost::asio::io_context &io_context) : _io_context(io_context) { }
+	
+	void initialize() override { HLog(error) << "Database not configured"; }
+	void initialize(std::string host, int port, std::string user, std::string pass, std::string database)
 	{
-		_mysql_connections = std::make_shared<ConnectionPool>(host, port, user, pass, database, threads);
+		try {
+    		boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::tls_client);
+    		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_io_context.get_executor(), ssl_ctx);
+    		boost::asio::ip::tcp::resolver resolver(_io_context.get_executor());
+    		auto endpoints = resolver.resolve(host, std::to_string(port));
+    		boost::mysql::handshake_params params(user, pass, database);
+    		_connection->connect(*endpoints.begin(), params);
+		} catch (boost::mysql::error_with_diagnostics &error) {
+			HLog(error) << error.what();
+		}
+
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
 	}
-	std::shared_ptr<ConnectionPool> pool() { return _mysql_connections; }
+
+	void finalize() override 
+	{
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false);
+	}
+
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection() { return _connection; }
+
+	bool is_initialized() { return _is_initialized.load(); }
 protected:
-	std::shared_ptr<ConnectionPool> _mysql_connections;
+    std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection;
+	boost::asio::io_context &_io_context;
+	std::atomic<bool> _is_initialized;
 };
 
 class Mainframe
 {
+	typedef std::map<std::string, std::shared_ptr<MainframeComponent>> MainframeComponents;
 public:
 	Mainframe(general_server_configuration &config);
 	~Mainframe();
@@ -111,15 +145,25 @@ public:
 
 	struct general_server_configuration &general_conf() { return this->_config; }
 
-	CommandLineProcess &get_command_line_process() { return _cmd_line_process; }
-	DatabaseProcess &get_databse_process() { return _database_process; }
-	
+	template <typename T>
+	std::shared_ptr<T> get_component(std::string name) 
+	{ 
+		return std::static_pointer_cast<T>(_components.find(name)->second);
+	}
+
+	template <typename T>
+	void register_component(std::string name, T &&component) { _components.insert(std::pair(name, std::make_shared<T>(std::move(component)))); }
+
+	template <typename T>
+	void register_component(std::string name, std::shared_ptr<T> component) { _components.insert(std::pair(name, component)); }
+
+	int get_component_count() { return _components.size(); }
+
 	/* Command Line Interface */
 	void initialize_command_line();
 
 protected:
-	CommandLineProcess _cmd_line_process;
-	DatabaseProcess _database_process;
+	MainframeComponents _components;
 	general_server_configuration _config;
 };
 
@@ -143,9 +187,27 @@ public:
 	struct general_server_configuration &general_conf() { return this->general_config; }
 	/* Common Configuration */
 	bool parse_common_configs(sol::table &cfg);
-    
-	std::shared_ptr<ConnectionPool> database_pool() { return _database_process.pool(); }
-	
+
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_database_connection() 
+	{ 
+		return get_component<DatabaseProcess>(DATABASE_MAINFRAME)->get_connection();
+	}
+
+	bool test_database_connection()
+	{
+		try {
+			const char *sql = "SELECT 'Hello World!'";
+			boost::mysql::results result;
+			get_database_connection()->execute(sql, result);
+
+			if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
+				return true;
+		} catch (boost::mysql::error_with_diagnostics &error) {
+			HLog(error) << error.what();
+		}
+		return false;
+	}
+
 protected:
 	/* General Configuration */
 	struct general_server_configuration general_config;

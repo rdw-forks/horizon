@@ -425,24 +425,25 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Entities::Creature> creat
 
 bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
-	mysqlx::Session session = sZone->database_pool()->get_connection();
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 	
 	try {
-		mysqlx::RowResult rr = session.sql("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
+		boost::mysql::statement stmt = conn->prepare_statement("SELECT `job_id`, `strength`, `agility`, `vitality`, `intelligence`, `dexterity`, "
 			"`luck`, `status_points`, `skill_points`, `hp`, `sp`, `maximum_hp`, `maximum_sp`, `base_level`, `job_level`, `base_experience`, `job_experience`, "
 			"`hair_color_id`, `cloth_color_id`, `head_top_view_id`, `head_mid_view_id`, `head_bottom_view_id`, `hair_style_id`, `shield_view_id`, `weapon_view_id`, `robe_view_id`, "
-			"`body_id`, `zeny`, `virtue`, `honor`, `manner` FROM `character_status` WHERE `id` = ?")
-			.bind(pl->character()._character_id)
-			.execute();
+			"`body_id`, `zeny`, `virtue`, `honor`, `manner` FROM `character_status` WHERE `id` = ?");
+		auto b1 = stmt.bind(pl->character()._character_id);
+		boost::mysql::results results;
+		conn->execute(b1, results);
 
-		mysqlx::Row r = rr.fetchOne();
-
-		if (r.isNull()) {
+		if (results.rows().empty()) {
 			HLog(error) << "Error loading status, character with ID " << pl->character()._character_id << " does not exist.";
 			return false;
 		}
 
-		int32_t job_id = r[0].get<int>();
+		auto r = results.rows()[0];
+
+		int32_t job_id = r[0].get_uint64();
 
 		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(job_id);
 		std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
@@ -451,12 +452,12 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		pl->set_job_id(job_id);
 		pl->set_job(job);
 
-		int32_t str = r[1].get<int>();
-		int32_t agi = r[2].get<int>();
-		int32_t vit = r[3].get<int>();
-		int32_t _int = r[4].get<int>();
-		int32_t dex = r[5].get<int>();
-		int32_t luk = r[6].get<int>();
+		int32_t str = r[1].as_uint64();
+		int32_t agi = r[2].as_uint64();
+		int32_t vit = r[3].as_uint64();
+		int32_t _int = r[4].as_uint64();
+		int32_t dex = r[5].as_uint64();
+		int32_t luk = r[6].as_uint64();
 
 		/**
 		 * Main Attributes.
@@ -477,50 +478,50 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		set_dexterity_cost(std::make_shared<DexterityPointCost>(_entity, get_required_statpoints(dex, dex + 1)));
 		set_luck_cost(std::make_shared<LuckPointCost>(_entity, get_required_statpoints(luk, luk + 1)));
 
-		set_status_point(std::make_shared<StatusPoint>(_entity, uint32_t(r[7].get<int>())));
-		set_skill_point(std::make_shared<SkillPoint>(_entity, uint32_t(r[8].get<int>())));
+		set_status_point(std::make_shared<StatusPoint>(_entity, uint32_t(r[7].as_uint64())));
+		set_skill_point(std::make_shared<SkillPoint>(_entity, uint32_t(r[8].as_uint64())));
 
-		set_current_hp(std::make_shared<CurrentHP>(_entity, uint32_t(r[9].get<int>())));
-		set_current_sp(std::make_shared<CurrentSP>(_entity, uint32_t(r[10].get<int>())));
-		set_max_hp(std::make_shared<MaxHP>(_entity, uint32_t(r[11].get<int>())));
-		set_max_sp(std::make_shared<MaxSP>(_entity, uint32_t(r[12].get<int>())));
+		set_current_hp(std::make_shared<CurrentHP>(_entity, uint32_t(r[9].as_uint64())));
+		set_current_sp(std::make_shared<CurrentSP>(_entity, uint32_t(r[10].as_uint64())));
+		set_max_hp(std::make_shared<MaxHP>(_entity, uint32_t(r[11].as_uint64())));
+		set_max_sp(std::make_shared<MaxSP>(_entity, uint32_t(r[12].as_uint64())));
 
-		uint32_t base_level = uint32_t(r[13].get<int>());
-		uint32_t job_level = uint32_t(r[14].get<int>());
+		uint32_t base_level = uint32_t(r[13].as_uint64());
+		uint32_t job_level = uint32_t(r[14].as_uint64());
 
 		set_base_level(std::make_shared<BaseLevel>(_entity, base_level));
 		set_job_level(std::make_shared<JobLevel>(_entity, job_level));
 
-		set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(r[15].get<int>())));
-		set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(r[16].get<int>())));
+		set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(r[15].as_uint64())));
+		set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(r[16].as_uint64())));
 		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
 		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
 		set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
 
 		set_base_appearance(std::make_shared<BaseAppearance>(_entity, job_id));
-		set_hair_color(std::make_shared<HairColor>(_entity, uint32_t(r[17].get<int>())));
-		set_cloth_color(std::make_shared<ClothColor>(_entity, uint32_t(r[18].get<int>())));
-		set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, uint32_t(r[19].get<int>())));
-		set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, uint32_t(r[20].get<int>())));
-		set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, uint32_t(r[21].get<int>())));
-		set_hair_style(std::make_shared<HairStyle>(_entity, uint32_t(r[22].get<int>())));
-		set_shield_sprite(std::make_shared<ShieldSprite>(_entity, uint32_t(r[23].get<int>())));
-		set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, uint32_t(r[24].get<int>())));
-		set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(r[25].get<int>())));
-		set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(r[26].get<int>())));
+		set_hair_color(std::make_shared<HairColor>(_entity, uint32_t(r[17].as_uint64())));
+		set_cloth_color(std::make_shared<ClothColor>(_entity, uint32_t(r[18].as_uint64())));
+		set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, uint32_t(r[19].as_uint64())));
+		set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, uint32_t(r[20].as_uint64())));
+		set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, uint32_t(r[21].as_uint64())));
+		set_hair_style(std::make_shared<HairStyle>(_entity, uint32_t(r[22].as_uint64())));
+		set_shield_sprite(std::make_shared<ShieldSprite>(_entity, uint32_t(r[23].as_uint64())));
+		set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, uint32_t(r[24].as_uint64())));
+		set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(r[25].as_uint64())));
+		set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(r[26].as_uint64())));
 
 		/**
 		 * Misc
 		 */
-		set_zeny(std::make_shared<Zeny>(_entity, int32_t(r[27].get<int>())));
-		set_virtue(std::make_shared<Virtue>(_entity, int32_t(r[28].get<int>())));
-		set_honor(std::make_shared<Honor>(_entity, int32_t(r[29].get<int>())));
-		set_manner(std::make_shared<Manner>(_entity, int32_t(r[30].get<int>())));
+		set_zeny(std::make_shared<Zeny>(_entity, int32_t(r[27].as_uint64())));
+		set_virtue(std::make_shared<Virtue>(_entity, int32_t(r[28].as_int64())));
+		set_honor(std::make_shared<Honor>(_entity, int32_t(r[29].as_uint64())));
+		set_manner(std::make_shared<Manner>(_entity, int32_t(r[30].as_int64())));
 
 		HLog(info) << "Status loaded for character " << pl->name() << "(" << pl->character()._character_id << ").";
 
 	}
-	catch (mysqlx::Error& error) {
+	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "Status::load:" << error.what();
 		return false;
 	}
@@ -528,35 +529,34 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		HLog(error) << "Status::load:" << error.what();
 		return false;
 	}
-	
-	sZone->database_pool()->release_connection(std::move(session));
 	
 	return true;
 }
 
 bool Status::save(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 {
-	mysqlx::Session session = sZone->database_pool()->get_connection();
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 	
 	try {
-		session.sql("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
+		boost::mysql::statement stmt = conn->prepare_statement("UPDATE `character_status` SET `job_id` = ?, `base_level` = ?, `job_level` = ?, `base_experience` = ?, `job_experience` = ?, "
 			"`zeny` = ?, `strength` = ?, `agility` = ?, `vitality` = ?, `intelligence` = ?, `dexterity` = ?, `luck` = ?, `maximum_hp` = ?, `hp` = ?, `maximum_sp` = ?, `sp` = ?, "
 			"`status_points` = ?, `skill_points` = ?, `body_state` = ?, `virtue` = ?, `honor` = ?, `manner` = ?, `hair_style_id` = ?, `hair_color_id` = ?, `cloth_color_id` = ?, `body_id` = ?, "
 			"`weapon_view_id` = ?, `shield_view_id` = ?, `head_top_view_id` = ?, `head_mid_view_id` = ?, `head_bottom_view_id` = ?, `robe_view_id` = ? "
-			"WHERE id = ?")
-			.bind(pl->job_id(), base_level()->total(), job_level()->total(), base_experience()->total(),
-				job_experience()->total(), zeny()->total(), strength()->total(), agility()->total(), vitality()->total(),
-				intelligence()->total(), dexterity()->total(),
-				luck()->total(), max_hp()->total(), current_hp()->total(), max_sp()->total(), current_sp()->total(), status_point()->total(),
-				skill_point()->total(), 0, virtue()->total(), honor()->total(), manner()->total(), hair_style()->get(),
-				hair_color()->get(), cloth_color()->get(), body_style()->get(), weapon_sprite()->get(), shield_sprite()->get(),
-				head_top_sprite()->get(), head_mid_sprite()->get(), head_bottom_sprite()->get(), robe_sprite()->get(),
-				pl->character()._character_id)
-			.execute();
+			"WHERE id = ?");
+		auto b1 = stmt.bind(pl->job_id(), base_level()->total(), job_level()->total(), base_experience()->total(),
+			job_experience()->total(), zeny()->total(), strength()->total(), agility()->total(), vitality()->total(),
+			intelligence()->total(), dexterity()->total(),
+			luck()->total(), max_hp()->total(), current_hp()->total(), max_sp()->total(), current_sp()->total(), status_point()->total(),
+			skill_point()->total(), 0, virtue()->total(), honor()->total(), manner()->total(), hair_style()->get(),
+			hair_color()->get(), cloth_color()->get(), body_style()->get(), weapon_sprite()->get(), shield_sprite()->get(),
+			head_top_sprite()->get(), head_mid_sprite()->get(), head_bottom_sprite()->get(), robe_sprite()->get(),
+			pl->character()._character_id);
+		boost::mysql::results results;
+		conn->execute(b1, results);
 
 		HLog(info) << "Status saved for character " << pl->name() << "(" << pl->character()._character_id << ").";
 	}
-	catch (mysqlx::Error& error) {
+	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "Status::save:" << error.what();
 		return false;
 	}
@@ -564,8 +564,6 @@ bool Status::save(std::shared_ptr<Horizon::Zone::Entities::Player> pl)
 		HLog(error) << "Status::save:" << error.what();
 		return false;
 	}
-	
-	sZone->database_pool()->release_connection(std::move(session));
 	
 	return true;
 }

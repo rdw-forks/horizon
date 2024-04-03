@@ -201,7 +201,7 @@ public:
 
 /* Structure */
 	uint32_t _character_id{ 0 };
-	char _email[MAX_EMAIL_LENGTH]{ 0 };
+	char _email[CLIENT_MAX_EMAIL_LENGTH]{ 0 };
 };
 
 enum {
@@ -240,6 +240,8 @@ public:
 	void deserialize(ByteBuffer &buf);
 
 /* Structure */
+	uint32_t _character_id{ 0 };
+	char _email[CLIENT_MAX_EMAIL_LENGTH]{ 0 };
 };
 
 enum {

@@ -42,6 +42,7 @@
 #include "Server/Zone/Script/Components/MonsterComponent.hpp"
 #include "Server/Zone/Script/Components/NPCComponent.hpp"
 #include "Server/Zone/Script/Components/PlayerComponent.hpp"
+#include "Server/Common/Server.hpp"
 
 namespace Horizon
 {
@@ -53,7 +54,7 @@ namespace Entities
 	class Player;
 	class Monster;
 }
-class ScriptManager
+class ScriptManager : public MainframeComponent
 {
 public:
 	ScriptManager();

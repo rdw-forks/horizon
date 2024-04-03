@@ -32,8 +32,10 @@
 class CLICommand
 {
 public:
-	typedef void (*FinishFunc) (std::shared_ptr<CLICommand> cmd, bool success);
+	typedef void (*FinishFunc) (CLICommand cmd, bool success);
 
+	CLICommand() { };
+	
 	CLICommand(char *command, FinishFunc finish_func)
 	: m_command(command), m_finish_func(finish_func)
 	{
@@ -44,8 +46,18 @@ public:
 	{
 	}
 
+	CLICommand(CLICommand &command)
+	{
+		m_command = command.m_command;
+		m_finish_func = command.m_finish_func;
+	}
+
+	CLICommand operator=(CLICommand &command)
+	{
+		return CLICommand(command);
+	}
+
 	std::string m_command;            ///< Command string.
 	FinishFunc m_finish_func;         ///< Completion handler function.
-	bool terminal_shutdown_signal;    ///< Terminal shutdown signal.
 };
 #endif //HORIZON_CLICOMMAND_HPP

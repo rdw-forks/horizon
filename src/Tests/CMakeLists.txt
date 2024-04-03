@@ -65,22 +65,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${CORE_DIR}/Logging/Logger.hpp)
 		set (ADD_LIBS -lpthread)
 	elseif (TEST_NAME STREQUAL "MySQLTest")
-		set (ADD_SOURCES
-			${CORE_DIR}/Logging/Logger.cpp
-			${CORE_DIR}/Logging/Logger.hpp)
-		set(ADD_INCLUDE_DIRS 
-			${MYSQL_INCLUDE_DIR} 
-			$<$<BOOL:${WIN32}>:${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}>
-			$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_INCLUDE_DIR}>
-		)
-		set(ADD_LIBS 
-			${MYSQL_LIBRARY}
-			$<$<BOOL:${WIN32}>:unofficial::mysql-connector-cpp::connector>
-			$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_LIBRARIES}>
-			$<$<BOOL:${UNIX}>:-lssl>
-			$<$<BOOL:${UNIX}>:-lcrypto>
-			$<$<BOOL:${UNIX}>:-lresolv>
-		)
+		set (ADD_LIBS OpenSSL::SSL)
 	endif ()
 
 	# Add test executable.

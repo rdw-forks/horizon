@@ -42,7 +42,7 @@ namespace Zone
 /**
  * Manager of client sockets
  */
-class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>
+class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>, public MainframeComponent
 {
 	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket> BaseSocketMgr;
 public:
@@ -52,8 +52,28 @@ public:
 		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
 			return false;
 
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
 		return true;
 	}
+
+	bool stop()
+	{
+		if (!BaseSocketMgr::stop_network())
+			return false;
+
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false);
+		return true;
+	}
+
+	virtual bool is_initialized() override { return _is_initialized.load(); }
+
+	virtual void initialize() override { this->initialize(); }
+	virtual void finalize() override { stop(); }
+
+protected:
+	std::atomic<bool> _is_initialized;
 };
 }
 }

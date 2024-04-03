@@ -57,7 +57,7 @@ horizon_config = {
         user = 'horizon',
         db = 'horizon',
         pass = 'horizon',
-        port = 33060
+        port = 3306
     },
 
 	database_threads = 5,

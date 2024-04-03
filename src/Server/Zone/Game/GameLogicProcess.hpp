@@ -36,7 +36,7 @@ namespace Horizon
 {
 namespace Zone
 {
-class GameLogicProcess
+class GameLogicProcess : public MainframeComponent
 {
 public:
     void initialize();

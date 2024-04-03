@@ -42,7 +42,8 @@ using namespace Horizon::Zone;
 using namespace Horizon::Zone::Entities;
 
 ScriptManager::ScriptManager()
-: _lua_state(std::make_shared<sol::state>()),
+: MainframeComponent(),
+_lua_state(std::make_shared<sol::state>()),
 _player_component(std::make_shared<PlayerComponent>()),
 _npc_component(std::make_shared<NPCComponent>()),
 _monster_component(std::make_shared<MonsterComponent>()),

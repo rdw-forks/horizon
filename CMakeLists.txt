@@ -101,7 +101,7 @@ check_cxx_source_compiles("
 #################################
 # Boost Library
 #################################
-set(BOOST_REQUIRED_VERSION 1.69.0)
+set(BOOST_REQUIRED_VERSION 1.82.0)
 
 set(BOOST_COMPONENTS locale filesystem log log_setup)
 
@@ -109,9 +109,15 @@ if (WITH_TESTS)
 	set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
 endif()
 
-message(STATUS "Boost Components: ${BOOST_COMPONENTS}")
-
 find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
+
+# Fix: error LNK2038: mismatch detected for 'boost_log_abi': value 'v2_mt_nt6' doesn't match value 'v2_mt_nt62'
+add_definitions(-D_WIN32_WINNT=0x0602)
+
+#################
+# OpenSSL Library
+#################
+find_package(OpenSSL REQUIRED)
 
 #################
 # Readline Library
@@ -137,17 +143,6 @@ endif()
 # Find ZLIB
 #################
 find_package(ZLIB REQUIRED)
-
-#################
-# Find MySQL
-#################	
-if (WIN32)
-find_package(libmysql REQUIRED)
-find_package(unofficial-mysql-connector-cpp CONFIG REQUIRED)
-elseif(UNIX)
-find_package(MySQL REQUIRED)
-include(FindMySQLCPPConn8)
-endif()
 
 #################
 # Horizon Project Source

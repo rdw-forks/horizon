@@ -42,7 +42,6 @@ using namespace Horizon::Auth;
 AuthServer::AuthServer()
 : Server(), _update_timer(_io_service)
 {
-	initialize_cli_commands();
 }
 
 /**
@@ -152,32 +151,27 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	game_account_gender_type gender = separated_args.size() >= 7 ? ((separated_args[6] == "M" ? ACCOUNT_GENDER_MALE : (separated_args[6] == "F" ? ACCOUNT_GENDER_FEMALE : ACCOUNT_GENDER_NONE))) : ACCOUNT_GENDER_NONE;
 	int group_id = separated_args.size() >= 8 ? std::stoi(separated_args[7]) : 0;
 	int character_slots = separated_args.size() >= 9 ? std::stoi(separated_args[8]) : 3;
-
-	mysqlx::Session db_session = sAuth->database_pool()->get_connection();
 	
 	try {
-		auto res = db_session.sql("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username).execute();
-		mysqlx::Row r = res.fetchOne();
+		auto b1 = sAuth->get_database_connection()->prepare_statement("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username);
+		boost::mysql::results results;
+		sAuth->get_database_connection()->execute(b1, results);
 
-		if (!r.isNull()) {
+		if (!results.rows().empty()) {
 			HLog(error) << "Account with username '" << username << "' already exists.";
-			sAuth->database_pool()->release_connection(std::move(db_session));
 			return false;
 		}
 
-		db_session.sql("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
-			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);")
-			.bind(username, password, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
-				email, birthdate, character_slots, pincode, group_id, (int)ACCOUNT_STATE_NONE)
-			.execute();
+		boost::mysql::statement stmt = sAuth->get_database_connection()->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		auto b2 = stmt.bind(username, password, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
+				email, birthdate, character_slots, pincode, group_id, (int)ACCOUNT_STATE_NONE);
+		sAuth->get_database_connection()->execute(b2, results);
 	}
-	catch (mysqlx::Error& err) {
-		HLog(error) << err.what();
-		sAuth->database_pool()->release_connection(std::move(db_session));
+	catch (boost::mysql::error_with_diagnostics &error) {
+		HLog(error) << error.what();
 		return false;
 	}
-
-	sAuth->database_pool()->release_connection(std::move(db_session));
 	
 	HLog(info) << "Account '" << username << "' has been created successfully.";
 
@@ -189,8 +183,8 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
  */
 void AuthServer::initialize_cli_commands()
 {
-	get_command_line_process().add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
-	get_command_line_process().add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
+	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
+	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
 }
 
 /**
@@ -208,11 +202,11 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 
 void AuthServer::update(uint64_t time)
 {
-	get_command_line_process().process();
+	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->process();
 
 	getScheduler().Update();
 	
-	ClientSocktMgr->update_socket_sessions(time);
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
@@ -234,14 +228,17 @@ void AuthServer::initialize_core()
 	signals.async_wait(std::bind(&SignalHandler, std::placeholders::_1, std::placeholders::_2));
 
 	// Start Horizon Network
-	ClientSocktMgr->start(get_io_service(),
+	register_component(NETWORK_MAINFRAME, std::make_shared<ClientSocketMgr>());
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->start(get_io_service(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
 
 	// Initialize core.
 	Server::initialize();
-	
+
+	initialize_cli_commands();
+		
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 
@@ -262,7 +259,7 @@ void AuthServer::initialize_core()
 	/**
 	 * Stop all networks
 	 */
-	ClientSocktMgr->stop_network();
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->stop();
 
 	/* Cancel signal handling. */
 	signals.cancel();

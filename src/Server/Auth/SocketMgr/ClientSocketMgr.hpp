@@ -44,25 +44,38 @@ namespace Auth
 /**
  * Manager of client sockets and initialization of the packet db * @brief Singleton class
  */
-class ClientSocketMgr : public Networking::AcceptSocketMgr<AuthSocket>
+class ClientSocketMgr : public Networking::AcceptSocketMgr<AuthSocket>, public MainframeComponent
 {
 	typedef Networking::AcceptSocketMgr<AuthSocket> BaseSocketMgr;
 public:
-	static ClientSocketMgr *getInstance()
-	{
-		static ClientSocketMgr instance;
-		return &instance;
-	}
-
 	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = MAX_NETWORK_THREADS)
 	{
 		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
 			return false;
 
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
 		return true;
 	}
+
+	bool stop()
+	{
+		if (!BaseSocketMgr::stop_network())
+			return false;
+
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false);
+		return true;
+	}
+
+	virtual void initialize() override { this->initialize(); }
+	virtual void finalize() override { stop(); }
+
+	virtual bool is_initialized() override { return _is_initialized.load(); }
+
+protected:
+	std::atomic<bool> _is_initialized;
 };
 }
 }
-#define ClientSocktMgr Horizon::Auth::ClientSocketMgr::getInstance()
 #endif /* HORIZON_CLIENTSOCKETMGR_HPP */

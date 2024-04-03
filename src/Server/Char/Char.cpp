@@ -38,7 +38,6 @@
 #include <iostream>
 
 #include <sol.hpp>
-#include <mysqlx/xdevapi.h>
 
 using namespace Horizon::Char;
 
@@ -193,47 +192,43 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 }
 
 void CharServer::verify_connected_sessions()
-{
-	mysqlx::Session db_session = sChar->database_pool()->get_connection();
-	
+{	
 	try {
-		db_session.sql("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?")
-			.bind("C", std::time(nullptr) - config().session_max_timeout())
-			.execute();
+		std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sChar->get_database_connection();
+		boost::mysql::statement stmt = conn->prepare_statement("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?");
+		auto b = stmt.bind("C", std::time(nullptr) - config().session_max_timeout());
+		boost::mysql::results results;
+		conn->execute(b, results);
 
-		mysqlx::RowResult rr = db_session.sql("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?")
-			.bind("C")
-			.execute();
+		stmt = conn->prepare_statement("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?");
+		auto b2 = stmt.bind("C");
+		conn->execute(b2, results);
 
-		mysqlx::Row r = rr.fetchOne();
-		if (r.isNull()) {
+		if (results.rows().empty()) {
 			HLog(info) << "There are no connected session(s).";
-			sChar->database_pool()->release_connection(std::move(db_session));
 			return;
 		}
 
-		int32_t count = r[0].get<int>();
+		int32_t count = results.rows()[0][0].as_int64();
 
 		HLog(info) << count << " connected session(s).";
 
 	}
-	catch (mysqlx::Error& error) {
+	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();
 	}
 	catch (std::exception& error) {
 		HLog(error) << error.what();
 	}
-	
-	sChar->database_pool()->release_connection(std::move(db_session));
 }
 
 void CharServer::update(uint64_t time)
 {
-	get_command_line_process().process();
+	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->process();
 	
 	getScheduler().Update();
 
-	ClientSocktMgr->update_socket_sessions(time);
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_socket_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
@@ -250,7 +245,9 @@ void CharServer::initialize_core()
 	signals.async_wait(SignalHandler);
 
 	/* Start Character Network */
-	ClientSocktMgr->start(get_io_service(),
+	register_component(NETWORK_MAINFRAME, std::make_shared<ClientSocketMgr>());
+
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->start(get_io_service(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
@@ -282,7 +279,7 @@ void CharServer::initialize_core()
 	/**
 	 * Stop all networks
 	 */
-	ClientSocktMgr->stop_network();
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->stop_network();
 
 	/* Cancel signal handling. */
 	signals.cancel();

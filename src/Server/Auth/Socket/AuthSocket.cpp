@@ -78,7 +78,7 @@ void AuthSocket::on_close()
 	HLog(info) << "Closed connection from " << remote_ip_address();
 
 	/* Perform socket manager cleanup. */
-	ClientSocktMgr->set_socket_for_removal(shared_from_this());
+	sAuth->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(shared_from_this());
 }
 
 /**
@@ -98,7 +98,7 @@ void AuthSocket::on_error()
 bool AuthSocket::update()
 {
 	if (get_shutdown_stage() >= SHUTDOWN_INITIATED)
-		ClientSocktMgr->set_socket_for_removal(shared_from_this());
+		sAuth->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(shared_from_this());
 
 	return BaseSocket::update();
 }
