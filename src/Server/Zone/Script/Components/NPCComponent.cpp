@@ -29,12 +29,12 @@
 #include "NPCComponent.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Zone/Game/Entities/NPC/NPC.hpp"
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Units/NPC/NPC.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
+using namespace Horizon::Zone::Units;
 
 void NPCComponent::sync_definitions(std::shared_ptr<sol::state> state)
 {
@@ -43,7 +43,7 @@ void NPCComponent::sync_definitions(std::shared_ptr<sol::state> state)
 void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
 	state->new_usertype<NPC>("NPC",
-		"entity", [](std::shared_ptr<Horizon::Zone::Entities::NPC> npc) { return npc->shared_from_this(); },
+		"entity", [](std::shared_ptr<Horizon::Zone::Units::NPC> npc) { return npc->shared_from_this(); },
 		"name", &NPC::name,
 		"map_coords", &NPC::map_coords,
 		"get_nearby_entity", &NPC::get_nearby_entity,
@@ -55,9 +55,9 @@ void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)
 {
 	state->set_function("cast_entity_to_npc",
-		[](std::shared_ptr<Entity> e)
+		[](std::shared_ptr<Unit> e)
 		{
-			return e->template downcast<Horizon::Zone::Entities::NPC>();
+			return e->template downcast<Horizon::Zone::Units::NPC>();
 		});
 
 	state->set_function("NewNPC",
@@ -159,7 +159,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		});
 }
 
-void NPCComponent::contact_npc_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid)
+void NPCComponent::contact_npc_for_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid)
 {
 	std::shared_ptr<npc_db_data> const &nd = _npc_db.at(npc_guid);
 
@@ -179,7 +179,7 @@ void NPCComponent::contact_npc_for_player(std::shared_ptr<Entities::Player> play
 	}
 }
 
-void NPCComponent::continue_npc_script_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid, uint32_t select_idx)
+void NPCComponent::continue_npc_script_for_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid, uint32_t select_idx)
 {
 	sol::thread cr_thread = (*player->lua_state())["script_exec_routine"];
 	sol::state_view cr_state = cr_thread.state();

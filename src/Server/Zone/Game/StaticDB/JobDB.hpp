@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_STATICDB_JOBDB_HPP
 
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 
 namespace Horizon
 {

@@ -36,7 +36,7 @@
 #include <fstream>
 #include <memory>
 
-#include "Server/Zone/Game/Entities/Traits/ObservableStatus.hpp"
+#include "Server/Zone/Game/Units/Traits/ObservableStatus.hpp"
 
 class B;
 class C;

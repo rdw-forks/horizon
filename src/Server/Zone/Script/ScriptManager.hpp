@@ -36,7 +36,7 @@
 #include "Server/Zone/Script/Components/StatusEffectComponent.hpp"
 #include "Server/Zone/Script/Components/SkillComponent.hpp"
 #include "Server/Zone/Script/Components/CombatComponent.hpp"
-#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/UnitComponent.hpp"
 #include "Server/Zone/Script/Components/ItemComponent.hpp"
 #include "Server/Zone/Script/Components/MapComponent.hpp"
 #include "Server/Zone/Script/Components/MonsterComponent.hpp"
@@ -48,7 +48,7 @@ namespace Horizon
 {
 namespace Zone
 {
-namespace Entities
+namespace Units
 {
 	class NPC;
 	class Player;
@@ -70,7 +70,7 @@ public:
 	std::shared_ptr<MonsterComponent> monster() { return _monster_component; }
 	std::shared_ptr<MapComponent> map() { return _map_component; }
 	std::shared_ptr<ItemComponent> item() { return _item_component; }
-	std::shared_ptr<EntityComponent> entity() { return _entity_component; }
+	std::shared_ptr<UnitComponent> entity() { return _entity_component; }
 	std::shared_ptr<SkillComponent> skill() { return _skill_component; }
 	std::shared_ptr<StatusEffectComponent> status_effect() { return _status_effect_component; }
 	std::shared_ptr<CombatComponent> combat() { return _combat_component; }
@@ -99,7 +99,7 @@ private:
 	std::shared_ptr<MonsterComponent> _monster_component;
 	std::shared_ptr<MapComponent> _map_component;
 	std::shared_ptr<ItemComponent> _item_component;
-	std::shared_ptr<EntityComponent> _entity_component;
+	std::shared_ptr<UnitComponent> _entity_component;
 	std::shared_ptr<SkillComponent> _skill_component;
 	std::shared_ptr<StatusEffectComponent> _status_effect_component;
 	std::shared_ptr<CombatComponent> _combat_component;

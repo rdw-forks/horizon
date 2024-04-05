@@ -14,7 +14,7 @@ namespace Zone
 class SkillExecution : public std::enable_shared_from_this<SkillExecution>
 {
 public:
-	SkillExecution(std::shared_ptr<Entity> initial_source, int16_t skill_id, int16_t skill_lv);
+	SkillExecution(std::shared_ptr<Unit> initial_source, int16_t skill_id, int16_t skill_lv);
 	~SkillExecution();
 
 	void execute(int initial_target_guid);
@@ -43,8 +43,8 @@ private:
 	std::weak_ptr<MapContainerThread> _map_container_thread;
 	std::weak_ptr<ScriptManager> _lua_mgr;
 	std::weak_ptr<sol::state> _lua_state;
-	std::shared_ptr<Entity> _initial_source{nullptr};
-	std::shared_ptr<Entity> _initial_target{nullptr};
+	std::shared_ptr<Unit> _initial_source{nullptr};
+	std::shared_ptr<Unit> _initial_target{nullptr};
 	int16_t _skill_id;
 	int16_t _skill_lv;
 	MapCoords _map_coords;

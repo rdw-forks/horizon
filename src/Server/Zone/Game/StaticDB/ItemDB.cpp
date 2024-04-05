@@ -28,9 +28,9 @@
  **************************************************/
 
 #include "ItemDB.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Script/Components/ItemComponent.hpp"
-#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/UnitComponent.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Zone.hpp"
 
@@ -73,7 +73,7 @@ bool ItemDatabase::load()
 	lua->open_libraries(sol::lib::base);
 	lua->open_libraries(sol::lib::package);
 
-	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
 	
 	entity_component->sync_definitions(lua);
@@ -658,7 +658,7 @@ bool ItemDatabase::load_weapon_attribute_modifiers_db()
 	lua->open_libraries(sol::lib::base);
 
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
-	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
 
 	item_component->sync_definitions(lua);
 	item_component->sync_data_types(lua);

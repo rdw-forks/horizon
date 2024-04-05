@@ -54,12 +54,12 @@ public:
     void add_npc_to_db(uint32_t guid, std::shared_ptr<npc_db_data> const &data) { _npc_db.insert(guid, data); }
     std::shared_ptr<npc_db_data> get_npc_from_db(uint32_t guid) { return _npc_db.at(guid); }
 
-    void contact_npc_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
-    void continue_npc_script_for_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid, uint32_t select_idx = 0);
+    void contact_npc_for_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid);
+    void continue_npc_script_for_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid, uint32_t select_idx = 0);
 
-    // void send_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid, std::string const &HLog);
-    // void send_next_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
-    // void send_close_dialog_to_player(std::shared_ptr<Entities::Player> player, uint32_t npc_guid);
+    // void send_dialog_to_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid, std::string const &HLog);
+    // void send_next_dialog_to_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid);
+    // void send_close_dialog_to_player(std::shared_ptr<Units::Player> player, uint32_t npc_guid);
 
     LockedLookupTable<uint32_t, std::shared_ptr<npc_db_data>> _npc_db;
 };

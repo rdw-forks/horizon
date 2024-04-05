@@ -30,7 +30,7 @@
 #define HORIZON_ZONE_MONSTER_DEFINITIONS_HPP
 
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 
 #define MAX_MOB_DROP 10
 #define MAX_MVP_DROP 10
@@ -246,7 +246,7 @@ struct monster_config_data
 		int32_t body_style_id{0};
 		int32_t hair_color_id{0};
 		int32_t body_color_id{0};
-		entity_gender_types gender{ENTITY_GENDER_FEMALE};
+		entity_gender_types gender{UNIT_GENDER_FEMALE};
 	} view{0};
 	//struct view_data vd;
 	unsigned int option;

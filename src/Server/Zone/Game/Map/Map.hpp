@@ -33,7 +33,7 @@
 #include "Path/AStar.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Cell/Cell.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
@@ -44,7 +44,7 @@ namespace Horizon
 {
 namespace Zone
 {
-	namespace Entities
+	namespace Units
 	{
 		class Item;
 	}
@@ -195,7 +195,7 @@ bool Horizon::Zone::Map::ensure_grid_for_entity(T *entity, MapCoords mcoords)
 template<class T, class CONTAINER>
 inline void Horizon::Zone::Map::visit(int grid_x, int grid_y, GridReferenceContainerVisitor<T, CONTAINER> &visitor)
 {
-	Grid<AllEntityTypes> &g = _gridholder.get_grid(grid_x, grid_y);
+	Grid<AllUnitTypes> &g = _gridholder.get_grid(grid_x, grid_y);
 	g.visit(visitor);
 }
 

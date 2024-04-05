@@ -27,15 +27,15 @@
 
 #include "CharClientInterface.hpp"
 
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
-#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
-#include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
-#include "Server/Zone/Game/Entities/Player/Assets/Storage.hpp"
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Zone/Game/Entities/Traits/Status.hpp"
-#include "Server/Zone/Game/Entities/Item/Item.hpp"
+#include "Server/Zone/Game/Units/Battle/Combat.hpp"
+#include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Units/Player/Assets/Storage.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
+#include "Server/Zone/Game/Units/Traits/Status.hpp"
+#include "Server/Zone/Game/Units/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
@@ -96,8 +96,8 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	auto b3 = stmt.bind("Z", account_id, auth_code);
 	conn->execute(b3, results);
 
-	uint64_t uuid = sZone->to_uuid((int8_t) ENTITY_PLAYER, account_id, char_id, 0);
-	std::shared_ptr<Horizon::Zone::Entities::Player> pl = std::make_shared<Horizon::Zone::Entities::Player>(get_session(), uuid);
+	uint64_t uuid = sZone->to_uuid((int8_t) UNIT_PLAYER, account_id, char_id, 0);
+	std::shared_ptr<Horizon::Zone::Units::Player> pl = std::make_shared<Horizon::Zone::Units::Player>(get_session(), uuid);
 
 	pl->create(char_id, r2[0].as_string(), r2[1].as_int64());
 
@@ -219,7 +219,7 @@ bool ZoneClientInterface::notify_time()
 
 bool ZoneClientInterface::notify_entity_name(uint32_t guid)
 {
-	std::shared_ptr<Entity> entity = get_session()->player()->get_nearby_entity(guid);
+	std::shared_ptr<Unit> entity = get_session()->player()->get_nearby_entity(guid);
 	
 	if (entity == nullptr)
 		return false;
@@ -241,7 +241,7 @@ bool ZoneClientInterface::stop_attack()
 	get_session()->player()->stop_attack();
 	return true;
 }
-item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_ptr<Entities::Item> item)
+item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_ptr<Units::Item> item)
 {
 	item_viewport_entry entry;
 
@@ -259,7 +259,7 @@ item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_
 
 	return entry;
 }
-entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<Entity> entity)
+entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<Unit> entity)
 {
 	entity_viewport_entry entry;
 
@@ -283,8 +283,8 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	entry.robe_id = status->robe_sprite()->get();
 	entry.guild_id = 0;
 	entry.guild_emblem_version = 0;
-	entry.honor = entity->type() == ENTITY_PLAYER ? status->honor()->total() : 0;
-	entry.virtue = entity->type() == ENTITY_PLAYER ? status->virtue()->total() : 0;
+	entry.honor = entity->type() == UNIT_PLAYER ? status->honor()->total() : 0;
+	entry.virtue = entity->type() == UNIT_PLAYER ? status->virtue()->total() : 0;
 	entry.in_pk_mode = 0;
 	entry.current_x = entity->map_coords().x();
 	entry.current_y = entity->map_coords().y();
@@ -314,12 +314,12 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	
 	switch (entry.unit_type)
 	{
-		case ENTITY_PLAYER:
-			entry.character_id = entity->downcast<Horizon::Zone::Entities::Player>()->character()._character_id;
+		case UNIT_PLAYER:
+			entry.character_id = entity->downcast<Horizon::Zone::Units::Player>()->character()._character_id;
 			entry.x_size = entry.y_size = 0;
-			entry.gender = entity->downcast<Horizon::Zone::Entities::Player>()->character()._gender;
+			entry.gender = entity->downcast<Horizon::Zone::Units::Player>()->character()._gender;
 			break;
-		case ENTITY_NPC:
+		case UNIT_NPC:
 		default:
 			entry.x_size = entry.y_size = 0;
 			break;
@@ -373,7 +373,7 @@ bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCo
 	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
-bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Entity> entity, entity_viewport_notification_type type)
+bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Unit> entity, entity_viewport_notification_type type)
 {
 	if (entity == nullptr)
 		 return false;
@@ -505,7 +505,7 @@ bool ZoneClientInterface::notify_zeny_update()
 }
 bool ZoneClientInterface::increase_status_point(status_point_type type, uint8_t amount)
 {
-	std::shared_ptr<Horizon::Zone::Entities::Player> pl = get_session()->player();
+	std::shared_ptr<Horizon::Zone::Units::Player> pl = get_session()->player();
 
 	if (pl == nullptr)
 		return false;
@@ -673,7 +673,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 
 	HLog(debug) << name << " : " << message;
 
-	std::shared_ptr<Horizon::Zone::Entities::Player> player = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().find_player(name);
+	std::shared_ptr<Horizon::Zone::Units::Player> player = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().find_player(name);
 
 	ZC_ACK_WHISPER02 pkt(get_session());
 	if (player != nullptr)
@@ -1055,7 +1055,7 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
 {
-	std::shared_ptr<Entity> target = get_session()->player()->get_nearby_entity(target_guid);
+	std::shared_ptr<Unit> target = get_session()->player()->get_nearby_entity(target_guid);
 	
 	if (target == nullptr)
 		return;
@@ -1155,7 +1155,7 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 		}
 		case PLAYER_ACT_ATTACK:
 		{
-			std::shared_ptr<Entity> target = get_session()->player()->get_nearby_entity(target_guid);
+			std::shared_ptr<Unit> target = get_session()->player()->get_nearby_entity(target_guid);
 			
 			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config config;
 			config.continuous = continuous;

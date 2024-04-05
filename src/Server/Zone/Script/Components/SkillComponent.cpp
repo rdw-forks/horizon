@@ -28,7 +28,7 @@
 
 #include "SkillComponent.hpp"
 
-#include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/Units/Unit.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "SkillDefinitions.hpp"

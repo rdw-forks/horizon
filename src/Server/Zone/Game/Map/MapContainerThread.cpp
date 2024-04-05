@@ -28,7 +28,7 @@
  **************************************************/
 
 #include "MapContainerThread.hpp"
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
@@ -81,7 +81,7 @@ void MapContainerThread::manage_session(map_container_session_action action, std
 	_session_buffer.push(std::make_pair(action, s));
 }
 
-std::shared_ptr<Entities::Player> MapContainerThread::get_player(std::string const &name)
+std::shared_ptr<Units::Player> MapContainerThread::get_player(std::string const &name)
 {
 	std::map<int64_t, std::shared_ptr<ZoneSession>> session_map = _managed_sessions.get_map();
 	for (auto it = session_map.begin(); it != session_map.end(); it++)
@@ -91,7 +91,7 @@ std::shared_ptr<Entities::Player> MapContainerThread::get_player(std::string con
 	return nullptr;
 }
 
-std::shared_ptr<Entities::Player> MapContainerThread::get_player(int guid)
+std::shared_ptr<Units::Player> MapContainerThread::get_player(int guid)
 {
 	std::map<int64_t, std::shared_ptr<ZoneSession>> session_map = _managed_sessions.get_map();
 	for (auto it = session_map.begin(); it != session_map.end(); it++)
@@ -120,13 +120,13 @@ void MapContainerThread::initialize()
 }
 
 //! @brief Add entity to vector of entities to be updated.
-void MapContainerThread::add_entity(std::shared_ptr<Entity> entity)
+void MapContainerThread::add_entity(std::shared_ptr<Unit> entity)
 {
 	_entities.push_back(entity);
 }
 
 //! @brief Remove entity from vector of entities to be updated.
-void MapContainerThread::remove_entity(std::shared_ptr<Entity> entity)
+void MapContainerThread::remove_entity(std::shared_ptr<Unit> entity)
 {
 	_entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
 }
@@ -279,7 +279,7 @@ void MapContainerThread::update(uint64_t diff)
 		
 	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);
-	//HLog(debug) << "Entities Update time: " << elapsed_time_e.count() << "us";
+	//HLog(debug) << "Units Update time: " << elapsed_time_e.count() << "us";
 
 	// Update sessions
 	std::map<int64_t, std::shared_ptr<ZoneSession>> smap = _managed_sessions.get_map();

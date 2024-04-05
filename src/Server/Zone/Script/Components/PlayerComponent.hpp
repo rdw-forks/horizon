@@ -36,7 +36,7 @@ namespace Horizon
 {
 namespace Zone
 {
-    namespace Entities
+    namespace Units
     {
         class Player;
     }
@@ -51,7 +51,7 @@ public:
     void sync_data_types(std::shared_ptr<sol::state> state);
     void sync_functions(std::shared_ptr<sol::state> state);
 
-    void perform_command_from_player(std::shared_ptr<Entities::Player> player, std::string const &cmd);
+    void perform_command_from_player(std::shared_ptr<Units::Player> player, std::string const &cmd);
 };
 }
 }

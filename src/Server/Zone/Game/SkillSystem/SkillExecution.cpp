@@ -1,18 +1,18 @@
 #include "SkillExecution.hpp"
 
-#include "Server/Zone/Game/Entities/Entity.hpp"
+#include "Server/Zone/Game/Units/Unit.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Script/Components/CombatComponent.hpp"
 #include "Server/Zone/Script/Components/ItemComponent.hpp"
 #include "Server/Zone/Script/Components/SkillComponent.hpp"
-#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/UnitComponent.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
 
-SkillExecution::SkillExecution(std::shared_ptr<Entity> initial_source, int16_t skill_id, int16_t skill_lv)
+SkillExecution::SkillExecution(std::shared_ptr<Unit> initial_source, int16_t skill_id, int16_t skill_lv)
 : _initial_source(initial_source), _skill_id(skill_id), _skill_lv(skill_lv), _map_coords(MapCoords(0, 0)), _message("")
 {
 	set_map(initial_source->map());

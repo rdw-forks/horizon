@@ -2,10 +2,10 @@ local entity, skill_id, skill_lv = ...
 
 player = nil
 
-if entity:type() == EntityType.Player then
+if entity:type() == UnitType.Player then
 	player = cast_entity_to_player(entity)
 else
-	print("skill:NV_BASIC: Entity Type was not Player.")
+	print("skill:NV_BASIC: Unit Type was not Player.")
 	return false
 end
 

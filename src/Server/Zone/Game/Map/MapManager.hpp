@@ -44,7 +44,7 @@ namespace Horizon
 namespace Zone
 {
 
-namespace Entities
+namespace Units
 {
 	class Player;
 }
@@ -65,7 +65,7 @@ public:
 
 	TaskScheduler &getScheduler() { return _scheduler; }
 
-	std::shared_ptr<Entities::Player> find_player(std::string name);
+	std::shared_ptr<Units::Player> find_player(std::string name);
 
 	std::map<int32_t, std::shared_ptr<MapContainerThread>> get_containers() { return _map_containers.get_map(); }
 

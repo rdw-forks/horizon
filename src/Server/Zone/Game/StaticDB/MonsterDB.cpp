@@ -32,7 +32,7 @@
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Script/Components/MonsterComponent.hpp"
-#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/UnitComponent.hpp"
 #include "Server/Zone/Script/Components/ItemComponent.hpp"
 
 #include "Server/Zone/Zone.hpp"
@@ -56,7 +56,7 @@ bool MonsterDatabase::load()
 	lua->open_libraries(sol::lib::base);
 	lua->open_libraries(sol::lib::package);
 
-	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
 	std::shared_ptr<MonsterComponent> monster_component = std::make_shared<MonsterComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
 
@@ -754,7 +754,7 @@ bool MonsterDatabase::parse_view(sol::table const &table, monster_config_data &d
 			if (maybe_val)
 				data.view.gender = (entity_gender_types) maybe_val.value();
 			else
-				data.view.gender = ENTITY_GENDER_FEMALE;
+				data.view.gender = UNIT_GENDER_FEMALE;
 		} else {
 			data.view.sprite_id = 0;
 			data.view.weapon_id = 0;
@@ -767,7 +767,7 @@ bool MonsterDatabase::parse_view(sol::table const &table, monster_config_data &d
 			data.view.body_style_id = 0;
 			data.view.hair_color_id = 0;
 			data.view.body_color_id = 0;
-			data.view.gender = ENTITY_GENDER_FEMALE;
+			data.view.gender = UNIT_GENDER_FEMALE;
 		}
 	} catch (sol::error &error) {
 		HLog(error) << "Error parsing Stats for monster '" << data.sprite_name << "' - " << error.what() << ".";

@@ -49,7 +49,7 @@ namespace Horizon
 	{
 		namespace Game
 		{
-			namespace Entities
+			namespace Units
 			{
 				class Player;
 			}

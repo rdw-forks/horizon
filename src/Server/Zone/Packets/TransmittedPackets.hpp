@@ -30,7 +30,7 @@
 
 #include "Server/Common/Base/NetworkPacket.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/CombatDefinitions.hpp"

@@ -32,7 +32,7 @@
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Libraries/MapCache/MapCache.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
@@ -149,11 +149,11 @@ std::shared_ptr<Map> MapManager::get_map(std::string map_name)
 	return nullptr;
 }
 
-std::shared_ptr<Entities::Player> MapManager::find_player(std::string name)
+std::shared_ptr<Units::Player> MapManager::find_player(std::string name)
 {
 	std::map<int32_t, std::shared_ptr<MapContainerThread>> map_containers = _map_containers.get_map();
 	for (auto it = map_containers.begin(); it != map_containers.end(); it++) {
-		std::shared_ptr<Entities::Player> player = it->second->get_player(name);
+		std::shared_ptr<Units::Player> player = it->second->get_player(name);
 		if (player != nullptr)
 			return player;
 	}

@@ -29,8 +29,8 @@
 #include "CombatComponent.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Zone/Game/Entities/Traits/Attribute.hpp"
-#include "Server/Zone/Game/Entities/Battle/Combat.hpp"
+#include "Server/Zone/Game/Units/Traits/Attribute.hpp"
+#include "Server/Zone/Game/Units/Battle/Combat.hpp"
 #include "BattleDefinitions.hpp"
 
 using namespace Horizon::Zone;
@@ -206,7 +206,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	);
 
 	state->new_usertype<CombatRegistry::AttributeOperation::AttributeOperand>("AttributeOperand",
-		sol::constructors<CombatRegistry::AttributeOperation::AttributeOperand(std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Traits::Attribute>)>(),
+		sol::constructors<CombatRegistry::AttributeOperation::AttributeOperand(std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Traits::Attribute>)>(),
 		"get_attribute", &CombatRegistry::AttributeOperation::AttributeOperand::get_attribute
 	);
 
@@ -222,7 +222,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	);
 
 	state->new_usertype<CombatRegistry::StatusOperation::StatusOperand>("StatusOperand",
-		sol::constructors<CombatRegistry::StatusOperation::StatusOperand(std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Entity>, CombatRegistry::StatusOperation::StatusOperand::s_combat_status_operation_config)>(),
+		sol::constructors<CombatRegistry::StatusOperation::StatusOperand(std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Unit>, CombatRegistry::StatusOperation::StatusOperand::s_combat_status_operation_config)>(),
 		"get_config", &CombatRegistry::StatusOperation::StatusOperand::get_config
 	);
 
@@ -236,7 +236,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	);
 	
 	state->new_usertype<CombatRegistry::SkillExecutionOperation::SkillExecutionOperand>("SkillExecutionOperand",
-		sol::constructors<CombatRegistry::SkillExecutionOperation::SkillExecutionOperand(std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Entity>, CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config)>(),
+		sol::constructors<CombatRegistry::SkillExecutionOperation::SkillExecutionOperand(std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Unit>, CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::s_skill_execution_operation_config)>(),
 		"get_config", &CombatRegistry::SkillExecutionOperation::SkillExecutionOperand::get_config
 	);
 
@@ -249,7 +249,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	);
 	
 	state->new_usertype<CombatRegistry::SkillResultOperation::SkillResultOperand>("SkillResultOperand",
-		sol::constructors<CombatRegistry::SkillResultOperation::SkillResultOperand(std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Entity>, CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config)>(),
+		sol::constructors<CombatRegistry::SkillResultOperation::SkillResultOperand(std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Unit>, CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config)>(),
 		"get_config", &CombatRegistry::SkillResultOperation::SkillResultOperand::get_config
 	);
 
@@ -265,7 +265,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	);
 	
 	state->new_usertype<CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand>("MeleeExecutionOperand",
-		sol::constructors<CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand(std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Entity>, CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config)>(),
+		sol::constructors<CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand(std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Unit>, CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config)>(),
 		"get_config", &CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::get_config
 	);
 
@@ -278,7 +278,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	);
 	
 	state->new_usertype<CombatRegistry::MeleeResultOperation::MeleeResultOperand>("MeleeResultOperand",
-		sol::constructors<CombatRegistry::MeleeResultOperation::MeleeResultOperand(std::shared_ptr<Horizon::Zone::Entity>, std::shared_ptr<Horizon::Zone::Entity>)>()
+		sol::constructors<CombatRegistry::MeleeResultOperation::MeleeResultOperand(std::shared_ptr<Horizon::Zone::Unit>, std::shared_ptr<Horizon::Zone::Unit>)>()
 	);
 
 	state->new_usertype<CombatRegistry::MeleeResultOperation>("MeleeResultOperation",

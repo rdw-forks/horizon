@@ -29,7 +29,7 @@
 #define HORIZON_ZONECLIENTINTERFACE_HPP
 
 #include "Server/Common/Base/NetworkPacket.hpp"
-#include "Server/Zone/Definitions/EntityDefinitions.hpp"
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Definitions/PlayerDefinitions.hpp"
 #include "Server/Common/Interfaces/ClientInterface.hpp"
@@ -41,7 +41,7 @@ namespace Horizon
 {
 namespace Zone
 {
-namespace Entities
+namespace Units
 {
 	namespace Traits
 	{
@@ -49,7 +49,7 @@ namespace Entities
 	}
 	class Item;
 }
-class Entity;
+class Unit;
 class ZoneSession;
 class ZoneClientInterface : public ClientInterface<ZoneSession>
 {
@@ -105,11 +105,11 @@ public:
 	bool notify_movement_stop(int32_t guid, int16_t x, int16_t y);
 	bool notify_entity_move(int32_t guid, MapCoords from, MapCoords to);
 
-	item_viewport_entry create_viewport_item_entry(std::shared_ptr<Entities::Item> item);
-	entity_viewport_entry create_viewport_entry(std::shared_ptr<Entity> entity);
+	item_viewport_entry create_viewport_item_entry(std::shared_ptr<Units::Item> item);
+	entity_viewport_entry create_viewport_entry(std::shared_ptr<Unit> entity);
 
 	bool notify_viewport_add_entity(entity_viewport_entry entry);
-	bool notify_viewport_remove_entity(std::shared_ptr<Entity> entity, entity_viewport_notification_type type);
+	bool notify_viewport_remove_entity(std::shared_ptr<Unit> entity, entity_viewport_notification_type type);
 	bool notify_viewport_moving_entity(entity_viewport_entry entry);
 	bool notify_viewport_spawn_entity(entity_viewport_entry entry);
 	bool notify_viewport_item_entry(item_viewport_entry entry);

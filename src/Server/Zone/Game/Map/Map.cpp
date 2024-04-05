@@ -34,7 +34,7 @@
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"
 #include "Server/Zone/Script/Components/MonsterComponent.hpp"
-#include "Server/Zone/Game/Entities/Item/Item.hpp"
+#include "Server/Zone/Game/Units/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Grid/Grid.hpp"
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -102,8 +102,8 @@ void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int ident
 
 	int r = std::rand();
 	
-	int64_t uuid = sZone->to_uuid(ENTITY_ITEM, ++_last_np_entity_guid, 0, 0);
-	std::shared_ptr<Horizon::Zone::Entities::Item> item = std::make_shared<Horizon::Zone::Entities::Item>(uuid, shared_from_this(), map_coords, identified, amount, item_d);
+	int64_t uuid = sZone->to_uuid(UNIT_ITEM, ++_last_np_entity_guid, 0, 0);
+	std::shared_ptr<Horizon::Zone::Units::Item> item = std::make_shared<Horizon::Zone::Units::Item>(uuid, shared_from_this(), map_coords, identified, amount, item_d);
 	item->initialize();
 
 	s_grid_notify_item_drop_entry entry;
@@ -127,8 +127,8 @@ void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int ident
 
 void Map::add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, MapCoords map_coords)
 {	
-	int64_t uuid = sZone->to_uuid(ENTITY_ITEM, ++_last_np_entity_guid, 0, 0);
-	std::shared_ptr<Horizon::Zone::Entities::Item> floor_item = std::make_shared<Horizon::Zone::Entities::Item>(uuid, entry, amount, shared_from_this(), map_coords);
+	int64_t uuid = sZone->to_uuid(UNIT_ITEM, ++_last_np_entity_guid, 0, 0);
+	std::shared_ptr<Horizon::Zone::Units::Item> floor_item = std::make_shared<Horizon::Zone::Units::Item>(uuid, entry, amount, shared_from_this(), map_coords);
 	floor_item->initialize();
 
 	s_grid_notify_item_drop_entry notif_config;

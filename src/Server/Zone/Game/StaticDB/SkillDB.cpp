@@ -32,7 +32,7 @@
 #include "Server/Zone/Script/Components/CombatComponent.hpp"
 #include "Server/Zone/Script/Components/ItemComponent.hpp"
 #include "Server/Zone/Script/Components/SkillComponent.hpp"
-#include "Server/Zone/Script/Components/EntityComponent.hpp"
+#include "Server/Zone/Script/Components/UnitComponent.hpp"
 
 #include "Server/Zone/Game/StaticDB/ItemDB.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
@@ -60,7 +60,7 @@ bool SkillDatabase::load()
 	std::shared_ptr<CombatComponent> combat_component = std::make_shared<CombatComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
 	std::shared_ptr<SkillComponent> skill_component = std::make_shared<SkillComponent>();
-	std::shared_ptr<EntityComponent> entity_component = std::make_shared<EntityComponent>();
+	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
 
 	combat_component->sync_definitions(lua);
 	combat_component->sync_data_types(lua);

@@ -29,7 +29,7 @@
 #ifndef HORIZON_ZONE_COMBAT_DEFINITIONS_HPP
 #define HORIZON_ZONE_COMBAT_DEFINITIONS_HPP
 
-#include "EntityDefinitions.hpp"
+#include "UnitDefinitions.hpp"
 
 enum combat_damage_type_mask {
 	// Flag of the final calculation

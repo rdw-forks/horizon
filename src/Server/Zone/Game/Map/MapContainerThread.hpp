@@ -39,8 +39,8 @@ namespace Horizon
 namespace Zone
 {
 class Map;
-class Entity;
-namespace Entities
+class Unit;
+namespace Units
 {
 	class Player;
 }
@@ -86,8 +86,8 @@ public:
 	void manage_session(map_container_session_action, std::shared_ptr<ZoneSession> s);
 
 	//! @brief Returns a player if found, nullptr otherwise.
-	std::shared_ptr<Entities::Player> get_player(std::string const &name);
-	std::shared_ptr<Entities::Player> get_player(int32_t guid);
+	std::shared_ptr<Units::Player> get_player(std::string const &name);
+	std::shared_ptr<Units::Player> get_player(int32_t guid);
 
 	//! @brief Returns a session if found, nullptr otherwise.
 	std::shared_ptr<ZoneSession> get_session(int64_t session_id);
@@ -109,9 +109,9 @@ public:
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 	//! @brief Add entity to vector of entities to be updated.
-	void add_entity(std::shared_ptr<Entity> entity);
+	void add_entity(std::shared_ptr<Unit> entity);
 	//! @brief Remove entity from vector of entities to be updated.
-	void remove_entity(std::shared_ptr<Entity> entity);
+	void remove_entity(std::shared_ptr<Unit> entity);
 private:
 	//! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 	//! Is also responsible emulating the world update loop and performing everything in maps it manages.
@@ -128,7 +128,7 @@ private:
 	ThreadSafeQueue<std::pair<map_container_session_action, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
 	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
 	TaskScheduler _task_scheduler;
-	std::vector<std::shared_ptr<Entity>> _entities;                                                        ///< Non-thread-safe vector of entities within this container.
+	std::vector<std::shared_ptr<Unit>> _entities;                                                        ///< Non-thread-safe vector of entities within this container.
 };
 }
 }

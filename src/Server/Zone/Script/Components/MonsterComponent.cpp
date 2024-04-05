@@ -29,13 +29,13 @@
 #include "MonsterComponent.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Server/Zone/Game/Entities/Creature/Hostile/Monster.hpp"
+#include "Server/Zone/Game/Units/Mob/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
+using namespace Horizon::Zone::Units;
 
 void MonsterComponent::sync_definitions(std::shared_ptr<sol::state> state)
 {
@@ -137,7 +137,7 @@ void MonsterComponent::sync_definitions(std::shared_ptr<sol::state> state)
 void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
 	state->new_usertype<Monster>("Monster",
-		"entity", [](std::shared_ptr<Horizon::Zone::Entities::Monster> monster) { return monster->shared_from_this(); },
+		"entity", [](std::shared_ptr<Horizon::Zone::Units::Monster> monster) { return monster->shared_from_this(); },
 		"stop_movement", &Monster::stop_movement,
 		"on_pathfinding_failure", &Monster::on_pathfinding_failure,
 		"on_movement_begin", &Monster::on_movement_begin,
@@ -157,7 +157,7 @@ void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)
 {
 	state->set_function("cast_entity_to_monster",
-					[] (std::shared_ptr<Entity> e)
+					[] (std::shared_ptr<Unit> e)
 					{
 						return e->template downcast<Monster>();
 					});
@@ -206,7 +206,7 @@ void MonsterComponent::deregister_single_spawned_monster(uint64_t uuid) {
 		}
 }
 
-void MonsterComponent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::Zone::Entities::Monster> monster) 
+void MonsterComponent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::Zone::Units::Monster> monster) 
 {
 	uint8_t type = 0;
 	uint32_t guid = 0;
@@ -228,7 +228,7 @@ void MonsterComponent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::
 
 	get_container()->getScheduler().Schedule(
 		Milliseconds(spawn_time_cache.spawn_time), 
-		monster->get_scheduler_task_id(ENTITY_SCHEDULE_MONSTER_RESPAWN),
+		monster->get_scheduler_task_id(UNIT_SCHEDULE_MONSTER_RESPAWN),
 		[this, monster, map, msd](TaskContext /*&context*/) {
 			if (map->get_user_count() == 0)
 				return;
@@ -272,7 +272,7 @@ void MonsterComponent::spawn_monsters(std::string map_name, std::shared_ptr<MapC
 
 					map->container()->getScheduler().Schedule(
 						Milliseconds(time_to_spawn_ms),
-						((uint64_t) guid << 32) + (int) ENTITY_SCHEDULE_MONSTER_RESPAWN,
+						((uint64_t) guid << 32) + (int) UNIT_SCHEDULE_MONSTER_RESPAWN,
 						[this, map, msd](TaskContext /*&context*/) {
 							if (map->get_user_count() == 0)
 								return;

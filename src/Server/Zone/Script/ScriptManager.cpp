@@ -39,7 +39,7 @@
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
-using namespace Horizon::Zone::Entities;
+using namespace Horizon::Zone::Units;
 
 ScriptManager::ScriptManager()
 : MainframeComponent(),
@@ -49,7 +49,7 @@ _npc_component(std::make_shared<NPCComponent>()),
 _monster_component(std::make_shared<MonsterComponent>()),
 _map_component(std::make_shared<MapComponent>()),
 _item_component(std::make_shared<ItemComponent>()),
-_entity_component(std::make_shared<EntityComponent>()),
+_entity_component(std::make_shared<UnitComponent>()),
 _skill_component(std::make_shared<SkillComponent>()),
 _status_effect_component(std::make_shared<StatusEffectComponent>()),
 _combat_component(std::make_shared<CombatComponent>())

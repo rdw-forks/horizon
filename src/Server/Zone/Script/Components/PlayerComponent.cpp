@@ -30,10 +30,10 @@
 
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Definitions/PlayerDefinitions.hpp"
-#include "Server/Zone/Game/Entities/Player/Player.hpp"
-#include "Server/Zone/Game/Entities/Player/Assets/Inventory.hpp"
-#include "Server/Zone/Game/Entities/Player/Assets/Storage.hpp"
-#include "Server/Zone/Game/Entities/Traits/Status.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
+#include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
+#include "Server/Zone/Game/Units/Player/Assets/Storage.hpp"
+#include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
@@ -68,24 +68,24 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "notify_all", &Assets::Storage::notify_all
     );
 
-    state->new_usertype<Horizon::Zone::Entities::Player>("Player",
-        "entity", [](std::shared_ptr<Horizon::Zone::Entities::Player> player) { return player->shared_from_this(); },
-        "send_npc_dialog", &Horizon::Zone::Entities::Player::send_npc_dialog,
-        "send_npc_next_dialog", &Horizon::Zone::Entities::Player::send_npc_next_dialog,
-        "send_npc_close_dialog", &Horizon::Zone::Entities::Player::send_npc_close_dialog,
-        "send_npc_menu_list", &Horizon::Zone::Entities::Player::send_npc_menu_list,
-        "move_to_map", &Horizon::Zone::Entities::Player::move_to_map,
-        "inventory", &Horizon::Zone::Entities::Player::inventory,
-        "storage", &Horizon::Zone::Entities::Player::get_storage,
-        "message", [] (std::shared_ptr<Horizon::Zone::Entities::Player> player, std::string const &message)
+    state->new_usertype<Horizon::Zone::Units::Player>("Player",
+        "entity", [](std::shared_ptr<Horizon::Zone::Units::Player> player) { return player->shared_from_this(); },
+        "send_npc_dialog", &Horizon::Zone::Units::Player::send_npc_dialog,
+        "send_npc_next_dialog", &Horizon::Zone::Units::Player::send_npc_next_dialog,
+        "send_npc_close_dialog", &Horizon::Zone::Units::Player::send_npc_close_dialog,
+        "send_npc_menu_list", &Horizon::Zone::Units::Player::send_npc_menu_list,
+        "move_to_map", &Horizon::Zone::Units::Player::move_to_map,
+        "inventory", &Horizon::Zone::Units::Player::inventory,
+        "storage", &Horizon::Zone::Units::Player::get_storage,
+        "message", [] (std::shared_ptr<Horizon::Zone::Units::Player> player, std::string const &message)
         {
             player->get_session()->clif()->notify_chat(message);
         },
-        "job_change", & Horizon::Zone::Entities::Player::job_change,
-        "perform_action", & Horizon::Zone::Entities::Player::perform_action,
-        "get_learnt_skill", & Horizon::Zone::Entities::Player::get_learnt_skill,
-        "perform_skill", & Horizon::Zone::Entities::Player::perform_skill,
-        "on_skill_failure", & Horizon::Zone::Entities::Player::on_skill_failure
+        "job_change", & Horizon::Zone::Units::Player::job_change,
+        "perform_action", & Horizon::Zone::Units::Player::perform_action,
+        "get_learnt_skill", & Horizon::Zone::Units::Player::get_learnt_skill,
+        "perform_skill", & Horizon::Zone::Units::Player::perform_skill,
+        "on_skill_failure", & Horizon::Zone::Units::Player::on_skill_failure
     );
 
 }
@@ -93,13 +93,13 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
 void PlayerComponent::sync_functions(std::shared_ptr<sol::state> state)
 {
     state->set_function("cast_entity_to_player",
-                    [] (std::shared_ptr<Entity> e)
+                    [] (std::shared_ptr<Unit> e)
                     {
-                        return e->template downcast<Horizon::Zone::Entities::Player>();
+                        return e->template downcast<Horizon::Zone::Units::Player>();
                     });
 }
 
-void PlayerComponent::perform_command_from_player(std::shared_ptr<Horizon::Zone::Entities::Player> player, std::string const &cmd)
+void PlayerComponent::perform_command_from_player(std::shared_ptr<Horizon::Zone::Units::Player> player, std::string const &cmd)
 {
     try {
         std::string script_root_path = sZone->config().get_script_root_path().string();
