@@ -130,7 +130,7 @@ public:
 class TransformUnit : public TransformResource<Unit>
 {
 public:
-    TransformUnit(PreparatoryToTransformUnit prep_to, SubsequentToTransformUnit sub_to);
+    TransformUnit(std::shared_ptr<Unit> unit);
 
     virtual bool prepare() override;
     virtual bool validate() override;
@@ -150,7 +150,7 @@ public:
 class SubsequentToTransformPlayer : public SubsequentToTransformUnit
 {
 public:
-    SubsequentToTransformPlayer(std::shared_ptr<Units::Player> unit);
+    SubsequentToTransformPlayer(std::shared_ptr<Units::Player> player);
 
     bool prepare() override;
     bool validate() override;
@@ -160,7 +160,7 @@ public:
 class TransformPlayer : public TransformUnit
 {
 public:
-    TransformPlayer(PreparatoryToTransformPlayer prep_to, SubsequentToTransformPlayer sub_to);
+    TransformPlayer(std::shared_ptr<Units::Player> player);
     ~TransformPlayer() { }
 
     virtual bool prepare() override;
@@ -191,7 +191,7 @@ public:
 class TransformNPC : public TransformUnit
 {
 public:
-    TransformNPC(PreparatoryToTransformNPC prep_to, SubsequentToTransformNPC sub_to);
+    TransformNPC(std::shared_ptr<Units::NPC> npc);
     ~TransformNPC() { }
 
     virtual bool prepare() override;
@@ -222,7 +222,7 @@ public:
 class TransformItem : public TransformUnit
 {
 public:
-    TransformItem(PreparatoryToTransformItem prep_to, SubsequentToTransformItem sub_to);
+    TransformItem(std::shared_ptr<Units::Item> item);
     ~TransformItem() { }
 
     virtual bool prepare() override;
@@ -253,7 +253,7 @@ public:
 class TransformSkill : public TransformUnit
 {
 public:
-    TransformSkill(PreparatoryToTransformSkill prep_to, SubsequentToTransformSkill sub_to);
+    TransformSkill(std::shared_ptr<Units::Skill> skill);
     ~TransformSkill() { }
 
     virtual bool prepare() override;
@@ -284,7 +284,7 @@ public:
 class TransformMob : public TransformUnit
 {
 public:
-    TransformMob(PreparatoryToTransformMob prep_to, SubsequentToTransformMob sub_to);
+    TransformMob(std::shared_ptr<Units::Mob> mob);
     ~TransformMob() { }
 
     virtual bool prepare() override;
@@ -316,7 +316,7 @@ public:
 class TransformMonster : public TransformMob
 {
 public:
-    TransformMonster(PreparatoryToTransformMonster prep_to, SubsequentToTransformMonster sub_to);
+    TransformMonster(std::shared_ptr<Units::Monster> monster);
     ~TransformMonster() { }
 
     virtual bool prepare() override;
@@ -347,7 +347,7 @@ public:
 class TransformElemental : public TransformMob
 {
 public:
-    TransformElemental(PreparatoryToTransformElemental prep_to, SubsequentToTransformElemental sub_to);
+    TransformElemental(std::shared_ptr<Units::Elemental> elemental);
 
     virtual bool prepare() override;
     virtual bool validate() override;
@@ -377,7 +377,7 @@ public:
 class TransformHomunculus : public TransformMob
 {
 public:
-    TransformHomunculus(PreparatoryToTransformHomunculus prep_to, SubsequentToTransformHomunculus sub_to);
+    TransformHomunculus(std::shared_ptr<Units::Homunculus> homunculus);
 
     virtual bool prepare() override;
     virtual bool validate() override;
@@ -407,7 +407,7 @@ public:
 class TransformMercenary : public TransformMob
 {
 public:
-    TransformMercenary(PreparatoryToTransformMercenary prep_to, SubsequentToTransformMercenary sub_to);
+    TransformMercenary(std::shared_ptr<Units::Mercenary> mercenary);
 
     virtual bool prepare() override;
     virtual bool validate() override;
@@ -437,7 +437,7 @@ public:
 class TransformPet : public TransformMob
 {
 public:
-    TransformPet(PreparatoryToTransformPet prep_to, SubsequentToTransformPet sub_to);
+    TransformPet(std::shared_ptr<Units::Pet> pet);
 
     virtual bool prepare() override;
     virtual bool validate() override;

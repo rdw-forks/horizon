@@ -76,6 +76,7 @@ PreparatoryToTransformUnit::PreparatoryToTransformUnit(std::shared_ptr<Unit> uni
 
 bool PreparatoryToTransformUnit::prepare()
 {
+    // Check for resource usage.
     return true;
 }
 
@@ -109,7 +110,7 @@ bool SubsequentToTransformUnit::response()
     return true;
 }
 
-TransformUnit::TransformUnit(PreparatoryToTransformUnit prep_to, SubsequentToTransformUnit sub_to) : TransformResource(prep_to, sub_to)
+TransformUnit::TransformUnit(std::shared_ptr<Horizon::Zone::Unit> unit) : TransformResource(PreparatoryToTransformUnit(unit), SubsequentToTransformUnit(unit))
 {
 
 }
@@ -169,7 +170,7 @@ bool SubsequentToTransformPlayer::response()
     return true;
 }
 
-TransformPlayer::TransformPlayer(PreparatoryToTransformPlayer prep_to, SubsequentToTransformPlayer sub_to) : TransformUnit(prep_to, sub_to)
+TransformPlayer::TransformPlayer(std::shared_ptr<Horizon::Zone::Units::Player> player) : TransformUnit(player)
 {
 
 }
@@ -233,7 +234,7 @@ bool SubsequentToTransformNPC::response()
     return true;
 }
 
-TransformNPC::TransformNPC(PreparatoryToTransformNPC prep_to, SubsequentToTransformNPC sub_to) : TransformUnit(prep_to, sub_to)
+TransformNPC::TransformNPC(std::shared_ptr<Horizon::Zone::Units::NPC> npc) : TransformUnit(npc)
 {
 
 }
@@ -295,7 +296,7 @@ bool SubsequentToTransformItem::response()
     return true;
 }
 
-TransformItem::TransformItem(PreparatoryToTransformItem prep_to, SubsequentToTransformItem sub_to) : TransformUnit(prep_to, sub_to)
+TransformItem::TransformItem(std::shared_ptr<Horizon::Zone::Units::Item> item) : TransformUnit(item)
 {
 
 }
@@ -357,7 +358,7 @@ bool SubsequentToTransformSkill::response()
     return true;
 }
 
-TransformSkill::TransformSkill(PreparatoryToTransformSkill prep_to, SubsequentToTransformSkill sub_to) : TransformUnit(prep_to, sub_to)
+TransformSkill::TransformSkill(std::shared_ptr<Horizon::Zone::Units::Skill> skill) : TransformUnit(skill)
 {
 
 }
@@ -420,7 +421,7 @@ bool SubsequentToTransformMob::response()
     return true;
 }
 
-TransformMob::TransformMob(PreparatoryToTransformMob prep_to, SubsequentToTransformMob sub_to) : TransformUnit(prep_to, sub_to)
+TransformMob::TransformMob(std::shared_ptr<Horizon::Zone::Units::Mob> mob) : TransformUnit(mob)
 {
 
 }
@@ -483,7 +484,7 @@ bool SubsequentToTransformMonster::response()
     return true;
 }
 
-TransformMonster::TransformMonster(PreparatoryToTransformMonster prep_to, SubsequentToTransformMonster sub_to) : TransformMob(prep_to, sub_to)
+TransformMonster::TransformMonster(std::shared_ptr<Horizon::Zone::Units::Monster> monster) : TransformMob(monster)
 {
 
 }
@@ -545,7 +546,7 @@ bool SubsequentToTransformElemental::response()
     return true;
 }
 
-TransformElemental::TransformElemental(PreparatoryToTransformElemental prep_to, SubsequentToTransformElemental sub_to) : TransformMob(prep_to, sub_to)
+TransformElemental::TransformElemental(std::shared_ptr<Horizon::Zone::Units::Elemental> elemental) : TransformMob(elemental)
 {
 
 }
@@ -607,7 +608,8 @@ bool SubsequentToTransformHomunculus::response()
     return true;
 }
 
-TransformHomunculus::TransformHomunculus(PreparatoryToTransformHomunculus prep_to, SubsequentToTransformHomunculus sub_to) : TransformMob(prep_to, sub_to)
+TransformHomunculus::TransformHomunculus(std::shared_ptr<Horizon::Zone::Units::Homunculus> homunculus) 
+: TransformMob(homunculus)
 {
 
 }
@@ -669,7 +671,8 @@ bool SubsequentToTransformMercenary::response()
     return true;
 }
 
-TransformMercenary::TransformMercenary(PreparatoryToTransformMercenary prep_to, SubsequentToTransformMercenary sub_to) : TransformMob(prep_to, sub_to)
+TransformMercenary::TransformMercenary(std::shared_ptr<Horizon::Zone::Units::Mercenary> mercenary) 
+: TransformMob(mercenary)
 {
 
 }
@@ -732,7 +735,7 @@ bool SubsequentToTransformPet::response()
     return true;
 }
 
-TransformPet::TransformPet(PreparatoryToTransformPet prep_to, SubsequentToTransformPet sub_to) : TransformMob(prep_to, sub_to)
+TransformPet::TransformPet(std::shared_ptr<Horizon::Zone::Units::Pet> pet) : TransformMob(pet)
 {
 
 }
