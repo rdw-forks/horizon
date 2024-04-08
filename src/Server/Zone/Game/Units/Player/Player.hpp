@@ -36,7 +36,7 @@
 #include "Server/Zone/Game/Units/Unit.hpp"
 #include "Server/Zone/Game/GridObject.hpp"
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
-#include "Server/Zone/Definitions/UnitDefinitions.hpp" // entity_gender_types
+#include "Server/Zone/Definitions/UnitDefinitions.hpp" // unit_gender_types
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
@@ -64,7 +64,7 @@ class Player : public Unit, public GridObject<Player>
 		int32_t _character_id{0};
 		int16_t _slot{0};
 		int8_t _online{0};
-		entity_gender_types _gender{UNIT_GENDER_FEMALE};
+		unit_gender_types _gender{UNIT_GENDER_FEMALE};
 		int32_t _max_inventory_size{MAX_INVENTORY_SIZE};
 		int64_t _last_unique_id{0};
 		int8_t _font{0};
@@ -108,14 +108,14 @@ public:
 	/**
 	 * Movement
 	 */
-	void realize_entity_movement(std::shared_ptr<Unit> entity);
-	void realize_entity_movement_entry(std::shared_ptr<Unit> entity);
-	void realize_nearby_items(entity_viewport_notification_type notif_type);
+	void realize_unit_movement(std::shared_ptr<Unit> unit);
+	void realize_unit_movement_entry(std::shared_ptr<Unit> unit);
+	void realize_nearby_items(unit_viewport_notification_type notif_type);
 
-	void add_entity_to_viewport(std::shared_ptr<Unit> entity);
-	void remove_entity_from_viewport(std::shared_ptr<Unit> entity, entity_viewport_notification_type type);
-	void spawn_entity_in_viewport(std::shared_ptr<Unit> entity);
-	bool entity_is_in_viewport(std::shared_ptr<Unit> entity);
+	void add_unit_to_viewport(std::shared_ptr<Unit> unit);
+	void remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport_notification_type type);
+	void spawn_unit_in_viewport(std::shared_ptr<Unit> unit);
+	bool unit_is_in_viewport(std::shared_ptr<Unit> unit);
 
 	void notify_in_area(ByteBuffer &buf, grid_notifier_type type, uint16_t range = MAX_VIEW_RANGE);
 	bool move_to_map(std::shared_ptr<Map> map, MapCoords coords = { 0, 0 });

@@ -45,27 +45,27 @@ using namespace Horizon::Zone::Traits;
 
 
 void Attribute::add_base(int32_t val) { 
-	entity()->status()->status_registry()->add_to_base(this, val);
+	unit()->status()->status_registry()->add_to_base(this, val);
 }
 void Attribute::sub_base(int32_t val) { 
-	entity()->status()->status_registry()->subtract_from_base(this, std::min(_base_val, val));
+	unit()->status()->status_registry()->subtract_from_base(this, std::min(_base_val, val));
 }
 void Attribute::add_equip(int32_t val) { 
-	entity()->status()->status_registry()->add_to_equip(this, val);
+	unit()->status()->status_registry()->add_to_equip(this, val);
 }
 void Attribute::sub_equip(int32_t val) { 
-	entity()->status()->status_registry()->subtract_from_equip(this, std::min(_equip_val, val));
+	unit()->status()->status_registry()->subtract_from_equip(this, std::min(_equip_val, val));
 }
 void Attribute::add_status(int32_t val) { 
-	entity()->status()->status_registry()->add_to_status(this, val);
+	unit()->status()->status_registry()->add_to_status(this, val);
 }
 void Attribute::sub_status(int32_t val) { 
-	entity()->status()->status_registry()->subtract_from_status(this, std::min(_status_val, val));
+	unit()->status()->status_registry()->subtract_from_status(this, std::min(_status_val, val));
 }
 
 void Attribute::notify()
 {
-	if (entity()->type() != UNIT_PLAYER) 
+	if (unit()->type() != UNIT_PLAYER) 
 		return;
 		
 	switch(_status_point_type)
@@ -100,7 +100,7 @@ void Attribute::notify()
 	case STATUS_HARD_MDEF:
 	case STATUS_ZENY:
 	{
-		entity()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_compound_attribute_update(_status_point_type, total());
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_compound_attribute_update(_status_point_type, total());
 	}      
 	break;  
 	case STATUS_BASEEXP:
@@ -108,7 +108,7 @@ void Attribute::notify()
 	case STATUS_NEXTBASEEXP:
 	case STATUS_NEXTJOBEXP:
 	{
-		entity()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_experience_update(_status_point_type, total());
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_experience_update(_status_point_type, total());
 	}
 	break;
 	case STATUS_STRENGTH_COST:
@@ -118,12 +118,12 @@ void Attribute::notify()
 	case STATUS_DEXTERITY_COST:
 	case STATUS_LUCK_COST:
 	{
-		entity()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_required_attribute_update(_status_point_type, total());
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_required_attribute_update(_status_point_type, total());
 	}
 	break;
 	case STATUS_ATTACKRANGE:
 	{
-		entity()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_attack_range_update(total());
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_attack_range_update(total());
 	}
 	break;            
 	case STATUS_STRENGTH:
@@ -133,12 +133,12 @@ void Attribute::notify()
 	case STATUS_DEXTERITY:
 	case STATUS_LUCK:
 	{
-		entity()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_attribute_update(_status_point_type, get_base(), get_status() + get_equip());
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_attribute_update(_status_point_type, get_base(), get_status() + get_equip());
 	}
 	break;
 	case STATUS_CARTINFO:
 	{
-		entity()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_cart_weight_update();
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_cart_weight_update();
 	}
 	break;
 	default:
@@ -147,56 +147,56 @@ void Attribute::notify()
 	}
 }
 template <class STATUS_COST_T, class STATUS_T>
-void set_new_point_cost(std::shared_ptr<Horizon::Zone::Unit> entity, STATUS_COST_T *cost_t, STATUS_T *stat)
+void set_new_point_cost(std::shared_ptr<Horizon::Zone::Unit> unit, STATUS_COST_T *cost_t, STATUS_T *stat)
 {
-	if (entity == nullptr || stat == nullptr)
+	if (unit == nullptr || stat == nullptr)
 		return;
 
-	int32_t new_cost = entity->status()->get_required_statpoints(stat->get_base(), stat->get_base() + 1);
+	int32_t new_cost = unit->status()->get_required_statpoints(stat->get_base(), stat->get_base() + 1);
 
 	cost_t->set_base(new_cost);
 }
 
 void StrengthPointCost::on_observable_changed(Strength *str)
 {
-	set_new_point_cost(entity(), this, str);
+	set_new_point_cost(unit(), this, str);
 }
 
 void AgilityPointCost::on_observable_changed(Agility *agi)
 {
-	set_new_point_cost(entity(), this, agi);
+	set_new_point_cost(unit(), this, agi);
 }
 
 void VitalityPointCost::on_observable_changed(Vitality *vit)
 {
-	set_new_point_cost(entity(), this, vit);
+	set_new_point_cost(unit(), this, vit);
 }
 
 void IntelligencePointCost::on_observable_changed(Intelligence *_int)
 {
-	set_new_point_cost(entity(), this, _int);
+	set_new_point_cost(unit(), this, _int);
 }
 
 void DexterityPointCost::on_observable_changed(Dexterity *dex)
 {
-	set_new_point_cost(entity(), this, dex);
+	set_new_point_cost(unit(), this, dex);
 }
 
 void LuckPointCost::on_observable_changed(Luck *luk)
 {
-	set_new_point_cost(entity(), this, luk);
+	set_new_point_cost(unit(), this, luk);
 }
 
 void BaseLevel::on_observable_changed(BaseExperience *bexp)
 {
-	if (entity() == nullptr || bexp == nullptr)
+	if (unit() == nullptr || bexp == nullptr)
 		return;
 
 	if (get_base() >= MAX_LEVEL)
 		return;
 
-	if (bexp->get_base() >= entity()->status()->next_base_experience()->get_base()) {
-		int carried_over = bexp->get_base() - entity()->status()->next_base_experience()->get_base();
+	if (bexp->get_base() >= unit()->status()->next_base_experience()->get_base()) {
+		int carried_over = bexp->get_base() - unit()->status()->next_base_experience()->get_base();
 		add_base(1);
 		bexp->set_base(carried_over);
 	}
@@ -204,17 +204,17 @@ void BaseLevel::on_observable_changed(BaseExperience *bexp)
 
 void JobLevel::on_observable_changed(JobExperience *jexp)
 {
-	if (entity() == nullptr || jexp == nullptr)
+	if (unit() == nullptr || jexp == nullptr)
 		return;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
-	if (entity()->status()->job_level()->get_base() >= jexpg->max_level)
+	if (unit()->status()->job_level()->get_base() >= jexpg->max_level)
 		return;
 
-	if (jexp->get_base() >= entity()->status()->next_job_experience()->get_base()) {
-		int carried_over = jexp->get_base() - entity()->status()->next_job_experience()->get_base();
+	if (jexp->get_base() >= unit()->status()->next_job_experience()->get_base()) {
+		int carried_over = jexp->get_base() - unit()->status()->next_job_experience()->get_base();
 		add_base(1);
 		jexp->set_base(carried_over);
 	}
@@ -238,10 +238,10 @@ void CurrentSP::reduce(int amount)
 
 void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 {
-	if (entity() == nullptr || blvl == nullptr)
+	if (unit() == nullptr || blvl == nullptr)
 		return;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
 	set_base(bexpg->exp[blvl->get_base() - 1]);
@@ -249,10 +249,10 @@ void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 
 void NextJobExperience::on_observable_changed(JobLevel *jlvl)
 {
-	if (entity() == nullptr || jlvl == nullptr)
+	if (unit() == nullptr || jlvl == nullptr)
 		return;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
 	set_base(jexpg->exp[jlvl->get_base() - 1]);
@@ -260,7 +260,7 @@ void NextJobExperience::on_observable_changed(JobLevel *jlvl)
 
 void StatusPoint::on_observable_changed(BaseLevel *blvl)
 {
-	if (entity() == nullptr || blvl == nullptr)
+	if (unit() == nullptr || blvl == nullptr)
 		return;
 
 	add_base(ExpDB->get_status_point(blvl->get_base()) - ExpDB->get_status_point(blvl->get_base() - 1));
@@ -268,7 +268,7 @@ void StatusPoint::on_observable_changed(BaseLevel *blvl)
 
 void SkillPoint::on_observable_changed(JobLevel *jlvl)
 {
-	if (entity() == nullptr || jlvl == nullptr)
+	if (unit() == nullptr || jlvl == nullptr)
 		return;
 
 	add_base(1);
@@ -281,10 +281,10 @@ void SkillPoint::set_base(int32_t val)
 
 int32_t MaxWeight::compute()
 {
-	if (entity() == nullptr || _str == nullptr)
+	if (unit() == nullptr || _str == nullptr)
 		return 0;
 
-	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 
 	set_base(job->max_weight + _str->get_base() * 300);
 	
@@ -437,7 +437,7 @@ int32_t EquipATK::compute()
 {
 	int32_t str = 1, dex = 1;
 
-	if (entity() == nullptr || entity()->type() != UNIT_PLAYER)
+	if (unit() == nullptr || unit()->type() != UNIT_PLAYER)
 		return 0;
 
 	if (_str != nullptr)
@@ -446,7 +446,7 @@ int32_t EquipATK::compute()
 	if (_dex != nullptr)
 		dex = _dex->total();
 
-	std::shared_ptr<Horizon::Zone::Units::Player> player = entity()->downcast<Horizon::Zone::Units::Player>();
+	std::shared_ptr<Horizon::Zone::Units::Player> player = unit()->downcast<Horizon::Zone::Units::Player>();
 	EquipmentListType const &equipments = player->inventory()->equipments();
 
 	std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
@@ -487,11 +487,11 @@ int32_t AttackSpeed::compute()
 	float temp_aspd = 0.00f;
 	int amotion = 0;
 
-	if (entity()->type() == UNIT_PLAYER) {
-		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+	if (unit()->type() == UNIT_PLAYER) {
+		EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 		std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
-		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(entity()->job_id());
+		std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 
 		item_weapon_type rhw_type, lhw_type;
 
@@ -547,8 +547,8 @@ int32_t AttackSpeed::compute()
 
 int32_t AttackRange::compute()
 {
-	if (entity()->type() == UNIT_PLAYER) {
-		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+	if (unit()->type() == UNIT_PLAYER) {
+		EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
 		
 		if (equipments[IT_EQPI_HAND_R].second.expired() == true)
 			return 1;
@@ -560,8 +560,8 @@ int32_t AttackRange::compute()
 
 		set_base(rhw->config->attack_range);
 
-	} else if (entity()->type() == UNIT_MONSTER) {
-		set_base(entity()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_range);
+	} else if (unit()->type() == UNIT_MONSTER) {
+		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_range);
 	}
 
 	return total();
@@ -585,39 +585,39 @@ int32_t MobMagicAttackDamage::compute()
 
 int32_t AttackMotion::compute()
 {
-	if (entity()->type() == UNIT_PLAYER)
+	if (unit()->type() == UNIT_PLAYER)
 		set_base(_attack_speed->get_base());
-	else if (entity()->type() == UNIT_MONSTER)
-		set_base(entity()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_motion);
+	else if (unit()->type() == UNIT_MONSTER)
+		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_motion);
 
 	return total();
 }
 
 int32_t AttackDelay::compute()
 {
-	if (entity()->type() == UNIT_PLAYER)
+	if (unit()->type() == UNIT_PLAYER)
 		set_base(2 * _attack_motion->total());
-	else if (entity()->type() == UNIT_MONSTER)
-		set_base(entity()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_delay);
+	else if (unit()->type() == UNIT_MONSTER)
+		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_delay);
 
 	return total();
 }
 
 int32_t DamageMotion::compute()
 {
-	if (entity()->type() == UNIT_PLAYER)
+	if (unit()->type() == UNIT_PLAYER)
 		set_base(800 - _agi->get_base() * 4);
-	else if (entity()->type() == UNIT_MONSTER)
-		set_base(entity()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->damage_motion);
+	else if (unit()->type() == UNIT_MONSTER)
+		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->damage_motion);
 
 	return total();
 }
 
 int32_t BaseAttack::compute()
 {
-	if (entity()->type() == UNIT_PLAYER) {
+	if (unit()->type() == UNIT_PLAYER) {
 		bool melee = true;
-		EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+		EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
 		std::shared_ptr<const item_entry_data> rhw = nullptr;
 
 		if (!equipments[IT_EQPI_HAND_R].second.expired()) {
@@ -640,7 +640,7 @@ int32_t BaseAttack::compute()
 		}
 		set_base((melee ? _str->total() : _dex->total()) + (float) ((melee ? _dex->get_base() : _str->total()) / 5) + (float) (_luk->get_base() / 3) + (_blvl->get_base() / 4));
 	}
-	else if (entity()->type() == UNIT_MONSTER)
+	else if (unit()->type() == UNIT_MONSTER)
 		set_base(_str->total() + _blvl->get_base());
 
 	return total();

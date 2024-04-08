@@ -182,8 +182,8 @@ bool ZoneServer::read_config()
 
 	config().set_script_root_path(tbl.get_or("script_root_path", std::string("scripts/")));
 	HLog(info) << "Script root path is set to " << config().get_script_root_path() << ", it will be used for all scripting references.";
-//	config().set_entity_save_interval(tbl.get_or("entity_save_interval", 180000));
-//	HLog(info) << "Unit data will be saved to the database every " << duration_cast<minutes>(std::chrono::milliseconds(config().get_entity_save_interval())).count() << " minutes and " << duration_cast<seconds>(std::chrono::milliseconds(config().get_entity_save_interval())).count() << " seconds.";
+//	config().set_unit_save_interval(tbl.get_or("unit_save_interval", 180000));
+//	HLog(info) << "Unit data will be saved to the database every " << duration_cast<minutes>(std::chrono::milliseconds(config().get_unit_save_interval())).count() << " minutes and " << duration_cast<seconds>(std::chrono::milliseconds(config().get_unit_save_interval())).count() << " seconds.";
 	
 	HLog(info) << "Maps will be managed by '" << MAX_MAP_CONTAINER_THREADS << "' thread containers.";
 
@@ -207,12 +207,12 @@ uint64_t ZoneServer::to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t 
 	return ((uint64_t)uid3 << 56 | ((uint64_t)uid2 << 8) | ((uint64_t)uid << 40) | (uint64_t) type);
 }
 
-void ZoneServer::from_uuid(uint64_t entity_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3)
+void ZoneServer::from_uuid(uint64_t unit_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3)
 {
-    type = (uint8_t) entity_uuid;
-    uid = (uint32_t) (entity_uuid >> 40);
-    uid2 = (uint16_t) (entity_uuid >> 8);
-    uid3 = (uint8_t) (entity_uuid >> 56);
+    type = (uint8_t) unit_uuid;
+    uid = (uint32_t) (unit_uuid >> 40);
+    uid2 = (uint16_t) (unit_uuid >> 8);
+    uid3 = (uint8_t) (unit_uuid >> 56);
 }
 
 /**

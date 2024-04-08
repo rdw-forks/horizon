@@ -70,7 +70,7 @@ public:
 		return _refine_db.at(type, std::shared_ptr<refine_config>());
 	}
 
-	uint8_t get_weapon_target_size_modifier(item_weapon_type wtype, entity_size_type stype)
+	uint8_t get_weapon_target_size_modifier(item_weapon_type wtype, unit_size_type stype)
 	{
 		std::shared_ptr<std::array<uint8_t, ESZ_MAX>> arr = _weapon_target_size_modifiers_db.at(wtype);
 		return arr != nullptr ? (*arr)[stype] : 100;

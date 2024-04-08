@@ -217,21 +217,21 @@ bool ZoneClientInterface::notify_time()
 }
 
 
-bool ZoneClientInterface::notify_entity_name(uint32_t guid)
+bool ZoneClientInterface::notify_unit_name(uint32_t guid)
 {
-	std::shared_ptr<Unit> entity = get_session()->player()->get_nearby_entity(guid);
+	std::shared_ptr<Unit> unit = get_session()->player()->get_nearby_unit(guid);
 	
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return false;
 
 #if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20150225) \
 	|| (CLIENT_TYPE == 'R' && PACKET_VERSION >= 20141126) \
 	|| (CLIENT_TYPE == 'Z')
 	ZC_ACK_REQNAMEALL2 req(get_session());
-	req.deliver(guid, std::string(entity->name()) , "", "", "", 0);
+	req.deliver(guid, std::string(unit->name()) , "", "", "", 0);
 #else
 	ZC_ACK_REQNAMEALL req(get_session());
-	req.deliver(guid, std::string(entity->name()), "", "", "");
+	req.deliver(guid, std::string(unit->name()), "", "", "");
 #endif
 	
 	return true;
@@ -259,43 +259,43 @@ item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_
 
 	return entry;
 }
-entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<Unit> entity)
+unit_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<Unit> unit)
 {
-	entity_viewport_entry entry;
+	unit_viewport_entry entry;
 
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return entry;
 	
-	std::shared_ptr<Horizon::Zone::Traits::Status> status = entity->status();
+	std::shared_ptr<Horizon::Zone::Traits::Status> status = unit->status();
 
 	if (status == nullptr)
 		return entry;
 
-	entry.guid = entity->guid();
-	entry.unit_type = entity->type();
+	entry.guid = unit->guid();
+	entry.unit_type = unit->type();
 	entry.speed = status->movement_speed()->total();
 	entry.body_state = 0;
 	entry.health_state = 0;
 	entry.effect_state = 0;
-	entry.job_id = entity->job_id();
+	entry.job_id = unit->job_id();
 	entry.hair_style_id = status->hair_style()->get();
 	entry.hair_color_id = status->hair_color()->get();
 	entry.robe_id = status->robe_sprite()->get();
 	entry.guild_id = 0;
 	entry.guild_emblem_version = 0;
-	entry.honor = entity->type() == UNIT_PLAYER ? status->honor()->total() : 0;
-	entry.virtue = entity->type() == UNIT_PLAYER ? status->virtue()->total() : 0;
+	entry.honor = unit->type() == UNIT_PLAYER ? status->honor()->total() : 0;
+	entry.virtue = unit->type() == UNIT_PLAYER ? status->virtue()->total() : 0;
 	entry.in_pk_mode = 0;
-	entry.current_x = entity->map_coords().x();
-	entry.current_y = entity->map_coords().y();
-	entry.current_dir = entity->direction();
+	entry.current_x = unit->map_coords().x();
+	entry.current_y = unit->map_coords().y();
+	entry.current_dir = unit->direction();
 	
-	if (entity->is_walking()) {
-		entry.to_x = entity->dest_coords().x();
-		entry.to_y = entity->dest_coords().y();
+	if (unit->is_walking()) {
+		entry.to_x = unit->dest_coords().x();
+		entry.to_y = unit->dest_coords().y();
 	}
 	
-	entry.posture = entity->posture();
+	entry.posture = unit->posture();
 	entry.base_level = status->base_level()->total();
 	entry.font = 1;
 
@@ -310,14 +310,14 @@ entity_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr
 	
 	entry.is_boss = 0;
 	entry.body_style_id = 0;
-	std::strncpy(entry.name, entity->name().c_str(), entity->name().size());
+	std::strncpy(entry.name, unit->name().c_str(), unit->name().size());
 	
 	switch (entry.unit_type)
 	{
 		case UNIT_PLAYER:
-			entry.character_id = entity->downcast<Horizon::Zone::Units::Player>()->character()._character_id;
+			entry.character_id = unit->downcast<Horizon::Zone::Units::Player>()->character()._character_id;
 			entry.x_size = entry.y_size = 0;
-			entry.gender = entity->downcast<Horizon::Zone::Units::Player>()->character()._gender;
+			entry.gender = unit->downcast<Horizon::Zone::Units::Player>()->character()._gender;
 			break;
 		case UNIT_NPC:
 		default:
@@ -339,7 +339,7 @@ bool ZoneClientInterface::notify_movement_stop(int32_t guid, int16_t x, int16_t 
 	pkt.deliver(guid, x, y);
 	return true;
 }
-bool ZoneClientInterface::notify_viewport_add_entity(entity_viewport_entry entry)
+bool ZoneClientInterface::notify_viewport_add_unit(unit_viewport_entry entry)
 {
 #if PACKET_VERSION >= 20150513
 	ZC_NOTIFY_STANDENTRY11 pkt(get_session());
@@ -347,13 +347,13 @@ bool ZoneClientInterface::notify_viewport_add_entity(entity_viewport_entry entry
 #endif
 	return true;
 }
-bool ZoneClientInterface::notify_viewport_spawn_entity(entity_viewport_entry entry)
+bool ZoneClientInterface::notify_viewport_spawn_unit(unit_viewport_entry entry)
 {
 	ZC_NOTIFY_NEWENTRY11 pkt(get_session());
 	pkt.deliver(entry);
 	return true;
 }
-bool ZoneClientInterface::notify_viewport_moving_entity(entity_viewport_entry entry)
+bool ZoneClientInterface::notify_viewport_moving_unit(unit_viewport_entry entry)
 {
 #if PACKET_VERSION >= 20150513
 	ZC_NOTIFY_MOVEENTRY11 pkt(get_session());
@@ -367,19 +367,19 @@ bool ZoneClientInterface::notify_viewport_item_entry(item_viewport_entry entry)
 	pkt.deliver(entry);
 	return true;
 }
-bool ZoneClientInterface::notify_entity_move(int32_t guid, MapCoords from, MapCoords to)
+bool ZoneClientInterface::notify_unit_move(int32_t guid, MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_MOVE pkt(get_session());
 	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
-bool ZoneClientInterface::notify_viewport_remove_entity(std::shared_ptr<Unit> entity, entity_viewport_notification_type type)
+bool ZoneClientInterface::notify_viewport_remove_unit(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		 return false;
 
 	ZC_NOTIFY_VANISH pkt(get_session());
-	pkt.deliver(entity->guid(), type);
+	pkt.deliver(unit->guid(), type);
 	return true;
 }
 bool ZoneClientInterface::notify_initial_status()
@@ -427,7 +427,7 @@ bool ZoneClientInterface::notify_initial_status()
 
 	return true;
 }
-bool ZoneClientInterface::notify_appearance_update(entity_appearance_type type, int32_t value, int32_t value2)
+bool ZoneClientInterface::notify_appearance_update(unit_appearance_type type, int32_t value, int32_t value2)
 {
 	ZC_SPRITE_CHANGE2 pkt(get_session());
 	pkt.deliver(get_session()->player()->guid(), type, value, value2);
@@ -1055,7 +1055,7 @@ bool ZoneClientInterface::notify_learnt_skill_list()
 
 void ZoneClientInterface::use_skill_on_target(int16_t skill_lv, int16_t skill_id, int target_guid)
 {
-	std::shared_ptr<Unit> target = get_session()->player()->get_nearby_entity(target_guid);
+	std::shared_ptr<Unit> target = get_session()->player()->get_nearby_unit(target_guid);
 	
 	if (target == nullptr)
 		return;
@@ -1155,7 +1155,7 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 		}
 		case PLAYER_ACT_ATTACK:
 		{
-			std::shared_ptr<Unit> target = get_session()->player()->get_nearby_entity(target_guid);
+			std::shared_ptr<Unit> target = get_session()->player()->get_nearby_unit(target_guid);
 			
 			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config config;
 			config.continuous = continuous;

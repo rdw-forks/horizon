@@ -44,7 +44,7 @@ namespace Units
 class Mob : public Unit
 {
 public:
-	Mob(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords);
+	Mob(uint64_t uuid, unit_type type, unit_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords);
 	~Mob() override;
 
 	bool initialize(std::shared_ptr<const monster_config_data> md);

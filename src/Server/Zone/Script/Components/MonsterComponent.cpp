@@ -137,7 +137,7 @@ void MonsterComponent::sync_definitions(std::shared_ptr<sol::state> state)
 void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
 	state->new_usertype<Monster>("Monster",
-		"entity", [](std::shared_ptr<Horizon::Zone::Units::Monster> monster) { return monster->shared_from_this(); },
+		"unit", [](std::shared_ptr<Horizon::Zone::Units::Monster> monster) { return monster->shared_from_this(); },
 		"stop_movement", &Monster::stop_movement,
 		"on_pathfinding_failure", &Monster::on_pathfinding_failure,
 		"on_movement_begin", &Monster::on_movement_begin,
@@ -156,7 +156,7 @@ void MonsterComponent::sync_data_types(std::shared_ptr<sol::state> state)
 
 void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)
 {
-	state->set_function("cast_entity_to_monster",
+	state->set_function("cast_unit_to_monster",
 					[] (std::shared_ptr<Unit> e)
 					{
 						return e->template downcast<Monster>();
@@ -198,9 +198,9 @@ void MonsterComponent::deregister_single_spawned_monster(uint64_t uuid) {
 		if ((*i).second->uuid() == uuid) {
 			reschedule_single_monster_spawn((*i).second);
 			(*i).second->finalize();
-			// Remove the entity from the containers.
+			// Remove the unit from the containers.
 			std::shared_ptr<MapContainerThread> container = (*i).second->map()->container();
-			container->remove_entity((*i).second);
+			container->remove_unit((*i).second);
 			_monster_spawned_map.erase(i);
 			return;
 		}
@@ -313,7 +313,7 @@ void MonsterComponent::spawn_monster(std::shared_ptr<Map> map, int spawn_dataset
 		std::shared_ptr<Monster> monster = std::make_shared<Monster>(spawn_dataset_id, i, map, mcoords, md, mskd);
 		
 		monster->initialize();
-		get_container()->add_entity(monster);
+		get_container()->add_unit(monster);
 		register_single_spawned_monster(monster->uuid(), monster);
 	}
 
@@ -332,7 +332,7 @@ void MonsterComponent::despawn_monsters(std::string map_name, std::shared_ptr<Ma
 	for (auto i = _monster_spawned_map.begin(); i != _monster_spawned_map.end();)
 		if ((*i).second->map()->get_name() == map_name) {
 			(*i).second->finalize();
-			container->remove_entity((*i).second);
+			container->remove_unit((*i).second);
 			i = _monster_spawned_map.erase(i);
 		}
 }

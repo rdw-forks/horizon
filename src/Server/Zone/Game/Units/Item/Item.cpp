@@ -55,7 +55,7 @@ void Item::initialize()
     if (!Unit::initialize())
         return;
 
-    map()->ensure_grid_for_entity(this, map_coords());
+    map()->ensure_grid_for_unit(this, map_coords());
 }
 
 bool Item::finalize()

@@ -43,7 +43,7 @@
 
 using namespace Horizon::Zone;
 
-Unit::Unit(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords)
+Unit::Unit(uint64_t uuid, unit_type type, unit_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords)
 	: _type(type), _type_mask(type_mask), _map_coords(map_coords)
 {
 	set_uuid(uuid);
@@ -51,7 +51,7 @@ Unit::Unit(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::sha
 }
 
 // For Player
-Unit::Unit(uint64_t uuid, entity_type type, entity_type_mask type_mask)
+Unit::Unit(uint64_t uuid, unit_type type, unit_type_mask type_mask)
 	: _type(type), _type_mask(type_mask), _map_coords(MapCoords(0, 0))
 {
 	set_uuid(uuid);
@@ -110,7 +110,7 @@ bool Unit::schedule_walk()
 
 	if (!map())
 	{
-		// HLog(error) << "Reference to map object has been lost for entity " << (void *) this << ".";
+		// HLog(error) << "Reference to map object has been lost for unit " << (void *) this << ".";
 		_dest_pos = {0, 0};
 		return false;
 	}
@@ -148,11 +148,11 @@ bool Unit::schedule_walk()
 	return true;
 }
 
-// This method begins the movement of the entity and schedules movement, server side.
-// @NOTE This method is called when the entity is already in motion and a new destination is set.
+// This method begins the movement of the unit and schedules movement, server side.
+// @NOTE This method is called when the unit is already in motion and a new destination is set.
 void Unit::walk()
 {
-	// Fixes the jumping walk bug that happens when the walk is invoked while entity is already walking.
+	// Fixes the jumping walk bug that happens when the walk is invoked while unit is already walking.
 	if (type() == UNIT_PLAYER && map()->container()->getScheduler().Count(get_scheduler_task_id(UNIT_SCHEDULE_WALK)) > 0)
 		return;
 
@@ -257,14 +257,14 @@ bool Unit::walk_to_coordinates(int16_t x, int16_t y)
 	return true;
 }
 
-bool Unit::walk_to_entity(std::shared_ptr<Unit> entity)
+bool Unit::walk_to_unit(std::shared_ptr<Unit> unit)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return false;
 
-	if (walk_to_coordinates(entity->map_coords().x(), entity->map_coords().y()))
+	if (walk_to_coordinates(unit->map_coords().x(), unit->map_coords().y()))
 	{
-		// HLog(warning) << "Unit (" << guid() << ") could not walk to (" << entity->guid() << ").";
+		// HLog(warning) << "Unit (" << guid() << ") could not walk to (" << unit->guid() << ").";
 		return false;
 	}
 
@@ -279,7 +279,7 @@ bool Unit::is_in_range_of(std::shared_ptr<Unit> e, uint8_t range)
 	return map_coords().is_within_range(e->map_coords(), range);
 }
 
-std::shared_ptr<Unit> Unit::get_nearby_entity(uint32_t guid)
+std::shared_ptr<Unit> Unit::get_nearby_unit(uint32_t guid)
 {
 	GridUnitSearcher searcher(guid);
 	GridReferenceContainerVisitor<GridUnitSearcher, GridReferenceContainer<AllUnitTypes>> search_visitor(searcher);
@@ -289,39 +289,39 @@ std::shared_ptr<Unit> Unit::get_nearby_entity(uint32_t guid)
 	return searcher.get_result();
 }
 
-void Unit::notify_nearby_players_of_existence(entity_viewport_notification_type notif_type)
+void Unit::notify_nearby_players_of_existence(unit_viewport_notification_type notif_type)
 {
 	GridUnitExistenceNotifier existence_notify(shared_from_this(), notif_type);
-	GridReferenceContainerVisitor<GridUnitExistenceNotifier, GridReferenceContainer<AllUnitTypes>> entity_visitor(existence_notify);
+	GridReferenceContainerVisitor<GridUnitExistenceNotifier, GridReferenceContainer<AllUnitTypes>> unit_visitor(existence_notify);
 
-	map()->visit_in_range(map_coords(), entity_visitor);
+	map()->visit_in_range(map_coords(), unit_visitor);
 }
 
 void Unit::notify_nearby_players_of_spawn()
 {
 	GridUnitSpawnNotifier spawn_notify(shared_from_this());
-	GridReferenceContainerVisitor<GridUnitSpawnNotifier, GridReferenceContainer<AllUnitTypes>> entity_visitor(spawn_notify);
+	GridReferenceContainerVisitor<GridUnitSpawnNotifier, GridReferenceContainer<AllUnitTypes>> unit_visitor(spawn_notify);
 
-	map()->visit_in_range(map_coords(), entity_visitor);
+	map()->visit_in_range(map_coords(), unit_visitor);
 }
 
 void Unit::notify_nearby_players_of_movement(bool new_entry)
 {
 	GridUnitMovementNotifier movement_notify(shared_from_this(), new_entry);
-	GridReferenceContainerVisitor<GridUnitMovementNotifier, GridReferenceContainer<AllUnitTypes>> entity_visitor(movement_notify);
+	GridReferenceContainerVisitor<GridUnitMovementNotifier, GridReferenceContainer<AllUnitTypes>> unit_visitor(movement_notify);
 
-	map()->visit_in_range(map_coords(), entity_visitor);
+	map()->visit_in_range(map_coords(), unit_visitor);
 }
 
 void Unit::notify_nearby_players_of_movement_stop(MapCoords stop_coords)
 {
 	GridUnitMovementStopNotifier movement_stop_notify(guid(), stop_coords.x(), stop_coords.y());
-	GridReferenceContainerVisitor<GridUnitMovementStopNotifier, GridReferenceContainer<AllUnitTypes>> entity_visitor(movement_stop_notify);
+	GridReferenceContainerVisitor<GridUnitMovementStopNotifier, GridReferenceContainer<AllUnitTypes>> unit_visitor(movement_stop_notify);
 
-	map()->visit_in_range(map_coords(), entity_visitor);
+	map()->visit_in_range(map_coords(), unit_visitor);
 }
 
-void Unit::notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config)
+void Unit::notify_nearby_players_of_skill_use(grid_unit_skill_use_notification_type notification_type, s_unit_skill_use_notifier_config config)
 {
 	GridUnitSkillUseNotifier notifier(shared_from_this(), notification_type, config);
 	GridReferenceContainerVisitor<GridUnitSkillUseNotifier, GridReferenceContainer<AllUnitTypes>> skill_use_notifier(notifier);
@@ -329,7 +329,7 @@ void Unit::notify_nearby_players_of_skill_use(grid_entity_skill_use_notification
 	map()->visit_in_range(map_coords(), skill_use_notifier);
 }
 
-void Unit::notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config)
+void Unit::notify_nearby_players_of_basic_attack(s_grid_unit_basic_attack_config config)
 {
 	GridUnitBasicAttackNotifier notifier(shared_from_this(), config);
 	GridReferenceContainerVisitor<GridUnitBasicAttackNotifier, GridReferenceContainer<AllUnitTypes>> basic_attack_notifier(notifier);
@@ -498,7 +498,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 			if (!is_in_range_of(target, range) && !is_walking())
 			{
 
-				walk_to_entity(target);
+				walk_to_unit(target);
 
 				if (continuous)
 					context.Repeat(Milliseconds(_attackable_time));

@@ -27,69 +27,59 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERPREDICATES_HPP
-#define HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERPREDICATES_HPP
+#ifndef HORIZON_ZONE_GAME_SHARED_RESOURCE_TRANSFORMER_HPP
+#define HORIZON_ZONE_GAME_SHARED_RESOURCE_TRANSFORMER_HPP
 
-#include "Server/Zone/Game/Units/Unit.hpp"
-#include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
-
-class GUIDCheckPredicate
+namespace Horizon
+{
+namespace Zone
+{
+namespace Game
+{
+template <typename T>
+class SharedGameResourceTransformer
 {
 public:
-	GUIDCheckPredicate(uint32_t guid) : _guid(guid) { }
-
-	bool operator()(std::weak_ptr<Horizon::Zone::Unit> unit)
-	{
-		return !unit.expired() && ((unit.lock())->guid() == _guid);
-	}
+    SharedResourceTransformer(std::shared_ptr<T> transformation) : _transformation(transformation) { }
+    ~SharedResourceTransformer() { }
 
 private:
-	uint32_t _guid;
+    std::shared_ptr<T> _transformation;
 };
 
-class RangeCheckPredicate
+template <typename T>
+class SharedResourceTransformationSaver : public SharedResourceTransformer
 {
 public:
-	RangeCheckPredicate(std::weak_ptr<Horizon::Zone::Unit> source)
-	: _source(source){ }
+    SharedResourceTransformationSaver() : SharedResourceTransformer()
+    {
 
-	bool operator()(std::weak_ptr<Horizon::Zone::Unit> target, uint16_t range = MAX_VIEW_RANGE)
-	{
-		return !_source.expired() && !target.expired() && _source.lock()->is_in_range_of(target.lock(), range);
-	}
+    }
 
-private:
-	std::weak_ptr<Horizon::Zone::Unit> _source;
+    ~SharedResourceTransformationSaver() { }
+
+    void prepare();
+    void verify();
+    void save();
 };
 
-class AOETargetTypePredicate
+template <typename T>
+class SharedResourceTransformationLoader : public SharedResourceTransformer
 {
 public:
-	AOETargetTypePredicate(int aoe_target_mask)
-	: _aoe_target_mask(aoe_target_mask){ }
+    SharedResourceTransformationLoader() : SharedResourceTransformer()
+    {
 
-	bool operator()(std::weak_ptr<Horizon::Zone::Unit> target)
-	{
-		return !target.expired() && (target.lock())->is_of_type(_aoe_target_mask);
-	}
+    }
 
-private:
-	int _aoe_target_mask{ 0 };
+    ~SharedResourceTransformationLoader() { }
+
+    void prepare();
+    void verify();
+    void load();
 };
+}
+}
+}
 
-class CellCheckPredicate
-{
-public:
-	CellCheckPredicate(MapCoords cell)
-	: _cell(cell){ }
-
-	bool operator()(MapCoords cell)
-	{
-		return cell == _cell;
-	}
-
-private:
-	MapCoords _cell{ 0, 0 };
-};
-
-#endif /* GRIDNOTIFIERPREDICATES_HPP */
+#endif /* HORIZON_ZONE_GAME_SHARED_RESOURCE_TRANSFORMER_HPP */

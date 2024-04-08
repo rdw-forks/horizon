@@ -31,7 +31,7 @@
 
 #include "Server/Common/Configuration/Horizon.hpp"
 
-enum entity_size_type
+enum unit_size_type
 {
 	ESZ_SMALL   = 0,
 	ESZ_MEDIUM  = 1,
@@ -39,7 +39,7 @@ enum entity_size_type
 	ESZ_MAX     = 3
 };
 
-enum entity_type : int
+enum unit_type : int
 {
 	UNIT_PLAYER      =  0,
 	UNIT_NPC         =  1,
@@ -54,7 +54,7 @@ enum entity_type : int
 	UNIT_ELEMENTAL   = 10,
 };
 
-enum entity_type_mask
+enum unit_type_mask
 {
 	UNIT_MASK_PLAYER    = 0x0000,
 	UNIT_MASK_NPC       = 0x0001,
@@ -179,7 +179,7 @@ enum status_point_type
 	STATUS_MOB_MODE          = 50015
 };
 
-enum entity_appearance_type
+enum unit_appearance_type
 {
 	EAT_BASE                      =  0,
 	EAT_HAIR_STYLE                =  1,
@@ -198,7 +198,7 @@ enum entity_appearance_type
 	EAT_MAX
 };
 
-enum entity_posture_type : char
+enum unit_posture_type : char
 {
 	POSTURE_STANDING  = 0,
 	POSTURE_DEAD      = 1,
@@ -567,7 +567,7 @@ enum job_class_mask : uint64_t
 	JMASK_ALL                     = 0xFFFFFFFFFFFFFFFF,
 };
 
-enum entity_viewport_notification_type
+enum unit_viewport_notification_type
 {
 	EVP_NOTIFY_IN_SIGHT          = -1,
 	EVP_NOTIFY_OUT_OF_SIGHT      = 0,
@@ -579,13 +579,13 @@ enum entity_viewport_notification_type
 
 struct viewport_entry
 {
-	entity_type unit_type{UNIT_PLAYER};
+	unit_type unit_type{UNIT_PLAYER};
 	uint32_t guid{ 0 };
 };
 
-struct entity_viewport_entry : public viewport_entry
+struct unit_viewport_entry : public viewport_entry
 {
-	virtual entity_viewport_entry operator = (entity_viewport_entry const &right)
+	virtual unit_viewport_entry operator = (unit_viewport_entry const &right)
 	{
 		unit_type = right.unit_type;
 		guid = right.guid;
@@ -659,7 +659,7 @@ struct entity_viewport_entry : public viewport_entry
 	int16_t to_x{0}, to_y{0};
 	int8_t x_size{0};
 	int8_t y_size{0};
-	entity_posture_type posture{POSTURE_STANDING};
+	unit_posture_type posture{POSTURE_STANDING};
 	int16_t base_level{0};
 	int16_t font{0};
 	int32_t max_hp{-1};
@@ -719,7 +719,7 @@ enum element_type : uint8_t
 	ELE_RANDOM  = 13
 };
 
-enum entity_gender_types : int8_t
+enum unit_gender_types : int8_t
 {
 	UNIT_GENDER_FEMALE = 0,
 	UNIT_GENDER_MALE   = 1,

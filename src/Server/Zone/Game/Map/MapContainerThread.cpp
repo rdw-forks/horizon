@@ -119,16 +119,16 @@ void MapContainerThread::initialize()
 {
 }
 
-//! @brief Add entity to vector of entities to be updated.
-void MapContainerThread::add_entity(std::shared_ptr<Unit> entity)
+//! @brief Add unit to vector of entities to be updated.
+void MapContainerThread::add_unit(std::shared_ptr<Unit> unit)
 {
-	_entities.push_back(entity);
+	_entities.push_back(unit);
 }
 
-//! @brief Remove entity from vector of entities to be updated.
-void MapContainerThread::remove_entity(std::shared_ptr<Unit> entity)
+//! @brief Remove unit from vector of entities to be updated.
+void MapContainerThread::remove_unit(std::shared_ptr<Unit> unit)
 {
-	_entities.erase(std::remove(_entities.begin(), _entities.end(), entity), _entities.end());
+	_entities.erase(std::remove(_entities.begin(), _entities.end(), unit), _entities.end());
 }
 
 //! @brief Process container finalization by cleanly disconnecting players after saving their data.
@@ -250,10 +250,10 @@ void MapContainerThread::update(uint64_t diff)
 			}
 			
 			_managed_sessions.insert(session->get_session_id(), session);
-			add_entity(session->player());
+			add_unit(session->player());
 			HLog(debug) << "Session " << session->get_session_id() << " was added to managed sessions in map container " << (void *) this;
 		} else if (action == SESSION_ACTION_REMOVE) {
-			remove_entity(session->player());
+			remove_unit(session->player());
 			_managed_sessions.erase(session->get_session_id());
 			HLog(debug) << "Session " << session->get_session_id() << " was removed from managed sessions in map container " << (void *) this;
 		} else if (action == SESSION_ACTION_LOGOUT_AND_REMOVE) {
@@ -265,7 +265,7 @@ void MapContainerThread::update(uint64_t diff)
 					session->player()->remove_grid_reference();
 				session->player()->map()->sub_user_count();
 			}
-			remove_entity(session->player());
+			remove_unit(session->player());
 			_managed_sessions.erase(session->get_session_id());
 			HLog(debug) << "Session " << session->get_session_id() << " was logged out and removed from managed sessions in map container " << (void *) this;
 		}
@@ -273,9 +273,9 @@ void MapContainerThread::update(uint64_t diff)
 
 	// Update the entities.
 	std::chrono::high_resolution_clock::time_point start_time_e = std::chrono::high_resolution_clock::now();
-	for (auto entity : _entities)
-		if(entity != nullptr)
-			entity->update(diff);
+	for (auto unit : _entities)
+		if(unit != nullptr)
+			unit->update(diff);
 		
 	std::chrono::high_resolution_clock::time_point end_time_e = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<long, std::micro> elapsed_time_e = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time_e - start_time_e);

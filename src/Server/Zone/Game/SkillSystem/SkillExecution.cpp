@@ -76,7 +76,7 @@ void SkillExecution::start_execution(enum skill_target_type target_type)
 
 void SkillExecution::execute(int initial_target_guid)
 {
-	_initial_target = _initial_source->get_nearby_entity(initial_target_guid);
+	_initial_target = _initial_source->get_nearby_unit(initial_target_guid);
 	start_execution(SKTT_SINGLE_TARGETED);
 }
 

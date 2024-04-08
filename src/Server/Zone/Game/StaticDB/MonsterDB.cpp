@@ -56,13 +56,13 @@ bool MonsterDatabase::load()
 	lua->open_libraries(sol::lib::base);
 	lua->open_libraries(sol::lib::package);
 
-	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
+	std::shared_ptr<UnitComponent> unit_component = std::make_shared<UnitComponent>();
 	std::shared_ptr<MonsterComponent> monster_component = std::make_shared<MonsterComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
 
-	entity_component->sync_definitions(lua);
-	entity_component->sync_data_types(lua);
-	entity_component->sync_functions(lua);
+	unit_component->sync_definitions(lua);
+	unit_component->sync_data_types(lua);
+	unit_component->sync_functions(lua);
 
 	monster_component->sync_definitions(lua);
 	monster_component->sync_data_types(lua);
@@ -397,7 +397,7 @@ bool MonsterDatabase::parse_size(sol::table const &table, monster_config_data &d
 	try {
 		sol::optional<int> maybe_val = table.get<sol::optional<int>>("Size");
 		if (maybe_val)
-			data.size = (entity_size_type) maybe_val.value();
+			data.size = (unit_size_type) maybe_val.value();
 		else
 			data.size = ESZ_SMALL;
 	} catch (sol::error &error) {
@@ -752,7 +752,7 @@ bool MonsterDatabase::parse_view(sol::table const &table, monster_config_data &d
 
 			maybe_val = s_tbl.get<sol::optional<int>>("Gender");
 			if (maybe_val)
-				data.view.gender = (entity_gender_types) maybe_val.value();
+				data.view.gender = (unit_gender_types) maybe_val.value();
 			else
 				data.view.gender = UNIT_GENDER_FEMALE;
 		} else {

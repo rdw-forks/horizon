@@ -48,7 +48,7 @@
 #define MOB_MIN_THINK_TIME 100
 #define MOB_MIN_THINK_TIME_LAZY (MOB_MIN_THINK_TIME * 10)
 
-enum entity_task_schedule_group
+enum unit_task_schedule_group
 {
 	UNIT_SCHEDULE_WALK       = 1,
 	UNIT_SCHEDULE_SAVE       = 2,
@@ -61,7 +61,7 @@ enum entity_task_schedule_group
 	UNIT_SCHEDULE_MONSTER_RESPAWN = 9
 };
 
-enum entity_walk_state
+enum unit_walk_state
 {
 	UNIT_WALK_STOPPED = 0,
 	UNIT_WALK_MOVING = 1
@@ -71,12 +71,12 @@ enum entity_walk_state
 
 struct s_grid_sc_apply_in_skill_area_config;
 struct s_grid_apply_in_area_config;
-struct s_entity_skill_use_notifier_config;
-struct s_grid_entity_basic_attack_config;
+struct s_unit_skill_use_notifier_config;
+struct s_grid_unit_basic_attack_config;
 struct s_grid_notify_item_drop_entry;
 
 // UUID parts
-struct entity_uuid
+struct unit_uuid
 {
 	uint8_t type{ 0 };
 	uint32_t guid{ 0 };
@@ -84,7 +84,7 @@ struct entity_uuid
 	uint8_t uid3{ 0 };
 };
 
-static std::atomic<int32_t> _last_np_entity_guid(NPC_START_GUID);
+static std::atomic<int32_t> _last_np_unit_guid(NPC_START_GUID);
 
 namespace Horizon
 {
@@ -101,8 +101,8 @@ class CombatRegistry;
 class Unit : public std::enable_shared_from_this<Unit>
 {
 public:
-	Unit(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords);
-	Unit(uint64_t uuid, entity_type type, entity_type_mask type_mask);
+	Unit(uint64_t uuid, unit_type type, unit_type_mask type_mask, std::shared_ptr<Map> map, MapCoords map_coords);
+	Unit(uint64_t uuid, unit_type type, unit_type_mask type_mask);
 	virtual ~Unit();
 
 	bool initialize();
@@ -117,7 +117,7 @@ public:
 	 */
 	MapCoords const &dest_coords() const { return _dest_pos; }
 	virtual bool walk_to_coordinates(int16_t x, int16_t y);
-	virtual bool walk_to_entity(std::shared_ptr<Unit> entity);
+	virtual bool walk_to_unit(std::shared_ptr<Unit> unit);
 	bool is_walking() const { return (dest_coords() != MapCoords(0, 0)) || ((_changed_dest_pos) != MapCoords(0, 0)); }
 
 	virtual void stop_movement() = 0;
@@ -138,7 +138,7 @@ protected:
 	 */
 public:
 	uint64_t uuid() const { return _uuid; }
-	entity_uuid s_uuid() const { return _s_uuid; }
+	unit_uuid s_uuid() const { return _s_uuid; }
 	void set_uuid(uint64_t uuid);
 	
 	uint32_t guid() { return _s_uuid.guid; }
@@ -146,8 +146,8 @@ public:
 	uint16_t job_id() const { return _job_id; }
 	void set_job_id(uint16_t job_id) { _job_id = job_id; }
 
-	entity_posture_type posture() const { return _posture; }
-	void set_posture(entity_posture_type posture) { _posture = posture; }
+	unit_posture_type posture() const { return _posture; }
+	void set_posture(unit_posture_type posture) { _posture = posture; }
 
 	const std::string &name() const { return _name; }
 	void set_name(const std::string &name) { _name = name; }
@@ -170,8 +170,8 @@ public:
 	/**
 	 * Unit applications
 	 */
-	entity_type type() const { return _type; }
-	entity_type_mask type_mask() const { return _type_mask; }
+	unit_type type() const { return _type; }
+	unit_type_mask type_mask() const { return _type_mask; }
 	bool is_of_type(int type_mask) { return !((type_mask & (int) _type_mask) == 0); }
 
 	template <class T>
@@ -189,19 +189,19 @@ public:
 	GridCoords const &grid_coords() const { return _grid_coords; }
 	void set_grid_coords(GridCoords const &coords) { _grid_coords = coords; }
 
-	bool is_in_range_of(std::shared_ptr<Unit> entity, uint8_t range = MAX_VIEW_RANGE);
+	bool is_in_range_of(std::shared_ptr<Unit> unit, uint8_t range = MAX_VIEW_RANGE);
 
-	void notify_nearby_players_of_existence(entity_viewport_notification_type notif_type);
+	void notify_nearby_players_of_existence(unit_viewport_notification_type notif_type);
 	void notify_nearby_players_of_spawn();
 	void notify_nearby_players_of_movement(bool new_entry = false);
 	void notify_nearby_players_of_movement_stop(MapCoords stop_coords);
-	void notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config);
-	void notify_nearby_players_of_basic_attack(s_grid_entity_basic_attack_config config);
+	void notify_nearby_players_of_skill_use(grid_unit_skill_use_notification_type notification_type, s_unit_skill_use_notifier_config config);
+	void notify_nearby_players_of_basic_attack(s_grid_unit_basic_attack_config config);
 	void notify_nearby_players_of_item_drop(s_grid_notify_item_drop_entry entry);
 
 	// Essentials
-	std::shared_ptr<Unit> get_nearby_entity(uint32_t guid);
-	uint64_t get_scheduler_task_id(entity_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
+	std::shared_ptr<Unit> get_nearby_unit(uint32_t guid);
+	uint64_t get_scheduler_task_id(unit_task_schedule_group group) { return ((uint64_t) guid() << 32) + (int) group; }
 	std::map<int16_t, std::shared_ptr<status_change_entry>> &get_status_effects() { return _status_effects; }
 	
 	// Skills
@@ -259,9 +259,9 @@ private:
 	bool _is_initialized{false}, _jump_walk_stop{false}, _is_finalized{ false };
 	bool _is_attacking{false};
 	uint64_t _uuid{0};
-	entity_uuid _s_uuid{ 0 };
-	entity_type _type{UNIT_UNKNOWN};
-	entity_type_mask _type_mask{UNIT_MASK_UNKNOWN};
+	unit_uuid _s_uuid{ 0 };
+	unit_type _type{UNIT_UNKNOWN};
+	unit_type_mask _type_mask{UNIT_MASK_UNKNOWN};
 	std::weak_ptr<Map> _map;
 	MapCoords _map_coords{0, 0};
 	GridCoords _grid_coords{0, 0};
@@ -275,7 +275,7 @@ private:
 	// General Data
 	std::string _name{""};
 	uint16_t _job_id{0};
-	entity_posture_type _posture{POSTURE_STANDING};
+	unit_posture_type _posture{POSTURE_STANDING};
 	directions _facing_dir{DIR_SOUTH};
 
 	std::map<int16_t, std::shared_ptr<status_change_entry>> _status_effects;

@@ -110,7 +110,7 @@ void CZ_MOVE_ITEM_FROM_STORE_TO_BODY::deserialize(ByteBuffer &buf)
 void CZ_REQNAME::handle(ByteBuffer &&buf) 
 {
 	deserialize(buf);
-	get_session()->clif()->notify_entity_name(_guid);
+	get_session()->clif()->notify_unit_name(_guid);
 }
 
 void CZ_REQNAME::deserialize(ByteBuffer &buf)
@@ -2577,7 +2577,7 @@ void CZ_USE_SKILL_TOGROUND_WITHTALKBOX2::deserialize(ByteBuffer &buf)
 void CZ_REQNAME2::handle(ByteBuffer &&buf)
 {
 	deserialize(buf);
-	get_session()->clif()->notify_entity_name(_guid);
+	get_session()->clif()->notify_unit_name(_guid);
 }
 
 void CZ_REQNAME2::deserialize(ByteBuffer &buf)

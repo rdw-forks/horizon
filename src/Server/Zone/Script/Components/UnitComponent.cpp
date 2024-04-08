@@ -112,7 +112,7 @@ void UnitComponent::sync_definitions(std::shared_ptr<sol::state> state)
     	"MultiHitCritical", (int) ZCNA3_MULTI_HIT_CRITICAL
 	);
 
-	state->create_named_table("grid_entity_skill_use_notification_type",
+	state->create_named_table("grid_unit_skill_use_notification_type",
 		"GRID_UNIT_SKILL_USE_NOTIFY_CASTTIME", GRID_UNIT_SKILL_USE_NOTIFY_CASTTIME,
 		"GRID_UNIT_SKILL_USE_NOTIFY_SUCCESS_DAMAGE", GRID_UNIT_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,
     	"GRID_UNIT_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE", GRID_UNIT_SKILL_USE_NOTIFY_SUCCESS_NO_DAMAGE
@@ -499,7 +499,7 @@ void UnitComponent::sync_data_types(std::shared_ptr<sol::state> state)
 
 	state->new_usertype<Combat>("Combat",
 		sol::constructors<Combat(std::shared_ptr<Unit>, std::shared_ptr<Unit>)>(),
-		"source", &Combat::entity,
+		"source", &Combat::unit,
 		"target", &Combat::target
 	);
 
@@ -679,11 +679,11 @@ void UnitComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "set", &Horizon::Zone::Traits::Virtue::set_base
     );
 
-	sol::usertype<entity_uuid> uuid = state->new_usertype<entity_uuid>("UnitUUID");
-	uuid["type"] = &entity_uuid::type;
-	uuid["guid"] = &entity_uuid::guid;
-	uuid["uid2"] = &entity_uuid::uid2;
-	uuid["uid3"] = &entity_uuid::uid3;
+	sol::usertype<unit_uuid> uuid = state->new_usertype<unit_uuid>("UnitUUID");
+	uuid["type"] = &unit_uuid::type;
+	uuid["guid"] = &unit_uuid::guid;
+	uuid["uid2"] = &unit_uuid::uid2;
+	uuid["uid3"] = &unit_uuid::uid3;
 
 	state->new_usertype<Unit>("Unit",
 		"guid", &Unit::guid,
@@ -711,7 +711,7 @@ void UnitComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"notify_nearby_players_of_spawn", &Unit::notify_nearby_players_of_spawn,
 		"notify_nearby_players_of_skill_use", &Unit::notify_nearby_players_of_skill_use,
 		"notify_nearby_players_of_item_drop", &Unit::notify_nearby_players_of_item_drop,
-		"get_nearby_entity", &Unit::get_nearby_entity,
+		"get_nearby_unit", &Unit::get_nearby_unit,
 		"status_effect_start", &Unit::status_effect_start,
 		"status_effect_end", &Unit::status_effect_end,
 		"get_walk_path", &Unit::get_walk_path,
@@ -724,23 +724,23 @@ void UnitComponent::sync_data_types(std::shared_ptr<sol::state> state)
 		"execute_skill_in_cell", &Unit::execute_skill_in_cell
 	);
 
-	state->new_usertype<s_entity_skill_use_notifier_config>("s_entity_skill_use_notifier_config",
-		"source_guid", &s_entity_skill_use_notifier_config::source_guid,
-		"target_guid", &s_entity_skill_use_notifier_config::target_guid,
-		"skill_id", &s_entity_skill_use_notifier_config::skill_id,
-		"skill_lv", &s_entity_skill_use_notifier_config::skill_lv,
-		"damage_value", &s_entity_skill_use_notifier_config::damage_value,
-		"display_value", &s_entity_skill_use_notifier_config::display_value,
-		"start_time", &s_entity_skill_use_notifier_config::start_time,
-		"attack_motion", &s_entity_skill_use_notifier_config::attack_motion,
-		"delay_motion", &s_entity_skill_use_notifier_config::delay_motion,
-		"number_of_hits", &s_entity_skill_use_notifier_config::number_of_hits,
-		"action_type", &s_entity_skill_use_notifier_config::action_type,
-		"item_id", &s_entity_skill_use_notifier_config::item_id,
-		"target_x", &s_entity_skill_use_notifier_config::target_x,
-		"target_y", &s_entity_skill_use_notifier_config::target_y,
-		"element", &s_entity_skill_use_notifier_config::element,
-		"cast_time", &s_entity_skill_use_notifier_config::cast_time
+	state->new_usertype<s_unit_skill_use_notifier_config>("s_unit_skill_use_notifier_config",
+		"source_guid", &s_unit_skill_use_notifier_config::source_guid,
+		"target_guid", &s_unit_skill_use_notifier_config::target_guid,
+		"skill_id", &s_unit_skill_use_notifier_config::skill_id,
+		"skill_lv", &s_unit_skill_use_notifier_config::skill_lv,
+		"damage_value", &s_unit_skill_use_notifier_config::damage_value,
+		"display_value", &s_unit_skill_use_notifier_config::display_value,
+		"start_time", &s_unit_skill_use_notifier_config::start_time,
+		"attack_motion", &s_unit_skill_use_notifier_config::attack_motion,
+		"delay_motion", &s_unit_skill_use_notifier_config::delay_motion,
+		"number_of_hits", &s_unit_skill_use_notifier_config::number_of_hits,
+		"action_type", &s_unit_skill_use_notifier_config::action_type,
+		"item_id", &s_unit_skill_use_notifier_config::item_id,
+		"target_x", &s_unit_skill_use_notifier_config::target_x,
+		"target_y", &s_unit_skill_use_notifier_config::target_y,
+		"element", &s_unit_skill_use_notifier_config::element,
+		"cast_time", &s_unit_skill_use_notifier_config::cast_time
 	);
 }
 

@@ -102,7 +102,7 @@ void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int ident
 
 	int r = std::rand();
 	
-	int64_t uuid = sZone->to_uuid(UNIT_ITEM, ++_last_np_entity_guid, 0, 0);
+	int64_t uuid = sZone->to_uuid(UNIT_ITEM, ++_last_np_unit_guid, 0, 0);
 	std::shared_ptr<Horizon::Zone::Units::Item> item = std::make_shared<Horizon::Zone::Units::Item>(uuid, shared_from_this(), map_coords, identified, amount, item_d);
 	item->initialize();
 
@@ -122,12 +122,12 @@ void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int ident
 	entry.drop_effect_mode = item->config()->drop_effect_mode;
 	item->notify_nearby_players_of_item_drop(entry);
 
-	this->container()->add_entity(item);
+	this->container()->add_unit(item);
 }
 
 void Map::add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, MapCoords map_coords)
 {	
-	int64_t uuid = sZone->to_uuid(UNIT_ITEM, ++_last_np_entity_guid, 0, 0);
+	int64_t uuid = sZone->to_uuid(UNIT_ITEM, ++_last_np_unit_guid, 0, 0);
 	std::shared_ptr<Horizon::Zone::Units::Item> floor_item = std::make_shared<Horizon::Zone::Units::Item>(uuid, entry, amount, shared_from_this(), map_coords);
 	floor_item->initialize();
 
@@ -151,5 +151,5 @@ void Map::add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, 
 
 	floor_item->notify_nearby_players_of_item_drop(notif_config);
 
-	this->container()->add_entity(floor_item);
+	this->container()->add_unit(floor_item);
 }

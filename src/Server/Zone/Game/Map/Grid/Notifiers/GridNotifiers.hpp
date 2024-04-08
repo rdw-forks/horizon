@@ -36,25 +36,25 @@
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifierPredicates.hpp"
 #include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 
-#define entity_ns(class) Horizon::Zone::Units::class
+#define unit_ns(class) Horizon::Zone::Units::class
 struct GridViewPortUpdater
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
 
-	explicit GridViewPortUpdater(const std::shared_ptr<Horizon::Zone::Unit>& entity) : _entity(entity) { }
+	explicit GridViewPortUpdater(const std::shared_ptr<Horizon::Zone::Unit>& unit) : _unit(unit) { }
 
 	template <class T>
 	void update(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Pet)> &m);
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
-	void Visit(GridRefManager<entity_ns(Item)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Pet)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Skill)> &m);
+	void Visit(GridRefManager<unit_ns(Item)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -62,17 +62,17 @@ struct GridViewPortUpdater
 
 struct GridUnitExistenceNotifier
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
-	entity_viewport_notification_type _notif_type;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
+	unit_viewport_notification_type _notif_type;
 
-	explicit GridUnitExistenceNotifier(const std::shared_ptr<Horizon::Zone::Unit>& entity, entity_viewport_notification_type notif_type)
-	: _entity(entity), _notif_type(notif_type)
+	explicit GridUnitExistenceNotifier(const std::shared_ptr<Horizon::Zone::Unit>& unit, unit_viewport_notification_type notif_type)
+	: _unit(unit), _notif_type(notif_type)
 	{ }
 
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -80,16 +80,16 @@ struct GridUnitExistenceNotifier
 
 struct GridUnitSpawnNotifier
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
 
-	explicit GridUnitSpawnNotifier(const std::shared_ptr<Horizon::Zone::Unit>& entity)
-	: _entity(entity)
+	explicit GridUnitSpawnNotifier(const std::shared_ptr<Horizon::Zone::Unit>& unit)
+	: _unit(unit)
 	{ }
 
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -97,17 +97,17 @@ struct GridUnitSpawnNotifier
 
 struct GridUnitMovementNotifier
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
 	bool _new_entry{ false };
 
-	explicit GridUnitMovementNotifier(const std::shared_ptr<Horizon::Zone::Unit>& entity, bool new_entry = false)
-	: _entity(entity), _new_entry(new_entry)
+	explicit GridUnitMovementNotifier(const std::shared_ptr<Horizon::Zone::Unit>& unit, bool new_entry = false)
+	: _unit(unit), _new_entry(new_entry)
 	{ }
 
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -127,15 +127,15 @@ struct GridUnitSearcher
 	template <class T>
 	void search(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Pet)> &m);
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
-	void Visit(GridRefManager<entity_ns(Skill)> &m);
-	void Visit(GridRefManager<entity_ns(Item)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Pet)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Skill)> &m);
+	void Visit(GridRefManager<unit_ns(Item)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -152,7 +152,7 @@ struct GridMonsterActiveAIExecutor
 	template <class T>
 	void perform(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -169,10 +169,10 @@ struct GridMonsterAIActiveSearchTarget
 	template <class T>
 	void search(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }	
@@ -189,10 +189,10 @@ struct GridMonsterAIChangeChaseTarget
 	template <class T>
 	void search(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }	
@@ -203,14 +203,14 @@ struct GridNPCTrigger
 	std::weak_ptr<Horizon::Zone::Unit> _source;
 	RangeCheckPredicate _predicate;
 
-	explicit GridNPCTrigger(const std::shared_ptr<Horizon::Zone::Unit>& entity)
-	: _source(entity), _predicate(entity)
+	explicit GridNPCTrigger(const std::shared_ptr<Horizon::Zone::Unit>& unit)
+	: _source(unit), _predicate(unit)
 	{ }
 
 	template <class T>
 	void check_and_trigger(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -218,17 +218,17 @@ struct GridNPCTrigger
 
 struct GridPlayerNotifier
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
 	ByteBuffer _buf;
 	grid_notifier_type _type;
 
-	explicit GridPlayerNotifier(ByteBuffer &buf, const std::shared_ptr<Horizon::Zone::Unit>& entity, grid_notifier_type type = GRID_NOTIFY_AREA)
-	: _entity(entity), _buf(buf), _type(type)
+	explicit GridPlayerNotifier(ByteBuffer &buf, const std::shared_ptr<Horizon::Zone::Unit>& unit, grid_notifier_type type = GRID_NOTIFY_AREA)
+	: _unit(unit), _buf(buf), _type(type)
 	{ }
 
-	void notify(GridRefManager<entity_ns(Player)> &m);
+	void notify(GridRefManager<unit_ns(Player)> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -245,7 +245,7 @@ struct s_grid_apply_in_area_config
 	int aoe_target_mask{ 0 };
 };
 
-// Searches a skillarea for an entity that is within the splash range of the target.
+// Searches a skillarea for an unit that is within the splash range of the target.
 // If found, the status change is applied to the target.
 struct GridSCApplyInSkillArea
 {
@@ -261,19 +261,19 @@ struct GridSCApplyInSkillArea
 	template <class T>
 	void apply(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Pet)> &m);
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Pet)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
-// Removes a status change from an entity that is within the splash range of the target and area with target as center.
+// Removes a status change from an unit that is within the splash range of the target and area with target as center.
 struct GridSCRemoveInSkillArea
 {
 	std::weak_ptr<Horizon::Zone::Unit> _source;
@@ -288,13 +288,13 @@ struct GridSCRemoveInSkillArea
 	template <class T>
 	void apply(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Pet)> &m);
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Pet)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -318,13 +318,13 @@ struct GridExecuteSkillInArea
 	template <class T>
 	void apply(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Pet)> &m);
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Pet)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -348,19 +348,19 @@ struct GridExecuteSkillInCell
 	template <class T>
 	void apply(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
-	void Visit(GridRefManager<entity_ns(NPC)> &m);
-	void Visit(GridRefManager<entity_ns(Elemental)> &m);
-	void Visit(GridRefManager<entity_ns(Homunculus)> &m);
-	void Visit(GridRefManager<entity_ns(Mercenary)> &m);
-	void Visit(GridRefManager<entity_ns(Pet)> &m);
-	void Visit(GridRefManager<entity_ns(Monster)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(NPC)> &m);
+	void Visit(GridRefManager<unit_ns(Elemental)> &m);
+	void Visit(GridRefManager<unit_ns(Homunculus)> &m);
+	void Visit(GridRefManager<unit_ns(Mercenary)> &m);
+	void Visit(GridRefManager<unit_ns(Pet)> &m);
+	void Visit(GridRefManager<unit_ns(Monster)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
-struct s_entity_skill_use_notifier_config
+struct s_unit_skill_use_notifier_config
 {
 	int source_guid, target_guid, skill_id, skill_lv, damage_value, display_value, start_time, attack_motion;
 	int delay_motion, number_of_hits;
@@ -372,41 +372,41 @@ struct s_entity_skill_use_notifier_config
 
 struct GridUnitSkillUseNotifier
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
-	grid_entity_skill_use_notification_type _notification_type;
-	s_entity_skill_use_notifier_config _config;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
+	grid_unit_skill_use_notification_type _notification_type;
+	s_unit_skill_use_notifier_config _config;
 
-	explicit GridUnitSkillUseNotifier(const std::shared_ptr<Horizon::Zone::Unit>& entity, grid_entity_skill_use_notification_type notification_type, s_entity_skill_use_notifier_config config)
-	: _entity(entity), _notification_type(notification_type), _config(config)
+	explicit GridUnitSkillUseNotifier(const std::shared_ptr<Horizon::Zone::Unit>& unit, grid_unit_skill_use_notification_type notification_type, s_unit_skill_use_notifier_config config)
+	: _unit(unit), _notification_type(notification_type), _config(config)
 	{ }
 
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
-struct s_grid_entity_basic_attack_config
+struct s_grid_unit_basic_attack_config
 {
 	int guid, target_guid, start_time, delay_skill, delay_damage, damage, is_sp_damaged, number_of_hits, action_type, left_damage;
 };
 
 struct GridUnitBasicAttackNotifier
 {
-	std::weak_ptr<Horizon::Zone::Unit> _entity;
-	s_grid_entity_basic_attack_config _config;
+	std::weak_ptr<Horizon::Zone::Unit> _unit;
+	s_grid_unit_basic_attack_config _config;
 
-	explicit GridUnitBasicAttackNotifier(const std::shared_ptr<Horizon::Zone::Unit>& entity, s_grid_entity_basic_attack_config config)
-	: _entity(entity), _config(config)
+	explicit GridUnitBasicAttackNotifier(const std::shared_ptr<Horizon::Zone::Unit>& unit, s_grid_unit_basic_attack_config config)
+	: _unit(unit), _config(config)
 	{ }
 
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -414,17 +414,17 @@ struct GridUnitBasicAttackNotifier
 
 struct GridUnitMovementStopNotifier
 {
-	int _entity_guid{ 0 };
+	int _unit_guid{ 0 };
 	int _pos_x{ 0 }, _pos_y{ 0 };
 
-	explicit GridUnitMovementStopNotifier(int entity_guid, int pos_x, int pos_y)
-	: _entity_guid(entity_guid), _pos_x(pos_x), _pos_y(pos_y)
+	explicit GridUnitMovementStopNotifier(int unit_guid, int pos_x, int pos_y)
+	: _unit_guid(unit_guid), _pos_x(pos_x), _pos_y(pos_y)
 	{ }
 
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
@@ -447,12 +447,12 @@ struct GridUnitItemDropNotifier
 	template <class T>
 	void notify(GridRefManager<T> &m);
 
-	void Visit(GridRefManager<entity_ns(Player)> &m);
+	void Visit(GridRefManager<unit_ns(Player)> &m);
 
 	template<class NOT_INTERESTED>
 	void Visit(GridRefManager<NOT_INTERESTED> &) { }
 };
 
-#undef entity_ns
+#undef unit_ns
 
 #endif /* HORIZON_ZONE_GAME_MAP_GRIDNOTIFIERS_HPP */

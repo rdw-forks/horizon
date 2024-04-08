@@ -14539,7 +14539,7 @@ public:
 	{}
 	virtual ~ZC_ACCEPT_ENTER3() {}
 
-	void deliver(int16_t x, int16_t y, int16_t dir, int16_t font, entity_gender_types gender);
+	void deliver(int16_t x, int16_t y, int16_t dir, int16_t font, unit_gender_types gender);
 	ByteBuffer &serialize();
 
 /* Structure */
@@ -33443,11 +33443,11 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_MOVEENTRY11() {}
 
-	void deliver(entity_viewport_entry entry);
+	void deliver(unit_viewport_entry entry);
 	ByteBuffer &serialize();
 
 /* Structure */
-	entity_viewport_entry _entry;
+	unit_viewport_entry _entry;
 };
 
 enum {
@@ -33828,12 +33828,12 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_NEWENTRY11() {}
 
-	void deliver(entity_viewport_entry entry);
+	void deliver(unit_viewport_entry entry);
 	ByteBuffer &serialize();
 
 /* Structure */
 	int16_t _packet_length;
-	entity_viewport_entry _entry;
+	unit_viewport_entry _entry;
 };
 
 enum {
@@ -34784,11 +34784,11 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_STANDENTRY11() {}
 
-	void deliver(entity_viewport_entry entry);
+	void deliver(unit_viewport_entry entry);
 	ByteBuffer &serialize();
 
 /* Structure */
-	entity_viewport_entry _entry;
+	unit_viewport_entry _entry;
 };
 
 enum {
@@ -35362,7 +35362,7 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_VANISH() {}
 
-	void deliver(int32_t guid, entity_viewport_notification_type type);
+	void deliver(int32_t guid, unit_viewport_notification_type type);
 	ByteBuffer &serialize();
 
 /* Structure */
@@ -43720,7 +43720,7 @@ public:
 	virtual ~ZC_SPRITE_CHANGE2() {}
 
 
-	void deliver(int32_t guid, entity_appearance_type look_type, int32_t value, int32_t value2);
+	void deliver(int32_t guid, unit_appearance_type look_type, int32_t value, int32_t value2);
 	ByteBuffer &serialize();
 
 /* Structure */

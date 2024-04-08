@@ -49,7 +49,7 @@ _npc_component(std::make_shared<NPCComponent>()),
 _monster_component(std::make_shared<MonsterComponent>()),
 _map_component(std::make_shared<MapComponent>()),
 _item_component(std::make_shared<ItemComponent>()),
-_entity_component(std::make_shared<UnitComponent>()),
+_unit_component(std::make_shared<UnitComponent>()),
 _skill_component(std::make_shared<SkillComponent>()),
 _status_effect_component(std::make_shared<StatusEffectComponent>()),
 _combat_component(std::make_shared<CombatComponent>())
@@ -153,9 +153,9 @@ void ScriptManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	_combat_component->sync_data_types(state);
 	_combat_component->sync_functions(state);
 
-	_entity_component->sync_definitions(state);
-	_entity_component->sync_data_types(state);
-	_entity_component->sync_functions(state);
+	_unit_component->sync_definitions(state);
+	_unit_component->sync_data_types(state);
+	_unit_component->sync_functions(state);
 
 	std::string script_root_path = sZone->config().get_script_root_path().string();
 	std::string static_db_root_path = sZone->config().get_static_db_path().string();

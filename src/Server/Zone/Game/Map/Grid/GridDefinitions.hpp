@@ -66,25 +66,25 @@ class GridReferenceContainer;
 #define MAX_GRIDS_PER_MAP 14
 #define MAX_CELLS_PER_MAP MAX_CELLS_PER_GRID * MAX_GRIDS_PER_MAP
 
-#define entity_ns(e) Horizon::Zone::Units::e
-typedef TYPELIST_9(entity_ns(Player),
-	entity_ns(NPC),
-	entity_ns(Elemental),
-	entity_ns(Homunculus),
-	entity_ns(Mercenary),
-	entity_ns(Pet),
-	entity_ns(Monster),
-	entity_ns(Skill),
-	entity_ns(Item)) AllUnitTypes;
+#define unit_ns(e) Horizon::Zone::Units::e
+typedef TYPELIST_9(unit_ns(Player),
+	unit_ns(NPC),
+	unit_ns(Elemental),
+	unit_ns(Homunculus),
+	unit_ns(Mercenary),
+	unit_ns(Pet),
+	unit_ns(Monster),
+	unit_ns(Skill),
+	unit_ns(Item)) AllUnitTypes;
 typedef GridHolder<AllUnitTypes> GridHolderType;
-#undef entity_ns
+#undef unit_ns
 
 typedef Coordinates<MAX_GRIDS_PER_MAP> GridCoords;
 typedef Coordinates<MAX_CELLS_PER_MAP> MapCoords;
 
 typedef GridReferenceContainer<AllUnitTypes> MapUnitContainer;
 
-enum grid_entity_skill_use_notification_type
+enum grid_unit_skill_use_notification_type
 {
 	GRID_UNIT_SKILL_USE_NOTIFY_CASTTIME,
 	GRID_UNIT_SKILL_USE_NOTIFY_SUCCESS_DAMAGE,

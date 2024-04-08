@@ -121,7 +121,7 @@ public:
 	s_zone_server_configuration &config() { return _zone_server_config; }
 
 	uint64_t to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3);
-	void from_uuid(uint64_t entity_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3);
+	void from_uuid(uint64_t unit_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3);
 
 private:
 	s_zone_server_configuration _zone_server_config;

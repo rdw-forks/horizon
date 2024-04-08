@@ -73,12 +73,12 @@ bool ItemDatabase::load()
 	lua->open_libraries(sol::lib::base);
 	lua->open_libraries(sol::lib::package);
 
-	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
+	std::shared_ptr<UnitComponent> unit_component = std::make_shared<UnitComponent>();
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
 	
-	entity_component->sync_definitions(lua);
-	entity_component->sync_data_types(lua);
-	entity_component->sync_functions(lua);
+	unit_component->sync_definitions(lua);
+	unit_component->sync_data_types(lua);
+	unit_component->sync_functions(lua);
 
 	item_component->sync_definitions(lua);
 	item_component->sync_data_types(lua);
@@ -658,15 +658,15 @@ bool ItemDatabase::load_weapon_attribute_modifiers_db()
 	lua->open_libraries(sol::lib::base);
 
 	std::shared_ptr<ItemComponent> item_component = std::make_shared<ItemComponent>();
-	std::shared_ptr<UnitComponent> entity_component = std::make_shared<UnitComponent>();
+	std::shared_ptr<UnitComponent> unit_component = std::make_shared<UnitComponent>();
 
 	item_component->sync_definitions(lua);
 	item_component->sync_data_types(lua);
 	item_component->sync_functions(lua);
 
-	entity_component->sync_definitions(lua);
-	entity_component->sync_data_types(lua);
-	entity_component->sync_functions(lua);
+	unit_component->sync_definitions(lua);
+	unit_component->sync_data_types(lua);
+	unit_component->sync_functions(lua);
 	
 	int total_entries = 0;
 

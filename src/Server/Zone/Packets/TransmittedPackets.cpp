@@ -2297,7 +2297,7 @@ ByteBuffer &ZC_NOTIFY_UPDATEPLAYER::serialize()
 /**
  * ZC_NOTIFY_VANISH
  */
-void ZC_NOTIFY_VANISH::deliver(int32_t guid, entity_viewport_notification_type type)
+void ZC_NOTIFY_VANISH::deliver(int32_t guid, unit_viewport_notification_type type)
 {
 	_guid = guid;
 	_type = (int8_t) type;
@@ -3030,7 +3030,7 @@ ByteBuffer &ZC_SPRITE_CHANGE::serialize()
 /**
  * ZC_SPRITE_CHANGE2
  */
-void ZC_SPRITE_CHANGE2::deliver(int32_t guid, entity_appearance_type look_type, int32_t value, int32_t value2)
+void ZC_SPRITE_CHANGE2::deliver(int32_t guid, unit_appearance_type look_type, int32_t value, int32_t value2)
 {
 	_guid = guid;
 	_look_type = (int8_t) look_type;
@@ -5246,7 +5246,7 @@ ByteBuffer &ZC_ADD_QUEST_EX::serialize()
 /**
  * ZC_NOTIFY_MOVEENTRY11
  */
-void ZC_NOTIFY_MOVEENTRY11::deliver(entity_viewport_entry entry)
+void ZC_NOTIFY_MOVEENTRY11::deliver(unit_viewport_entry entry)
 {
 	_entry = entry;
 	serialize();
@@ -5313,7 +5313,7 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 /**
  * ZC_NOTIFY_NEWENTRY11
  */
-void ZC_NOTIFY_NEWENTRY11::deliver(entity_viewport_entry entry)
+void ZC_NOTIFY_NEWENTRY11::deliver(unit_viewport_entry entry)
 {
 	_entry = entry;
 	serialize();
@@ -5380,7 +5380,7 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 /**
  * ZC_NOTIFY_STANDENTRY11
  */
-void ZC_NOTIFY_STANDENTRY11::deliver(entity_viewport_entry entry)
+void ZC_NOTIFY_STANDENTRY11::deliver(unit_viewport_entry entry)
 {
 	_entry = entry;
 	serialize();
@@ -5741,7 +5741,7 @@ ByteBuffer &ZC_CHECK_RECEIVE_CHARACTER_NAME::serialize()
 /**
  * ZC_ACCEPT_ENTER3
  */
-void ZC_ACCEPT_ENTER3::deliver(int16_t x, int16_t y, int16_t dir, int16_t font, entity_gender_types gender)
+void ZC_ACCEPT_ENTER3::deliver(int16_t x, int16_t y, int16_t dir, int16_t font, unit_gender_types gender)
 {
 	PackPosition((int8_t *) _packed_pos, x, y, dir);
 	_start_time = (int32_t) get_sys_time();

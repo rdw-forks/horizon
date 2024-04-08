@@ -36,7 +36,7 @@
 using namespace Horizon::Zone::Units;
 
 NPC::NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, uint32_t job_id, directions dir)
-: Unit(sZone->to_uuid((uint8_t) UNIT_NPC, ++_last_np_entity_guid, 0, 0), UNIT_NPC, UNIT_MASK_NPC, map, MapCoords(x, y))
+: Unit(sZone->to_uuid((uint8_t) UNIT_NPC, ++_last_np_unit_guid, 0, 0), UNIT_NPC, UNIT_MASK_NPC, map, MapCoords(x, y))
 {
 	set_name(name);
 	set_job_id(job_id);
@@ -44,7 +44,7 @@ NPC::NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t
 }
 
 NPC::NPC(std::string const &name, std::shared_ptr<Map> map, uint16_t x, uint16_t y, std::string const &script)
-: Unit(sZone->to_uuid((uint8_t) UNIT_NPC, ++_last_np_entity_guid, 0, 0), UNIT_NPC, UNIT_MASK_NPC, map, MapCoords(x, y))
+: Unit(sZone->to_uuid((uint8_t) UNIT_NPC, ++_last_np_unit_guid, 0, 0), UNIT_NPC, UNIT_MASK_NPC, map, MapCoords(x, y))
 {
 	set_name(name);
 	set_job_id(NPC_TYPE_PORTAL);
@@ -65,7 +65,7 @@ bool NPC::initialize()
 	if (status()->initialize(shared_from_this()->downcast<NPC>()) == false)
 		return false;
 
-	map()->ensure_grid_for_entity(this, map_coords());
+	map()->ensure_grid_for_unit(this, map_coords());
 
 	return true;
 }
@@ -87,7 +87,7 @@ void NPC::on_movement_begin()
 
 void NPC::on_movement_step()
 {
-	map()->ensure_grid_for_entity(this, map_coords());
+	map()->ensure_grid_for_unit(this, map_coords());
 }
 
 void NPC::on_movement_end()

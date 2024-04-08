@@ -69,7 +69,7 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
     );
 
     state->new_usertype<Horizon::Zone::Units::Player>("Player",
-        "entity", [](std::shared_ptr<Horizon::Zone::Units::Player> player) { return player->shared_from_this(); },
+        "unit", [](std::shared_ptr<Horizon::Zone::Units::Player> player) { return player->shared_from_this(); },
         "send_npc_dialog", &Horizon::Zone::Units::Player::send_npc_dialog,
         "send_npc_next_dialog", &Horizon::Zone::Units::Player::send_npc_next_dialog,
         "send_npc_close_dialog", &Horizon::Zone::Units::Player::send_npc_close_dialog,
@@ -92,7 +92,7 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
 
 void PlayerComponent::sync_functions(std::shared_ptr<sol::state> state)
 {
-    state->set_function("cast_entity_to_player",
+    state->set_function("cast_unit_to_player",
                     [] (std::shared_ptr<Unit> e)
                     {
                         return e->template downcast<Horizon::Zone::Units::Player>();

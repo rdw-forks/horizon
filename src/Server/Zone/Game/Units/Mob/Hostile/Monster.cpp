@@ -45,7 +45,7 @@ using namespace Horizon::Zone::Units;
 Monster::Monster(int16_t spawn_dataset_id, int8_t spawn_id, std::shared_ptr<Map> map, MapCoords mcoords,
 		std::shared_ptr<const monster_config_data> md,
 		std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd)
-: Mob(sZone->to_uuid((uint8_t) UNIT_MONSTER, ++_last_np_entity_guid, spawn_dataset_id, spawn_id), UNIT_MONSTER, UNIT_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
+: Mob(sZone->to_uuid((uint8_t) UNIT_MONSTER, ++_last_np_unit_guid, spawn_dataset_id, spawn_id), UNIT_MONSTER, UNIT_MASK_MONSTER, map, mcoords), _wmd_data(md), _wms_data(mskd)
 {
 	set_name(md->name);
 	set_job_id(md->monster_id);
@@ -63,7 +63,7 @@ bool Monster::initialize()
 	if (Mob::initialize(md) == false)
 		return false;
 
-	map()->ensure_grid_for_entity(this, map_coords());
+	map()->ensure_grid_for_unit(this, map_coords());
 
     map()->container()->getScheduler().Schedule(
     	Seconds(0),
@@ -158,7 +158,7 @@ void Monster::on_movement_begin()
 
 void Monster::on_movement_step()
 {
-	map()->ensure_grid_for_entity(this, map_coords());
+	map()->ensure_grid_for_unit(this, map_coords());
 }
 
 void Monster::on_movement_end()
@@ -217,7 +217,7 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 	}
 		break;
 	default:
-		HLog(warning) << "Monster::on_killed: Unknown entity type killed monster " << uuid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
+		HLog(warning) << "Monster::on_killed: Unknown unit type killed monster " << uuid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
 

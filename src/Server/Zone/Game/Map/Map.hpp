@@ -79,7 +79,7 @@ public:
 	GridHolderType &getGridHolder() { return _gridholder; }
 
 	template <class T>
-	bool ensure_grid_for_entity(T *entity, MapCoords coords);
+	bool ensure_grid_for_unit(T *unit, MapCoords coords);
 
 	template<class T, class CONTAINER>
 	void visit(int grid_x, int grid_y, GridReferenceContainerVisitor<T, CONTAINER> &visitor);
@@ -174,20 +174,20 @@ private:
 }
 
 template <class T>
-bool Horizon::Zone::Map::ensure_grid_for_entity(T *entity, MapCoords mcoords)
+bool Horizon::Zone::Map::ensure_grid_for_unit(T *unit, MapCoords mcoords)
 {
-	std::string const &new_map_name = entity->map()->get_name();
+	std::string const &new_map_name = unit->map()->get_name();
 	GridCoords new_gcoords = mcoords.scale<MAX_CELLS_PER_GRID, MAX_GRIDS_PER_MAP>();
 
-	if (new_map_name.compare(get_name()) == 0 && entity->grid_coords() == new_gcoords)
+	if (new_map_name.compare(get_name()) == 0 && unit->grid_coords() == new_gcoords)
 		return false;
 
-	if (entity->has_valid_grid_reference())
-		entity->remove_grid_reference();
+	if (unit->has_valid_grid_reference())
+		unit->remove_grid_reference();
 
-	entity->set_grid_coords(new_gcoords);
+	unit->set_grid_coords(new_gcoords);
 
-	_gridholder.get_grid(new_gcoords.x(), new_gcoords.y()).add_object(entity);
+	_gridholder.get_grid(new_gcoords.x(), new_gcoords.y()).add_object(unit);
 
 	return true;
 }

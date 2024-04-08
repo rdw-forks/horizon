@@ -141,8 +141,8 @@ bool Player::initialize()
 	}
 
 
-	// Ensure grid for entity.
-	map()->ensure_grid_for_entity(this, map_coords());
+	// Ensure grid for unit.
+	map()->ensure_grid_for_unit(this, map_coords());
 	map()->add_user_count();
 	
 	set_initialized(true);
@@ -240,7 +240,7 @@ bool Player::load()
 		character()._saved_y = r[9].as_uint64();
 
 		/**
-		 * Set map and coordinates for entity.
+		 * Set map and coordinates for unit.
 		 */
 		MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
 		std::shared_ptr<Map> map = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map(r[10].as_string());
@@ -296,7 +296,7 @@ void Player::on_movement_step()
 	GridNPCTrigger npc_trigger(shared_from_this());
 	GridReferenceContainerVisitor<GridNPCTrigger, GridReferenceContainer<AllUnitTypes>> npc_trigger_performer(npc_trigger);
 
-	map()->ensure_grid_for_entity(this, map_coords());
+	map()->ensure_grid_for_unit(this, map_coords());
 
 	update_viewport();
 
@@ -314,23 +314,23 @@ void Player::update_viewport()
 	map()->visit_in_range(map_coords(), update_caller);
 }
 
-void Player::add_entity_to_viewport(std::shared_ptr<Unit> entity)
+void Player::add_unit_to_viewport(std::shared_ptr<Unit> unit)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return;
 
-	if (entity_is_in_viewport(entity))
+	if (unit_is_in_viewport(unit))
 		return;
 
-	if (entity->type() == UNIT_ITEM) {
-		item_viewport_entry entry = get_session()->clif()->create_viewport_item_entry(entity->downcast<Item>());
+	if (unit->type() == UNIT_ITEM) {
+		item_viewport_entry entry = get_session()->clif()->create_viewport_item_entry(unit->downcast<Item>());
 		get_session()->clif()->notify_viewport_item_entry(entry);
 	} else {
-		entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
-		get_session()->clif()->notify_viewport_add_entity(entry);
+		unit_viewport_entry entry = get_session()->clif()->create_viewport_entry(unit);
+		get_session()->clif()->notify_viewport_add_unit(entry);
 	}
 	
-	_viewport_entities.push_back(entity);
+	_viewport_entities.push_back(unit);
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -341,23 +341,23 @@ void Player::add_entity_to_viewport(std::shared_ptr<Unit> entity)
 	HLog(debug) << "--------------------";
 }
 
-void Player::remove_entity_from_viewport(std::shared_ptr<Unit> entity, entity_viewport_notification_type type)
+void Player::remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)
 {
-	if (!entity_is_in_viewport(entity))
+	if (!unit_is_in_viewport(unit))
 		return;
 
 	_viewport_entities.erase(std::remove_if(_viewport_entities.begin(), _viewport_entities.end(),
-		[entity] (std::weak_ptr<Unit> wp_e) {
+		[unit] (std::weak_ptr<Unit> wp_e) {
 			if (wp_e.expired())
 				return false;
-			return wp_e.lock()->guid() == entity->guid();
+			return wp_e.lock()->guid() == unit->guid();
 		}
 	), _viewport_entities.end());
 
-	if (entity->type() == UNIT_ITEM)
-		get_session()->clif()->notify_item_removal_from_floor(entity->guid());
+	if (unit->type() == UNIT_ITEM)
+		get_session()->clif()->notify_item_removal_from_floor(unit->guid());
 	else
-		get_session()->clif()->notify_viewport_remove_entity(entity, type);
+		get_session()->clif()->notify_viewport_remove_unit(unit, type);
 
 	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
 	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
@@ -368,49 +368,49 @@ void Player::remove_entity_from_viewport(std::shared_ptr<Unit> entity, entity_vi
 	HLog(debug) << "--------------------";
 }
 
-bool Player::entity_is_in_viewport(std::shared_ptr<Unit> entity)
+bool Player::unit_is_in_viewport(std::shared_ptr<Unit> unit)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return false;
 
 	std::vector<std::weak_ptr<Unit>>::iterator it = std::find_if (_viewport_entities.begin(), _viewport_entities.end(), 
-		[entity] (const std::weak_ptr<Unit> &vp_ew) { 
+		[unit] (const std::weak_ptr<Unit> &vp_ew) { 
 			std::shared_ptr<Unit> vp_es = vp_ew.lock();
 
-			if (vp_es == nullptr || entity == nullptr)
+			if (vp_es == nullptr || unit == nullptr)
 				return false;
 
-			return (vp_es->guid() == entity->guid());
+			return (vp_es->guid() == unit->guid());
 		}
 	);
 	
 	return (it != _viewport_entities.end());
 }
 
-void Player::realize_entity_movement(std::shared_ptr<Unit> entity)
+void Player::realize_unit_movement(std::shared_ptr<Unit> unit)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return;
 
-	get_session()->clif()->notify_entity_move(entity->guid(), entity->map_coords(), entity->dest_coords());
+	get_session()->clif()->notify_unit_move(unit->guid(), unit->map_coords(), unit->dest_coords());
 }
 
-void Player::realize_entity_movement_entry(std::shared_ptr<Unit> entity)
+void Player::realize_unit_movement_entry(std::shared_ptr<Unit> unit)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return;
 
-	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
-	get_session()->clif()->notify_viewport_moving_entity(entry);
+	unit_viewport_entry entry = get_session()->clif()->create_viewport_entry(unit);
+	get_session()->clif()->notify_viewport_moving_unit(entry);
 }
 
-void Player::spawn_entity_in_viewport(std::shared_ptr<Unit> entity)
+void Player::spawn_unit_in_viewport(std::shared_ptr<Unit> unit)
 {
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return;
 
-	entity_viewport_entry entry = get_session()->clif()->create_viewport_entry(entity);
-	get_session()->clif()->notify_viewport_spawn_entity(entry);
+	unit_viewport_entry entry = get_session()->clif()->create_viewport_entry(unit);
+	get_session()->clif()->notify_viewport_spawn_unit(entry);
 }
 
 bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
@@ -440,7 +440,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		if (coords == MapCoords(0, 0))
 			coords = dest_map->get_random_accessible_coordinates();
 
-		dest_map->ensure_grid_for_entity(this, coords);
+		dest_map->ensure_grid_for_unit(this, coords);
 
 		set_map(dest_map);
 		set_map_coords(coords);
@@ -485,23 +485,23 @@ void Player::on_item_unequip(std::shared_ptr<const item_entry_data> item)
 
 void Player::pickup_item(int32_t guid)
 {
-	std::shared_ptr<Horizon::Zone::Unit> entity = get_nearby_entity(guid);
+	std::shared_ptr<Horizon::Zone::Unit> unit = get_nearby_unit(guid);
 
-	if (entity == nullptr)
+	if (unit == nullptr)
 		return;
 
-	if (entity->type() != UNIT_ITEM)
+	if (unit->type() != UNIT_ITEM)
 		return;
 
-	if (entity->is_in_range_of(shared_from_this(), 1) == false)
+	if (unit->is_in_range_of(shared_from_this(), 1) == false)
 		return;
 
-	std::shared_ptr<Item> item = entity->downcast<Item>();
+	std::shared_ptr<Item> item = unit->downcast<Item>();
 
 	if (inventory()->add_item(item) == Horizon::Zone::Assets::inventory_addition_result_type::INVENTORY_ADD_SUCCESS) {	
 		item->finalize();
 		std::shared_ptr<MapContainerThread> container = item->map()->container();
-		container->remove_entity(item);
+		container->remove_unit(item);
 		get_session()->clif()->notify_item_removal_from_floor(item->guid());
 		get_session()->clif()->notify_action(item->guid(), PLAYER_ACT_ITEM_PICKUP);
 	}

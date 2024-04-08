@@ -51,7 +51,7 @@ void GridPlayerNotifier::notify(GridRefManager<Horizon::Zone::Units::Player> &m)
 {
 	using namespace Horizon::Zone::Units;
 
-	std::shared_ptr<Player> pl = _entity.lock()->template downcast<Player>();
+	std::shared_ptr<Player> pl = _unit.lock()->template downcast<Player>();
 
 	for (typename GridRefManager<Player>::iterator iter = m.begin(); iter != typename GridRefManager<Player>::iterator(nullptr); ++iter) {
 		if (iter->source() == nullptr)
@@ -84,10 +84,10 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
 {
     using namespace Horizon::Zone::Units;
 
-    if (_entity.expired())
+    if (_unit.expired())
         return;
 
-    std::shared_ptr<Player> pl = _entity.lock()->template downcast<Player>();
+    std::shared_ptr<Player> pl = _unit.lock()->template downcast<Player>();
 
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
         if (iter->source() == nullptr || iter->source()->guid() == pl->guid())
@@ -100,9 +100,9 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
             std::shared_ptr<Horizon::Zone::Unit> vp_e = iter->source()->shared_from_this();
     
             if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
-                pl->add_entity_to_viewport(vp_e);
+                pl->add_unit_to_viewport(vp_e);
             else if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
-                pl->remove_entity_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
+                pl->remove_unit_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
     }
 }
 
@@ -124,7 +124,7 @@ void GridUnitExistenceNotifier::notify(GridRefManager<T> &m)
     if (!m.get_size())
         return;
 
-    std::shared_ptr<Horizon::Zone::Unit> src_entity = _entity.lock();
+    std::shared_ptr<Horizon::Zone::Unit> src_unit = _unit.lock();
 
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
         if (iter->source() == nullptr)
@@ -132,31 +132,31 @@ void GridUnitExistenceNotifier::notify(GridRefManager<T> &m)
 
         std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
 
-        if (src_entity == nullptr || src_entity->guid() == tpl->guid())
+        if (src_unit == nullptr || src_unit->guid() == tpl->guid())
             continue;
 
         if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
             continue;
 
-        bool is_in_range = tpl->is_in_range_of(src_entity);
+        bool is_in_range = tpl->is_in_range_of(src_unit);
 
         if (_notif_type == EVP_NOTIFY_IN_SIGHT && is_in_range) {
-            if (tpl->entity_is_in_viewport(src_entity))
+            if (tpl->unit_is_in_viewport(src_unit))
                 continue;
-            // Target player realizes new entity in viewport.
-            // Source entity doesn't need to realize target as update_viewport() is called when needed/
-            tpl->add_entity_to_viewport(src_entity);
+            // Target player realizes new unit in viewport.
+            // Source unit doesn't need to realize target as update_viewport() is called when needed/
+            tpl->add_unit_to_viewport(src_unit);
         } else if (_notif_type == EVP_NOTIFY_OUT_OF_SIGHT && !is_in_range) {
-            if (!tpl->entity_is_in_viewport(src_entity))
+            if (!tpl->unit_is_in_viewport(src_unit))
                 continue;
             
-            tpl->remove_entity_from_viewport(src_entity, EVP_NOTIFY_OUT_OF_SIGHT);
+            tpl->remove_unit_from_viewport(src_unit, EVP_NOTIFY_OUT_OF_SIGHT);
         }
         else if (_notif_type > EVP_NOTIFY_OUT_OF_SIGHT) {
-            if (!tpl->entity_is_in_viewport(src_entity))
+            if (!tpl->unit_is_in_viewport(src_unit))
                 continue;
 
-            tpl->remove_entity_from_viewport(src_entity, _notif_type);
+            tpl->remove_unit_from_viewport(src_unit, _notif_type);
         }
     }
 }
@@ -179,7 +179,7 @@ void GridUnitSpawnNotifier::notify(GridRefManager<T> &m)
     if (!m.get_size())
         return;
 
-    std::shared_ptr<Horizon::Zone::Unit> src_entity = _entity.lock();
+    std::shared_ptr<Horizon::Zone::Unit> src_unit = _unit.lock();
 
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
         if (iter->source() == nullptr)
@@ -187,13 +187,13 @@ void GridUnitSpawnNotifier::notify(GridRefManager<T> &m)
 
         std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
 
-        if (src_entity == nullptr || src_entity->guid() == tpl->guid())
+        if (src_unit == nullptr || src_unit->guid() == tpl->guid())
             continue;
 
         if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
             continue;
 
-        tpl->spawn_entity_in_viewport(src_entity);
+        tpl->spawn_unit_in_viewport(src_unit);
     }
 }
 
@@ -215,9 +215,9 @@ void GridUnitMovementNotifier::notify(GridRefManager<T> &m)
     if (m.get_size() == 0)
         return;
 
-    std::shared_ptr<Horizon::Zone::Unit> src_entity = _entity.lock();
+    std::shared_ptr<Horizon::Zone::Unit> src_unit = _unit.lock();
 
-    if (src_entity == nullptr)
+    if (src_unit == nullptr)
         return;
 
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); iter++) {
@@ -226,16 +226,16 @@ void GridUnitMovementNotifier::notify(GridRefManager<T> &m)
 
         std::shared_ptr<Player> tpl = iter->source()->template downcast<Player>();
 
-        if (src_entity->guid() == tpl->guid())
+        if (src_unit->guid() == tpl->guid())
             continue;
 
         if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
             continue;
 
         if (_new_entry == true)
-            tpl->realize_entity_movement_entry(src_entity);
+            tpl->realize_unit_movement_entry(src_unit);
         else
-            tpl->realize_entity_movement(src_entity);
+            tpl->realize_unit_movement(src_unit);
     }
 }
 
@@ -262,9 +262,9 @@ void GridUnitSearcher::search(GridRefManager<T> &m)
         if (iter->source() == nullptr)
             continue;
 
-        std::weak_ptr<Unit> entity = iter->source()->shared_from_this();
-        if (!entity.expired() && _predicate(entity)) {
-            _result = entity;
+        std::weak_ptr<Unit> unit = iter->source()->shared_from_this();
+        if (!unit.expired() && _predicate(unit)) {
+            _result = unit;
             return;
         }
     }
@@ -437,8 +437,8 @@ template<> void GridNPCTrigger::Visit<Monster>(GridRefManager<Monster> &m);
 template<> void GridNPCTrigger::Visit<Skill>(GridRefManager<Skill> &m);
 template<> void GridNPCTrigger::Visit<Item>(GridRefManager<Item> &m);
 
-// Searches a skillarea for an entity that is within the splash range of the target.
-// If found, the status change is applied to the entity.
+// Searches a skillarea for an unit that is within the splash range of the target.
+// If found, the status change is applied to the unit.
 template <class T>
 void GridSCApplyInSkillArea::apply(GridRefManager<T> &m)
 {
@@ -447,25 +447,25 @@ void GridSCApplyInSkillArea::apply(GridRefManager<T> &m)
 
     using namespace Horizon::Zone::Units;
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
-        std::shared_ptr<Horizon::Zone::Unit> entity = iter->source()->shared_from_this();
+        std::shared_ptr<Horizon::Zone::Unit> unit = iter->source()->shared_from_this();
         
-        if (entity == nullptr)
+        if (unit == nullptr)
             continue;
         
         // AOE Target Type check.       
         AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
 
-        if (!aoe_predicate(entity))
+        if (!aoe_predicate(unit))
             continue;
 
-        RangeCheckPredicate range_predicate(entity);
+        RangeCheckPredicate range_predicate(unit);
         
-        // If the entity is not in range of target's splash range, 
+        // If the unit is not in range of target's splash range, 
         // ignore.
         if (!range_predicate(_target, _aoe_config.aoe_range))
             continue;
         
-        entity->status_effect_start(_sc_config.type, _sc_config.total_time, _sc_config.val1, _sc_config.val2, _sc_config.val3, _sc_config.val4);
+        unit->status_effect_start(_sc_config.type, _sc_config.total_time, _sc_config.val1, _sc_config.val2, _sc_config.val3, _sc_config.val4);
     }
 }
 
@@ -487,26 +487,26 @@ void GridSCRemoveInSkillArea::apply(GridRefManager<T> &m)
 
     using namespace Horizon::Zone::Units;
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
-        std::shared_ptr<Horizon::Zone::Unit> entity = iter->source()->shared_from_this();
+        std::shared_ptr<Horizon::Zone::Unit> unit = iter->source()->shared_from_this();
         
-        if (entity == nullptr)
+        if (unit == nullptr)
             continue;
 
         // AOE Target Type check.       
         AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
 
-        if (!aoe_predicate(entity))
+        if (!aoe_predicate(unit))
             continue;
 
         // @Todo: check map type PvP, GvG, etc.
-        RangeCheckPredicate range_predicate(entity);
+        RangeCheckPredicate range_predicate(unit);
         
-        // If the entity is not in range of target's splash range, 
+        // If the unit is not in range of target's splash range, 
         // ignore.
         if (!range_predicate(_target, _aoe_config.aoe_range))
             continue;
         
-        entity->status_effect_end(_sc_type);
+        unit->status_effect_end(_sc_type);
     }
 }
 
@@ -528,26 +528,26 @@ void GridExecuteSkillInArea::apply(GridRefManager<T> &m)
 
     using namespace Horizon::Zone::Units;
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
-        std::shared_ptr<Horizon::Zone::Unit> entity = iter->source()->shared_from_this();
+        std::shared_ptr<Horizon::Zone::Unit> unit = iter->source()->shared_from_this();
         
-        if (entity == nullptr)
+        if (unit == nullptr)
             continue;
 
         // AOE Target Type check.       
         AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
 
-        if (!aoe_predicate(entity))
+        if (!aoe_predicate(unit))
             continue;
 
         // @Todo: check map type PvP, GvG, etc.
-        RangeCheckPredicate range_predicate(entity);
+        RangeCheckPredicate range_predicate(unit);
         
-        // If the entity is not in range of target's splash range, 
+        // If the unit is not in range of target's splash range, 
         // ignore.
         if (!range_predicate(_initial_source, _aoe_config.aoe_range))
             continue;
         
-        _skill_execution->execute(entity->guid());
+        _skill_execution->execute(unit->guid());
     }
 }
 
@@ -569,23 +569,23 @@ void GridExecuteSkillInCell::apply(GridRefManager<T> &m)
 
     using namespace Horizon::Zone::Units;
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
-        std::shared_ptr<Horizon::Zone::Unit> entity = iter->source()->shared_from_this();
+        std::shared_ptr<Horizon::Zone::Unit> unit = iter->source()->shared_from_this();
         
-        if (entity == nullptr)
+        if (unit == nullptr)
             continue;
 
         // AOE Target Type check.       
         AOETargetTypePredicate aoe_predicate(_aoe_config.aoe_target_mask);
 
-        if (!aoe_predicate(entity))
+        if (!aoe_predicate(unit))
             continue;
         
         CellCheckPredicate cell_predicate(_cell);
 
-        if (!cell_predicate(entity->map_coords()))
+        if (!cell_predicate(unit->map_coords()))
             continue;
 
-        _skill_execution->execute(entity->guid());
+        _skill_execution->execute(unit->guid());
     }
 }
 
@@ -607,7 +607,7 @@ void GridUnitSkillUseNotifier::notify(GridRefManager<T> &m)
     if (!m.get_size())
         return;
 
-    std::shared_ptr<Horizon::Zone::Unit> src_entity = _entity.lock();
+    std::shared_ptr<Horizon::Zone::Unit> src_unit = _unit.lock();
 
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
         if (iter->source() == nullptr)
@@ -671,7 +671,7 @@ void GridUnitBasicAttackNotifier::notify(GridRefManager<T> &m)
     if (!m.get_size())
         return;
 
-    std::shared_ptr<Horizon::Zone::Unit> src_entity = _entity.lock();
+    std::shared_ptr<Horizon::Zone::Unit> src_unit = _unit.lock();
 
     for (typename GridRefManager<T>::iterator iter = m.begin(); iter != typename GridRefManager<T>::iterator(nullptr); ++iter) {
         if (iter->source() == nullptr)
@@ -714,7 +714,7 @@ void GridUnitMovementStopNotifier::notify(GridRefManager<T> &m)
         if (tpl->get_session() == nullptr || tpl->get_session()->clif() == nullptr)
             continue;
         
-        tpl->get_session()->clif()->notify_movement_stop(_entity_guid, _pos_x, _pos_y);
+        tpl->get_session()->clif()->notify_movement_stop(_unit_guid, _pos_x, _pos_y);
     }
 }
 

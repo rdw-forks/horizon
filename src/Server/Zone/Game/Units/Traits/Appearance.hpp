@@ -46,8 +46,8 @@ namespace Traits
 	class Appearance
 	{
 	public:
-		Appearance(std::weak_ptr<Unit> entity, entity_appearance_type type, uint32_t id = 0)
-		: _entity(entity), _type(type), _id(id)
+		Appearance(std::weak_ptr<Unit> unit, unit_appearance_type type, uint32_t id = 0)
+		: _unit(unit), _type(type), _id(id)
 		{ }
 		~Appearance() { }
 
@@ -57,19 +57,19 @@ namespace Traits
 		virtual void notify_update();
 
 	protected:
-		std::shared_ptr<Unit> get_entity() { return _entity.lock(); }
+		std::shared_ptr<Unit> get_unit() { return _unit.lock(); }
 
 	private:
-		std::weak_ptr<Unit> _entity;
-		entity_appearance_type _type;
+		std::weak_ptr<Unit> _unit;
+		unit_appearance_type _type;
 		uint32_t _id{0};
 	};
 
 	class BaseAppearance : public Appearance
 	{
 	public:
-		BaseAppearance(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_BASE, id)
+		BaseAppearance(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_BASE, id)
 		{ }
 		~BaseAppearance() { }
 	};
@@ -77,8 +77,8 @@ namespace Traits
 	class HairColor : public Appearance
 	{
 	public:
-		HairColor(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_HAIR_COLOR, id)
+		HairColor(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_HAIR_COLOR, id)
 		{ }
 		~HairColor() { }
 	};
@@ -86,8 +86,8 @@ namespace Traits
 	class ClothColor : public Appearance
 	{
 	public:
-		ClothColor(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_CLOTH_COLOR, id)
+		ClothColor(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_CLOTH_COLOR, id)
 		{ }
 		~ClothColor() { }
 	};
@@ -95,8 +95,8 @@ namespace Traits
 	class WeaponSprite : public Appearance
 	{
 	public:
-		WeaponSprite(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_WEAPON_SPRITE, id)
+		WeaponSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_WEAPON_SPRITE, id)
 		{ }
 		~WeaponSprite() { }
 	};
@@ -104,8 +104,8 @@ namespace Traits
 	class ShieldSprite : public Appearance
 	{
 	public:
-		ShieldSprite(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_SHIELD_SPRITE, id)
+		ShieldSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_SHIELD_SPRITE, id)
 		{ }
 		~ShieldSprite() { }
 	};
@@ -113,8 +113,8 @@ namespace Traits
 	class RobeSprite : public Appearance
 	{
 	public:
-		RobeSprite(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_ROBE_SPRITE, id)
+		RobeSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_ROBE_SPRITE, id)
 		{ }
 		~RobeSprite() { }
 	};
@@ -122,8 +122,8 @@ namespace Traits
 	class HeadTopSprite : public Appearance
 	{
 	public:
-		HeadTopSprite(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_HEAD_TOP_SPRITE, id)
+		HeadTopSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_HEAD_TOP_SPRITE, id)
 		{ }
 		~HeadTopSprite() { }
 	};
@@ -131,8 +131,8 @@ namespace Traits
 	class HeadMidSprite : public Appearance
 	{
 	public:
-		HeadMidSprite(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_HEAD_MID_SPRITE, id)
+		HeadMidSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_HEAD_MID_SPRITE, id)
 		{ }
 		~HeadMidSprite() { }
 	};
@@ -140,8 +140,8 @@ namespace Traits
 	class HeadBottomSprite : public Appearance
 	{
 	public:
-		HeadBottomSprite(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_HEAD_BOTTOM_SPRITE, id)
+		HeadBottomSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_HEAD_BOTTOM_SPRITE, id)
 		{ }
 		~HeadBottomSprite() { }
 	};
@@ -149,8 +149,8 @@ namespace Traits
 	class HairStyle : public Appearance
 	{
 	public:
-		HairStyle(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_HAIR_STYLE, id)
+		HairStyle(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_HAIR_STYLE, id)
 		{ }
 		~HairStyle() { }
 	};
@@ -158,8 +158,8 @@ namespace Traits
 	class BodyStyle : public Appearance
 	{
 	public:
-		BodyStyle(std::weak_ptr<Unit> entity, uint32_t id = 0)
-		: Appearance(entity, EAT_BODY_STYLE, id)
+		BodyStyle(std::weak_ptr<Unit> unit, uint32_t id = 0)
+		: Appearance(unit, EAT_BODY_STYLE, id)
 		{ }
 		~BodyStyle() { }
 	};

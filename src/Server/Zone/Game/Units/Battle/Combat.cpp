@@ -41,8 +41,8 @@
 
 using namespace Horizon::Zone;
 
-CombatRegistry::CombatRegistry(std::shared_ptr<Unit> entity)
-: _entity(entity)
+CombatRegistry::CombatRegistry(std::shared_ptr<Unit> unit)
+: _unit(unit)
 {
 
 }
@@ -52,8 +52,8 @@ CombatRegistry::~CombatRegistry()
 
 }
 
-Combat::Combat(std::shared_ptr<Unit> entity, std::shared_ptr<Unit> target)
-: _entity(entity), _target(target), _start_time(std::time(nullptr))
+Combat::Combat(std::shared_ptr<Unit> unit, std::shared_ptr<Unit> target)
+: _unit(unit), _target(target), _start_time(std::time(nullptr))
 {
 }
 
@@ -65,12 +65,12 @@ combat_retaliate_type Combat::weapon_attack()
 {
     combat_damage dmg;
     
-    if (entity()->type() == UNIT_PLAYER) {
-        EquipmentListType const& equipments = entity()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+    if (unit()->type() == UNIT_PLAYER) {
+        EquipmentListType const& equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         // Calculate element damage ratio and damage.
-        int64_t batk = entity()->status()->base_attack()->total();
+        int64_t batk = unit()->status()->base_attack()->total();
 
         if (equipments[IT_EQPI_HAND_R].second.expired() == false) {
             batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_R);
@@ -84,16 +84,16 @@ combat_retaliate_type Combat::weapon_attack()
             dmg.left_damage = batk;
         }
     } else {
-        dmg.right_damage = (std::rand() % entity()->status()->creature_attack_damage()->get_min()) + (entity()->status()->creature_attack_damage()->get_max() - entity()->status()->creature_attack_damage()->get_min());
+        dmg.right_damage = (std::rand() % unit()->status()->creature_attack_damage()->get_min()) + (unit()->status()->creature_attack_damage()->get_max() - unit()->status()->creature_attack_damage()->get_min());
     }
     
     dmg.number_of_hits = 1;
 
-    CombatRegistry::MeleeResultOperation::MeleeResultOperand *melee_operand = new CombatRegistry::MeleeResultOperation::MeleeResultOperand(entity(), target());
+    CombatRegistry::MeleeResultOperation::MeleeResultOperand *melee_operand = new CombatRegistry::MeleeResultOperation::MeleeResultOperand(unit(), target());
     CombatRegistry::CombatValueDamage *melee_value = new CombatRegistry::CombatValueDamage(dmg);
     CombatRegistry::MeleeResultOperation *melee_operation = new CombatRegistry::MeleeResultOperation(melee_operand, CombatRegistry::MeleeResultOperation::melee_result_operation_type::MELEE_RESULT_OPERATION_DAMAGE, melee_value);
 
-    CombatRegistry::AttributeOperation::AttributeOperand *attr_operand = new CombatRegistry::AttributeOperation::AttributeOperand(entity(), target(), target()->status()->current_hp());
+    CombatRegistry::AttributeOperation::AttributeOperand *attr_operand = new CombatRegistry::AttributeOperation::AttributeOperand(unit(), target(), target()->status()->current_hp());
     CombatRegistry::CombatValueInteger *attr_value = new CombatRegistry::CombatValueInteger(dmg.left_damage + dmg.right_damage);
     CombatRegistry::AttributeOperation *attr_operation = new CombatRegistry::AttributeOperation(attr_operand, CombatRegistry::AttributeOperation::attribute_operation_type::ATTRIBUTE_OPERATION_SUBTRACT_FROM_BASE, attr_value);
     
@@ -101,7 +101,7 @@ combat_retaliate_type Combat::weapon_attack()
 	CombatRegistry::CombatStage *stage = new CombatRegistry::CombatStage(time);
     stage->add_operation(melee_operation);
     stage->add_operation(attr_operation);
-    entity()->combat_registry()->queue_combat_stage(stage);
+    unit()->combat_registry()->queue_combat_stage(stage);
 
     return CBT_RET_NONE;
 }
@@ -123,8 +123,8 @@ int64_t Combat::calculate_misc_attack(int64_t damage)
 
 int64_t Combat::deduce_weapon_element_attack(int64_t damage, element_type def_ele, item_equip_location_index loc)
 {
-    if (entity()->type() == UNIT_PLAYER) {
-        EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+    if (unit()->type() == UNIT_PLAYER) {
+        EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         if (equipments[loc].second.expired())
@@ -152,8 +152,8 @@ int64_t Combat::deduce_weapon_element_attack(int64_t damage, element_type def_el
 
 int64_t Combat::deduce_damage_size_modifier(int64_t damage, item_equip_location_index loc)
 {
-    if (entity()->type() == UNIT_PLAYER) {
-        EquipmentListType const &equipments = entity()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+    if (unit()->type() == UNIT_PLAYER) {
+        EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
         std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         if (equipments[loc].second.expired())
@@ -171,7 +171,7 @@ int64_t Combat::deduce_damage_size_modifier(int64_t damage, item_equip_location_
             return damage;
         }
 
-        int32_t size_damage_ratio = ItemDB->get_weapon_target_size_modifier(weapond->sub_type.weapon_t, (entity_size_type) entity()->status()->size()->get_base());
+        int32_t size_damage_ratio = ItemDB->get_weapon_target_size_modifier(weapond->sub_type.weapon_t, (unit_size_type) unit()->status()->size()->get_base());
 
         damage += (size_damage_ratio < 100 ? -(damage * (size_damage_ratio - 100) / 100) : (damage * (size_damage_ratio - 100) / 100));
     }
@@ -319,7 +319,7 @@ void CombatRegistry::SkillExecutionOperation::execute() const
     {
         case SKILL_EXECUTION_OPERATION_CAST:
         {
-            s_entity_skill_use_notifier_config notifier_config;
+            s_unit_skill_use_notifier_config notifier_config;
             notifier_config.skill_id = config.skill_id;
             notifier_config.cast_time = config.cast_time;
             notifier_config.element = config.element;
@@ -327,7 +327,7 @@ void CombatRegistry::SkillExecutionOperation::execute() const
             notifier_config.target_guid = target->guid();
             notifier_config.target_x = target->map_coords().x();
             notifier_config.target_y = target->map_coords().y();
-            source->notify_nearby_players_of_skill_use(grid_entity_skill_use_notification_type::GRID_UNIT_SKILL_USE_NOTIFY_CASTTIME, notifier_config);
+            source->notify_nearby_players_of_skill_use(grid_unit_skill_use_notification_type::GRID_UNIT_SKILL_USE_NOTIFY_CASTTIME, notifier_config);
             
             if (source->is_walking())
                 source->stop_walking(true, true);
@@ -374,7 +374,7 @@ void CombatRegistry::SkillResultOperation::execute() const
             CombatRegistry::SkillResultOperation::SkillResultOperand *operand = dynamic_cast<CombatRegistry::SkillResultOperation::SkillResultOperand *>(get_operand());
             CombatRegistry::CombatValueDamage *damage = dynamic_cast<CombatRegistry::CombatValueDamage *>(get_operation_value());
             HLog(debug) << "Started skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
-            s_entity_skill_use_notifier_config notifier_config;
+            s_unit_skill_use_notifier_config notifier_config;
             notifier_config.skill_id = operand->get_config().skill_id;
             notifier_config.skill_lv = operand->get_config().skill_lv;
             notifier_config.source_guid = source->guid();
@@ -395,7 +395,7 @@ void CombatRegistry::SkillResultOperation::execute() const
             CombatRegistry::SkillResultOperation::SkillResultOperand *operand = dynamic_cast<CombatRegistry::SkillResultOperation::SkillResultOperand *>(get_operand());
             CombatRegistry::CombatValueHealing *healing = dynamic_cast<CombatRegistry::CombatValueHealing *>(get_operation_value());
             HLog(debug) << "Started skill result damage operation for skill: " << operand->get_config().skill_id << "." << std::endl;
-            s_entity_skill_use_notifier_config notifier_config;
+            s_unit_skill_use_notifier_config notifier_config;
             notifier_config.skill_id = operand->get_config().skill_id;
             notifier_config.skill_lv = operand->get_config().skill_lv;
             notifier_config.source_guid = source->guid();
@@ -438,7 +438,7 @@ void CombatRegistry::MeleeResultOperation::execute() const
         case MELEE_RESULT_OPERATION_DAMAGE:
         {
             CombatRegistry::CombatValueDamage *value = dynamic_cast<CombatRegistry::CombatValueDamage *>(get_operation_value());
-            s_grid_entity_basic_attack_config config;
+            s_grid_unit_basic_attack_config config;
             config.guid = source->guid();
             config.target_guid = target->guid();
             config.start_time = get_sys_time();

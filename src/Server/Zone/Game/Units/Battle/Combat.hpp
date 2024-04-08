@@ -505,10 +505,10 @@ protected:
         }
     };
 
-    CombatRegistry(std::shared_ptr<Unit> entity);
+    CombatRegistry(std::shared_ptr<Unit> unit);
     ~CombatRegistry();
 
-    std::shared_ptr<Unit> get_entity() { return _entity.lock(); }
+    std::shared_ptr<Unit> get_unit() { return _unit.lock(); }
 
     CombatStage *create_combat_stage(int priority) { return new CombatStage(priority); }
 
@@ -517,16 +517,16 @@ protected:
     void process_queue();
 
 private:
-    std::weak_ptr<Unit> _entity;
+    std::weak_ptr<Unit> _unit;
     std::priority_queue<CombatStage *, std::vector<CombatStage *>, CompareCombatStage> _combat_stage_queue;
 };
 class Combat
 {
 public:
-    explicit Combat(std::shared_ptr<Unit> entity, std::shared_ptr<Unit> target);
+    explicit Combat(std::shared_ptr<Unit> unit, std::shared_ptr<Unit> target);
     ~Combat();
 
-    std::shared_ptr<Unit> entity() const { return _entity.lock(); }
+    std::shared_ptr<Unit> unit() const { return _unit.lock(); }
     std::shared_ptr<Unit> target() const { return _target.lock(); }
 
     combat_retaliate_type weapon_attack();
@@ -537,7 +537,7 @@ public:
     int64_t deduce_damage_size_modifier(int64_t damage, item_equip_location_index loc);
 private:
     time_t _start_time{0};
-    std::weak_ptr<Unit> _entity, _target;
+    std::weak_ptr<Unit> _unit, _target;
 };
 }
 }

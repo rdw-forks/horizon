@@ -108,10 +108,10 @@ public:
 	
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
-	//! @brief Add entity to vector of entities to be updated.
-	void add_entity(std::shared_ptr<Unit> entity);
-	//! @brief Remove entity from vector of entities to be updated.
-	void remove_entity(std::shared_ptr<Unit> entity);
+	//! @brief Add unit to vector of entities to be updated.
+	void add_unit(std::shared_ptr<Unit> unit);
+	//! @brief Remove unit from vector of entities to be updated.
+	void remove_unit(std::shared_ptr<Unit> unit);
 private:
 	//! @brief Called by the internal thread of MapContainerThread and deals with initialization of thread-accessible data.
 	//! Is also responsible emulating the world update loop and performing everything in maps it manages.

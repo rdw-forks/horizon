@@ -36,7 +36,7 @@
 
 using namespace Horizon::Zone::Units;
 
-Mob::Mob(uint64_t uuid, entity_type type, entity_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
+Mob::Mob(uint64_t uuid, unit_type type, unit_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
 : Unit(uuid, type, type_mask, map, mcoords)
 {
 	//

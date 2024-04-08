@@ -72,14 +72,14 @@ namespace Traits
 	class Attribute
 	{
 	public:
-		Attribute(std::weak_ptr<Unit> entity, status_point_type st_type, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: _base_val(base), _status_point_type(st_type), _equip_val(equip), _status_val(status), _entity(entity)
+		Attribute(std::weak_ptr<Unit> unit, status_point_type st_type, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
+		: _base_val(base), _status_point_type(st_type), _equip_val(equip), _status_val(status), _unit(unit)
 		{
 		}
 		virtual ~Attribute() { }
 
-		std::shared_ptr<Unit> entity() { return _entity.lock(); }
-		void entity(std::shared_ptr<Unit> e) { _entity = e; }
+		std::shared_ptr<Unit> unit() { return _unit.lock(); }
+		void unit(std::shared_ptr<Unit> e) { _unit = e; }
 
 		virtual void set_base(int32_t val)
 		{
@@ -146,7 +146,7 @@ namespace Traits
 
 		Attribute operator = (Attribute &right)
 		{
-			entity(right.entity());
+			unit(right.unit());
 			set_base(right.get_base());
 			set_equip(right.get_equip());
 			set_status(right.get_status());
@@ -164,7 +164,7 @@ namespace Traits
 		int32_t _equip_val{0};
 		int32_t _status_val{0};
 	private:
-		std::weak_ptr<Unit> _entity;
+		std::weak_ptr<Unit> _unit;
 	};
 }
 }

@@ -101,8 +101,8 @@ void Status::StatusRegistry::StatusOperation::execute()
 	}
 	
 	// notify through walk packet of hp change.
-    if (_attribute->get_type() == STATUS_CURRENTHP && _attribute->entity()->type() == UNIT_MONSTER && !_attribute->entity()->is_dead()) {
-        _attribute->entity()->notify_nearby_players_of_movement(true);
+    if (_attribute->get_type() == STATUS_CURRENTHP && _attribute->unit()->type() == UNIT_MONSTER && !_attribute->unit()->is_dead()) {
+        _attribute->unit()->notify_nearby_players_of_movement(true);
     }
 }
 
@@ -116,8 +116,8 @@ void Status::StatusRegistry::process_queue()
 	}
 }
 
-Status::Status(std::weak_ptr<Horizon::Zone::Unit> entity, entity_type type)
-	: _entity(entity), _type(type)
+Status::Status(std::weak_ptr<Horizon::Zone::Unit> unit, unit_type type)
+	: _unit(unit), _type(type)
 {
 	_status_registry = std::make_shared<StatusRegistry>();
 }
@@ -137,63 +137,63 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		return false;
 	}
 
-	set_attack_range(std::make_shared<AttackRange>(_entity));
+	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
 
-	set_max_weight(std::make_shared<MaxWeight>(_entity, job->max_weight));
+	set_max_weight(std::make_shared<MaxWeight>(_unit, job->max_weight));
 	max_weight()->set_strength(strength().get());
 	max_weight()->compute();
 
 	// Calculated when inventory is synced.
-	set_current_weight(std::make_shared<CurrentWeight>(_entity, 0));
+	set_current_weight(std::make_shared<CurrentWeight>(_unit, 0));
 
-	set_status_atk(std::make_shared<StatusATK>(_entity));
+	set_status_atk(std::make_shared<StatusATK>(_unit));
 	status_atk()->set_base_level(base_level().get());
 	status_atk()->set_strength(strength().get());
 	status_atk()->set_dexterity(dexterity().get());
 	status_atk()->set_luck(luck().get());
 	status_atk()->compute();
 
-	set_equip_atk(std::make_shared<EquipATK>(_entity));
+	set_equip_atk(std::make_shared<EquipATK>(_unit));
 	equip_atk()->set_strength(strength().get());
 	equip_atk()->set_dexterity(dexterity().get());
 	equip_atk()->compute();
 
-	set_status_matk(std::make_shared<StatusMATK>(_entity));
+	set_status_matk(std::make_shared<StatusMATK>(_unit));
 	status_matk()->set_base_level(base_level().get());
 	status_matk()->set_intelligence(intelligence().get());
 	status_matk()->set_dexterity(dexterity().get());
 	status_matk()->set_luck(luck().get());
 	status_matk()->compute();
 
-	set_soft_def(std::make_shared<SoftDEF>(_entity));
+	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
 	soft_def()->compute();
 
-	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
+	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
 	soft_mdef()->set_intelligence(intelligence().get());
 	soft_mdef()->set_dexterity(dexterity().get());
 	soft_mdef()->set_vitality(vitality().get());
 	soft_mdef()->compute();
 
-	set_hit(std::make_shared<HIT>(_entity));
+	set_hit(std::make_shared<HIT>(_unit));
 	hit()->set_base_level(base_level().get());
 	hit()->set_dexterity(dexterity().get());
 	hit()->set_luck(luck().get());
 	hit()->compute();
 
-	set_crit(std::make_shared<CRIT>(_entity));
+	set_crit(std::make_shared<CRIT>(_unit));
 	crit()->set_luck(luck().get());
 	crit()->compute();
 
-	set_flee(std::make_shared<FLEE>(_entity));
+	set_flee(std::make_shared<FLEE>(_unit));
 	flee()->set_base_level(base_level().get());
 	flee()->set_agility(agility().get());
 	flee()->set_luck(luck().get());
 	flee()->compute();
 
-	set_attack_speed(std::make_shared<AttackSpeed>(_entity));
+	set_attack_speed(std::make_shared<AttackSpeed>(_unit));
 	attack_speed()->set_base_level(base_level().get());
 	attack_speed()->set_agility(agility().get());
 	attack_speed()->set_dexterity(dexterity().get());
@@ -269,26 +269,26 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	job_experience()->register_observers(job_level().get());
 	
 	/* Combat Status Attributes */
-	set_attack_motion(std::make_shared<AttackMotion>(_entity));
+	set_attack_motion(std::make_shared<AttackMotion>(_unit));
 	attack_motion()->set_attack_speed(attack_speed().get());
 	attack_motion()->set_agility(agility().get());
 	attack_motion()->register_observable(attack_motion().get());
 	attack_motion()->register_observers(attack_speed().get(), agility().get());
 	attack_motion()->compute();
 
-	set_attack_delay(std::make_shared<AttackDelay>(_entity));
+	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->set_attack_motion(attack_motion().get());
 	attack_delay()->register_observable(attack_delay().get());
 	attack_delay()->register_observers(attack_motion().get());
 	attack_delay()->compute();
 
-	set_damage_motion(std::make_shared<DamageMotion>(_entity));
+	set_damage_motion(std::make_shared<DamageMotion>(_unit));
 	damage_motion()->set_agility(agility().get());
 	damage_motion()->register_observable(damage_motion().get());
 	damage_motion()->register_observers(agility().get());
 	damage_motion()->compute();
 
-	set_base_attack(std::make_shared<BaseAttack>(_entity));
+	set_base_attack(std::make_shared<BaseAttack>(_unit));
 	base_attack()->set_strength(strength().get());
 	base_attack()->set_dexterity(dexterity().get());
 	base_attack()->set_luck(luck().get());
@@ -304,17 +304,17 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::NPC> npc)
 {
-	set_movement_speed(std::make_shared<MovementSpeed>(_entity, 100));
-	set_base_level(std::make_shared<BaseLevel>(_entity, 1));
+	set_movement_speed(std::make_shared<MovementSpeed>(_unit, 100));
+	set_base_level(std::make_shared<BaseLevel>(_unit, 1));
 
-	set_current_hp(std::make_shared<CurrentHP>(_entity, 1));
-	set_current_sp(std::make_shared<CurrentSP>(_entity, 1));
-	set_max_hp(std::make_shared<MaxHP>(_entity, 1));
-	set_max_sp(std::make_shared<MaxSP>(_entity, 1));
-	set_hair_style(std::make_shared<HairStyle>(_entity, 0));
-	set_hair_color(std::make_shared<HairColor>(_entity, 0));
-	set_robe_sprite(std::make_shared<RobeSprite>(_entity, 0));
-	set_base_appearance(std::make_shared<BaseAppearance>(_entity, npc->job_id()));
+	set_current_hp(std::make_shared<CurrentHP>(_unit, 1));
+	set_current_sp(std::make_shared<CurrentSP>(_unit, 1));
+	set_max_hp(std::make_shared<MaxHP>(_unit, 1));
+	set_max_sp(std::make_shared<MaxSP>(_unit, 1));
+	set_hair_style(std::make_shared<HairStyle>(_unit, 0));
+	set_hair_color(std::make_shared<HairColor>(_unit, 0));
+	set_robe_sprite(std::make_shared<RobeSprite>(_unit, 0));
+	set_base_appearance(std::make_shared<BaseAppearance>(_unit, npc->job_id()));
 
 	set_initialized(true);
 	return true;
@@ -322,80 +322,80 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::NPC> npc)
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std::shared_ptr<const monster_config_data> md)
 {
-	set_movement_speed(std::make_shared<MovementSpeed>(_entity, md->move_speed));
+	set_movement_speed(std::make_shared<MovementSpeed>(_unit, md->move_speed));
 
-	set_base_level(std::make_shared<BaseLevel>(_entity, md->level));
+	set_base_level(std::make_shared<BaseLevel>(_unit, md->level));
 
-	set_current_hp(std::make_shared<CurrentHP>(_entity, md->hp));
-	set_current_sp(std::make_shared<CurrentSP>(_entity, md->sp));
-	set_max_hp(std::make_shared<MaxHP>(_entity, md->hp));
-	set_max_sp(std::make_shared<MaxSP>(_entity, md->sp));
-	set_size(std::make_shared<UnitSize>(_entity, (int) md->size));
-	set_base_appearance(std::make_shared<BaseAppearance>(_entity, md->monster_id));
-	set_hair_color(std::make_shared<HairColor>(_entity, md->view.hair_color_id));
-	set_cloth_color(std::make_shared<ClothColor>(_entity, md->view.body_color_id));
-	set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, md->view.headgear_top_id));
-	set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, md->view.headgear_middle_id));
-	set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, md->view.headgear_bottom_id));
-	set_hair_style(std::make_shared<HairStyle>(_entity, md->view.hair_style_id));
-	set_shield_sprite(std::make_shared<ShieldSprite>(_entity, md->view.shield_id));
-	set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, md->view.weapon_id));
-	set_robe_sprite(std::make_shared<RobeSprite>(_entity, md->view.robe_id));
-	set_body_style(std::make_shared<BodyStyle>(_entity, md->view.body_style_id));
+	set_current_hp(std::make_shared<CurrentHP>(_unit, md->hp));
+	set_current_sp(std::make_shared<CurrentSP>(_unit, md->sp));
+	set_max_hp(std::make_shared<MaxHP>(_unit, md->hp));
+	set_max_sp(std::make_shared<MaxSP>(_unit, md->sp));
+	set_size(std::make_shared<UnitSize>(_unit, (int) md->size));
+	set_base_appearance(std::make_shared<BaseAppearance>(_unit, md->monster_id));
+	set_hair_color(std::make_shared<HairColor>(_unit, md->view.hair_color_id));
+	set_cloth_color(std::make_shared<ClothColor>(_unit, md->view.body_color_id));
+	set_head_top_sprite(std::make_shared<HeadTopSprite>(_unit, md->view.headgear_top_id));
+	set_head_mid_sprite(std::make_shared<HeadMidSprite>(_unit, md->view.headgear_middle_id));
+	set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_unit, md->view.headgear_bottom_id));
+	set_hair_style(std::make_shared<HairStyle>(_unit, md->view.hair_style_id));
+	set_shield_sprite(std::make_shared<ShieldSprite>(_unit, md->view.shield_id));
+	set_weapon_sprite(std::make_shared<WeaponSprite>(_unit, md->view.weapon_id));
+	set_robe_sprite(std::make_shared<RobeSprite>(_unit, md->view.robe_id));
+	set_body_style(std::make_shared<BodyStyle>(_unit, md->view.body_style_id));
 
-	set_strength(std::make_shared<Strength>(_entity, md->stats.str));
-	set_agility(std::make_shared<Agility>(_entity, md->stats.agi, 0, 0));
-	set_vitality(std::make_shared<Vitality>(_entity, md->stats.vit, 0, 0));
-	set_intelligence(std::make_shared<Intelligence>(_entity, md->stats.int_, 0, 0));
-	set_dexterity(std::make_shared<Dexterity>(_entity, md->stats.dex, 0, 0));
-	set_luck(std::make_shared<Luck>(_entity, md->stats.luk, 0, 0));
+	set_strength(std::make_shared<Strength>(_unit, md->stats.str));
+	set_agility(std::make_shared<Agility>(_unit, md->stats.agi, 0, 0));
+	set_vitality(std::make_shared<Vitality>(_unit, md->stats.vit, 0, 0));
+	set_intelligence(std::make_shared<Intelligence>(_unit, md->stats.int_, 0, 0));
+	set_dexterity(std::make_shared<Dexterity>(_unit, md->stats.dex, 0, 0));
+	set_luck(std::make_shared<Luck>(_unit, md->stats.luk, 0, 0));
 
-	set_soft_def(std::make_shared<SoftDEF>(_entity));
+	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
 	soft_def()->compute();
 
-	set_soft_mdef(std::make_shared<SoftMDEF>(_entity));
+	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
 	soft_mdef()->set_intelligence(intelligence().get());
 	soft_mdef()->set_dexterity(dexterity().get());
 	soft_mdef()->set_vitality(vitality().get());
 	soft_mdef()->compute();
 
-	set_hit(std::make_shared<HIT>(_entity));
+	set_hit(std::make_shared<HIT>(_unit));
 	hit()->set_base_level(base_level().get());
 	hit()->set_dexterity(dexterity().get());
 	hit()->set_luck(luck().get());
 	hit()->compute();
 
-	set_crit(std::make_shared<CRIT>(_entity));
+	set_crit(std::make_shared<CRIT>(_unit));
 	crit()->set_luck(luck().get());
 	crit()->compute();
 
-	set_flee(std::make_shared<FLEE>(_entity));
+	set_flee(std::make_shared<FLEE>(_unit));
 	flee()->set_base_level(base_level().get());
 	flee()->set_agility(agility().get());
 	flee()->set_luck(luck().get());
 	flee()->compute();
 
-	set_attack_range(std::make_shared<AttackRange>(_entity));
+	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
 
-	set_attack_motion(std::make_shared<AttackMotion>(_entity));
+	set_attack_motion(std::make_shared<AttackMotion>(_unit));
 	attack_motion()->compute();
 
-	set_attack_delay(std::make_shared<AttackDelay>(_entity));
+	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->compute();
 
-	set_damage_motion(std::make_shared<DamageMotion>(_entity));
+	set_damage_motion(std::make_shared<DamageMotion>(_unit));
 	damage_motion()->compute();
 
-	set_attack_range(std::make_shared<AttackRange>(_entity));
+	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
 
-	set_creature_weapon_attack(std::make_shared<MobWeaponAttack>(_entity, md->attack_damage[0]));
-	set_creature_weapon_attack_magic(std::make_shared<MobWeaponAttack>(_entity, md->attack_damage[1]));
+	set_creature_weapon_attack(std::make_shared<MobWeaponAttack>(_unit, md->attack_damage[0]));
+	set_creature_weapon_attack_magic(std::make_shared<MobWeaponAttack>(_unit, md->attack_damage[1]));
 	
-	set_creature_attack_damage(std::make_shared<MobAttackDamage>(_entity));
+	set_creature_attack_damage(std::make_shared<MobAttackDamage>(_unit));
 	creature_attack_damage()->set_strength(strength().get());
 	creature_attack_damage()->set_base_level(base_level().get());
 	creature_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
@@ -403,7 +403,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	creature_attack_damage()->register_observable(creature_attack_damage().get());
 	creature_attack_damage()->register_observers(strength().get(), base_level().get(), creature_weapon_attack().get());
 
-	set_creature_magic_attack_damage(std::make_shared<MobMagicAttackDamage>(_entity));
+	set_creature_magic_attack_damage(std::make_shared<MobMagicAttackDamage>(_unit));
 	creature_magic_attack_damage()->set_intelligence(intelligence().get());
 	creature_magic_attack_damage()->set_base_level(base_level().get());
 	creature_magic_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
@@ -411,13 +411,13 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	creature_magic_attack_damage()->register_observable(creature_magic_attack_damage().get());
 	creature_magic_attack_damage()->register_observers(intelligence().get(), base_level().get(), creature_weapon_attack().get());
 
-	set_creature_view_range(std::make_shared<MobViewRange>(_entity, (int) md->view_range));
-	set_creature_chase_range(std::make_shared<MobChaseRange>(_entity, (int) md->chase_range));
-	set_creature_primary_race(std::make_shared<MobPrimaryRace>(_entity, (int) md->primary_race));
-	set_creature_secondary_race(std::make_shared<MobSecondaryRace>(_entity, (int) md->secondary_race));
-	set_creature_element(std::make_shared<MobElement>(_entity, (int) md->element));
-	set_creature_element_level(std::make_shared<MobElementLevel>(_entity, (int) md->element_level));
-	set_creature_mode(std::make_shared<MobMode>(_entity, (int) md->mode));
+	set_creature_view_range(std::make_shared<MobViewRange>(_unit, (int) md->view_range));
+	set_creature_chase_range(std::make_shared<MobChaseRange>(_unit, (int) md->chase_range));
+	set_creature_primary_race(std::make_shared<MobPrimaryRace>(_unit, (int) md->primary_race));
+	set_creature_secondary_race(std::make_shared<MobSecondaryRace>(_unit, (int) md->secondary_race));
+	set_creature_element(std::make_shared<MobElement>(_unit, (int) md->element));
+	set_creature_element_level(std::make_shared<MobElementLevel>(_unit, (int) md->element_level));
+	set_creature_mode(std::make_shared<MobMode>(_unit, (int) md->mode));
 
 	set_initialized(true);
 	return true;
@@ -462,61 +462,61 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Units::Player> pl)
 		/**
 		 * Main Attributes.
 		 */
-		set_strength(std::make_shared<Strength>(_entity, str));
-		set_agility(std::make_shared<Agility>(_entity, agi, 0, 0));
-		set_vitality(std::make_shared<Vitality>(_entity, vit, 0, 0));
-		set_intelligence(std::make_shared<Intelligence>(_entity, _int, 0, 0));
-		set_dexterity(std::make_shared<Dexterity>(_entity, dex, 0, 0));
-		set_luck(std::make_shared<Luck>(_entity, luk, 0, 0));
+		set_strength(std::make_shared<Strength>(_unit, str));
+		set_agility(std::make_shared<Agility>(_unit, agi, 0, 0));
+		set_vitality(std::make_shared<Vitality>(_unit, vit, 0, 0));
+		set_intelligence(std::make_shared<Intelligence>(_unit, _int, 0, 0));
+		set_dexterity(std::make_shared<Dexterity>(_unit, dex, 0, 0));
+		set_luck(std::make_shared<Luck>(_unit, luk, 0, 0));
 
-		set_size(std::make_shared<UnitSize>(_entity, (int)ESZ_MEDIUM));
+		set_size(std::make_shared<UnitSize>(_unit, (int)ESZ_MEDIUM));
 
-		set_strength_cost(std::make_shared<StrengthPointCost>(_entity, get_required_statpoints(str, str + 1)));
-		set_agility_cost(std::make_shared<AgilityPointCost>(_entity, get_required_statpoints(agi, agi + 1)));
-		set_vitality_cost(std::make_shared<VitalityPointCost>(_entity, get_required_statpoints(vit, vit + 1)));
-		set_intelligence_cost(std::make_shared<IntelligencePointCost>(_entity, get_required_statpoints(_int, _int + 1)));
-		set_dexterity_cost(std::make_shared<DexterityPointCost>(_entity, get_required_statpoints(dex, dex + 1)));
-		set_luck_cost(std::make_shared<LuckPointCost>(_entity, get_required_statpoints(luk, luk + 1)));
+		set_strength_cost(std::make_shared<StrengthPointCost>(_unit, get_required_statpoints(str, str + 1)));
+		set_agility_cost(std::make_shared<AgilityPointCost>(_unit, get_required_statpoints(agi, agi + 1)));
+		set_vitality_cost(std::make_shared<VitalityPointCost>(_unit, get_required_statpoints(vit, vit + 1)));
+		set_intelligence_cost(std::make_shared<IntelligencePointCost>(_unit, get_required_statpoints(_int, _int + 1)));
+		set_dexterity_cost(std::make_shared<DexterityPointCost>(_unit, get_required_statpoints(dex, dex + 1)));
+		set_luck_cost(std::make_shared<LuckPointCost>(_unit, get_required_statpoints(luk, luk + 1)));
 
-		set_status_point(std::make_shared<StatusPoint>(_entity, uint32_t(r[7].as_uint64())));
-		set_skill_point(std::make_shared<SkillPoint>(_entity, uint32_t(r[8].as_uint64())));
+		set_status_point(std::make_shared<StatusPoint>(_unit, uint32_t(r[7].as_uint64())));
+		set_skill_point(std::make_shared<SkillPoint>(_unit, uint32_t(r[8].as_uint64())));
 
-		set_current_hp(std::make_shared<CurrentHP>(_entity, uint32_t(r[9].as_uint64())));
-		set_current_sp(std::make_shared<CurrentSP>(_entity, uint32_t(r[10].as_uint64())));
-		set_max_hp(std::make_shared<MaxHP>(_entity, uint32_t(r[11].as_uint64())));
-		set_max_sp(std::make_shared<MaxSP>(_entity, uint32_t(r[12].as_uint64())));
+		set_current_hp(std::make_shared<CurrentHP>(_unit, uint32_t(r[9].as_uint64())));
+		set_current_sp(std::make_shared<CurrentSP>(_unit, uint32_t(r[10].as_uint64())));
+		set_max_hp(std::make_shared<MaxHP>(_unit, uint32_t(r[11].as_uint64())));
+		set_max_sp(std::make_shared<MaxSP>(_unit, uint32_t(r[12].as_uint64())));
 
 		uint32_t base_level = uint32_t(r[13].as_uint64());
 		uint32_t job_level = uint32_t(r[14].as_uint64());
 
-		set_base_level(std::make_shared<BaseLevel>(_entity, base_level));
-		set_job_level(std::make_shared<JobLevel>(_entity, job_level));
+		set_base_level(std::make_shared<BaseLevel>(_unit, base_level));
+		set_job_level(std::make_shared<JobLevel>(_unit, job_level));
 
-		set_base_experience(std::make_shared<BaseExperience>(_entity, uint64_t(r[15].as_uint64())));
-		set_job_experience(std::make_shared<JobExperience>(_entity, uint64_t(r[16].as_uint64())));
-		set_next_base_experience(std::make_shared<NextBaseExperience>(_entity, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
-		set_next_job_experience(std::make_shared<NextJobExperience>(_entity, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
-		set_movement_speed(std::make_shared<MovementSpeed>(_entity, DEFAULT_MOVEMENT_SPEED));
+		set_base_experience(std::make_shared<BaseExperience>(_unit, uint64_t(r[15].as_uint64())));
+		set_job_experience(std::make_shared<JobExperience>(_unit, uint64_t(r[16].as_uint64())));
+		set_next_base_experience(std::make_shared<NextBaseExperience>(_unit, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
+		set_next_job_experience(std::make_shared<NextJobExperience>(_unit, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
+		set_movement_speed(std::make_shared<MovementSpeed>(_unit, DEFAULT_MOVEMENT_SPEED));
 
-		set_base_appearance(std::make_shared<BaseAppearance>(_entity, job_id));
-		set_hair_color(std::make_shared<HairColor>(_entity, uint32_t(r[17].as_uint64())));
-		set_cloth_color(std::make_shared<ClothColor>(_entity, uint32_t(r[18].as_uint64())));
-		set_head_top_sprite(std::make_shared<HeadTopSprite>(_entity, uint32_t(r[19].as_uint64())));
-		set_head_mid_sprite(std::make_shared<HeadMidSprite>(_entity, uint32_t(r[20].as_uint64())));
-		set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_entity, uint32_t(r[21].as_uint64())));
-		set_hair_style(std::make_shared<HairStyle>(_entity, uint32_t(r[22].as_uint64())));
-		set_shield_sprite(std::make_shared<ShieldSprite>(_entity, uint32_t(r[23].as_uint64())));
-		set_weapon_sprite(std::make_shared<WeaponSprite>(_entity, uint32_t(r[24].as_uint64())));
-		set_robe_sprite(std::make_shared<RobeSprite>(_entity, uint32_t(r[25].as_uint64())));
-		set_body_style(std::make_shared<BodyStyle>(_entity, uint32_t(r[26].as_uint64())));
+		set_base_appearance(std::make_shared<BaseAppearance>(_unit, job_id));
+		set_hair_color(std::make_shared<HairColor>(_unit, uint32_t(r[17].as_uint64())));
+		set_cloth_color(std::make_shared<ClothColor>(_unit, uint32_t(r[18].as_uint64())));
+		set_head_top_sprite(std::make_shared<HeadTopSprite>(_unit, uint32_t(r[19].as_uint64())));
+		set_head_mid_sprite(std::make_shared<HeadMidSprite>(_unit, uint32_t(r[20].as_uint64())));
+		set_head_bottom_sprite(std::make_shared<HeadBottomSprite>(_unit, uint32_t(r[21].as_uint64())));
+		set_hair_style(std::make_shared<HairStyle>(_unit, uint32_t(r[22].as_uint64())));
+		set_shield_sprite(std::make_shared<ShieldSprite>(_unit, uint32_t(r[23].as_uint64())));
+		set_weapon_sprite(std::make_shared<WeaponSprite>(_unit, uint32_t(r[24].as_uint64())));
+		set_robe_sprite(std::make_shared<RobeSprite>(_unit, uint32_t(r[25].as_uint64())));
+		set_body_style(std::make_shared<BodyStyle>(_unit, uint32_t(r[26].as_uint64())));
 
 		/**
 		 * Misc
 		 */
-		set_zeny(std::make_shared<Zeny>(_entity, int32_t(r[27].as_uint64())));
-		set_virtue(std::make_shared<Virtue>(_entity, int32_t(r[28].as_int64())));
-		set_honor(std::make_shared<Honor>(_entity, int32_t(r[29].as_uint64())));
-		set_manner(std::make_shared<Manner>(_entity, int32_t(r[30].as_int64())));
+		set_zeny(std::make_shared<Zeny>(_unit, int32_t(r[27].as_uint64())));
+		set_virtue(std::make_shared<Virtue>(_unit, int32_t(r[28].as_int64())));
+		set_honor(std::make_shared<Honor>(_unit, int32_t(r[29].as_uint64())));
+		set_manner(std::make_shared<Manner>(_unit, int32_t(r[30].as_int64())));
 
 		HLog(info) << "Status loaded for character " << pl->name() << "(" << pl->character()._character_id << ").";
 
@@ -627,7 +627,7 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 	if (limit <= 0 || limit > MAX_STATUS_POINTS)
 		return false;
 
-	if (_entity.expired())
+	if (_unit.expired())
 		return false;
 
 	uint32_t available_points = status_point()->get_base();
@@ -636,7 +636,7 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 	limit += get_status_base(type);
 
 #define notify_status(t, amount, result) \
-		entity()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
+		unit()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
 	do {
 		value = get_status_base(type);
 		required_points = get_required_statpoints(value + 1, value + 2);

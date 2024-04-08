@@ -117,7 +117,7 @@ public:
     	std::priority_queue<StatusOperation *, std::vector<StatusOperation *>, CompareStatusOperation> _status_operation_queue;
 	};
 
-	Status(std::weak_ptr<Unit> entity, entity_type type);
+	Status(std::weak_ptr<Unit> unit, unit_type type);
 	~Status();
 
 	bool initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std::shared_ptr<const monster_config_data> md);
@@ -356,13 +356,13 @@ public:
 	void set_initialized(bool b) { _is_initialized = b; }
 
 protected:
-	std::shared_ptr<Unit> entity() { return _entity.lock(); }
-	entity_type _type{ UNIT_PLAYER };
+	std::shared_ptr<Unit> unit() { return _unit.lock(); }
+	unit_type _type{ UNIT_PLAYER };
 	bool _is_initialized{ false };
 
 private:
 	std::shared_ptr<StatusRegistry> _status_registry{ nullptr };
-	std::weak_ptr<Unit> _entity;
+	std::weak_ptr<Unit> _unit;
 	// Attributes
 	std::shared_ptr<Strength> _str;
 	std::shared_ptr<Agility> _agi;
