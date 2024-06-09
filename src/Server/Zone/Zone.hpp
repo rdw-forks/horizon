@@ -38,6 +38,7 @@
 #include "Server/Zone/Script/ScriptManager.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Server.hpp"
+#include "ZoneRuntime.hpp"
 
 #define PERSISTENCE_MAINFRAME "persistence"
 #define SCRIPT_MAINFRAME "script"
@@ -94,13 +95,14 @@ public:
 
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
-	void update(uint64_t diff);
 	void verify_connected_sessions();
+
+	ZoneRuntime &get_runtime() { return _runtime; }
 
 protected:
 	TaskScheduler _task_scheduler;
-	boost::asio::deadline_timer _update_timer;
 	s_zone_server_configuration _config;
+	ZoneRuntime _runtime;
 };
 
 class ZoneServer : public ZoneMainframe

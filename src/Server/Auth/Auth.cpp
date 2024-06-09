@@ -206,7 +206,8 @@ void AuthServer::update(uint64_t time)
 
 	getScheduler().Update();
 	
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_socket_sessions(time);
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->manage_sockets(time);
+	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));

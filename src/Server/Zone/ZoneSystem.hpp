@@ -27,38 +27,36 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_ZONESOCKET_HPP
-#define HORIZON_ZONE_ZONESOCKET_HPP
+#ifndef HORIZON_ZONE_ZONESYSTEM_HPP
+#define HORIZON_ZONE_ZONESYSTEM_HPP
 
-#include "Libraries/Networking/Socket.hpp"
+#include "Server/Common/System.hpp"
+#include "Server/Zone/Zone.hpp"
 
-using boost::asio::ip::tcp;
+class DatabaseProcess;
 
 namespace Horizon
 {
 namespace Zone
 {
-class ZoneSession;
-class ZoneSocket : public Horizon::Networking::Socket<ZoneSocket>
+template <typename T>
+void dispatch(std::string component, std::shared_ptr<Horizon::System::RuntimeRoutineContext> context) 
 {
-	typedef Socket<ZoneSocket> BaseSocket;
+	sZone->get_component<T>(component)->system_routine_queue_push(context);
+}
+
+template <typename T>
+void dispatch(std::string component, std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> chain) 
+{
+	sZone->get_component<T>(component)->system_routine_queue_push(chain);
+}
+
+class ZoneRuntimeRoutineContext : public Horizon::System::RuntimeRoutineContext
+{
 public:
-	ZoneSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket);
-	~ZoneSocket() { }
-	/* */
-	void start() override;
-	bool update() override;
 
-	/* */
-	std::shared_ptr<ZoneSession> get_session();
-	void set_session(std::shared_ptr<ZoneSession> session);
-protected:
-	void read_handler() override;
-	void on_close() override;
-	void on_error() override;
-
-	std::shared_ptr<ZoneSession> _session;
 };
 }
 }
-#endif //HORIZON_ZONE_ZONESOCKET_HPP
+
+#endif // HORIZON_ZONE_ZONESYSTEM_HPP

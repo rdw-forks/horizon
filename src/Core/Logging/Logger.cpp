@@ -29,14 +29,16 @@
 
 #include "Logger.hpp"
 #include <iostream>
+#include <boost/log/sinks.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/log/support/date_time.hpp>
+#include <boost/core/null_deleter.hpp>
 
-std::string Logger::color(uint16_t color) { return "\033[" + std::to_string(color) + "m"; }
+static inline std::string color(uint16_t color) { return "\033[" + std::to_string(color) + "m"; }
  
 void Logger::colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm)
 {
@@ -105,9 +107,13 @@ void Logger::initialize()
         % boost::log::expressions::smessage;
 
     /* console sink */
-    auto consoleSink = boost::log::add_console_log(std::clog);
+    auto sink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>>();
+    boost::log::core::get()->add_sink(sink);
     
-    consoleSink->set_formatter(std::bind(&Logger::colored_formatter, this, std::placeholders::_1, std::placeholders::_2));
+    boost::shared_ptr<std::ostream> stream{&std::clog, boost::null_deleter{}};
+    sink->locked_backend()->add_stream(stream);
+    
+    sink->set_formatter(std::bind(&Logger::colored_formatter, this, std::placeholders::_1, std::placeholders::_2));
 
     /* fs sink */
     auto fsSink = boost::log::add_file_log(

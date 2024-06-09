@@ -42,8 +42,6 @@ if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-message(STATUS "Project ${PROJECT_NAME} initiated configuring in ${CMAKE_BUILD_TYPE} mode.")
-
 #################################
 # CMAKE Module Path
 #################################
@@ -75,15 +73,7 @@ include(AutoCollect)
 #################
 # Generate version.hpp File
 #################
-set(CMAKE_DISABLE_SOURCE_CHANGES OFF)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD OFF)
 include(cmake/genversion/genversion.cmake)
-
-#################################
-# Disable in-source builds and changes
-#################################
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 #################################
 # print out the results before continuing
@@ -109,6 +99,9 @@ if (WITH_TESTS)
 	set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
 endif()
 
+# Remove warnings for new versions of Boost
+set(Boost_NO_WARN_NEW_VERSIONS 1)
+
 find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 # Fix: error LNK2038: mismatch detected for 'boost_log_abi': value 'v2_mt_nt6' doesn't match value 'v2_mt_nt62'
@@ -126,10 +119,9 @@ set(Readline_FIND_REQUIRED true)
 include(FindReadline)
 
 ###############
-# LuaJit
+# Lua
 ###############
-set(LUA_FIND_REQUIRED true)
-include(FindLua)
+find_package(Lua 5.0 REQUIRED)
 
 ###############
 # Sol2
@@ -139,6 +131,7 @@ find_package(sol2 3.3.0 REQUIRED)
 elseif(UNIX)
 include(FindSol2)
 endif()
+
 #################
 # Find ZLIB
 #################

@@ -35,7 +35,7 @@ using namespace std;
 using namespace Horizon::Zone;
 
 ZoneMainframe::ZoneMainframe(s_zone_server_configuration &config) 
-: Server(), _update_timer(_io_service), _config(config)
+: Server(), _config(config), _runtime(get_io_service(), general_conf())
 {
 
 }
@@ -67,16 +67,20 @@ void ZoneMainframe::initialize()
 
 	register_component(SCRIPT_MAINFRAME, std::make_shared<ScriptManager>());
 	get_component<ScriptManager>(SCRIPT_MAINFRAME)->initialize();
-	
-	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
-	_update_timer.async_wait(std::bind(&ZoneServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 
 	Server::initialize();
 
-	get_io_service().run();
+	// Initialize mainframe runtime. This is where the mainframe begins its routines of working during its lifetime.
+	get_runtime().initialize();
 
+	get_io_service().run();
+}
+
+void ZoneMainframe::finalize()
+{
 	HLog(info) << "Server shutdown initiated ...";
 
+	get_io_service().stop();
 	get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->finalize();
 	get_component<PersistenceManager>(PERSISTENCE_MAINFRAME)->finalize();
 	get_component<ScriptManager>(SCRIPT_MAINFRAME)->finalize();
@@ -88,28 +92,7 @@ void ZoneMainframe::initialize()
 	_task_scheduler.CancelAll();
 	
 	Server::finalize();
-}
 
-void ZoneMainframe::finalize()
-{
-
-}
-
-void ZoneMainframe::update(uint64_t time)
-{
-	sZone->get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->process();
-
-	/**
-	 * Process Packets.
-	 */
-	sZone->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_socket_sessions(time);
-	
-	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
-		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
-		_update_timer.async_wait(std::bind(&ZoneServer::update, this, std::time(nullptr)));
-	} else {
-		get_io_service().stop();
-	}
 }
 
 void ZoneMainframe::verify_connected_sessions()
@@ -241,8 +224,6 @@ void ZoneServer::initialize()
 	signal(SIGTERM, SignalHandler);
 
 	ZoneMainframe::initialize();
-
-	ZoneMainframe::finalize();
 }
 
 /**

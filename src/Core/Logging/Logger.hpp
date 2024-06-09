@@ -61,13 +61,12 @@ public:
     logtype &get_core_log() { return _core_log; }
     
     void colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm);
-    std::string color(uint16_t color);
 
 protected:
     logtype _core_log;
+    
     std::atomic<bool> _initialized;
 };
 
 #define HLog(type) BOOST_LOG_SEV(Logger().getInstance()->get_core_log(), boost::log::trivial::type)
-
 #endif //HORIZON_LOGGER_H

@@ -73,6 +73,14 @@ public:
 
 	virtual bool is_initialized() override { return _is_initialized.load(); }
 
+	void update_sessions(uint64_t time)
+	{
+		auto socket_map = get_sockets();
+
+		for (auto s : socket_map) {
+			s.second->get_session()->update(time);
+		}
+	}
 protected:
 	std::atomic<bool> _is_initialized;
 };

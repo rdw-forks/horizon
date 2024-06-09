@@ -32,7 +32,6 @@
 
 #include "CLI/CLICommand.hpp"
 
-#define MAX_MAINFRAME_COMPONENTS 5
 #define DATABASE_MAINFRAME "database"
 #define CONSOLE_MAINFRAME "console"
 #define NETWORK_MAINFRAME "network"
@@ -54,6 +53,14 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
+namespace Horizon
+{
+namespace System
+{
+	class RuntimeWorkSegment;
+}
+}
+
 class MainframeComponent
 {
 public:
@@ -61,6 +68,13 @@ public:
 	virtual void finalize() { }
 
 	virtual bool is_initialized() { return false; }
+
+	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContext> context);
+	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> context);
+	void system_routine_process_queue();
+
+private:
+	Horizon::System::SystemRoutineManager _hsr_manager;
 };
 
 class CommandLineProcess : public MainframeComponent
@@ -133,9 +147,10 @@ protected:
 	std::atomic<bool> _is_initialized;
 };
 
+typedef std::map<std::string, std::shared_ptr<MainframeComponent>> MainframeComponents;
+
 class Mainframe
 {
-	typedef std::map<std::string, std::shared_ptr<MainframeComponent>> MainframeComponents;
 public:
 	Mainframe(general_server_configuration &config);
 	~Mainframe();
@@ -161,6 +176,8 @@ public:
 
 	/* Command Line Interface */
 	void initialize_command_line();
+
+	MainframeComponents get_components() { return _components; }
 
 protected:
 	MainframeComponents _components;

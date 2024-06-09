@@ -37,6 +37,10 @@ set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PRIVATE_SOURCES
 	${DIR}/Zone.hpp
 	${DIR}/Zone.cpp
+	${DIR}/ZoneRuntime.cpp
+	${DIR}/ZoneRuntime.hpp
+	${DIR}/ZoneSystem.cpp
+	${DIR}/ZoneSystem.hpp
 	${DIR}/Interface/ZoneClientInterface.cpp
 	${DIR}/Interface/ZoneClientInterface.hpp
 	${DIR}/Session/ZoneSession.cpp

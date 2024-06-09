@@ -192,8 +192,6 @@ public:
 	void delayed_close_socket() { if (_closing.exchange(true)) return; }
 
     ByteBuffer &get_read_buffer() { return _read_buffer; }
-	
-	ThreadSafeQueue<ByteBuffer> &get_recv_queue() { return _buffer_recv_queue; }
 
 protected:
 	virtual void on_close() = 0;
@@ -354,9 +352,6 @@ private:
 	std::atomic<bool> _closed;
 	std::atomic<bool> _closing;
 	bool _is_writing_async;
-
-public:
-	ThreadSafeQueue<ByteBuffer> _buffer_recv_queue;
 };
 }
 }

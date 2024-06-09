@@ -94,7 +94,12 @@ public:
 	//! @brief Get the unique id of the session.
 	//! @return int64_t
 	int64_t get_session_id() { return _uid; }
+
+	//! @brief Receive queue of the buffer received by the socket.
+	//! @return Queue of ByteBuffer type.
+	ThreadSafeQueue<ByteBuffer> &get_recv_queue() { return _buffer_recv_queue; }
 private:
+	ThreadSafeQueue<ByteBuffer> _buffer_recv_queue;
 	std::weak_ptr<SocketType> _socket;
 	bool _is_initialized{ false };
 	int64_t _uid{ 0 };

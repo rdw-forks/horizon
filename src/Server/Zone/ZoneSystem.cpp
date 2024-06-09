@@ -26,39 +26,3 @@
  * You should have received a copy of the GNU General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
-
-#ifndef HORIZON_ZONE_ZONESOCKET_HPP
-#define HORIZON_ZONE_ZONESOCKET_HPP
-
-#include "Libraries/Networking/Socket.hpp"
-
-using boost::asio::ip::tcp;
-
-namespace Horizon
-{
-namespace Zone
-{
-class ZoneSession;
-class ZoneSocket : public Horizon::Networking::Socket<ZoneSocket>
-{
-	typedef Socket<ZoneSocket> BaseSocket;
-public:
-	ZoneSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket);
-	~ZoneSocket() { }
-	/* */
-	void start() override;
-	bool update() override;
-
-	/* */
-	std::shared_ptr<ZoneSession> get_session();
-	void set_session(std::shared_ptr<ZoneSession> session);
-protected:
-	void read_handler() override;
-	void on_close() override;
-	void on_error() override;
-
-	std::shared_ptr<ZoneSession> _session;
-};
-}
-}
-#endif //HORIZON_ZONE_ZONESOCKET_HPP

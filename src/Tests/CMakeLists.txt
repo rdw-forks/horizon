@@ -56,14 +56,13 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 		set (ADD_INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "LockedLookupTableTest"
 			OR TEST_NAME STREQUAL "ThreadSafeQueueTest"
-			OR TEST_NAME STREQUAL "WorkerThreadPoolTest"
-			OR TEST_NAME STREQUAL "ParallelDataLockDesignTest")
+			OR TEST_NAME STREQUAL "WorkerThreadPoolTest")
 		set (ADD_LIBS -lpthread)
-	elseif (TEST_NAME STREQUAL "LoggingTest")
+	elseif (TEST_NAME STREQUAL "LoggingTest"
+			OR TEST_NAME STREQUAL "SystemRoutinesTest")
 		set (ADD_SOURCES
 			${CORE_DIR}/Logging/Logger.cpp
 			${CORE_DIR}/Logging/Logger.hpp)
-		set (ADD_LIBS -lpthread)
 	elseif (TEST_NAME STREQUAL "MySQLTest")
 		set (ADD_LIBS OpenSSL::SSL)
 	endif ()

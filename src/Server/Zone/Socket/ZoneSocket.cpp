@@ -132,12 +132,7 @@ void ZoneSocket::read_handler()
 		
 		ByteBuffer b;
 		b.append(get_read_buffer().get_read_pointer(), packet_length);
-		get_recv_queue().push(std::move(b));
+		get_session()->get_recv_queue().push(std::move(b));
 		get_read_buffer().read_completed(packet_length);
 	}
-}
-
-void ZoneSocket::update_session(uint32_t diff)
-{
-	get_session()->update(diff);
 }

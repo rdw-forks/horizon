@@ -60,12 +60,15 @@ public:
 
     void set_after_resource(std::shared_ptr<UnitType> after_resource) { _after_resource = after_resource; }
     
+    std::shared_ptr<UnitType> get_before_resource() { return _before_resource.lock(); }
+    std::shared_ptr<UnitType> get_after_resource() { return _after_resource.lock(); }
+
     virtual bool prepare() { HLog(error) << "Nothing to prepare."; return true; }
     virtual bool validate() { HLog(error) << "Nothing to validate."; return true; }
     virtual bool transform() { HLog(error) << "Nothing to transform."; return true; }
     virtual bool response() { HLog(error) << "Nothing to respond."; return true; };
 
-private:
+protected:
     std::weak_ptr<UnitType> _before_resource;
     std::weak_ptr<UnitType> _after_resource;
 };
@@ -102,7 +105,7 @@ public:
     virtual bool validate() { HLog(error) << "Nothing to Validate."; return true; }
     virtual bool transform() { HLog(error) << "Nothing to transform."; return true; }
 
-private: 
+protected: 
     PreparatoryTo<UnitType> _prep_to;
     SubsequentTo<UnitType> _sub_to;
 };

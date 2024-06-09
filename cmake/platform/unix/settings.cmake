@@ -20,12 +20,12 @@ endif()
 
 if (NOT DB_DIR)
   set(DB_DIR ${CMAKE_INSTALL_PREFIX}/db)
-  message(STATUS "UNIX: Using deafult static database directory ${DB_DIR}")
+  message(STATUS "UNIX: Using default static database directory ${DB_DIR}")
 endif()
 
 if (WITH_TESTS AND NOT TEST_DIR)
   set(TEST_DIR ${CMAKE_INSTALL_PREFIX}/test)
-  message(STATUS "UNIX: Using deafult test directory ${TEST_DIR}")
+  message(STATUS "UNIX: Using default test directory ${TEST_DIR}")
 endif()
 
 # configure uninstaller

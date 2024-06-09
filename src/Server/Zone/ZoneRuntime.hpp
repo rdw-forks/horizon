@@ -27,38 +27,42 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_ZONE_ZONESOCKET_HPP
-#define HORIZON_ZONE_ZONESOCKET_HPP
+#ifndef HORIZON_ZONE_ZONERUNTIME_HPP
+#define HORIZON_ZONE_ZONERUNTIME_HPP
 
-#include "Libraries/Networking/Socket.hpp"
+#include <boost/lockfree/queue.hpp>
+#include <optional> 
 
-using boost::asio::ip::tcp;
+class DatabaseProcess;
 
 namespace Horizon
 {
 namespace Zone
 {
-class ZoneSession;
-class ZoneSocket : public Horizon::Networking::Socket<ZoneSocket>
+struct s_zone_server_configuration;
+class ClientSocketMgr;
+// @brief Routines that go into the main Horizon runtime.
+class ZoneRuntime
 {
-	typedef Socket<ZoneSocket> BaseSocket;
 public:
-	ZoneSocket(uint64_t uid, std::shared_ptr<tcp::socket> socket);
-	~ZoneSocket() { }
-	/* */
-	void start() override;
-	bool update() override;
+    ZoneRuntime(boost::asio::io_service &io_service, general_server_configuration &config);
 
-	/* */
-	std::shared_ptr<ZoneSession> get_session();
-	void set_session(std::shared_ptr<ZoneSession> session);
+    general_server_configuration &general_conf() { return _config; }
+
+    void initialize();
+    void finalize();
+
+	void run(uint64_t diff);
+
+    std::shared_ptr<ClientSocketMgr> network();
+    std::shared_ptr<DatabaseProcess> database();
+
 protected:
-	void read_handler() override;
-	void on_close() override;
-	void on_error() override;
-
-	std::shared_ptr<ZoneSession> _session;
+    general_server_configuration &_config;
+	boost::asio::deadline_timer _update_timer;
+    boost::asio::io_service &_io_service;
 };
 }
 }
-#endif //HORIZON_ZONE_ZONESOCKET_HPP
+
+#endif // HORIZON_ZONE_ZONERUNTIME_HPP

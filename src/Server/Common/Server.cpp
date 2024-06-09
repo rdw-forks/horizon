@@ -32,6 +32,7 @@
 #include "Server/Common/CLI/CommandLineInterface.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 #include "version.hpp"
+#include "System.hpp"
 
 #include <readline/readline.h>
 
@@ -45,6 +46,10 @@ void Mainframe::initialize_command_line()
 {
 	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->initialize();
 }
+
+void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContext> context) { _hsr_manager.push(context); }
+void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> context) { _hsr_manager.push(context); }
+void MainframeComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
 
 bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 {
@@ -74,7 +79,6 @@ void CommandLineProcess::finalize()
 
 void CommandLineProcess::process()
 {
-
 	while (_cli_cmd_queue.size()) {
 		CLICommand command = _cli_cmd_queue.front();
 		_cli_cmd_queue.pop();
@@ -100,14 +104,6 @@ Server::Server() : Mainframe(general_conf())
 {   
 	auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
-
-	HLog(info) << "   _   _            _                  ";
-	HLog(info) << "  | | | |          (_)                 ";
-	HLog(info) << "  | |_| | ___  _ __ _ _______  _ __    ";
-	HLog(info) << "  |  _  |/ _ \\| '__| |_  / _ \\| '_ \\   ";
-	HLog(info) << "  | | | | (_) | |  | |/ / (_) | | | |  ";
-	HLog(info) << "  \\_| |_/\\___/|_|  |_/___\\___/|_| |_|  ";
-    HLog(info) << "";
 
 	HLog(info) << "Copyright (c) https://github.com/horizonxyz/horizon";
 	HLog(info) << "Date: " << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d");
@@ -252,6 +248,16 @@ void Server::initialize()
 void Server::finalize()
 {
 	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->finalize();
+	get_component<DatabaseProcess>(DATABASE_MAINFRAME)->finalize();
+
+	for (auto i = _components.begin(); i != _components.end(); i++) {
+		while (i->second->is_initialized() == true) {
+			HLog(error) << "Mainframe component '" << i->first << "': Online (Shutting Down)";
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+
+		HLog(info) << "Mainframe component '" << i->first << "': Offline";
+	}
 }
 
 boost::asio::io_service &Server::get_io_service()

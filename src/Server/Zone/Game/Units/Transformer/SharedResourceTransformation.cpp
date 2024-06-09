@@ -76,7 +76,7 @@ PreparatoryToTransformUnit::PreparatoryToTransformUnit(std::shared_ptr<Unit> uni
 
 bool PreparatoryToTransformUnit::prepare()
 {
-    // Check for resource usage.
+    
     return true;
 }
 
@@ -110,7 +110,8 @@ bool SubsequentToTransformUnit::response()
     return true;
 }
 
-TransformUnit::TransformUnit(std::shared_ptr<Horizon::Zone::Unit> unit) : TransformResource(PreparatoryToTransformUnit(unit), SubsequentToTransformUnit(unit))
+TransformUnit::TransformUnit(std::shared_ptr<Horizon::Zone::Unit> unit) 
+: TransformResource(PreparatoryToTransformUnit(unit), SubsequentToTransformUnit(unit))
 {
 
 }

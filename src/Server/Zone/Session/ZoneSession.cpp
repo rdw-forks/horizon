@@ -115,7 +115,7 @@ void ZoneSession::update(uint32_t /*diff*/)
 	if (get_socket() == nullptr || !get_socket()->is_open())
 		return;
 
-	while ((read_buf = get_socket()->_buffer_recv_queue.try_pop())) {
+	while ((read_buf = get_recv_queue().try_pop())) {
 		while (read_buf->active_length()) {
 			uint16_t packet_id = 0x0;
 			memcpy(&packet_id, read_buf->get_read_pointer(), sizeof(int16_t));
