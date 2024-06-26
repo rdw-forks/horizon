@@ -29,8 +29,7 @@
 
 #include "ScriptManager.hpp"
 
-
-
+#include "Server/Common/System.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
@@ -42,7 +41,7 @@ using namespace Horizon::Zone;
 using namespace Horizon::Zone::Units;
 
 ScriptManager::ScriptManager()
-: MainframeComponent(),
+: MainframeComponent(Horizon::System::RUNTIME_DISPATCH_SCRIPTVM),
 _lua_state(std::make_shared<sol::state>()),
 _player_component(std::make_shared<PlayerComponent>()),
 _npc_component(std::make_shared<NPCComponent>()),

@@ -50,7 +50,7 @@ class TestWork : public Horizon::System::RuntimeRoutineContext::Work<work_reques
 public:
 	TestWork(work_request req, std::shared_ptr<Horizon::System::RuntimeRoutineContext> context) : Work(req, context) { }
 
-	void execute() { 
+	bool execute() { 
 		using ResultType = Horizon::System::RuntimeRoutineContext::Result<int>;
 		std::promise<ResultType> p;
 		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
@@ -63,6 +63,31 @@ public:
 		std::future<ResultType> f = p.get_future();
 		set_result(std::make_shared<ResultType>(f.get())); 
 		t.join();
+
+		return true;
+	}
+};
+
+class TestWork2 : public Horizon::System::RuntimeRoutineContext::Work<work_request>
+{
+public:
+	TestWork2(work_request req, std::shared_ptr<Horizon::System::RuntimeRoutineContext> context) : Work(req, context) { }
+
+	bool execute() { 
+		using ResultType = Horizon::System::RuntimeRoutineContext::Result<int>;
+		std::promise<ResultType> p;
+		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
+		// We can use a promise / future combination of techniques to derive the final result.
+		std::thread t = std::thread([&]()
+		{ 
+			std::cout << "Calculating 2..." << std::endl;
+			p.set_value(ResultType(get_request().i * 10)); 
+		});
+		std::future<ResultType> f = p.get_future();
+		set_result(std::make_shared<ResultType>(f.get())); 
+		t.join();
+
+		return true;
 	}
 };
 
@@ -77,26 +102,26 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
 	work->execute();
 	while(!work->has_result());
     auto work2 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, routine_1, work->get_result());
-    auto work3 = std::make_shared<TestWork>(work_request{ 40 }, routine_1);
+    auto work3 = std::make_shared<TestWork2>(work_request{ 40 }, routine_1);
     auto work4 = std::make_shared<TestWork>(work_request{ 50 }, routine_1);
     
-	routine_1->add_work(work2);
-	routine_1->add_work(work3);
-	routine_1->add_work(work4);
+	routine_1->push(work2);
+	routine_1->push(work3);
+	routine_1->push(work4);
     
 	srm.push(routine_1);
     srm.process_queue();
 
 	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 600);
-	BOOST_CHECK_EQUAL(work3->get_result()->get_one(), 800);
+	BOOST_CHECK_EQUAL(work3->get_result()->get_one(), 400);
 	BOOST_CHECK_EQUAL(work4->get_result()->get_one(), 1000);
 }
 
 BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
 {
     Horizon::System::SystemRoutineManager srm;
-	std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> chain_1 = std::make_shared<Horizon::System::RuntimeRoutineContextChain>();
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_1 = std::make_shared<Horizon::System::RuntimeContextChain>();
 
     std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>();
     std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>();
@@ -108,17 +133,17 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
     auto work3 = std::make_shared<TestWork>(work_request{ 40 }, routine_1);
     auto work4 = std::make_shared<TestWork>(work_request{ 50 }, routine_1);
     
-	routine_1->add_work(work);
-	routine_1->add_work(work2);
+	routine_1->push(work);
+	routine_1->push(work2);
 
-	routine_2->add_work(work3);
-	routine_2->add_work(work4);
+	routine_2->push(work3);
+	routine_2->push(work4);
     
 	chain_1->push(routine_1);
 	chain_1->push(routine_2);
 
 	std::thread t = std::thread([&](){ chain_1->process(); });
-	
+
 	while (!work->has_result() || !work2->has_result() || !work3->has_result() || !work4->has_result());
 	
 	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
@@ -129,22 +154,128 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
 	t.join();
 }
 
-BOOST_AUTO_TEST_CASE(SystemRoutinesUseResultTest)
+BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainFailedTest)
 {
     Horizon::System::SystemRoutineManager srm;
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_1 = std::make_shared<Horizon::System::RuntimeContextChain>();
+
     std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>();
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>();
 
     work_request req;
     
 	auto work = std::make_shared<TestWork>(work_request{ 20 }, routine_1);
     auto work2 = std::make_shared<TestWork>(work_request{ 30 }, routine_1);
+    auto work3 = std::make_shared<TestWork>(work_request{ 40 }, routine_1);
+    auto work4 = std::make_shared<TestWork>(work_request{ 50 }, routine_1);
     
-	routine_1->add_work(work);
-	routine_1->add_work(work2);
-    
-	srm.push(routine_1);
-    srm.process_queue();
+	routine_1->push(work);
+	routine_1->push(work2);
 
-	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
-	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 600);
+	routine_2->push(work3);
+	routine_2->push(work4);
+    
+	chain_1->push(routine_1);
+	chain_1->push(routine_2);
+
+	std::thread t = std::thread([&](){ chain_1->process(); });
+
+	chain_1->get_control_agent().stop();
+
+	while (!chain_1->get_queue_manager().is_paused())
+		;
+
+	BOOST_CHECK_EQUAL(true, chain_1->get_queue_manager().is_paused());
+
+	chain_1->get_control_agent().start();
+
+	chain_1->get_control_agent().pause();
+	bool paused = false;
+
+	while (!chain_1->get_queue_manager().is_paused())
+		;
+
+	BOOST_CHECK_EQUAL(true, chain_1->get_queue_manager().is_paused());
+
+	chain_1->get_control_agent().start();
+	
+	chain_1->get_control_agent().failed();
+
+	bool failed = false;
+
+	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result()))
+	{
+		if (chain_1->get_control_agent().get_status() == Horizon::System::RUNTIME_ROUTINE_CHAIN_FAILED) {
+			failed = true;
+			break;
+		}
+	};
+
+	BOOST_CHECK_EQUAL(failed, true);
+	BOOST_CHECK_EQUAL(false, chain_1->get_queue_manager().is_paused());
+
+	t.join();
+}
+
+BOOST_AUTO_TEST_CASE(RuntimeRoutineWorkFailedTest)
+{
+    Horizon::System::SystemRoutineManager srm;
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_1 = std::make_shared<Horizon::System::RuntimeContextChain>();
+
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>();
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>();
+
+    work_request req;
+    
+	auto work = std::make_shared<TestWork>(work_request{ 20 }, routine_1);
+    auto work2 = std::make_shared<TestWork>(work_request{ 30 }, routine_1);
+    auto work3 = std::make_shared<TestWork>(work_request{ 40 }, routine_1);
+    auto work4 = std::make_shared<TestWork>(work_request{ 50 }, routine_1);
+    
+	routine_1->push(work);
+	routine_1->push(work2);
+
+	routine_2->push(work3);
+	routine_2->push(work4);
+    
+	chain_1->push(routine_1);
+	chain_1->push(routine_2);
+
+	std::thread t = std::thread([&](){ chain_1->process(); });
+
+	routine_1->get_control_agent().stop();
+
+	while (!routine_1->get_queue_manager().is_paused())
+		;
+
+	BOOST_CHECK_EQUAL(true, routine_1->get_queue_manager().is_paused());
+
+	routine_1->get_control_agent().start();
+
+	routine_1->get_control_agent().pause();
+	bool paused = false;
+
+	while (!routine_1->get_queue_manager().is_paused())
+		;
+
+	BOOST_CHECK_EQUAL(true, routine_1->get_queue_manager().is_paused());
+
+	routine_1->get_control_agent().start();
+	
+	routine_1->get_control_agent().failed();
+
+	bool failed = false;
+
+	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result()))
+	{
+		if (routine_1->get_control_agent().get_status() == Horizon::System::RUNTIME_ROUTINE_CHAIN_FAILED) {
+			failed = true;
+			break;
+		}
+	};
+
+	BOOST_CHECK_EQUAL(failed, true);
+	BOOST_CHECK_EQUAL(false, routine_1->get_queue_manager().is_paused());
+
+	t.join();
 }

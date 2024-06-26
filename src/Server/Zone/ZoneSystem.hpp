@@ -39,22 +39,15 @@ namespace Horizon
 {
 namespace Zone
 {
-template <typename T>
-void dispatch(std::string component, std::shared_ptr<Horizon::System::RuntimeRoutineContext> context) 
+class ZoneRuntimeRoutineContext : public System::RuntimeRoutineContext
 {
-	sZone->get_component<T>(component)->system_routine_queue_push(context);
-}
-
-template <typename T>
-void dispatch(std::string component, std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> chain) 
-{
-	sZone->get_component<T>(component)->system_routine_queue_push(chain);
-}
-
-class ZoneRuntimeRoutineContext : public Horizon::System::RuntimeRoutineContext
-{
+	System::runtime_dispatch_module_type _module_t = System::RUNTIME_DISPATCH_MAIN;
+	System::runtime_synchronization_method _synchronization_t = System::RUNTIME_SYNC_NONE;
 public:
-
+	void register_()
+	{
+		Zone->system_routine_register(_module_t, _synchronization_t, shared_from_this());
+	}
 };
 }
 }

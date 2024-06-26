@@ -39,7 +39,7 @@
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
-Mainframe::Mainframe(general_server_configuration &conf) : _config(conf) { }
+Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_DISPATCH_MAIN) { }
 Mainframe::~Mainframe() { }
 
 void Mainframe::initialize_command_line()
@@ -47,9 +47,21 @@ void Mainframe::initialize_command_line()
 	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->initialize();
 }
 
-void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContext> context) { _hsr_manager.push(context); }
-void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> context) { _hsr_manager.push(context); }
+void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
+void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
+void Mainframe::system_routine_process_queue() { _hsr_manager.process_queue(); }
+void Mainframe::system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
+{
+	_hsr_manager.register_(module_t, sync_t, context);
+}
+
+void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
+void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
 void MainframeComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
+void MainframeComponent::system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
+{
+	_hsr_manager.register_(module_t, sync_t, context);
+}
 
 bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 {

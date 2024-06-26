@@ -58,5 +58,5 @@ void PersistenceManager::start()
 
 void PersistenceManager::update(uint64_t diff)
 {
-	
+	Zone->get_component<PersistenceManager>(PERSISTENCE_MAINFRAME)->system_routine_process_queue();
 }

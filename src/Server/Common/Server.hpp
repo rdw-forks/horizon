@@ -30,6 +30,7 @@
 #ifndef HORIZON_SERVER_HPP
 #define HORIZON_SERVER_HPP
 
+#include "System.hpp"
 #include "CLI/CLICommand.hpp"
 
 #define DATABASE_MAINFRAME "database"
@@ -53,25 +54,19 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
-namespace Horizon
-{
-namespace System
-{
-	class RuntimeWorkSegment;
-}
-}
-
 class MainframeComponent
 {
 public:
+	MainframeComponent(Horizon::System::runtime_dispatch_module_type module_type) : _hsr_manager(module_type) { }
 	virtual void initialize() { }
 	virtual void finalize() { }
 
 	virtual bool is_initialized() { return false; }
 
-	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContext> context);
-	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeRoutineContextChain> context);
+	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
+	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
 	void system_routine_process_queue();
+	void system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
 
 private:
 	Horizon::System::SystemRoutineManager _hsr_manager;
@@ -80,6 +75,7 @@ private:
 class CommandLineProcess : public MainframeComponent
 {
 public:
+	CommandLineProcess() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_COMMANDLINE) { }
 	void process();
 	void queue(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
 	void add_function(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
@@ -112,7 +108,8 @@ private:
 class DatabaseProcess : public MainframeComponent
 {
 public:
-	DatabaseProcess(boost::asio::io_context &io_context) : _io_context(io_context) { }
+	// MainframeComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
+	DatabaseProcess(boost::asio::io_context &io_context) : _io_context(io_context), MainframeComponent(Horizon::System::RUNTIME_DISPATCH_MAIN) { }
 	
 	void initialize() override { HLog(error) << "Database not configured"; }
 	void initialize(std::string host, int port, std::string user, std::string pass, std::string database)
@@ -179,9 +176,16 @@ public:
 
 	MainframeComponents get_components() { return _components; }
 
+	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
+	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
+	void system_routine_process_queue();
+	void system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
+
 protected:
 	MainframeComponents _components;
 	general_server_configuration _config;
+private:
+	Horizon::System::SystemRoutineManager _hsr_manager;
 };
 
 class Server : public Mainframe
@@ -233,6 +237,7 @@ protected:
 	 * Core IO Service
 	 */
 	boost::asio::io_service _io_service;
+
 };
 
 #endif /* HORIZON_SERVER_HPP */

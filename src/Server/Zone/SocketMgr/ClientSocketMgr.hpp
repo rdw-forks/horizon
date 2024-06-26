@@ -33,6 +33,7 @@
 #define HORIZON_ZONE_CLIENTSOCKETMGR_HPP
 
 #include "Libraries/Networking/AcceptSocketMgr.hpp"
+#include "Server/Common/System.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 
@@ -47,6 +48,7 @@ class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>,
 {
 	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket> BaseSocketMgr;
 public:
+	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_NETWORKING) { }
 
 	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
 	{

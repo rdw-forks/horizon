@@ -32,12 +32,8 @@
 
 #include "Utility/TaskScheduler.hpp"
 #include "MapContainerThread.hpp"
+#include "Libraries/MapCache/MapCache.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
-
-enum mapmgr_task_schedule_group
-{
-	MAPMGR_TASK_MAP_UPDATE = 0
-};
 
 namespace Horizon
 {
@@ -59,6 +55,8 @@ public:
 	bool finalize();
 	bool LoadMapCache();
 
+	void start_containers();
+
 	std::shared_ptr<Map> manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s);
 
 	std::shared_ptr<Map> get_map(std::string map_name);
@@ -72,6 +70,7 @@ public:
 private:
 	TaskScheduler _scheduler;
 	LockedLookupTable<int32_t, std::shared_ptr<MapContainerThread>> _map_containers;
+	std::map<std::string, map_data> _maps;
 };
 }
 }

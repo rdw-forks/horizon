@@ -168,8 +168,6 @@ bool ZoneServer::read_config()
 //	config().set_unit_save_interval(tbl.get_or("unit_save_interval", 180000));
 //	HLog(info) << "Unit data will be saved to the database every " << duration_cast<minutes>(std::chrono::milliseconds(config().get_unit_save_interval())).count() << " minutes and " << duration_cast<seconds>(std::chrono::milliseconds(config().get_unit_save_interval())).count() << " seconds.";
 	
-	HLog(info) << "Maps will be managed by '" << MAX_MAP_CONTAINER_THREADS << "' thread containers.";
-
 	config().set_session_max_timeout(tbl.get_or("session_max_timeout", 60));
 
 	HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "'.";

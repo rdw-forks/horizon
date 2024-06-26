@@ -30,7 +30,6 @@
 #include "MapManager.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
-#include "Libraries/MapCache/MapCache.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -40,7 +39,9 @@ using namespace Horizon::Zone;
 
 bool MapManager::initialize()
 {
-	return LoadMapCache();
+	LoadMapCache();
+	start_containers();
+	return true;
 }
 
 bool MapManager::finalize()
@@ -89,17 +90,24 @@ bool MapManager::LoadMapCache()
 			HLog(error) << "Could not read cell information for a map while importing file '" << m.getMapCachePath().string() << "', rebuilding...";
 			return false;
 	}
-;
+
+	_maps = m.getMCache()->maps;
+	
+	return true;
+}
+
+void MapManager::start_containers()
+{
 	int container_idx = 0, map_counter = 0, total_maps = 0;
-	int mcache_size = m.getMCache()->maps.size();
-	int container_max = std::ceil((double) mcache_size / MAX_MAP_CONTAINER_THREADS);
+	int mcache_size = _maps.size();
+	int container_max = std::ceil((double) mcache_size / MAX_GAME_LOGIC_THREADS);
 
-	HLog(info) << "Initializing " << MAX_MAP_CONTAINER_THREADS << " map containers with " << container_max << " maps per container for a total of " << mcache_size << " maps...";
+	HLog(info) << "Initializing " << MAX_GAME_LOGIC_THREADS << " map containers with " << container_max << " maps per container for a total of " << mcache_size << " maps...";
 
-	for (int i = 0; i < MAX_MAP_CONTAINER_THREADS; i++)
+	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++)
 		_map_containers.insert(i, std::make_shared<MapContainerThread>());
 
-	for (auto &i : m.getMCache()->maps) {
+	for (auto &i : _maps) {
 		std::shared_ptr<Map> map = std::make_shared<Map>(_map_containers.at(container_idx), i.second.name(), i.second.width(), i.second.height(), i.second.getCells());
 		(_map_containers.at(container_idx))->add_map(std::move(map));
 		map_counter++;
@@ -114,9 +122,7 @@ bool MapManager::LoadMapCache()
 		}
 	}
 
-	HLog(info) << "Done initializing " << total_maps << " maps in " << MAX_MAP_CONTAINER_THREADS << " containers.";
-
-	return true;
+	_maps.clear();
 }
 
 std::shared_ptr<Map> MapManager::manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s)

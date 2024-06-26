@@ -57,11 +57,17 @@
 // Network Threads
 #define MAX_NETWORK_THREADS 1
 
+// Max Game Logic Threads
+#define MAX_GAME_LOGIC_THREADS 1
+
+// Max Persistence Threads
+#define MAX_PERSISTENCE_THREADS 1
+
+// Max Script VM Threads
+#define MAX_SCRIPT_VM_THREADS 1
+
 // Time in Microseconds (µs)
 #define MAX_CORE_UPDATE_INTERVAL 500
-
-// Map Thread Containers
-#define MAX_MAP_CONTAINER_THREADS 1
 
 // Mob searches active path when selecting target.
 #define ACTIVE_PATH_SEARCH 1
@@ -79,12 +85,15 @@ static_assert(MAX_NPC_TRIGGER_RANGE > 0 && MAX_NPC_TRIGGER_RANGE < MAX_VIEW_RANG
 
 static_assert(MAX_NETWORK_THREADS > 0,
               "MAX_NETWORK_THREADS cannot be less than or equal to 0.");
+static_assert(MAX_GAME_LOGIC_THREADS > 0,
+              "MAX_GAME_LOGIC_THREADS cannot be less than or equal to 0.");
+static_assert(MAX_PERSISTENCE_THREADS > 0,
+              "MAX_PERSISTENCE_THREADS cannot be less than or equal to 0.");
+static_assert(MAX_SCRIPT_VM_THREADS > 0,
+              "MAX_SCRIPT_VM_THREADS cannot be less than or equal to 0.");
 
 static_assert(MAX_CORE_UPDATE_INTERVAL >= 1,
             "MAX_CORE_UPDATE_INTERVAL should be greater than or equal to 500 microseconds (µs).");
-
-static_assert(MAX_MAP_CONTAINER_THREADS > 0,
-            "MAX_MAP_CONTAINER_THREADS cannot be less than or equal to 0.");
 
 #include "Client.hpp"
 

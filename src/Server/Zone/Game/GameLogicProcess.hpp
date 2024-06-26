@@ -30,6 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP
 #define HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP
 
+#include "Server/Common/System.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 
 namespace Horizon
@@ -39,6 +40,7 @@ namespace Zone
 class GameLogicProcess : public MainframeComponent
 {
 public:
+	GameLogicProcess() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_GAMELOGIC) { }
     void initialize();
     void finalize();
 

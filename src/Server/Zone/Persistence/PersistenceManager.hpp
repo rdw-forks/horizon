@@ -28,6 +28,7 @@
 
 #ifndef HORIZON_ZONE_PERSISTENCE_PERSISTENCEMANAGER
 #define HORIZON_ZONE_PERSISTENCE_PERSISTENCEMANAGER
+#include "Server/Common/System.hpp"
 #include "Server/Common/Server.hpp"
 
 
@@ -38,6 +39,7 @@ namespace Zone
 class PersistenceManager : public MainframeComponent
 {
 public:
+	PersistenceManager() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_PERSISTENCE) { }
     void initialize();
     void finalize();
     void start();
