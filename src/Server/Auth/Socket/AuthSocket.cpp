@@ -78,7 +78,7 @@ void AuthSocket::on_close()
 	HLog(info) << "Closed connection from " << remote_ip_address();
 
 	/* Perform socket manager cleanup. */
-	sAuth->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(shared_from_this());
+	sAuth->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->set_socket_for_removal(shared_from_this());
 }
 
 /**
@@ -98,7 +98,7 @@ void AuthSocket::on_error()
 bool AuthSocket::update()
 {
 	if (get_shutdown_stage() >= SHUTDOWN_INITIATED)
-		sAuth->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(shared_from_this());
+		sAuth->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->set_socket_for_removal(shared_from_this());
 
 	return BaseSocket::update();
 }
@@ -133,7 +133,7 @@ void AuthSocket::read_handler()
 		
 		ByteBuffer b;
 		b.append(get_read_buffer().get_read_pointer(), packet_length);
-		get_recv_queue().push(std::move(b));
+		get_session()->get_recv_queue().push(std::move(b));
 		get_read_buffer().read_completed(packet_length);
 	}
 }

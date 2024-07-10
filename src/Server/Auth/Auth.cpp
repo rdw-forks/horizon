@@ -183,8 +183,8 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
  */
 void AuthServer::initialize_cli_commands()
 {
-	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
-	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
 }
 
 /**
@@ -202,12 +202,12 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 
 void AuthServer::update(uint64_t time)
 {
-	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->process();
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
 
 	getScheduler().Update();
 	
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->manage_sockets(time);
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_sessions(time);
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->manage_sockets(time);
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->update_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
@@ -229,8 +229,8 @@ void AuthServer::initialize_core()
 	signals.async_wait(std::bind(&SignalHandler, std::placeholders::_1, std::placeholders::_2));
 
 	// Start Horizon Network
-	register_component(NETWORK_MAINFRAME, std::make_shared<ClientSocketMgr>());
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->start(get_io_service(),
+	register_component(Horizon::System::RUNTIME_NETWORKING, std::make_shared<ClientSocketMgr>());
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->start(get_io_service(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
@@ -253,14 +253,14 @@ void AuthServer::initialize_core()
 	getScheduler().CancelAll();
 
 	/**
+	 * Stop all networks
+	 */
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->finalize();
+
+	/**
 	 * Server shutdown routine begins here...
 	 */
 	Server::finalize();
-
-	/**
-	 * Stop all networks
-	 */
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->stop();
 
 	/* Cancel signal handling. */
 	signals.cancel();

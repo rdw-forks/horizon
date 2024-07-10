@@ -39,32 +39,37 @@
 
 using namespace Horizon::Zone;
 
-void GameLogicProcess::initialize()
+static std::atomic<bool> static_db_loaded = false;
+
+void GameLogicProcess::initialize(int segment_number)
 {
 	/**
 	 * Static Databases
 	 */
-	ExpDB->load();
-	ExpDB->load_status_point_table();
-	JobDB->load();
-	ItemDB->load();
-	ItemDB->load_refine_db();
-	ItemDB->load_weapon_target_size_modifiers_db();
-	ItemDB->load_weapon_attribute_modifiers_db();
-	StatusEffectDB->load();
-	SkillDB->load();
-	MonsterDB->load();
-	StorageDB->load();
-
-    get_map_process().initialize();
+	if (static_db_loaded == false) {
+		ExpDB->load();
+		ExpDB->load_status_point_table();
+		JobDB->load();
+		ItemDB->load();
+		ItemDB->load_refine_db();
+		ItemDB->load_weapon_target_size_modifiers_db();
+		ItemDB->load_weapon_attribute_modifiers_db();
+		StatusEffectDB->load();
+		SkillDB->load();
+		MonsterDB->load();
+		StorageDB->load();
+		static_db_loaded = true;
+	}
+	
+    get_map_process().initialize(segment_number);
 
     bool value = _is_initialized;
 	_is_initialized.compare_exchange_strong(value, true);
 }
 
-void GameLogicProcess::finalize()
+void GameLogicProcess::finalize(int segment_number)
 {
-    get_map_process().finalize();
+    get_map_process().finalize(segment_number);
 
     bool value = _is_initialized;
 	_is_initialized.compare_exchange_strong(value, false);

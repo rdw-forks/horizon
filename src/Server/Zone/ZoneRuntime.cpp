@@ -29,6 +29,7 @@
 
 #include "ZoneRuntime.hpp"
 #include "Server/Common/Server.hpp"
+#include "Server/Zone/ZoneSystem.hpp"
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 
@@ -50,14 +51,14 @@ void ZoneRuntime::initialize()
 
 void ZoneRuntime::run(uint64_t time)
 {
-	sZone->get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->process();
+	sZone->get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
 
 	/**
 	 * Process Packets.
 	 */
-	sZone->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->manage_sockets(time);
+	sZone->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->manage_sockets(time);
 
-    sZone->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_sessions(time);
+    sZone->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->update_sessions(time);
 
 	// Process Horizon System Routine Queue.
 	sZone->system_routine_process_queue();
@@ -76,5 +77,5 @@ void ZoneRuntime::finalize()
 	sZone->finalize();
 }
 
-std::shared_ptr<ClientSocketMgr> ZoneRuntime::network() { return sZone->get_component<ClientSocketMgr>(NETWORK_MAINFRAME); }
-std::shared_ptr<DatabaseProcess> ZoneRuntime::database() { return sZone->get_component<DatabaseProcess>(DATABASE_MAINFRAME); }
+std::shared_ptr<ClientSocketMgr> ZoneRuntime::network() { return sZone->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING); }
+std::shared_ptr<DatabaseProcess> ZoneRuntime::database() { return sZone->get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE); }

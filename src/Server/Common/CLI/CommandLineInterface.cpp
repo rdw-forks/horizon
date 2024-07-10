@@ -34,6 +34,7 @@
 #include <readline/history.h>
 #endif
 #include <Server/Common/Server.hpp>
+#include <Server/Common/Configuration/Horizon.hpp>
 #include <signal.h>
 
 #define TERMINAL_STR "Horizon $> "

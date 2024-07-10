@@ -37,14 +37,14 @@
 
 using namespace Horizon::Zone;
 
-bool MapManager::initialize()
+bool MapManager::initialize(int segment_number)
 {
 	LoadMapCache();
-	start_containers();
+	start_containers(segment_number);
 	return true;
 }
 
-bool MapManager::finalize()
+bool MapManager::finalize(int segment_number)
 {
 	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
 	for (auto &cont : container_map) {
@@ -96,31 +96,35 @@ bool MapManager::LoadMapCache()
 	return true;
 }
 
-void MapManager::start_containers()
+void MapManager::start_containers(int segment_number)
 {
 	int container_idx = 0, map_counter = 0, total_maps = 0;
 	int mcache_size = _maps.size();
-	int container_max = std::ceil((double) mcache_size / MAX_GAME_LOGIC_THREADS);
+	int max_maps_per_thread = std::ceil((double) mcache_size / MAX_GAME_LOGIC_THREADS);
+	int container_max = segment_number * max_maps_per_thread;
+	int container_min = (segment_number - 1) * max_maps_per_thread;
 
-	HLog(info) << "Initializing " << MAX_GAME_LOGIC_THREADS << " map containers with " << container_max << " maps per container for a total of " << mcache_size << " maps...";
+	_map_containers.insert(0, std::make_shared<MapContainerThread>());
 
-	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++)
-		_map_containers.insert(i, std::make_shared<MapContainerThread>());
-
-	for (auto &i : _maps) {
-		std::shared_ptr<Map> map = std::make_shared<Map>(_map_containers.at(container_idx), i.second.name(), i.second.width(), i.second.height(), i.second.getCells());
+	auto map_i = _maps.begin();
+	for (int i = container_min; i < container_max; i++)
+	{
+		std::shared_ptr<Map> map = std::make_shared<Map>(_map_containers.at(container_idx), map_i->second.name(), map_i->second.width(), map_i->second.height(), map_i->second.getCells());
 		(_map_containers.at(container_idx))->add_map(std::move(map));
-		map_counter++;
-		total_maps++;
 
-		if (container_max == map_counter || total_maps == mcache_size) {
-			HLog(info) << "Initializing " << map_counter << " maps in map container " << (void *) _map_containers.at(container_idx).get() << "...";
+		if (max_maps_per_thread - 1 == map_counter) {
 			(_map_containers.at(container_idx))->initialize();
 			(_map_containers.at(container_idx))->start();
 			map_counter = 0;
 			container_idx++;
 		}
+
+		map_counter++;
+		total_maps++;
+		map_i++;
 	}
+	
+	HLog(info) << "Started map container " << segment_number << " (" << container_min + 1 << " to " << container_max << " maps) for a total of " << container_max - container_min << " out of "  << mcache_size << " maps.";
 
 	_maps.clear();
 }

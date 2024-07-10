@@ -40,10 +40,6 @@
 #include "Server/Common/Server.hpp"
 #include "ZoneRuntime.hpp"
 
-#define PERSISTENCE_MAINFRAME "persistence"
-#define SCRIPT_MAINFRAME "script"
-#define GAME_LOGIC_MAINFRAME "game_logic"
-
 namespace Horizon
 {
 	namespace Zone

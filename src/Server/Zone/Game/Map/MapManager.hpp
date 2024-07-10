@@ -51,11 +51,11 @@ class Map;
 class MapManager
 {
 public:
-	bool initialize();
-	bool finalize();
+	bool initialize(int segment_number = 1);
+	bool finalize(int segment_number = 1);
 	bool LoadMapCache();
 
-	void start_containers();
+	void start_containers(int segment_number = 1);
 
 	std::shared_ptr<Map> manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s);
 

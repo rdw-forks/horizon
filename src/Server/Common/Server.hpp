@@ -32,10 +32,22 @@
 
 #include "System.hpp"
 #include "CLI/CLICommand.hpp"
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/asio.hpp>
+#include <queue>
 
-#define DATABASE_MAINFRAME "database"
-#define CONSOLE_MAINFRAME "console"
-#define NETWORK_MAINFRAME "network"
+#include <boost/mysql/error_with_diagnostics.hpp>
+#include <boost/mysql/handshake_params.hpp>
+#include <boost/mysql/results.hpp>
+#include <boost/mysql/static_results.hpp>
+#include <boost/mysql/tcp_ssl.hpp>
+
+#include "Server/Common/Configuration/ServerConfiguration.hpp"
+
+#include <sol/sol.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -57,25 +69,46 @@ extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_sta
 class MainframeComponent
 {
 public:
-	MainframeComponent(Horizon::System::runtime_dispatch_module_type module_type) : _hsr_manager(module_type) { }
-	virtual void initialize() { }
-	virtual void finalize() { }
+	MainframeComponent(Horizon::System::runtime_module_type module_type) : _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) { }
+	virtual void initialize(int segment_number = 1) { }
+	virtual void finalize(int segment_number = 1) { }
 
 	virtual bool is_initialized() { return false; }
 
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
 	void system_routine_process_queue();
-	void system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
+	void system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
 
+	const std::string get_uuid_string() { return boost::uuids::to_string(_uuid); }
+
+	const std::string get_type_string() 
+	{ 
+		switch (_module_type)
+		{
+			case Horizon::System::RUNTIME_MAIN: return "Main";
+			case Horizon::System::RUNTIME_GAMELOGIC: return "Game-logic";
+			case Horizon::System::RUNTIME_PERSISTENCE: return "Persistence";
+			case Horizon::System::RUNTIME_DATABASE: return "Database";
+			case Horizon::System::RUNTIME_COMMANDLINE: return "Command-Line";
+			case Horizon::System::RUNTIME_SCRIPTVM: return "Script-VM";
+			case Horizon::System::RUNTIME_NETWORKING: return "Networking";
+			default: return "Unknown";
+		}
+	}
+	
+	Horizon::System::SystemRoutineManager &get_system_routine_manager() { return _hsr_manager; }
+	
 private:
+	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_MAIN};
 	Horizon::System::SystemRoutineManager _hsr_manager;
+	boost::uuids::uuid _uuid;
 };
 
 class CommandLineProcess : public MainframeComponent
 {
 public:
-	CommandLineProcess() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_COMMANDLINE) { }
+	CommandLineProcess() : MainframeComponent(Horizon::System::RUNTIME_COMMANDLINE) { }
 	void process();
 	void queue(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
 	void add_function(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
@@ -87,8 +120,8 @@ public:
 		return (it != _cli_function_map.end()) ? it->second : nullptr;
 	}
 
-	void initialize() override;
-	void finalize() override;
+	void initialize(int segment_number = 1) override;
+	void finalize(int segment_number = 1) override;
 
 	/**
 	 * CLI Commands
@@ -109,10 +142,10 @@ class DatabaseProcess : public MainframeComponent
 {
 public:
 	// MainframeComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
-	DatabaseProcess(boost::asio::io_context &io_context) : _io_context(io_context), MainframeComponent(Horizon::System::RUNTIME_DISPATCH_MAIN) { }
+	DatabaseProcess(boost::asio::io_context &io_context) : _io_context(io_context), MainframeComponent(Horizon::System::RUNTIME_MAIN) { }
 	
-	void initialize() override { HLog(error) << "Database not configured"; }
-	void initialize(std::string host, int port, std::string user, std::string pass, std::string database)
+	void initialize(int segment_number = 1) override { HLog(error) << "Database not configured"; }
+	void initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
 	{
 		try {
     		boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::tls_client);
@@ -129,7 +162,7 @@ public:
 		_is_initialized.compare_exchange_strong(value, true);
 	}
 
-	void finalize() override 
+	void finalize(int segment_number = 1) override 
 	{
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, false);
@@ -144,7 +177,14 @@ protected:
 	std::atomic<bool> _is_initialized;
 };
 
-typedef std::map<std::string, std::shared_ptr<MainframeComponent>> MainframeComponents;
+struct mainframe_component_state_holder
+{
+	Horizon::System::runtime_module_type type;
+	std::shared_ptr<MainframeComponent> ptr;
+	int segment_number;
+};
+
+typedef std::map<std::string, mainframe_component_state_holder> MainframeComponents;
 
 class Mainframe
 {
@@ -158,29 +198,68 @@ public:
 	struct general_server_configuration &general_conf() { return this->_config; }
 
 	template <typename T>
-	std::shared_ptr<T> get_component(std::string name) 
+	std::shared_ptr<T> get_component(std::string uuid) 
 	{ 
-		return std::static_pointer_cast<T>(_components.find(name)->second);
+		auto it = _components.find(uuid);
+		if (it == _components.end()) 
+			return nullptr;
+
+		return std::static_pointer_cast<T>(it->second.ptr);
 	}
 
 	template <typename T>
-	void register_component(std::string name, T &&component) { _components.insert(std::pair(name, std::make_shared<T>(std::move(component)))); }
+	std::shared_ptr<T> get_component_of_type(Horizon::System::runtime_module_type type, int segment_number = 1)
+	{
+		for (auto c : _components) {
+			if (c.second.type == type && c.second.segment_number == segment_number)
+				return std::static_pointer_cast<T>(c.second.ptr);
+		}
+
+		return nullptr;
+	}
 
 	template <typename T>
-	void register_component(std::string name, std::shared_ptr<T> component) { _components.insert(std::pair(name, component)); }
+	void register_component(Horizon::System::runtime_module_type type, T &&component) { 
+		mainframe_component_state_holder holder;
+		holder.segment_number = get_registered_component_count_of_type(type) + 1;
+		holder.type = type;
+		holder.ptr = std::make_shared<T>(std::move(component));
+		_components.insert(std::pair(component.get_uuid_string(), holder)); 
+	}
+
+	template <typename T>
+	void register_component(Horizon::System::runtime_module_type type, std::shared_ptr<T> component) 
+	{
+		mainframe_component_state_holder holder;
+		holder.segment_number = get_registered_component_count_of_type(type) + 1;
+		holder.type = type;
+		holder.ptr = component;
+		_components.insert(std::pair(component->get_uuid_string(), holder)); 
+	}
+
+	int get_registered_component_count_of_type(Horizon::System::runtime_module_type type)
+	{
+		int count = 0;
+		for (auto c : _components) {
+			if (c.second.type == type)
+				count++;
+		}
+		return count;
+	}
 
 	int get_component_count() { return _components.size(); }
 
 	/* Command Line Interface */
 	void initialize_command_line();
 
-	MainframeComponents get_components() { return _components; }
+	MainframeComponents get_component_of_types() { return _components; }
 
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
 	void system_routine_process_queue();
-	void system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
+	void system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
 
+	Horizon::System::SystemRoutineManager &get_system_routine_manager() { return _hsr_manager; }
 protected:
 	MainframeComponents _components;
 	general_server_configuration _config;
@@ -211,7 +290,7 @@ public:
 
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_database_connection() 
 	{ 
-		return get_component<DatabaseProcess>(DATABASE_MAINFRAME)->get_connection();
+		return get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->get_connection();
 	}
 
 	bool test_database_connection()

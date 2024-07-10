@@ -33,12 +33,12 @@
 
 using namespace Horizon::Zone;
 
-void PersistenceManager::initialize()
+void PersistenceManager::initialize(int segment_number)
 {
 	_thread = std::thread(&PersistenceManager::start, this);
 }
 
-void PersistenceManager::finalize()
+void PersistenceManager::finalize(int segment_number)
 {
     _thread.join();
     
@@ -58,5 +58,5 @@ void PersistenceManager::start()
 
 void PersistenceManager::update(uint64_t diff)
 {
-	Zone->get_component<PersistenceManager>(PERSISTENCE_MAINFRAME)->system_routine_process_queue();
+	sZone->get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE)->system_routine_process_queue();
 }

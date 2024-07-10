@@ -48,7 +48,7 @@ class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>,
 {
 	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket> BaseSocketMgr;
 public:
-	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_NETWORKING) { }
+	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
 
 	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
 	{
@@ -72,8 +72,8 @@ public:
 
 	virtual bool is_initialized() override { return _is_initialized.load(); }
 
-	virtual void initialize() override { this->initialize(); }
-	virtual void finalize() override { stop(); }
+	virtual void initialize(int segment_number = 1) override { this->initialize(); }
+	virtual void finalize(int segment_number = 1) override { stop(); }
 
 	void update_sessions(uint64_t time)
 	{

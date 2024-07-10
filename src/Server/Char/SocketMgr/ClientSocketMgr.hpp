@@ -34,6 +34,7 @@
 #include "Libraries/Networking/AcceptSocketMgr.hpp"
 
 #include "Server/Char/Char.hpp"
+#include "Server/Char/Session/CharSession.hpp"
 #include "Server/Char/Socket/CharSocket.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
@@ -48,6 +49,8 @@ class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<CharSocket>,
 {
 	typedef Horizon::Networking::AcceptSocketMgr<CharSocket> BaseSocketMgr;
 public:
+	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
+
 	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
 	{
 		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
@@ -69,8 +72,8 @@ public:
 		return true;
 	}
 
-	virtual void initialize() override { this->initialize(); }
-	virtual void finalize() override { stop(); }
+	virtual void initialize(int segment_number = 1) override { this->initialize(); }
+	virtual void finalize(int segment_number = 1) override { stop(); }
 
 	virtual bool is_initialized() override { return _is_initialized.load(); }
 

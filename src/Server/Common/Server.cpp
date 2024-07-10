@@ -30,27 +30,29 @@
 #include "Server.hpp"
 
 #include "Server/Common/CLI/CommandLineInterface.hpp"
+#include "Server/Common/Configuration/Horizon.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 #include "version.hpp"
-#include "System.hpp"
-
+#include <boost/algorithm/algorithm.hpp>
+#include <boost/algorithm/string.hpp>
+#include <iomanip>
 #include <readline/readline.h>
 
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
-Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_DISPATCH_MAIN) { }
+Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
 Mainframe::~Mainframe() { }
 
 void Mainframe::initialize_command_line()
 {
-	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->initialize();
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->initialize();
 }
 
 void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
 void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
 void Mainframe::system_routine_process_queue() { _hsr_manager.process_queue(); }
-void Mainframe::system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
+void Mainframe::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
 {
 	_hsr_manager.register_(module_t, sync_t, context);
 }
@@ -58,7 +60,7 @@ void Mainframe::system_routine_register(Horizon::System::runtime_dispatch_module
 void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
 void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
 void MainframeComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
-void MainframeComponent::system_routine_register(Horizon::System::runtime_dispatch_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
+void MainframeComponent::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
 {
 	_hsr_manager.register_(module_t, sync_t, context);
 }
@@ -70,7 +72,7 @@ bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 	return true;
 }
 
-void CommandLineProcess::initialize()
+void CommandLineProcess::initialize(int segment_number)
 {
 	_cli_thread = std::thread(std::bind(&cli_thread_start, this));
 
@@ -80,7 +82,7 @@ void CommandLineProcess::initialize()
 	_is_initialized.compare_exchange_strong(value, true);
 }
 
-void CommandLineProcess::finalize()
+void CommandLineProcess::finalize(int segment_number)
 {
 	if (_cli_thread.joinable())
 		_cli_thread.detach();
@@ -204,9 +206,9 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
 		
-		register_component(DATABASE_MAINFRAME, std::make_shared<DatabaseProcess>(get_io_service()));
+		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>(get_io_service()));
 		
-		get_component<DatabaseProcess>(DATABASE_MAINFRAME)->initialize(
+		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(1,
 			general_conf().get_db_host(), 
 			general_conf().get_db_port(), 
 			general_conf().get_db_user(), 
@@ -243,32 +245,32 @@ void Server::initialize()
 		HLog(info) << "Command line not supported during test-runs... skipping.";
 	} else {
 		HLog(info) << "Initializing command line.";
-		register_component(CONSOLE_MAINFRAME, std::make_shared<CommandLineProcess>());
-		get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->initialize();
+		register_component(Horizon::System::RUNTIME_COMMANDLINE, std::make_shared<CommandLineProcess>());
+		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->initialize();
 	}
 
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second->is_initialized() == false) {
-			HLog(error) << "Mainframe component '" << i->first << "': Offline";
+		while (i->second.ptr->is_initialized() == false) {
+			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 
-		HLog(info) << "Mainframe component '" << i->first << "': Online";
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online" << " { uuid: " << i->first << " }";
 	}
 }
 
 void Server::finalize()
 {
-	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->finalize();
-	get_component<DatabaseProcess>(DATABASE_MAINFRAME)->finalize();
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
+	get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
 
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second->is_initialized() == true) {
-			HLog(error) << "Mainframe component '" << i->first << "': Online (Shutting Down)";
+		while (i->second.ptr->is_initialized() == true) {
+			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online (Shutting Down)" << " { uuid: " << i->first << " }";
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 
-		HLog(info) << "Mainframe component '" << i->first << "': Offline";
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
 	}
 }
 

@@ -35,7 +35,13 @@
 #include <optional>
 #include <vector>
 #include <memory>
+#include <map>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/random_generator.hpp>
 
+class Server;
+class MainframeComponent;
 namespace Horizon
 {
 namespace System
@@ -69,29 +75,49 @@ enum runtime_work_run_result : int
 	RUNTIME_WORK_RUN_BYPASS      = 2
 };
 
-enum runtime_dispatch_module_type : int
+enum runtime_module_type : int
 {
-	RUNTIME_DISPATCH_MAIN        = 0,
-	RUNTIME_DISPATCH_COMMANDLINE = 1,
-	RUNTIME_DISPATCH_NETWORKING  = 2,
-	RUNTIME_DISPATCH_PERSISTENCE = 3,
-	RUNTIME_DISPATCH_GAMELOGIC   = 4,
-	RUNTIME_DISPATCH_SCRIPTVM    = 5
+	RUNTIME_MAIN        = 0,
+	RUNTIME_COMMANDLINE = 1,
+	RUNTIME_NETWORKING  = 2,
+	RUNTIME_PERSISTENCE = 3,
+	RUNTIME_GAMELOGIC   = 4,
+	RUNTIME_SCRIPTVM    = 5,
+	RUNTIME_DATABASE    = 6
 };
 
 enum runtime_synchronization_method : int
 {
 	RUNTIME_SYNC_NONE = 0,
-	RUNTIME_SYNC_WAIT_NORETURN = 1,
-	RUNTIME_SYNC_WAIT_RETURN = 2
+	RUNTIME_SYNC_WAIT_NO_CHECK_STATE = 1,
+	RUNTIME_SYNC_WAIT_CHECK_STATE = 2
 };
 
 class RuntimeContextChain;
 
+enum runtime_context_result : int
+{
+	RUNTIME_CONTEXT_NO_STATE = 0,
+	RUNTIME_CONTEXT_FAIL     = 1,
+	RUNTIME_CONTEXT_PASS     = 2
+};
+class SystemRoutineManager;
+
 class RuntimeContext : public std::enable_shared_from_this<RuntimeContext>
 {
 public:
-    RuntimeContext() : _queue_manager(_control_agent) { }
+    RuntimeContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE) 
+	: _hsr_manager(hsr_manager), _synchronization_t(sync_t), _uuid(boost::uuids::random_generator()()), _queue_manager(_control_agent) 
+	{ }
+
+	class ResultContext
+	{
+	public:
+		virtual bool has_result()
+		{
+			return true;
+		}
+	};
 
     class WorkContext
     {
@@ -249,19 +275,43 @@ public:
 	WorkQueueManager &get_queue_manager() { return _queue_manager; }
 	WorkControlAgent &get_control_agent() { return _control_agent; }
 
+	SystemRoutineManager &get_routine_manager() { return _hsr_manager; }
+
+	std::string get_uuid_string() { return boost::uuids::to_string(_uuid); }
+
+	void set_context_result(runtime_context_result pass = RUNTIME_CONTEXT_NO_STATE)
+	{
+		_result = pass;
+	}
+	runtime_context_result get_context_result() { return _result.load(); }
+
+	void set_synchronization_method(runtime_synchronization_method sync) { _synchronization_t = sync; }
+	runtime_synchronization_method get_synchronization_method() { return _synchronization_t; }
+
+	void dispatch();
+
 protected:
+	SystemRoutineManager &_hsr_manager;
 	WorkControlAgent _control_agent;
 	WorkQueueManager _queue_manager;
+	boost::uuids::uuid _uuid;
+	std::atomic<enum runtime_context_result> _result;
+
+	runtime_synchronization_method _synchronization_t{RUNTIME_SYNC_NONE};
 };
 
 class RuntimeRoutineContext : public RuntimeContext
 {
 public:
+	RuntimeRoutineContext(Server *s,  runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
+	RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
+	RuntimeRoutineContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
+
 	// @TODO derive from base class that is used to pass result on line 425, 
 	// - pass it so we can withdraw the result for the use result in the next context of the chain.
 	// - similar to how Work derives from WorkContext
     template <typename PayloadType>
-    class Result
+    class Result : public RuntimeContext::ResultContext
     {
     public:
         Result(PayloadType payload) : _payload(payload) { }
@@ -272,6 +322,7 @@ public:
 
 		std::vector<PayloadType> get_many() { return _payload_vector; }
 		void set_many(std::vector<PayloadType> vec) { _payload_vector = vec; }
+		
 	private:
     	PayloadType _payload;
 		std::vector<PayloadType> _payload_vector;
@@ -281,10 +332,10 @@ public:
     class Work : public RuntimeContext::WorkContext
     {
     public:
-        Work(RequestType request, std::shared_ptr<RuntimeRoutineContext> context) 
-        : _request(request), _context(context) { }
-        Work(RequestType request, std::shared_ptr<RuntimeRoutineContext> context, std::shared_ptr<Result<UseResultType>> use_result) 
-        : _request(request), _context(context), _use_result(use_result) { }
+        Work(RequestType request) 
+        : _request(request) { }
+        Work(RequestType request, std::shared_ptr<Result<UseResultType>> use_result) 
+        : _request(request), _use_result(use_result) { }
         
 		void set_request(RequestType request) { _request = request; }
 		RequestType &get_request() { return _request; }
@@ -301,17 +352,18 @@ public:
         }
 		
     private:
-        std::shared_ptr<RuntimeRoutineContext> _context;
         std::shared_ptr<Result<ResultType>> _result;
 		std::shared_ptr<Result<UseResultType>> _use_result;
         RequestType _request;
     };
 };
 
-class RuntimeContextChain
+class RuntimeContextChain : public std::enable_shared_from_this<RuntimeContextChain>
 {
 public:
-    RuntimeContextChain() : _queue_manager(_control_agent) { }
+    RuntimeContextChain(runtime_module_type run_module) 
+	: _module_t(run_module), _uuid(boost::uuids::random_generator()()), _queue_manager(_control_agent, this) 
+	{ }
 
     class ContextControlAgent
     {
@@ -392,7 +444,7 @@ public:
     class ContextQueueManager
     {
     public:
-        ContextQueueManager(ContextControlAgent &control_agent) : _control_agent(control_agent) { }
+        ContextQueueManager(ContextControlAgent &control_agent, RuntimeContextChain *chain) : _control_agent(control_agent), _chain(chain) { }
 
         void push(std::shared_ptr<RuntimeContext> seg) { _queue.push(std::move(seg)); }
         std::shared_ptr<RuntimeContext> pop() 
@@ -405,43 +457,12 @@ public:
             return ret;
         }
 
-        bool process()
-        {
-			std::shared_ptr<RuntimeContext> context = nullptr;
-			
-			_control_agent.start();
-
-			bool failed = false;
-            while((context = pop()) != nullptr) {
-				while (_control_agent.get_status() == RUNTIME_ROUTINE_CHAIN_PAUSED || _control_agent.get_status() == RUNTIME_ROUTINE_CHAIN_STOPPED) {
-					if (!_paused)
-						_paused = true;
-				}
-
-				if (_paused == true)
-					_paused = false;
-
-				if (_control_agent.get_status() == RUNTIME_ROUTINE_CHAIN_CANCELLED)
-					return false;
-
-				if (context->run() == false) {
-					failed = true;
-					break;
-				}
-            }
-
-			if (failed == true) {
-				_control_agent.failed();
-				return false;
-			}
-
-			_control_agent.completed();
-
-			return true;
-        }
+        bool process();
 
 		bool is_paused() { return _paused; }
+		
         ContextControlAgent &_control_agent;
+		RuntimeContextChain *_chain;
         boost::lockfree::spsc_queue<std::shared_ptr<RuntimeContext>, boost::lockfree::capacity<100>> _queue;
 		std::atomic<bool> _paused{false};
     };
@@ -455,13 +476,22 @@ public:
 
 	ContextQueueManager _queue_manager;
     ContextControlAgent _control_agent;
+
+	runtime_module_type get_module_type() { return _module_t; }
+	void set_module_type(runtime_module_type module_t) { _module_t = module_t; }
+
+	std::string get_uuid_string() { return boost::uuids::to_string(_uuid); }
+
+private:
+	boost::uuids::uuid _uuid;
+	runtime_module_type _module_t;
 };
 
 class SystemRoutineManager
 {
 	struct runtime_map_data
 	{
-		runtime_dispatch_module_type module_t;
+		runtime_module_type module_t;
 		runtime_synchronization_method sync_t;
 		std::shared_ptr<RuntimeContext> context;
 		std::shared_ptr<RuntimeContextChain> context_chain;
@@ -469,24 +499,24 @@ class SystemRoutineManager
 
 	typedef std::map<std::string, runtime_map_data> runtime_map;
 public:
-	SystemRoutineManager(runtime_dispatch_module_type module_type)
+	SystemRoutineManager(runtime_module_type module_type)
 	: _module_type(module_type)
 	{
-		if (_module_type < RUNTIME_DISPATCH_MAIN || _module_type > RUNTIME_DISPATCH_SCRIPTVM) {
+		if (_module_type < RUNTIME_MAIN || _module_type > Horizon::System::RUNTIME_SCRIPTVM) {
 			HLog(error) << "SystemRoutineManager for module type (" << module_type << ") failed to start. Invalid module type.";
 		}
 	}
 
-	virtual void register_(runtime_dispatch_module_type module_t, runtime_synchronization_method sync_t, std::shared_ptr<RuntimeContext> context) 
+	virtual void register_(runtime_module_type module_t, runtime_synchronization_method sync_t, std::shared_ptr<RuntimeContext> context) 
 	{
 		runtime_map_data data = { module_t, sync_t, context, nullptr };
-		_runtime_map.emplace(typeid(context).name(), data);
+		_runtime_map.emplace(context->get_uuid_string(), data);
 	}
 
-	virtual void register_(runtime_dispatch_module_type module_t, runtime_synchronization_method sync_t, std::shared_ptr<RuntimeContextChain> context_chain) 
+	virtual void register_(runtime_module_type module_t, runtime_synchronization_method sync_t, std::shared_ptr<RuntimeContextChain> context_chain) 
 	{
 		runtime_map_data data = { module_t, sync_t, nullptr, context_chain };
-		_runtime_map.emplace(typeid(context_chain).name(), data);
+		_runtime_map.emplace(context_chain->get_uuid_string(), data);
 	}
 
 	virtual std::shared_ptr<const runtime_map_data> find_runtime(std::string name)
@@ -495,8 +525,21 @@ public:
 		return (it != _runtime_map.end()) ? std::make_shared<const runtime_map_data>(it->second) : nullptr;
 	}
 
-    void push(std::shared_ptr<RuntimeContextChain> chain) { _system_queue_chain.push(std::move(chain)); }
-    void push(std::shared_ptr<RuntimeContext> seg) { _system_queue.push(std::move(seg)); }
+	virtual int get_runtime_routine_count() 
+	{
+		return _runtime_map.size();
+	}
+
+	runtime_module_type get_module_type() { return _module_type; }
+
+    void push(std::shared_ptr<RuntimeContextChain> chain) { 
+		register_(chain->get_module_type(), RUNTIME_SYNC_NONE, chain);
+		_system_queue_chain.push(std::move(chain)); 
+	}
+    void push(std::shared_ptr<RuntimeContext> seg) { 
+		register_(get_module_type(), seg->get_synchronization_method(), seg);
+		_system_queue.push(std::move(seg)); 
+	}
 
     std::shared_ptr<RuntimeContext> pop() 
     {
@@ -525,20 +568,12 @@ public:
     {
         while(_system_queue.empty() == false) {
     	    std::shared_ptr<RuntimeContext> context = pop();
-			if (find_runtime(typeid(context).name()) == nullptr) {
-				HLog(warning) << "HSR: Tried to run a routine that is not registered. (Name: " << typeid(context).name() << ") skipping...";
-				continue;
-			}
 			if (context != nullptr)
 	            context->run();
         }
 		
         while(_system_queue_chain.empty() == false) {
     	    std::shared_ptr<RuntimeContextChain> routine_chain = pop_chain();
-			if (find_runtime(typeid(routine_chain).name()) == nullptr) {
-				HLog(warning) << "HSR: Tried to run a routine chain that is not registered. (Name: " << typeid(routine_chain).name() << ") skipping...";
-				continue;
-			}
 			if (routine_chain != nullptr)
 	            routine_chain->get_queue_manager().process();
         }
@@ -549,7 +584,7 @@ public:
 
 private:
 	runtime_map _runtime_map;
-	runtime_dispatch_module_type _module_type;
+	runtime_module_type _module_type;
 };
 }
 }

@@ -39,9 +39,9 @@ namespace Zone
 class PersistenceManager : public MainframeComponent
 {
 public:
-	PersistenceManager() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_PERSISTENCE) { }
-    void initialize();
-    void finalize();
+	PersistenceManager() : MainframeComponent(Horizon::System::RUNTIME_PERSISTENCE) { }
+    void initialize(int segment_number = 1);
+    void finalize(int segment_number = 1);
     void start();
     void update(uint64_t diff);
 

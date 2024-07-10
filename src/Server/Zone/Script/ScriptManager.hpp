@@ -79,8 +79,8 @@ public:
 
 	bool is_initialized() { return _is_initialized.load(); }
 
-	void initialize();
-	void finalize();
+	void initialize(int segment_number = 1);
+	void finalize(int segment_number = 1);
 	void prepare_lua_state(std::shared_ptr<sol::state> &lua);
 
 	void start();

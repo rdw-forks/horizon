@@ -224,12 +224,12 @@ void CharServer::verify_connected_sessions()
 
 void CharServer::update(uint64_t time)
 {
-	get_component<CommandLineProcess>(CONSOLE_MAINFRAME)->process();
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
 	
 	getScheduler().Update();
 
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->manage_sockets(time);
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->update_sessions(time);
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->manage_sockets(time);
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->update_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
@@ -246,9 +246,9 @@ void CharServer::initialize_core()
 	signals.async_wait(SignalHandler);
 
 	/* Start Character Network */
-	register_component(NETWORK_MAINFRAME, std::make_shared<ClientSocketMgr>());
+	register_component(Horizon::System::RUNTIME_NETWORKING, std::make_shared<ClientSocketMgr>());
 
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->start(get_io_service(),
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->start(get_io_service(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
@@ -273,14 +273,14 @@ void CharServer::initialize_core()
 	getScheduler().CancelAll();
 
 	/**
+	 * Stop all networks
+	 */
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->finalize();
+
+	/**
 	 * Server shutdown routine begins here...
 	 */
 	Server::finalize();
-
-	/**
-	 * Stop all networks
-	 */
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->stop_network();
 
 	/* Cancel signal handling. */
 	signals.cancel();

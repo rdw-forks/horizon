@@ -74,13 +74,13 @@ void MapComponent::sync_functions(std::shared_ptr<sol::state> state)
 	state->set_function("get_map_by_name",
 		[] (std::string const &name)
 		{
-			return sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map(name);
+			return sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map(name);
 		});
 
 	state->set_function("get_map_for_container",
 		[this] (std::string const &name)
 		{
-			std::shared_ptr<Map> map = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map(name);
+			std::shared_ptr<Map> map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map(name);
 
 			if (map == nullptr)
 				return std::shared_ptr<Map>();

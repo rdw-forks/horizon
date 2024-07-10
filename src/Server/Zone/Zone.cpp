@@ -53,20 +53,26 @@ void ZoneMainframe::initialize()
 	});
 
 	// Start Network
-	register_component(NETWORK_MAINFRAME, std::make_shared<ClientSocketMgr>());
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->start(get_io_service(),
+	register_component(Horizon::System::RUNTIME_NETWORKING, std::make_shared<ClientSocketMgr>());
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->start(get_io_service(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS);
 	
-	register_component(GAME_LOGIC_MAINFRAME, std::make_shared<GameLogicProcess>());
-	get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->initialize();
+	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
+		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
+		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
+	}
 
-	register_component(PERSISTENCE_MAINFRAME, std::make_shared<PersistenceManager>());
-	get_component<PersistenceManager>(PERSISTENCE_MAINFRAME)->initialize();
+	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++) {
+		register_component(Horizon::System::RUNTIME_PERSISTENCE, std::make_shared<PersistenceManager>());
+		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->initialize(i + 1);
+	}
 
-	register_component(SCRIPT_MAINFRAME, std::make_shared<ScriptManager>());
-	get_component<ScriptManager>(SCRIPT_MAINFRAME)->initialize();
+	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
+		register_component(Horizon::System::RUNTIME_SCRIPTVM, std::make_shared<ScriptManager>());
+		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->initialize(i + 1);
+	}
 
 	Server::initialize();
 
@@ -81,10 +87,15 @@ void ZoneMainframe::finalize()
 	HLog(info) << "Server shutdown initiated ...";
 
 	get_io_service().stop();
-	get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->finalize();
-	get_component<PersistenceManager>(PERSISTENCE_MAINFRAME)->finalize();
-	get_component<ScriptManager>(SCRIPT_MAINFRAME)->finalize();
-	get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->finalize();
+
+	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++)
+		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->finalize(i + 1);
+	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++)
+		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->finalize(i + 1);
+	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++)
+		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->finalize(i + 1);
+
+	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->finalize();
 
 	/**
 	 * Server shutdown routine begins here...

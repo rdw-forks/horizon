@@ -36,6 +36,8 @@ list(REMOVE_ITEM TEST_SOURCES REGEX "${CMAKE_CURRENT_SOURCE_DIR}/prontera.cpp")
 
 set(CORE_DIR ${PROJECT_SOURCE_DIR}/src/Core)
 set(UTIL_DIR ${PROJECT_SOURCE_DIR}/src/Utility)
+set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/Server/Common)
+set(SERVER_DIR ${PROJECT_SOURCE_DIR}/src/Server)
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -58,11 +60,25 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			OR TEST_NAME STREQUAL "ThreadSafeQueueTest"
 			OR TEST_NAME STREQUAL "WorkerThreadPoolTest")
 		set (ADD_LIBS -lpthread)
-	elseif (TEST_NAME STREQUAL "LoggingTest"
-			OR TEST_NAME STREQUAL "SystemRoutinesTest")
+	elseif (TEST_NAME STREQUAL "LoggingTest")
 		set (ADD_SOURCES
 			${CORE_DIR}/Logging/Logger.cpp
 			${CORE_DIR}/Logging/Logger.hpp)
+	elseif (TEST_NAME STREQUAL "SystemRoutinesTest")
+		set (ADD_SOURCES
+			${COMMON_DIR}/Server.hpp
+			${COMMON_DIR}/Server.cpp
+			${COMMON_DIR}/System.hpp
+			${COMMON_DIR}/System.cpp
+			${CORE_DIR}/Logging/Logger.cpp
+			${CORE_DIR}/Logging/Logger.hpp
+			${SERVER_DIR}/pch.hpp
+			${COMMON_DIR}/CLI/CLICommand.hpp
+			${COMMON_DIR}/CLI/CommandLineInterface.cpp
+			${COMMON_DIR}/CLI/CommandLineInterface.hpp
+			${COMMON_DIR}/Configuration/Horizon.hpp)
+			set (ADD_LIBS OpenSSL::SSL ${LUA_LIBRARIES} ${Readline_LIBRARY})
+			set (ADD_INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "MySQLTest")
 		set (ADD_LIBS OpenSSL::SSL)
 	endif ()

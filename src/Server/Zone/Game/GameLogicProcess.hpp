@@ -40,9 +40,9 @@ namespace Zone
 class GameLogicProcess : public MainframeComponent
 {
 public:
-	GameLogicProcess() : MainframeComponent(Horizon::System::RUNTIME_DISPATCH_GAMELOGIC) { }
-    void initialize();
-    void finalize();
+	GameLogicProcess() : MainframeComponent(Horizon::System::RUNTIME_GAMELOGIC) { }
+    void initialize(int segment_number = 1);
+    void finalize(int segment_number = 1);
 
     MapManager &get_map_process() { return _map_manager; }
 

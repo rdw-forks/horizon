@@ -34,6 +34,7 @@
 #include "Libraries/Networking/AcceptSocketMgr.hpp"
 
 #include "Server/Auth/Auth.hpp"
+#include "Server/Auth/Session/AuthSession.hpp"
 #include "Server/Auth/Socket/AuthSocket.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
@@ -48,6 +49,8 @@ class ClientSocketMgr : public Networking::AcceptSocketMgr<AuthSocket>, public M
 {
 	typedef Networking::AcceptSocketMgr<AuthSocket> BaseSocketMgr;
 public:
+	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
+	
 	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = MAX_NETWORK_THREADS)
 	{
 		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
@@ -68,8 +71,8 @@ public:
 		return true;
 	}
 
-	virtual void initialize() override { this->initialize(); }
-	virtual void finalize() override { stop(); }
+	virtual void initialize(int segment_number = 1) override { this->initialize(); }
+	virtual void finalize(int segment_number = 1) override { stop(); }
 
 	virtual bool is_initialized() override { return _is_initialized.load(); }
 

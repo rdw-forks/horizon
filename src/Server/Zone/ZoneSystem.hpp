@@ -39,15 +39,11 @@ namespace Horizon
 {
 namespace Zone
 {
-class ZoneRuntimeRoutineContext : public System::RuntimeRoutineContext
+
+class SCENARIO_REQUEST_CZ_USE_SKILL_TOGROUND_WITHTALKBOX2 : public Horizon::System::RuntimeRoutineContext
 {
-	System::runtime_dispatch_module_type _module_t = System::RUNTIME_DISPATCH_MAIN;
-	System::runtime_synchronization_method _synchronization_t = System::RUNTIME_SYNC_NONE;
 public:
-	void register_()
-	{
-		Zone->system_routine_register(_module_t, _synchronization_t, shared_from_this());
-	}
+	SCENARIO_REQUEST_CZ_USE_SKILL_TOGROUND_WITHTALKBOX2() : Horizon::System::RuntimeRoutineContext(sZone) { }
 };
 }
 }

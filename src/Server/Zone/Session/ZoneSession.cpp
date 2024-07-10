@@ -142,5 +142,5 @@ void ZoneSession::update(uint32_t /*diff*/)
  */
 void ZoneSession::perform_cleanup()
 {
-	sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
+	sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
 }

@@ -243,11 +243,11 @@ bool Player::load()
 		 * Set map and coordinates for unit.
 		 */
 		MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
-		std::shared_ptr<Map> map = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map(r[10].as_string());
+		std::shared_ptr<Map> map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map(r[10].as_string());
 
 		if (map == nullptr) { 
 			HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
-			map = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().get_map("prontera");
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map("prontera");
 		}
 		
 		get_session()->set_map_name(map->get_name());

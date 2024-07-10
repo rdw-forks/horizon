@@ -114,7 +114,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	// The player is initialized within the map container, so the player must be added to the session first.
 	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
 	
-	sZone->get_component<ClientSocketMgr>(NETWORK_MAINFRAME)->set_socket_for_removal(get_session()->get_socket());
+	sZone->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->set_socket_for_removal(get_session()->get_socket());
 	
 	HLog(info) << "Player (" << pl->guid() << ") " << pl->name() << " has logged in.";
 	return true;
@@ -163,7 +163,7 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
+	sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
 bool ZoneClientInterface::update_session(int32_t account_id)
@@ -673,7 +673,7 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 
 	HLog(debug) << name << " : " << message;
 
-	std::shared_ptr<Horizon::Zone::Units::Player> player = sZone->get_component<GameLogicProcess>(GAME_LOGIC_MAINFRAME)->get_map_process().find_player(name);
+	std::shared_ptr<Horizon::Zone::Units::Player> player = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().find_player(name);
 
 	ZC_ACK_WHISPER02 pkt(get_session());
 	if (player != nullptr)
