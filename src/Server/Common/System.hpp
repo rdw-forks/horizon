@@ -39,6 +39,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
+#include <iostream>
 
 class Server;
 class MainframeComponent;
@@ -100,6 +101,13 @@ enum runtime_context_result : int
 	RUNTIME_CONTEXT_NO_STATE = 0,
 	RUNTIME_CONTEXT_FAIL     = 1,
 	RUNTIME_CONTEXT_PASS     = 2
+};
+
+enum runtime_context_state : int
+{
+	RUNTIME_CONTEXT_STATE_INACTIVE = 0,
+	RUNTIME_CONTEXT_STATE_ACTIVE = 1,
+	RUNTIME_CONTEXT_STATE_WAITING = 2
 };
 class SystemRoutineManager;
 
@@ -171,10 +179,10 @@ public:
         {
             runtime_work_queue_status status = get_status();
 
-            if (status == RUNTIME_WORK_QUEUE_CANCELLED || status <= RUNTIME_WORK_QUEUE_STARTED)
+            if (status == RUNTIME_WORK_QUEUE_CANCELLED || status == RUNTIME_WORK_QUEUE_COMPLETED)
                 return false;
 
-            _status.store(RUNTIME_WORK_QUEUE_CANCELLED);
+            _status.compare_exchange_strong(status, RUNTIME_WORK_QUEUE_CANCELLED);
             return true;
         }
 
@@ -225,7 +233,7 @@ public:
         {
 			std::shared_ptr<WorkContext> context = nullptr;
 			
-			_control_agent.start();
+			//_control_agent.start();
 
 			bool failed = false;
 
@@ -238,14 +246,16 @@ public:
 				if (_paused == true)
 					_paused = false;
 
-				if (_control_agent.get_status() == RUNTIME_WORK_QUEUE_CANCELLED)
+				if (_control_agent.get_status() == RUNTIME_WORK_QUEUE_CANCELLED) {
 					return false;
+				}
 
 				// break on execution failure.
 				if (context->execute() == false) {
 					failed = true;
 					break;
 				}
+
             }
 
 			if (failed == true) {
@@ -269,7 +279,15 @@ public:
 
     virtual bool run() 
 	{ 
-		return _queue_manager.process();
+		set_context_state(RUNTIME_CONTEXT_STATE_ACTIVE);
+
+		if (_queue_manager.process()) {
+			set_context_result(RUNTIME_CONTEXT_PASS);
+			return true;
+		}
+
+		set_context_result(RUNTIME_CONTEXT_FAIL);
+		return false;
 	}
 
 	WorkQueueManager &get_queue_manager() { return _queue_manager; }
@@ -284,6 +302,12 @@ public:
 		_result = pass;
 	}
 	runtime_context_result get_context_result() { return _result.load(); }
+	
+	void set_context_state(runtime_context_state state = RUNTIME_CONTEXT_STATE_INACTIVE)
+	{
+		_context_state_t = state;
+	}
+	runtime_context_state get_context_state() { return _context_state_t.load(); }
 
 	void set_synchronization_method(runtime_synchronization_method sync) { _synchronization_t = sync; }
 	runtime_synchronization_method get_synchronization_method() { return _synchronization_t; }
@@ -295,9 +319,9 @@ protected:
 	WorkControlAgent _control_agent;
 	WorkQueueManager _queue_manager;
 	boost::uuids::uuid _uuid;
-	std::atomic<enum runtime_context_result> _result;
-
+	std::atomic<enum runtime_context_result> _result{RUNTIME_CONTEXT_NO_STATE};
 	runtime_synchronization_method _synchronization_t{RUNTIME_SYNC_NONE};
+	std::atomic<enum runtime_context_state> _context_state_t{RUNTIME_CONTEXT_STATE_INACTIVE};
 };
 
 class RuntimeRoutineContext : public RuntimeContext

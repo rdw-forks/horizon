@@ -70,10 +70,27 @@ bool Horizon::System::RuntimeContextChain::ContextQueueManager::process()
 		if (context->get_routine_manager().get_module_type() != _chain->get_module_type()) {
 			context->dispatch();
 
-			if (context->get_synchronization_method() == RUNTIME_SYNC_WAIT_NO_CHECK_STATE)
-				while(context->get_context_result() == RUNTIME_CONTEXT_NO_STATE);
-			else if (context->get_synchronization_method() == RUNTIME_SYNC_WAIT_CHECK_STATE) {
-				while(context->get_context_result() == RUNTIME_CONTEXT_NO_STATE);
+			if (context->get_synchronization_method() == RUNTIME_SYNC_WAIT_NO_CHECK_STATE) {
+				while(context->get_context_result() == RUNTIME_CONTEXT_NO_STATE) {
+					if (context->get_context_state() != RUNTIME_CONTEXT_STATE_WAITING) {
+						context->set_context_state(RUNTIME_CONTEXT_STATE_WAITING);
+					}
+				}
+
+				if (context->get_context_result() == RUNTIME_CONTEXT_STATE_WAITING) {
+					context->set_context_state(RUNTIME_CONTEXT_STATE_ACTIVE);
+				}
+				/* Don't check the pass or fail of the context. */
+			} else if (context->get_synchronization_method() == RUNTIME_SYNC_WAIT_CHECK_STATE) {
+				while(context->get_context_result() == RUNTIME_CONTEXT_NO_STATE) {
+					if (context->get_context_state() != RUNTIME_CONTEXT_STATE_WAITING) {
+						context->set_context_state(RUNTIME_CONTEXT_STATE_WAITING);
+					}
+				}
+				if (context->get_context_result() == RUNTIME_CONTEXT_STATE_WAITING) {
+					context->set_context_state(RUNTIME_CONTEXT_STATE_ACTIVE);
+				}
+				/* check context result whether pass or fail. */
 				if (context->get_context_result() == RUNTIME_CONTEXT_FAIL) {
 					failed = true;
 					break;

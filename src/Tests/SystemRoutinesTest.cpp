@@ -217,3 +217,103 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
 	thread_2.join();
 	thread_3.join();
 }
+
+BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
+{
+    Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
+    Horizon::System::SystemRoutineManager srm_gl(Horizon::System::RUNTIME_GAMELOGIC);
+    Horizon::System::SystemRoutineManager srm_p(Horizon::System::RUNTIME_PERSISTENCE);
+    Horizon::System::SystemRoutineManager srm_s(Horizon::System::RUNTIME_SCRIPTVM);
+    Horizon::System::SystemRoutineManager srm_n(Horizon::System::RUNTIME_NETWORKING);
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_gl, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_3 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_p, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_4 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_s, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_5 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_n, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
+    work_request req;
+    
+	auto work = std::make_shared<TestWork>(work_request{ 20 });
+	work->execute();
+	while(!work->has_result());
+    auto work2 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+    auto work3 = std::make_shared<TestWork2>(work_request{ 40 });
+    auto work4 = std::make_shared<TestWork>(work_request{ 50 });
+    
+	routine_1->push(work2);
+	routine_1->push(work3);
+	routine_1->push(work4);
+    
+	auto work_gl_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+
+	routine_2->push(work_gl_1);
+    
+	auto work_p_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+
+	routine_3->push(work_p_1);
+    
+	auto work_s_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{10}, work->get_result());
+
+	routine_4->push(work_s_1);
+    
+	auto work_n_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{20}, work->get_result());
+
+	routine_5->push(work_n_1);
+
+	srm.push(routine_1);
+	srm.push(routine_2);
+	srm.push(routine_3);
+	srm.push(routine_4);
+	srm.push(routine_5);
+
+	std::thread thread_1 = std::thread([&](){
+	    srm.process_queue(); 
+	});
+
+	std::thread thread_2 = std::thread([&]() { 
+		while(!work_gl_1->has_result()) { srm_gl.process_queue(); }
+	});
+	
+	std::thread thread_3 = std::thread([&]() { 
+		routine_3->get_control_agent().cancel();
+		while(routine_3->get_control_agent().get_status() != Horizon::System::RUNTIME_WORK_QUEUE_CANCELLED) {
+			srm_p.process_queue(); 
+		}
+	});
+	
+	std::thread thread_4 = std::thread([&]() { 
+		routine_4->get_control_agent().cancel();
+		while(routine_4->get_control_agent().get_status() != Horizon::System::RUNTIME_WORK_QUEUE_CANCELLED) {
+			srm_s.process_queue(); 
+		}
+	});
+	
+	std::thread thread_5 = std::thread([&]() { 
+		while(!work_n_1->has_result()) { srm_n.process_queue(); }
+	});
+
+	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_n_1->has_result()));
+
+	while (routine_1->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE
+		|| routine_2->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE
+		|| routine_3->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL);
+	
+	BOOST_CHECK_EQUAL(routine_1->get_context_result(), Horizon::System::RUNTIME_CONTEXT_PASS);
+	BOOST_CHECK_EQUAL(routine_2->get_context_result(), Horizon::System::RUNTIME_CONTEXT_PASS);
+	BOOST_CHECK_EQUAL(routine_3->get_context_result(), Horizon::System::RUNTIME_CONTEXT_FAIL);
+
+	while (routine_4->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL || routine_5->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS);
+	
+	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
+	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work3->get_result()->get_one(), 400);
+	BOOST_CHECK_EQUAL(work4->get_result()->get_one(), 1000);
+	BOOST_CHECK_EQUAL(work_gl_1->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work_s_1->has_result(), false);
+	BOOST_CHECK_EQUAL(work_n_1->get_result()->get_one(), 600);
+
+	thread_1.join();
+	thread_2.join();
+	thread_3.join();
+	thread_4.join();
+	thread_5.join();
+}
