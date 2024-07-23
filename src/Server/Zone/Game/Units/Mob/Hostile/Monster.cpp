@@ -29,7 +29,6 @@
 
 #include "Monster.hpp"
 
-#include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"

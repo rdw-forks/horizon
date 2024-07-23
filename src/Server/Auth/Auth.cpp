@@ -40,7 +40,7 @@ using namespace Horizon::Auth;
  * Horizon Constructor.
  */
 AuthServer::AuthServer()
-: Server(), _update_timer(_io_service)
+: Server(), _update_timer(_io_context)
 {
 }
 
@@ -206,14 +206,14 @@ void AuthServer::update(uint64_t time)
 
 	getScheduler().Update();
 	
-	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->manage_sockets(time);
-	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->update_sessions(time);
+	sClientSocketMgr->manage_sockets(time);
+	sClientSocketMgr->update_sessions(time);
 	
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&AuthServer::update, this, std::time(nullptr)));
 	} else {
-		get_io_service().stop();
+		get_io_context().stop();
 	}
 }
 
@@ -222,19 +222,15 @@ void AuthServer::initialize_core()
 	/**
 	 * Core Signal Handler
 	 */
-	boost::asio::signal_set signals(get_io_service(), SIGINT, SIGTERM);
+	boost::asio::signal_set signals(get_io_context(), SIGINT, SIGTERM);
 	// Set signal handler for callbacks.
-	// Set signal handlers (this must be done before starting io_service threads,
+	// Set signal handlers (this must be done before starting io_context threads,
 	// because otherwise they would unblock and exit)
 	signals.async_wait(std::bind(&SignalHandler, std::placeholders::_1, std::placeholders::_2));
 
 	// Start Horizon Network
-	register_component(Horizon::System::RUNTIME_NETWORKING, std::make_shared<ClientSocketMgr>());
-	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->start(get_io_service(),
-						  general_conf().get_listen_ip(),
-						  general_conf().get_listen_port(),
-						  MAX_NETWORK_THREADS);
-
+	sClientSocketMgr->start(get_io_context(), general_conf().get_listen_ip(), general_conf().get_listen_port(), MAX_NETWORK_THREADS);
+	
 	// Initialize core.
 	Server::initialize();
 
@@ -243,7 +239,7 @@ void AuthServer::initialize_core()
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 
-	get_io_service().run();
+	get_io_context().run();
 
 	HLog(info) << "Shutdown process initiated...";
 	
@@ -255,7 +251,7 @@ void AuthServer::initialize_core()
 	/**
 	 * Stop all networks
 	 */
-	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->finalize();
+	sClientSocketMgr->stop();
 
 	/**
 	 * Server shutdown routine begins here...

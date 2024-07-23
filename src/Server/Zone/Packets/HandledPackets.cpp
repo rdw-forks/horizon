@@ -26,6 +26,7 @@
  **************************************************/
 
 #include "HandledPackets.hpp"
+#include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Interface/UI/UserInterface.hpp"
 

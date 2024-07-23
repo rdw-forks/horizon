@@ -29,9 +29,8 @@
 #ifndef HORIZON_ZONE_NPC_LUA_COMPONENT_HPP
 #define HORIZON_ZONE_NPC_LUA_COMPONENT_HPP
 
-
+#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Server/Zone/Script/Components/LUAComponent.hpp"
-
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 
 namespace Horizon

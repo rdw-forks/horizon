@@ -37,6 +37,8 @@
 #include "Server/Common/Configuration/Horizon.hpp"
 #include <cmath>
 #include <memory>
+#include <functional>
+#include <vector>
 
 namespace Horizon
 {

@@ -35,6 +35,7 @@ add_subdirectory(Interface)
 
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(PRIVATE_SOURCES
+	${DIR}/Main.cpp
 	${DIR}/Zone.hpp
 	${DIR}/Zone.cpp
 	${DIR}/ZoneRuntime.cpp
@@ -48,6 +49,7 @@ set(PRIVATE_SOURCES
 	${DIR}/Socket/ZoneSocket.cpp
 	${DIR}/Socket/ZoneSocket.hpp
 	${DIR}/SocketMgr/ClientSocketMgr.hpp
+	${DIR}/SocketMgr/ClientSocketMgr.cpp
 )
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
@@ -64,7 +66,6 @@ add_executable(zone
 	${SCRIPT_SOURCES}
 	${PERSISTENCE_SOURCES}
 	${INTERFACE_SOURCES}
-	${DATABASE_SOURCES}
 )
 
 target_precompile_headers(zone
@@ -97,10 +98,6 @@ target_include_directories(zone
 		${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
-		${SQLPP11_INCLUDE_DIR}
-		${MYSQL_INCLUDE_DIR}
-		$<$<BOOL:${WIN32}>:${UNOFFICIAL_MYSQL_CONNECTOR_CPP_INCLUDE_DIR}>
-		$<$<BOOL:${UNIX}>:${MYSQLCPPCONN8_INCLUDE_DIR}>
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 )

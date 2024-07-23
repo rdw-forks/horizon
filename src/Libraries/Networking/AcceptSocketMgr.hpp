@@ -44,25 +44,25 @@ class AsyncAcceptor;
  * @brief Socket Manager for Accepted Sockets.
  *        Deals with client sockets that were accepted by the server.
  */
-template <class SocketType>
-class AcceptSocketMgr : public SocketMgr<SocketType>
+template <class SocketType, class NetworkThreadType>
+class AcceptSocketMgr : public SocketMgr<SocketType, NetworkThreadType>
 {
 	typedef std::map<uint32_t, std::shared_ptr<SocketType>> SocketMap;
-	typedef SocketMgr<SocketType> BaseSocketMgr;
+	typedef SocketMgr<SocketType, NetworkThreadType> BaseSocketMgr;
 public:
 	/**
 	 * @brief Initialize and start accepting connections asynchronously.
 	 *        This method also starts the networking threads for accepted sockets.
-	 * @param[in|out] &io_service  const reference to the IO_Service object.
+	 * @param[in|out] &io_context  const reference to the io_context object.
 	 * @param[in|out] &listen_ip   const reference to the ip_address string for the acceptor to bind on.
 	 * @param[in]     port         port number for the acceptor to bind on.
 	 * @param[in]     threads      number of network acceptor threads to start and run.
 	 * @return true on success, false on failure.
 	 */
-	virtual bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
+	virtual bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false)
 	{
 		try {
-			_acceptor = std::make_unique<AsyncAcceptor>(io_service, listen_ip, port);
+			_acceptor = std::make_unique<AsyncAcceptor>(io_context, listen_ip, port);
 		} catch (boost::system::system_error const &error) {
 			HLog(error) << "Exception caught in AcceptSocketMgr::Start (" << listen_ip.c_str() << ", " << port << ") " << error.what();
 			return false;
@@ -74,7 +74,9 @@ public:
 		}
 
 		_acceptor->set_socket_factory(std::bind(&BaseSocketMgr::get_new_socket, this));
-		_acceptor->async_accept_with_callback(std::bind(&AcceptSocketMgr<SocketType>::on_socket_open, this, std::placeholders::_1, std::placeholders::_2));
+
+		if (!minimal)
+			_acceptor->async_accept_with_callback(std::bind(&AcceptSocketMgr<SocketType, NetworkThreadType>::on_socket_open, this, std::placeholders::_1, std::placeholders::_2));
 
 		HLog(info) << "Networking initialized, listening on " << listen_ip << "@" << port << ".";
 		HLog(info) << "Maximum Network Threads: " << threads;
@@ -88,13 +90,14 @@ public:
 	 */
 	virtual bool stop_network() override
 	{
-		if (_acceptor->is_open())
-			_acceptor->close();
-
 		BaseSocketMgr::stop_network();
+	
+		if (_acceptor->is_open()) {
+			_acceptor->close();
+		}
 
 		_socket_map.clear();
-
+		_acceptor.reset();
 		return true;
 	}
 

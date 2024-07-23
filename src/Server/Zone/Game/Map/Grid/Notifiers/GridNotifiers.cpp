@@ -30,7 +30,6 @@
 #include "GridNotifiers.hpp"
 
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
-#include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Game/Units/NPC/NPC.hpp"

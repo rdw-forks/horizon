@@ -30,26 +30,30 @@
 #ifndef HORIZON_SERVER_HPP
 #define HORIZON_SERVER_HPP
 
+#include "Core/Logging/Logger.hpp"
+
 #include "System.hpp"
-#include "CLI/CLICommand.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
-#include <boost/asio.hpp>
 #include <queue>
 
 #include <boost/mysql/error_with_diagnostics.hpp>
 #include <boost/mysql/handshake_params.hpp>
 #include <boost/mysql/results.hpp>
-#include <boost/mysql/static_results.hpp>
 #include <boost/mysql/tcp_ssl.hpp>
+
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/context.hpp>
+#include <boost/system/system_error.hpp>
 
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
 #include <sol/sol.hpp>
 
-using boost::asio::ip::tcp;
+#define TERMINAL_STR "Horizon $> "
 
 enum shutdown_stages
 {
@@ -69,7 +73,9 @@ extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_sta
 class MainframeComponent
 {
 public:
-	MainframeComponent(Horizon::System::runtime_module_type module_type) : _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) { }
+	MainframeComponent(Horizon::System::runtime_module_type module_type) 
+	: _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) 
+	{ }
 	virtual void initialize(int segment_number = 1) { }
 	virtual void finalize(int segment_number = 1) { }
 
@@ -89,8 +95,8 @@ public:
 			case Horizon::System::RUNTIME_MAIN: return "Main";
 			case Horizon::System::RUNTIME_GAMELOGIC: return "Game-logic";
 			case Horizon::System::RUNTIME_PERSISTENCE: return "Persistence";
-			case Horizon::System::RUNTIME_DATABASE: return "Database";
-			case Horizon::System::RUNTIME_COMMANDLINE: return "Command-Line";
+			//case Horizon::System::RUNTIME_DATABASE: return "Database";
+			//case Horizon::System::RUNTIME_COMMANDLINE: return "Command-Line";
 			case Horizon::System::RUNTIME_SCRIPTVM: return "Script-VM";
 			case Horizon::System::RUNTIME_NETWORKING: return "Networking";
 			default: return "Unknown";
@@ -103,6 +109,38 @@ private:
 	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_MAIN};
 	Horizon::System::SystemRoutineManager _hsr_manager;
 	boost::uuids::uuid _uuid;
+};
+
+class CLICommand
+{
+public:
+	typedef std::function<void(CLICommand, bool)> FinishFunc;
+
+	CLICommand() { };
+	
+	CLICommand(char *command, FinishFunc finish_func)
+	: m_command(command), m_finish_func(finish_func)
+	{
+		//
+	}
+
+	~CLICommand()
+	{
+	}
+
+	CLICommand(CLICommand &command)
+	{
+		m_command = command.m_command;
+		m_finish_func = command.m_finish_func;
+	}
+
+	CLICommand operator=(CLICommand &command)
+	{
+		return CLICommand(command);
+	}
+
+	std::string m_command;            ///< Command string.
+	FinishFunc m_finish_func;         ///< Completion handler function.
 };
 
 class CommandLineProcess : public MainframeComponent
@@ -123,6 +161,13 @@ public:
 	void initialize(int segment_number = 1) override;
 	void finalize(int segment_number = 1) override;
 
+	void command_complete(CLICommand /*cmd*/, bool /*success*/)
+	{
+		fflush(stdout);
+	}
+
+	void cli_thread_start();
+
 	/**
 	 * CLI Commands
 	 */
@@ -142,28 +187,23 @@ class DatabaseProcess : public MainframeComponent
 {
 public:
 	// MainframeComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
-	DatabaseProcess(boost::asio::io_context &io_context) : _io_context(io_context), MainframeComponent(Horizon::System::RUNTIME_MAIN) { }
+	DatabaseProcess() : MainframeComponent(Horizon::System::RUNTIME_DATABASE) { }
+	~DatabaseProcess() 
+	{ 
+		_connection.reset();
+		_ssl_ctx.reset();
+	}
 	
 	void initialize(int segment_number = 1) override { HLog(error) << "Database not configured"; }
-	void initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
-	{
-		try {
-    		boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::tls_client);
-    		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_io_context.get_executor(), ssl_ctx);
-    		boost::asio::ip::tcp::resolver resolver(_io_context.get_executor());
-    		auto endpoints = resolver.resolve(host, std::to_string(port));
-    		boost::mysql::handshake_params params(user, pass, database);
-    		_connection->connect(*endpoints.begin(), params);
-		} catch (boost::mysql::error_with_diagnostics &error) {
-			HLog(error) << error.what();
-		}
-
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, true);
-	}
+	void initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
 
 	void finalize(int segment_number = 1) override 
 	{
+		// Close connection object.
+		if (_connection != nullptr) {
+			_connection->close();
+		}
+		
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, false);
 	}
@@ -172,8 +212,9 @@ public:
 
 	bool is_initialized() { return _is_initialized.load(); }
 protected:
-    std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection;
-	boost::asio::io_context &_io_context;
+	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
+    std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
+	boost::asio::io_context _db_io_context;
 	std::atomic<bool> _is_initialized;
 };
 
@@ -186,6 +227,15 @@ struct mainframe_component_state_holder
 
 typedef std::map<std::string, mainframe_component_state_holder> MainframeComponents;
 
+/**
+ * Core IO Service
+ * @note moved from Server to Mainframe, because the DatabaseProcess was throwning an
+ * Access Violation Exception when trying to access the io_context from Server.
+ * The error was due to the fact that the DatabaseProcess ended after the io_context from Server
+ * was destructed. This is a tricky situation that needs to be remembered.
+ */
+extern boost::asio::io_context _io_context_global;
+
 class Mainframe
 {
 public:
@@ -194,6 +244,8 @@ public:
 
 	virtual void initialize() = 0; //< Mainframe initialization routine
 	virtual void finalize() = 0;   //< Mainframe finalization routine
+	virtual void post_initialize() = 0; //< Post initialization routine
+	virtual void post_finalize() = 0; //< Post finalization routine
 
 	struct general_server_configuration &general_conf() { return this->_config; }
 
@@ -211,8 +263,9 @@ public:
 	std::shared_ptr<T> get_component_of_type(Horizon::System::runtime_module_type type, int segment_number = 1)
 	{
 		for (auto c : _components) {
-			if (c.second.type == type && c.second.segment_number == segment_number)
+			if (c.second.type == type && c.second.segment_number == segment_number) {
 				return std::static_pointer_cast<T>(c.second.ptr);
+			}
 		}
 
 		return nullptr;
@@ -233,7 +286,7 @@ public:
 		mainframe_component_state_holder holder;
 		holder.segment_number = get_registered_component_count_of_type(type) + 1;
 		holder.type = type;
-		holder.ptr = component;
+		holder.ptr = std::dynamic_pointer_cast<MainframeComponent>(component);
 		_components.insert(std::pair(component->get_uuid_string(), holder)); 
 	}
 
@@ -249,9 +302,6 @@ public:
 
 	int get_component_count() { return _components.size(); }
 
-	/* Command Line Interface */
-	void initialize_command_line();
-
 	MainframeComponents get_component_of_types() { return _components; }
 
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
@@ -260,6 +310,10 @@ public:
 	void system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context);
 
 	Horizon::System::SystemRoutineManager &get_system_routine_manager() { return _hsr_manager; }
+
+	/* Core I/O Service*/
+	boost::asio::io_context &get_io_context();
+	
 protected:
 	MainframeComponents _components;
 	general_server_configuration _config;
@@ -278,10 +332,10 @@ public:
 	void initialize();
 	void finalize();
 	
+	void post_initialize();
+	void post_finalize();
+	
 	void print_help();
-
-	/* Core I/O Service*/
-	boost::asio::io_service &get_io_service();
 
 	/* General Configuration */
 	struct general_server_configuration &general_conf() { return this->general_config; }
@@ -293,29 +347,11 @@ public:
 		return get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->get_connection();
 	}
 
-	bool test_database_connection()
-	{
-		try {
-			const char *sql = "SELECT 'Hello World!'";
-			boost::mysql::results result;
-			get_database_connection()->execute(sql, result);
-
-			if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
-				return true;
-		} catch (boost::mysql::error_with_diagnostics &error) {
-			HLog(error) << error.what();
-		}
-		return false;
-	}
+	bool test_database_connection();
 
 protected:
 	/* General Configuration */
 	struct general_server_configuration general_config;
-    
-	/**
-	 * Core IO Service
-	 */
-	boost::asio::io_service _io_service;
 
 };
 

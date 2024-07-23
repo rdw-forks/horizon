@@ -1,0 +1,44 @@
+#include "Server/Zone/Zone.hpp"
+
+#include <random>
+#include <ctime>
+#include <crtdbg.h>
+
+/**
+ * Zone Server Main runtime entrypoint.
+ * @param argc
+ * @param argv
+ * @return
+ */
+int main(int argc, const char * argv[])
+{
+	std::srand(std::time(nullptr));
+	
+	if (argc > 1)
+		sZone->parse_exec_args(argv, argc);
+
+	/*
+	 * Read Configuration Settings for
+	 * the Zoneacter Server.
+	 */
+	if (!sZone->read_config())
+		exit(1); // Stop process if the file can't be read.
+
+	/**
+	 * Initialize the Common Core
+	 */
+	sZone->initialize();
+
+	/* io_context LOOP */
+	
+	sZone->finalize();
+	/*
+	 * Core Cleanup
+	 */
+	HLog(info) << "Server shutting down...";
+
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG); 
+    _CrtDumpMemoryLeaks();
+
+	return 0;
+}

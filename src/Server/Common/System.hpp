@@ -31,7 +31,6 @@
 #define HORIZON_SYSTEM_ROUTINES_HPP
 
 #include <boost/lockfree/spsc_queue.hpp>
-#include "Core/Logging/Logger.hpp"
 #include <optional>
 #include <vector>
 #include <memory>
@@ -79,12 +78,13 @@ enum runtime_work_run_result : int
 enum runtime_module_type : int
 {
 	RUNTIME_MAIN        = 0,
-	RUNTIME_COMMANDLINE = 1,
+	RUNTIME_COMMANDLINE = RUNTIME_MAIN, //.we use main because we want the main thread to print console output.
 	RUNTIME_NETWORKING  = 2,
 	RUNTIME_PERSISTENCE = 3,
 	RUNTIME_GAMELOGIC   = 4,
 	RUNTIME_SCRIPTVM    = 5,
-	RUNTIME_DATABASE    = 6
+	RUNTIME_DATABASE    = RUNTIME_MAIN, // Database utilizes main thread instead of its own separate thread.
+	RUNTIME_MODULE_MAX  = 7
 };
 
 enum runtime_synchronization_method : int
@@ -131,8 +131,7 @@ public:
     {
     public:
         virtual bool execute() 
-		{ 
-			HLog(warning) << "Nothing to execute";
+		{
 			return true;
 		}
     };
@@ -276,7 +275,7 @@ public:
 	
 	std::shared_ptr<WorkContext> pop() { return _queue_manager.pop(); }
 	void push(std::shared_ptr<WorkContext> context) { _queue_manager.push(context); }
-
+	
     virtual bool run() 
 	{ 
 		set_context_state(RUNTIME_CONTEXT_STATE_ACTIVE);
@@ -324,7 +323,43 @@ protected:
 	std::atomic<enum runtime_context_state> _context_state_t{RUNTIME_CONTEXT_STATE_INACTIVE};
 };
 
-class RuntimeRoutineContext : public RuntimeContext
+template <typename T = int>
+class ContextWithResult
+{
+public:
+	virtual bool has_result() { return true; }
+	virtual T get_result() { return _result; }
+	virtual void set_result(T result) { _result = result; }
+
+	virtual std::vector<T> get_result_vector() { return _result_vector; }
+	virtual void set_result_vector(std::vector<T> result_vector) { _result_vector = result_vector; }
+
+protected:
+	T _result;
+	std::vector<T> _result_vector;
+};
+
+template <typename T = int>
+class ContextUsesResult
+{
+public:
+	virtual bool has_use_result() { return true; }
+	virtual T get_use_result() { return _result; }
+	virtual void set_use_result(T result) { _result = result; }
+
+	virtual std::vector<T> get_use_result_vector() { return _result_vector; }
+	virtual void set_use_result_vector(std::vector<T> result_vector) { _result_vector = result_vector; }
+
+protected:
+	T _result;
+	std::vector<T> _result_vector;
+};
+
+template <typename ContextResultType = int, typename ContextUseResultType = int>
+class RuntimeRoutineContext 
+: public ContextWithResult<ContextResultType>,
+  public ContextUsesResult<ContextUseResultType>,
+  public RuntimeContext
 {
 public:
 	RuntimeRoutineContext(Server *s,  runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
@@ -338,28 +373,29 @@ public:
     class Result : public RuntimeContext::ResultContext
     {
     public:
-        Result(PayloadType payload) : _payload(payload) { }
-        Result(std::vector<PayloadType> payload_vector) : _payload_vector(payload_vector) { }
+        Result(PayloadType payload) 
+		: _payload(payload) { }
+        Result(std::vector<PayloadType> payload_vector) 
+		: _payload_vector(payload_vector) { }
 
 		PayloadType get_one() { return _payload; }
 		void set_one(PayloadType &payload) { _payload = payload; }
 
 		std::vector<PayloadType> get_many() { return _payload_vector; }
 		void set_many(std::vector<PayloadType> vec) { _payload_vector = vec; }
-		
-	private:
+
     	PayloadType _payload;
 		std::vector<PayloadType> _payload_vector;
     };
 
-    template <typename RequestType = int, typename ResultType = int, typename UseResultType = int>
+    template <typename ParentContextType, typename RequestType = int, typename ResultType = int, typename UseResultType = int>
     class Work : public RuntimeContext::WorkContext
     {
     public:
-        Work(RequestType request) 
-        : _request(request) { }
-        Work(RequestType request, std::shared_ptr<Result<UseResultType>> use_result) 
-        : _request(request), _use_result(use_result) { }
+        Work(std::shared_ptr<ParentContextType> parent_context, RequestType request) 
+        : _parent_context(parent_context), _request(request) { }
+        Work(std::shared_ptr<ParentContextType> parent_context, RequestType request, std::shared_ptr<Result<UseResultType>> use_result) 
+        : _parent_context(parent_context), _request(request), _use_result(use_result) { }
         
 		void set_request(RequestType request) { _request = request; }
 		RequestType &get_request() { return _request; }
@@ -370,16 +406,25 @@ public:
 
         virtual bool execute() 
         {
-            set_result(std::make_shared<Result<UseResultType>>(_use_result->get_one() + 200));
             std::cerr << "Nothing to execute." << std::endl;
 			return true;
         }
+
+		std::shared_ptr<ParentContextType> get_parent_context() { return _parent_context; }
+		void set_parent_context(std::shared_ptr<ParentContextType> parent_context) { _parent_context = parent_context; }
 		
-    private:
         std::shared_ptr<Result<ResultType>> _result;
 		std::shared_ptr<Result<UseResultType>> _use_result;
         RequestType _request;
+		std::shared_ptr<ParentContextType> _parent_context;
     };
+
+	template <typename ParentContextType>
+	void prepare(std::shared_ptr<ParentContextType> parent_context)
+	{
+		this->set_use_result(parent_context->get_result());
+		this->set_use_result_vector(parent_context->get_result_vector());
+	}
 };
 
 class RuntimeContextChain : public std::enable_shared_from_this<RuntimeContextChain>
@@ -527,7 +572,7 @@ public:
 	: _module_type(module_type)
 	{
 		if (_module_type < RUNTIME_MAIN || _module_type > Horizon::System::RUNTIME_SCRIPTVM) {
-			HLog(error) << "SystemRoutineManager for module type (" << module_type << ") failed to start. Invalid module type.";
+			std::cerr << "SystemRoutineManager for module type (" << module_type << ") failed to start. Invalid module type." << std::endl;
 		}
 	}
 

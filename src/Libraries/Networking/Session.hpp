@@ -28,6 +28,7 @@
 #ifndef HORIZON_NETWORKING_SESSION_HPP
 #define HORIZON_NETWORKING_SESSION_HPP
 
+#include "Core/Multithreading/ThreadSafeQueue.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 
 #include <memory>

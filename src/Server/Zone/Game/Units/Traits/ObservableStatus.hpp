@@ -30,6 +30,8 @@
 #ifndef HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
 #define HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
 
+#include <type_traits>
+#include <tuple>
 template <typename OBSERVABLE, typename ... HAS_OBSERVERS>
 class ObservableStatus
 {

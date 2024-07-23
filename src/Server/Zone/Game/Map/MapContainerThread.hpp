@@ -30,6 +30,7 @@
 #ifndef HORIZON_ZONE_GAME_MAPCONTAINERTHREAD_HPP
 #define HORIZON_ZONE_GAME_MAPCONTAINERTHREAD_HPP
 
+#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Core/Multithreading/ThreadSafeQueue.hpp"
 #include "Server/Zone/Script/ScriptManager.hpp"
 #include "Utility/TaskScheduler.hpp"

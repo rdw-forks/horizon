@@ -58,13 +58,13 @@
 #define MAX_NETWORK_THREADS 1
 
 // Max Game Logic Threads
-#define MAX_GAME_LOGIC_THREADS 2
+#define MAX_GAME_LOGIC_THREADS 1
 
 // Max Persistence Threads
-#define MAX_PERSISTENCE_THREADS 2
+#define MAX_PERSISTENCE_THREADS 1
 
 // Max Script VM Threads
-#define MAX_SCRIPT_VM_THREADS 2
+#define MAX_SCRIPT_VM_THREADS 1
 
 // Time in Microseconds (µs)
 #define MAX_CORE_UPDATE_INTERVAL 500

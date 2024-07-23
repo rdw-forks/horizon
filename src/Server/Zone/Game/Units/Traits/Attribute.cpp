@@ -38,7 +38,6 @@
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
-#include "Core/Logging/Logger.hpp"
 
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Traits;

@@ -41,51 +41,77 @@ namespace Horizon
 {
 namespace Zone
 {
+	
+class ZoneNetworkThread : public MainframeComponent, public Networking::NetworkThread<ZoneSocket>
+{
+public:
+	ZoneNetworkThread() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
+
+	bool start(int segment_number = 1)
+	{
+		if (!Networking::NetworkThread<ZoneSocket>::start(segment_number))
+			return false;
+
+		initialize(segment_number);
+		return true;
+	}
+
+	void run() override
+	{
+		Networking::NetworkThread<ZoneSocket>::run();
+	}
+
+	void update() override
+	{
+		Networking::NetworkThread<ZoneSocket>::update();
+
+		get_system_routine_manager().process_queue();
+	}
+
+	virtual void initialize(int segment_number = 1) override 
+	{ 
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
+	}
+
+	virtual void finalize(int segment_number = 1) override 
+	{
+		Networking::NetworkThread<ZoneSocket>::finalize(segment_number);
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false); 
+	}
+
+	virtual bool is_initialized() override { return _is_initialized.load(); }
+protected:
+	std::atomic<bool> _is_initialized;
+};
+
+
 /**
  * Manager of client sockets
  */
-class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket>, public MainframeComponent
+class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket, ZoneNetworkThread>
 {
-	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket> BaseSocketMgr;
+	typedef Horizon::Networking::AcceptSocketMgr<ZoneSocket, ZoneNetworkThread> BaseSocketMgr;
 public:
-	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
-
-	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
-	{
-		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
-			return false;
-
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, true);
-		return true;
-	}
+	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false);
 
 	bool stop()
 	{
 		if (!BaseSocketMgr::stop_network())
 			return false;
-
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, false);
 		return true;
 	}
-
-	virtual bool is_initialized() override { return _is_initialized.load(); }
-
-	virtual void initialize(int segment_number = 1) override { this->initialize(); }
-	virtual void finalize(int segment_number = 1) override { stop(); }
 
 	void update_sessions(uint64_t time)
 	{
 		auto socket_map = get_sockets();
 
 		for (auto s : socket_map) {
-			s.second->get_session()->update(time);
+			if (s.second->get_session() != nullptr)
+				s.second->get_session()->update(time);
 		}
 	}
-
-protected:
-	std::atomic<bool> _is_initialized;
 };
 }
 }

@@ -31,7 +31,6 @@
 #define HORIZON_ZONE_GAME_MAP_HPP
 
 #include "Path/AStar.hpp"
-#include "Core/Logging/Logger.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"

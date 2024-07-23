@@ -32,6 +32,7 @@
 
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Game/Units/Traits/ObservableStatus.hpp"
+#include <memory>
 
 namespace Horizon
 {

@@ -29,20 +29,22 @@
 
 #include "Zone.hpp"
 
+#include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 
 using namespace std;
 using namespace Horizon::Zone;
 
 ZoneMainframe::ZoneMainframe(s_zone_server_configuration &config) 
-: Server(), _config(config), _runtime(get_io_service(), general_conf())
+: Server(), _config(config)
 {
 
 }
 
 ZoneMainframe::~ZoneMainframe()
 {
-
+	if (!get_io_context().stopped())
+		get_io_context().stop();
 }
 
 void ZoneMainframe::initialize()
@@ -52,16 +54,9 @@ void ZoneMainframe::initialize()
 		context.Repeat();
 	});
 
-	// Start Network
-	register_component(Horizon::System::RUNTIME_NETWORKING, std::make_shared<ClientSocketMgr>());
-	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->start(get_io_service(),
-						  general_conf().get_listen_ip(),
-						  general_conf().get_listen_port(),
-						  MAX_NETWORK_THREADS);
-	
-	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
-		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
-		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
+	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
+		register_component(Horizon::System::RUNTIME_SCRIPTVM, std::make_shared<ScriptManager>());
+		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->initialize(i + 1);
 	}
 
 	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++) {
@@ -69,24 +64,29 @@ void ZoneMainframe::initialize()
 		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->initialize(i + 1);
 	}
 
-	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
-		register_component(Horizon::System::RUNTIME_SCRIPTVM, std::make_shared<ScriptManager>());
-		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->initialize(i + 1);
+	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
+		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
+		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
 	}
 
 	Server::initialize();
+}
 
-	// Initialize mainframe runtime. This is where the mainframe begins its routines of working during its lifetime.
-	get_runtime().initialize();
+void ZoneMainframe::post_initialize()
+{
+	for (auto i = _components.begin(); i != _components.end(); i++) {
+		while (i->second.ptr->is_initialized() == false) {
+			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
 
-	get_io_service().run();
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online" << " { uuid: " << i->first << " }";
+	}
 }
 
 void ZoneMainframe::finalize()
 {
 	HLog(info) << "Server shutdown initiated ...";
-
-	get_io_service().stop();
 
 	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++)
 		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->finalize(i + 1);
@@ -95,15 +95,21 @@ void ZoneMainframe::finalize()
 	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++)
 		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->finalize(i + 1);
 
-	get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->finalize();
-
-	/**
-	 * Server shutdown routine begins here...
-	 */
 	_task_scheduler.CancelAll();
 	
 	Server::finalize();
+}
 
+void ZoneMainframe::post_finalize()
+{
+	for (auto i = _components.begin(); i != _components.end(); i++) {
+		while (i->second.ptr->is_initialized() == true) {
+			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online (Shutting Down)" << " { uuid: " << i->first << " }";
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
+	}
 }
 
 void ZoneMainframe::verify_connected_sessions()
@@ -133,7 +139,7 @@ void ZoneMainframe::verify_connected_sessions()
  * Zone Main server constructor.
  */
 ZoneServer::ZoneServer()
-: ZoneMainframe(_zone_server_config)
+: ZoneMainframe(_zone_server_config), _runtime(std::make_shared<ZoneRuntime>(general_conf()))
 {
 }
 
@@ -142,6 +148,7 @@ ZoneServer::ZoneServer()
  */
 ZoneServer::~ZoneServer()
 {
+	_runtime.reset();
 }
 
 #define config_error(setting_name, default) \
@@ -176,9 +183,7 @@ bool ZoneServer::read_config()
 
 	config().set_script_root_path(tbl.get_or("script_root_path", std::string("scripts/")));
 	HLog(info) << "Script root path is set to " << config().get_script_root_path() << ", it will be used for all scripting references.";
-//	config().set_unit_save_interval(tbl.get_or("unit_save_interval", 180000));
-//	HLog(info) << "Unit data will be saved to the database every " << duration_cast<minutes>(std::chrono::milliseconds(config().get_unit_save_interval())).count() << " minutes and " << duration_cast<seconds>(std::chrono::milliseconds(config().get_unit_save_interval())).count() << " seconds.";
-	
+
 	config().set_session_max_timeout(tbl.get_or("session_max_timeout", 60));
 
 	HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "'.";
@@ -232,38 +237,22 @@ void ZoneServer::initialize()
 #endif
 	signal(SIGTERM, SignalHandler);
 
+	// Initialize mainframe runtime. This is where the mainframe begins its routines of working during its lifetime.
+	get_runtime()->initialize();
+						  
 	ZoneMainframe::initialize();
+
+	ZoneMainframe::post_initialize();
+
+	// IO context will run here, keeping the server / main thread in a loop.
+	// Once the runtime finalizes, io_context will stop and this function will return.
+	while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
+		_io_context_global.run_one();
 }
 
-/**
- * Zone Server Main runtime entrypoint.
- * @param argc
- * @param argv
- * @return
- */
-int main(int argc, const char * argv[])
+void ZoneServer::finalize()
 {
-	std::srand(std::time(nullptr));
-	
-	if (argc > 1)
-		sZone->parse_exec_args(argv, argc);
+	ZoneMainframe::finalize();
 
-	/*
-	 * Read Configuration Settings for
-	 * the Zoneacter Server.
-	 */
-	if (!sZone->read_config())
-		exit(1); // Stop process if the file can't be read.
-
-	/**
-	 * Initialize the Common Core
-	 */
-	sZone->initialize();
-
-	/*
-	 * Core Cleanup
-	 */
-	HLog(info) << "Server shutting down...";
-
-	return 0;
+	ZoneMainframe::post_finalize();
 }

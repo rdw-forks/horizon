@@ -32,7 +32,7 @@
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
-#include "Core/Logging/Logger.hpp"
+#include "Server/Zone/Socket/ZoneSocket.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 
 using namespace Horizon::Zone;

@@ -35,9 +35,13 @@ CollectSourceFiles(
 list(REMOVE_ITEM TEST_SOURCES REGEX "${CMAKE_CURRENT_SOURCE_DIR}/prontera.cpp")
 
 set(CORE_DIR ${PROJECT_SOURCE_DIR}/src/Core)
+set(LIBRARY_DIR ${PROJECT_SOURCE_DIR}/src/Libraries)
 set(UTIL_DIR ${PROJECT_SOURCE_DIR}/src/Utility)
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/Server/Common)
 set(SERVER_DIR ${PROJECT_SOURCE_DIR}/src/Server)
+set(ZONE_DIR ${SERVER_DIR}/Zone)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /MTd")
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -73,12 +77,38 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${CORE_DIR}/Logging/Logger.cpp
 			${CORE_DIR}/Logging/Logger.hpp
 			${SERVER_DIR}/pch.hpp
-			${COMMON_DIR}/CLI/CLICommand.hpp
-			${COMMON_DIR}/CLI/CommandLineInterface.cpp
-			${COMMON_DIR}/CLI/CommandLineInterface.hpp
 			${COMMON_DIR}/Configuration/Horizon.hpp)
 			set (ADD_LIBS OpenSSL::SSL ${LUA_LIBRARIES} ${Readline_LIBRARY})
 			set (ADD_INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
+	elseif (TEST_NAME STREQUAL "ZoneSystemTest")
+		set (ADD_SOURCES
+			${SERVER_DIR}/pch.hpp
+			${COMMON_SOURCES}
+			${COMMON_HEADERS}
+			${CORE_SOURCES}
+			${UTILITY_SOURCES}
+			${PACKET_SOURCES}
+			${PACKET_HEADERS}
+			${GAME_SOURCES}
+			${SCRIPT_SOURCES}
+			${PERSISTENCE_SOURCES}
+			${INTERFACE_SOURCES}
+			${ZONE_TESTING_SOURCES}
+		)
+		set (ADD_LIBS 
+        	${Boost_LIBRARIES}
+			networking
+			mcache
+			${Readline_LIBRARY}
+			${LUA_LIBRARIES}
+			OpenSSL::SSL
+		)
+		set (ADD_INCLUDE_DIRS 
+			${Boost_INCLUDE_DIRS}
+			${PUBLIC_INCLUDES}
+			${Readline_INCLUDE_DIR}
+			${LUA_INCLUDE_DIR}
+			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "MySQLTest")
 		set (ADD_LIBS OpenSSL::SSL)
 	endif ()

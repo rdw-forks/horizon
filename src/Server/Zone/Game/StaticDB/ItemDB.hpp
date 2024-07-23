@@ -29,9 +29,10 @@
 
 #ifndef HORIZON_ZONE_STATICDB_ITEMDB_HPP
 #define HORIZON_ZONE_STATICDB_ITEMDB_HPP
-
+#include "Core/Multithreading/LockedLookupTable.hpp"
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include <sol/sol.hpp>
 
 namespace Horizon
 {

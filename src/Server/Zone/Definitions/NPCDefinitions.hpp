@@ -32,6 +32,8 @@
 
 #include "UnitDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
+#include <memory>
+#include <string>
 
 #define NPC_START_GUID 5000000
 

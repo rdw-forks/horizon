@@ -30,6 +30,9 @@
 #ifndef HORIZON_ZONE_GAME_SHARED_RESOURCE_TRANSFORMATION_HPP
 #define HORIZON_ZONE_GAME_SHARED_RESOURCE_TRANSFORMATION_HPP
 
+#include "Core/Logging/Logger.hpp"
+#include <memory>
+
 namespace Horizon
 {
 namespace Zone

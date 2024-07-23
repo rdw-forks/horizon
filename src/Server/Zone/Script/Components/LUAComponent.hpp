@@ -29,7 +29,7 @@
 #ifndef HORIZON_ZONE_LUA_COMPONENT_HPP
 #define HORIZON_ZONE_LUA_COMPONENT_HPP
 
-
+#include <sol/sol.hpp>
 
 namespace Horizon
 {

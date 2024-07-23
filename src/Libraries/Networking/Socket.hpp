@@ -41,7 +41,7 @@
 #include <future>
 #include <type_traits>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/use_future.hpp>
 
@@ -50,6 +50,7 @@
 using boost::asio::ip::tcp;
 
 #define READ_BLOCK_SIZE 0x1000
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS 1
 
 namespace Horizon
 {

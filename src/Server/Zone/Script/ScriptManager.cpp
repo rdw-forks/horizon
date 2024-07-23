@@ -31,7 +31,6 @@
 
 #include "Server/Common/System.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
-#include "Core/Logging/Logger.hpp"
 #include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -67,7 +66,13 @@ void ScriptManager::initialize(int segment_number)
 
 void ScriptManager::finalize(int segment_number)
 {
-	_thread.join();
+	if (_thread.joinable()) {
+		try {
+			_thread.join();
+		} catch(std::exception &e) {
+			HLog(error) << "ScriptManager::finalize: " << e.what();
+		}
+	}
 
 	_script_files.clear();
 

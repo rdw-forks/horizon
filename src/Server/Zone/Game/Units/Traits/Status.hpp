@@ -35,6 +35,9 @@
 #include "Server/Zone/Game/Units/Traits/Appearance.hpp"
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 
+#include <ctime>
+#include <queue>
+
  // Linux
 
 struct item_entry_data;

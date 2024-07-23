@@ -31,6 +31,9 @@
 
 #include "Server/Zone/Game/Map/Grid/GridDefinitions.hpp"
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
+#include <cinttypes>
+#include <string>
+#include <unordered_map>
 
 #define MAX_MOB_DROP 10
 #define MAX_MVP_DROP 10

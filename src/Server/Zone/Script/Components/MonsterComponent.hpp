@@ -32,6 +32,7 @@
 #include "Server/Zone/Script/Components/LUAComponent.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 
+#include <map>
 
 namespace Horizon
 {

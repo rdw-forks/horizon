@@ -25,7 +25,7 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#include "CharClientInterface.hpp"
+#include "ZoneClientInterface.hpp"
 
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
@@ -114,7 +114,7 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	// The player is initialized within the map container, so the player must be added to the session first.
 	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
 	
-	sZone->get_component_of_type<ClientSocketMgr>(Horizon::System::RUNTIME_NETWORKING)->set_socket_for_removal(get_session()->get_socket());
+	sZone->get_client_socket_mgr().set_socket_for_removal(get_session()->get_socket());
 	
 	HLog(info) << "Player (" << pl->guid() << ") " << pl->name() << " has logged in.";
 	return true;

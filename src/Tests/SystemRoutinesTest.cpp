@@ -39,20 +39,19 @@
 #include <memory>
 
 #include "Server/Common/System.hpp"
-#include "Core/Logging/Logger.hpp"
 
 struct work_request
 {
     int i{20};
 };
 
-class TestWork : public Horizon::System::RuntimeRoutineContext::Work<work_request>
+class TestWork : public Horizon::System::RuntimeRoutineContext<int, int>::Work<Horizon::System::RuntimeRoutineContext<int, int>, work_request>
 {
 public:
-	TestWork(work_request req) : Work(req) { }
+	TestWork(std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> parent_context, work_request req) : Work(parent_context, req) { }
 
 	bool execute() { 
-		using ResultType = Horizon::System::RuntimeRoutineContext::Result<int>;
+		using ResultType = Horizon::System::RuntimeRoutineContext<int, int>::Result<int>;
 		std::promise<ResultType> p;
 		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
 		// We can use a promise / future combination of techniques to derive the final result.
@@ -69,13 +68,13 @@ public:
 	}
 };
 
-class TestWork2 : public Horizon::System::RuntimeRoutineContext::Work<work_request>
+class TestWork2 : public Horizon::System::RuntimeRoutineContext<int, int>::Work<Horizon::System::RuntimeRoutineContext<int, int>, work_request>
 {
 public:
-	TestWork2(work_request req) : Work(req) { }
+	TestWork2(std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> parent_context, work_request req) : Work(parent_context, req) { }
 
 	bool execute() { 
-		using ResultType = Horizon::System::RuntimeRoutineContext::Result<int>;
+		using ResultType = Horizon::System::RuntimeRoutineContext<int, int>::Result<int>;
 		std::promise<ResultType> p;
 		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
 		// We can use a promise / future combination of techniques to derive the final result.
@@ -92,19 +91,42 @@ public:
 	}
 };
 
+class TestWorkWithUseResult : public Horizon::System::RuntimeRoutineContext<int, int>::Work<Horizon::System::RuntimeRoutineContext<int, int>, work_request>
+{
+public:
+	TestWorkWithUseResult(std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> parent_context, work_request req, std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>::Result<int>> use_result) : Work(parent_context, req, use_result) { }
+
+	bool execute() { 
+		using ResultType = Horizon::System::RuntimeRoutineContext<int, int>::Result<int>;
+		std::promise<ResultType> p;
+		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
+		// We can use a promise / future combination of techniques to derive the final result.
+		std::thread t = std::thread([&]()
+		{ 
+			std::cout << "Calculating..." << std::endl;
+			p.set_value(ResultType(get_request().i * 20 + (*_use_result).get_one())); 
+		});
+		std::future<ResultType> f = p.get_future();
+		set_result(std::make_shared<ResultType>(f.get())); 
+		t.join();
+
+		return true;
+	}
+};
+
 BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
 {
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
-    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm, Horizon::System::RUNTIME_SYNC_NONE);
 
     work_request req;
     
-	auto work = std::make_shared<TestWork>(work_request{ 20 });
+	auto work = std::make_shared<TestWork>(routine_1, work_request{ 20 });
 	work->execute();
 	while(!work->has_result());
-    auto work2 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
-    auto work3 = std::make_shared<TestWork2>(work_request{ 40 });
-    auto work4 = std::make_shared<TestWork>(work_request{ 50 });
+    auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1, work_request{30}, work->get_result());
+    auto work3 = std::make_shared<TestWork2>(routine_1, work_request{ 40 });
+    auto work4 = std::make_shared<TestWork>(routine_1, work_request{ 50 });
     
 	routine_1->push(work2);
 	routine_1->push(work3);
@@ -114,7 +136,7 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
     srm.process_queue();
 
 	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
-	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 1000);
 	BOOST_CHECK_EQUAL(work3->get_result()->get_one(), 400);
 	BOOST_CHECK_EQUAL(work4->get_result()->get_one(), 1000);
 }
@@ -124,15 +146,15 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
 	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_1 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_MAIN);
 
-    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
-    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm, Horizon::System::RUNTIME_SYNC_NONE);
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm, Horizon::System::RUNTIME_SYNC_NONE);
 
     work_request req;
     
-	auto work = std::make_shared<TestWork>(work_request{ 20 });
-    auto work2 = std::make_shared<TestWork>(work_request{ 30 });
-    auto work3 = std::make_shared<TestWork>(work_request{ 40 });
-    auto work4 = std::make_shared<TestWork>(work_request{ 50 });
+	auto work = std::make_shared<TestWork>(routine_1, work_request{ 20 });
+    auto work2 = std::make_shared<TestWork>(routine_1, work_request{ 30 });
+    auto work3 = std::make_shared<TestWork>(routine_1, work_request{ 40 });
+    auto work4 = std::make_shared<TestWork>(routine_1, work_request{ 50 });
     
 	routine_1->push(work);
 	routine_1->push(work2);
@@ -160,27 +182,27 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
     Horizon::System::SystemRoutineManager srm_gl(Horizon::System::RUNTIME_GAMELOGIC);
     Horizon::System::SystemRoutineManager srm_p(Horizon::System::RUNTIME_PERSISTENCE);
-    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_gl, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_3 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_p, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm, Horizon::System::RUNTIME_SYNC_NONE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm_gl, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_3 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm_p, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
     work_request req;
     
-	auto work = std::make_shared<TestWork>(work_request{ 20 });
+	auto work = std::make_shared<TestWork>(routine_1, work_request{ 20 });
 	work->execute();
 	while(!work->has_result());
-    auto work2 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
-    auto work3 = std::make_shared<TestWork2>(work_request{ 40 });
-    auto work4 = std::make_shared<TestWork>(work_request{ 50 });
+    auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1, work_request{30}, work->get_result());
+    auto work3 = std::make_shared<TestWork2>(routine_1, work_request{ 40 });
+    auto work4 = std::make_shared<TestWork>(routine_1, work_request{ 50 });
     
 	routine_1->push(work2);
 	routine_1->push(work3);
 	routine_1->push(work4);
     
-	auto work_gl_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+	auto work_gl_1 = std::make_shared<TestWorkWithUseResult>(routine_2, work_request{30}, work->get_result());
 
 	routine_2->push(work_gl_1);
     
-	auto work_p_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+	auto work_p_1 = std::make_shared<TestWorkWithUseResult>(routine_3, work_request{30}, work->get_result());
 
 	routine_3->push(work_p_1);
 
@@ -207,11 +229,11 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
 	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_p_1->has_result()));
 
 	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
-	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 1000);
 	BOOST_CHECK_EQUAL(work3->get_result()->get_one(), 400);
 	BOOST_CHECK_EQUAL(work4->get_result()->get_one(), 1000);
-	BOOST_CHECK_EQUAL(work_gl_1->get_result()->get_one(), 600);
-	BOOST_CHECK_EQUAL(work_p_1->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work_gl_1->get_result()->get_one(), 1000);
+	BOOST_CHECK_EQUAL(work_p_1->get_result()->get_one(), 1000);
 
 	thread_1.join();
 	thread_2.join();
@@ -225,37 +247,37 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
     Horizon::System::SystemRoutineManager srm_p(Horizon::System::RUNTIME_PERSISTENCE);
     Horizon::System::SystemRoutineManager srm_s(Horizon::System::RUNTIME_SCRIPTVM);
     Horizon::System::SystemRoutineManager srm_n(Horizon::System::RUNTIME_NETWORKING);
-    std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_gl, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_3 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_p, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_4 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_s, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_5 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_n, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
+    std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm, Horizon::System::RUNTIME_SYNC_NONE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm_gl, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_3 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm_p, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_4 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm_s, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext<int, int>> routine_5 = std::make_shared<Horizon::System::RuntimeRoutineContext<int, int>>(srm_n, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
     work_request req;
     
-	auto work = std::make_shared<TestWork>(work_request{ 20 });
+	auto work = std::make_shared<TestWork>(routine_1, work_request{ 20 });
 	work->execute();
 	while(!work->has_result());
-    auto work2 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
-    auto work3 = std::make_shared<TestWork2>(work_request{ 40 });
-    auto work4 = std::make_shared<TestWork>(work_request{ 50 });
+    auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1, work_request{30}, work->get_result());
+    auto work3 = std::make_shared<TestWork2>(routine_1, work_request{ 40 });
+    auto work4 = std::make_shared<TestWork>(routine_1, work_request{ 50 });
     
 	routine_1->push(work2);
 	routine_1->push(work3);
 	routine_1->push(work4);
     
-	auto work_gl_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+	auto work_gl_1 = std::make_shared<TestWorkWithUseResult>(routine_2, work_request{30}, work->get_result());
 
 	routine_2->push(work_gl_1);
     
-	auto work_p_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{30}, work->get_result());
+	auto work_p_1 = std::make_shared<TestWorkWithUseResult>(routine_3, work_request{30}, work->get_result());
 
 	routine_3->push(work_p_1);
     
-	auto work_s_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{10}, work->get_result());
+	auto work_s_1 = std::make_shared<TestWorkWithUseResult>(routine_4, work_request{10}, work->get_result());
 
 	routine_4->push(work_s_1);
     
-	auto work_n_1 = std::make_shared<Horizon::System::RuntimeRoutineContext::Work<work_request, int, int>>(work_request{20}, work->get_result());
+	auto work_n_1 = std::make_shared<TestWorkWithUseResult>(routine_5, work_request{20}, work->get_result());
 
 	routine_5->push(work_n_1);
 
@@ -304,12 +326,12 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 	while (routine_4->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL || routine_5->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS);
 	
 	BOOST_CHECK_EQUAL(work->get_result()->get_one(), 400);
-	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work2->get_result()->get_one(), 1000);
 	BOOST_CHECK_EQUAL(work3->get_result()->get_one(), 400);
 	BOOST_CHECK_EQUAL(work4->get_result()->get_one(), 1000);
-	BOOST_CHECK_EQUAL(work_gl_1->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work_gl_1->get_result()->get_one(), 1000);
 	BOOST_CHECK_EQUAL(work_s_1->has_result(), false);
-	BOOST_CHECK_EQUAL(work_n_1->get_result()->get_one(), 600);
+	BOOST_CHECK_EQUAL(work_n_1->get_result()->get_one(), 800);
 
 	thread_1.join();
 	thread_2.join();

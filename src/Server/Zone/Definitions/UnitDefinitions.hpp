@@ -30,6 +30,7 @@
 #define HORIZON_ZONE_ENTITIES_DEFINITIONS
 
 #include "Server/Common/Configuration/Horizon.hpp"
+#include <cstring>
 
 enum unit_size_type
 {

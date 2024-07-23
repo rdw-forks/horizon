@@ -31,7 +31,7 @@
 #define HORIZON_ZONE_GAME_TRAITS_APPEARANCE_HPP
 
 #include "Server/Zone/Definitions/UnitDefinitions.hpp" // Linux
-
+#include <memory>
 namespace Horizon
 {
 namespace Zone

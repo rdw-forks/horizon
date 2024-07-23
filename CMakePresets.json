@@ -14,7 +14,8 @@
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
                 "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
-                "VCPKG_TARGET_TRIPLET": "x64-windows"
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
+				"CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {
@@ -33,7 +34,8 @@
                 "VCPKG_TARGET_TRIPLET": "x64-windows",
                 "WITH_TOOLS": true,
                 "WITHOUT_SERVERS": true,
-                "WITH_TESTS": false
+                "WITH_TESTS": false,
+				"CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {
@@ -52,7 +54,8 @@
                 "VCPKG_TARGET_TRIPLET": "x64-windows",
                 "WITH_TOOLS": false,
                 "WITHOUT_SERVERS": true,
-                "WITH_TESTS": true
+                "WITH_TESTS": true,
+				"CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
         {
@@ -61,7 +64,10 @@
             "displayName": "",
             "inherits": [
                 "Horizon"
-            ]
+            ],
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
         },
         {
             "name": "Horizon Tools Debug",
@@ -69,7 +75,10 @@
             "displayName": "",
             "inherits": [
                 "Horizon-Tools"
-            ]
+            ],
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
         },
         {
             "name": "Horizon Tests Debug",
@@ -77,7 +86,10 @@
             "displayName": "",
             "inherits": [
                 "Horizon-Tests"
-            ]
+            ],
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
         },
         {
             "name": "Horizon x86",
@@ -101,25 +113,25 @@
             "name": "Horizon",
             "displayName": "Visual Studio Community 2022 Release - amd64",
             "configurePreset": "Horizon",
-            "configuration": "Release"
+            "configuration": "RelWithDebInfo"
         },
         {
             "name": "Horizon-Tools",
             "displayName": "Visual Studio Community 2022 Release - Tools - amd64",
             "configurePreset": "Horizon-Tools",
-            "configuration": "Release"
+            "configuration": "RelWithDebInfo"
         },
         {
             "name": "Horizon-Tests",
             "displayName": "Visual Studio Community 2022 Release - Tests - amd64",
             "configurePreset": "Horizon-Tests",
-            "configuration": "Release"
+            "configuration": "RelWithDebInfo"
         },
         {
             "name": "Horizon x86",
             "displayName": "Visual Studio Community 2022 Release - x86 - Debug",
             "configurePreset": "Horizon x86",
-            "configuration": "Release"
+            "configuration": "RelWithDebInfo"
         }
     ]
 }

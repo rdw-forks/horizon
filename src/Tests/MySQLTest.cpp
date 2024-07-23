@@ -57,15 +57,15 @@ struct test{
 };
 BOOST_DESCRIBE_STRUCT(test, (), (idtest, testint, teststring, testbool, testdate, testdatetime))
 
-void test_connection(boost::mysql::tcp_ssl_connection &conn)
+void test_connection(std::shared_ptr<boost::mysql::tcp_ssl_connection> conn)
 {
     boost::mysql::statement stmt;
     boost::mysql::results results;
     boost::mysql::static_results<std::tuple<>> empty_result;
-    conn.execute("CREATE DATABASE IF NOT EXISTS `horizon`", results);
+    conn->execute("CREATE DATABASE IF NOT EXISTS `horizon`", results);
 
     try {
-        conn.execute("CREATE TABLE IF NOT EXISTS `horizon`.`test` ( \
+        conn->execute("CREATE TABLE IF NOT EXISTS `horizon`.`test` ( \
             `idtest` INT NOT NULL, \
             `testint` INT NOT NULL, \
             `teststring` VARCHAR(45) NOT NULL, \
@@ -76,9 +76,9 @@ void test_connection(boost::mysql::tcp_ssl_connection &conn)
         ", empty_result);
         std::cout << "Created Table `horizon`.`test`..." << std::endl;
 
-        stmt = conn.prepare_statement("INSERT INTO `horizon`.`test` (`idtest`, `testint`, `teststring`, `testbool`, `testdate`, `testdatetime`) VALUES (?, ?, ?, ?, ?, ?);");
+        stmt = conn->prepare_statement("INSERT INTO `horizon`.`test` (`idtest`, `testint`, `teststring`, `testbool`, `testdate`, `testdatetime`) VALUES (?, ?, ?, ?, ?, ?);");
         auto b = stmt.bind(1, 100, "test string", true, "1990-10-01", "1990-11-01 01:01:01");
-        conn.execute(b, empty_result);
+        conn->execute(b, empty_result);
 
         std::cout << "Inserted 1 column into `horizon`.`test`..." << std::endl;
     }
@@ -88,12 +88,12 @@ void test_connection(boost::mysql::tcp_ssl_connection &conn)
     
     try {
         std::cout << "Fetching 1 column from `horizon`.`test`..." << std::endl;
-        stmt = conn.prepare_statement("SELECT `idtest`, `testint`, `teststring`, `testbool`, `testdate`, `testdatetime` FROM `horizon`.`test` WHERE `idtest` = ?");
+        stmt = conn->prepare_statement("SELECT `idtest`, `testint`, `teststring`, `testbool`, `testdate`, `testdatetime` FROM `horizon`.`test` WHERE `idtest` = ?");
         auto b1 = stmt.bind(1);
 
         boost::mysql::static_results<test> test_rows;
 
-        conn.execute(b1, test_rows);
+        conn->execute(b1, test_rows);
 
         if (test_rows.rows().empty()) {
             BOOST_TEST_FAIL("Failed to retrieve rows for test table");
@@ -110,7 +110,7 @@ void test_connection(boost::mysql::tcp_ssl_connection &conn)
 
         std::cout << "Dropping table `horizon`.`test`..." << std::endl;
         
-        conn.execute("DROP TABLE `horizon`.`test`;", empty_result);
+        conn->execute("DROP TABLE `horizon`.`test`;", empty_result);
 
         std::cout << "Executed all queries successfully." << std::endl;
     }
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(MySQLTest)
     boost::asio::io_context ctx;
     boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::tls_client);
 
-    boost::mysql::tcp_ssl_connection conn(ctx.get_executor(), ssl_ctx);
+    std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = std::make_shared<boost::mysql::tcp_ssl_connection>(ctx.get_executor(), ssl_ctx);
 
     boost::asio::ip::tcp::resolver resolver(ctx.get_executor());
 
@@ -138,15 +138,15 @@ BOOST_AUTO_TEST_CASE(MySQLTest)
 
     boost::mysql::handshake_params params(user, pass, schema);
 
-    conn.connect(*endpoints.begin(), params);
+    conn->connect(*endpoints.begin(), params);
 
     const char *sql = "SELECT 'Hello World!'";
     boost::mysql::results result;
-    conn.execute(sql, result);
+    conn->execute(sql, result);
 
     std::cout << "Result: " << result.rows().at(0).at(0) << std::endl;
 
     test_connection(conn);
     
-    conn.close();
+    conn->close();
 }

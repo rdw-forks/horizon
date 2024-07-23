@@ -29,24 +29,32 @@
 
 #include "Server.hpp"
 
-#include "Server/Common/CLI/CommandLineInterface.hpp"
+#include "Core/Logging/Logger.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 #include "version.hpp"
 #include <boost/algorithm/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
+
 #include <iomanip>
+#if defined(__APPLE__) || defined(__MACH__)
+#include <editline/readline.h>
+#else
 #include <readline/readline.h>
+#include <readline/history.h>
+#endif
+#include <signal.h>
 
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
-Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
-Mainframe::~Mainframe() { }
+boost::asio::io_context _io_context_global = boost::asio::io_context();
 
-void Mainframe::initialize_command_line()
+Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
+Mainframe::~Mainframe() 
 {
-	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->initialize();
+	_components.clear();
+	std::cout << "Mainframe Destructed" << std::endl;
 }
 
 void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
@@ -57,12 +65,27 @@ void Mainframe::system_routine_register(Horizon::System::runtime_module_type mod
 	_hsr_manager.register_(module_t, sync_t, context);
 }
 
+boost::asio::io_context &Mainframe::get_io_context()
+{
+	return _io_context_global;
+}
+
 void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
 void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
 void MainframeComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
 void MainframeComponent::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
 {
 	_hsr_manager.register_(module_t, sync_t, context);
+}
+
+void Mainframe::post_initialize()
+{
+
+}
+
+void Mainframe::post_finalize()
+{
+
 }
 
 bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
@@ -74,7 +97,7 @@ bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 
 void CommandLineProcess::initialize(int segment_number)
 {
-	_cli_thread = std::thread(std::bind(&cli_thread_start, this));
+	_cli_thread = std::thread(std::bind(&CommandLineProcess::cli_thread_start, this));
 
 	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
 
@@ -94,23 +117,103 @@ void CommandLineProcess::finalize(int segment_number)
 void CommandLineProcess::process()
 {
 	while (_cli_cmd_queue.size()) {
-		CLICommand command = _cli_cmd_queue.front();
-		_cli_cmd_queue.pop();
-		bool ret = false;
-		std::vector<std::string> separated_args;
-		boost::algorithm::split(separated_args, command.m_command, boost::algorithm::is_any_of(" "));
+		/**
+		 * Error on this line, need to fix it. Particularly with VS Code debugger. It is probably only in the debugger because it acts wierd with line inputs.
+		 * We will disable the command line on test runs for now.
+		 * Exception thrown at 0x00007FFA60FAF39C in ZoneSystemTest.exe: Microsoft C++ exception: std::bad_alloc at memory location 0x000000851FAFE830.
+		 * Failed to process command line input: bad allocation
+		 */
+		try {
+			CLICommand command = _cli_cmd_queue.front();
+			_cli_cmd_queue.pop();
 
-		std::function<bool(std::string)> cmd_func = find(separated_args[0]);
+			bool ret = false;
+			std::vector<std::string> separated_args;
+			boost::algorithm::split(separated_args, command.m_command, boost::algorithm::is_any_of(" "));
+		
+			std::function<bool(std::string)> cmd_func = find(separated_args[0]);
+		
+			if (cmd_func) {
+				ret = cmd_func(command.m_command);
+			} else {
+				HLog(info) << "Command '" << command.m_command << "' not found!";
+			}
+		
+			if (command.m_finish_func != nullptr)
+				command.m_finish_func(command, ret);
+		} catch(std::exception &e) {
+			HLog(error) << "Failed to process command line input: " << e.what();
+			return;
+		}
+	}
+}
 
-		if (cmd_func) {
-			ret = cmd_func(command.m_command);
-		} else {
-			HLog(info) << "Command '" << command.m_command << "' not found!";
+void CommandLineProcess::cli_thread_start()
+{
+	printf("\a");
+
+	while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
+	{
+		char *command_str;
+
+		try {
+			command_str = readline(TERMINAL_STR);
+			rl_bind_key('\t', rl_complete);
+		} catch(std::bad_alloc &e) {
+			HLog(error) << "Failed to allocate memory for command line input.";
+			set_shutdown_stage(SHUTDOWN_INITIATED);
+			set_shutdown_signal(SIGTERM);
+			break;
+		} catch(std::length_error &e) {
+			HLog(error) << "Command line input too long.";
+			set_shutdown_stage(SHUTDOWN_INITIATED);
+			set_shutdown_signal(SIGTERM);
+			break;
 		}
 
-		if (command.m_finish_func != nullptr)
-			command.m_finish_func(command, ret);
+		if (command_str != nullptr) {
+			int size = 0;
+			for (int x = 0; command_str[x]; ++x) {
+				if (command_str[x] == '\r' || command_str[x] == '\n') {
+					command_str[x] = 0;
+					break;
+				}
+				size++;
+			}
+
+			if (!*command_str || size == 0) {
+				free(command_str);
+				fflush(stdout);
+				continue;
+			}
+
+			fflush(stdout);
+			queue(CLICommand(command_str, std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));
+			add_history(command_str);
+			std::free(command_str);
+			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL * 1)); // Sleep until core has updated.
+		} else if (feof(stdin)) {
+			set_shutdown_stage(SHUTDOWN_INITIATED);
+			set_shutdown_signal(SIGTERM);
+		}
 	}
+}
+
+void DatabaseProcess::initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
+{
+	try {
+		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
+		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_db_io_context.get_executor(), *_ssl_ctx);
+		boost::asio::ip::tcp::resolver resolver(_db_io_context.get_executor());
+		auto endpoints = resolver.resolve(host, std::to_string(port));
+		boost::mysql::handshake_params params(user, pass, database);
+		_connection->connect(*endpoints.begin(), params);
+	} catch (boost::mysql::error_with_diagnostics &error) {
+		HLog(error) << error.what();
+	}
+
+	bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, true);
 }
 
 /* Public */
@@ -189,9 +292,8 @@ bool Server::parse_common_configs(sol::table &tbl)
 	std::string tmp_string{""};
 
 	general_conf().set_listen_ip(tbl.get_or("bind_ip", std::string("127.0.0.1")));
-
 	general_conf().set_listen_port(tbl.get_or("bind_port", 0));
-    
+	
 	if (general_conf().get_listen_port() == 0) {
 		HLog(error) << "Invalid or non-existent configuration for 'bind_port', Halting...";
 		return false;
@@ -206,8 +308,8 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
 		
-		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>(get_io_service()));
-		
+		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
+
 		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(1,
 			general_conf().get_db_host(), 
 			general_conf().get_db_port(), 
@@ -244,37 +346,40 @@ void Server::initialize()
 	if (general_conf().is_test_run()) {
 		HLog(info) << "Command line not supported during test-runs... skipping.";
 	} else {
-		HLog(info) << "Initializing command line.";
+		HLog(info) << "Horizon Command-Line initializing...";
 		register_component(Horizon::System::RUNTIME_COMMANDLINE, std::make_shared<CommandLineProcess>());
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->initialize();
-	}
-
-	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second.ptr->is_initialized() == false) {
-			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online" << " { uuid: " << i->first << " }";
 	}
 }
 
 void Server::finalize()
 {
-	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
+	if (!general_conf().is_test_run())
+		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
+	
 	get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
-
-	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second.ptr->is_initialized() == true) {
-			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online (Shutting Down)" << " { uuid: " << i->first << " }";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
-	}
 }
 
-boost::asio::io_service &Server::get_io_service()
+void Server::post_initialize()
 {
-	return _io_service;
+	Mainframe::post_initialize();
+}
+
+void Server::post_finalize()
+{
+	Mainframe::post_finalize();
+}
+
+bool Server::test_database_connection()
+{
+	try {
+		const char *sql = "SELECT 'Hello World!'";
+		boost::mysql::results result;
+		get_database_connection()->execute(sql, result);
+		if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
+			return true;
+	} catch (boost::mysql::error_with_diagnostics &error) {
+		HLog(error) << error.what();
+	}
+	return false;
 }

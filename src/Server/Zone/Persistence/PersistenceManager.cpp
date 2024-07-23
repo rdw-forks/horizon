@@ -40,7 +40,8 @@ void PersistenceManager::initialize(int segment_number)
 
 void PersistenceManager::finalize(int segment_number)
 {
-    _thread.join();
+	if (_thread.joinable())
+	    _thread.join();
     
     bool value = _is_initialized;
 	_is_initialized.compare_exchange_strong(value, false);

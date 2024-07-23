@@ -26,6 +26,7 @@
  **************************************************/
 
 #include "TransmittedPackets.hpp"
+#include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Utility/Utility.hpp"
 

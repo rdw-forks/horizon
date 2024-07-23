@@ -38,10 +38,6 @@ project (${PROJECT_NAME})
 enable_language(CXX)
 enable_language(C)
 
-if (NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Debug)
-endif()
-
 #################################
 # CMAKE Module Path
 #################################

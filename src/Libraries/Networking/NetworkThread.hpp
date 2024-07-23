@@ -51,12 +51,12 @@ namespace Networking
  *        Once started, the object blocks to handle I/O events and requires explicit stopping.
  */
 template <class SocketType>
-class NetworkThread
+class NetworkThread : public std::enable_shared_from_this<NetworkThread<SocketType>>
 {
 	typedef std::vector<std::shared_ptr<SocketType>> SocketContainer;
 public:
 	NetworkThread()
-	: _connections(0), _finalizing(false), _update_timer(_io_service)
+	: _connections(0), _finalizing(false), _update_timer(_io_context)
 	{
 		// Constructor
 	}
@@ -67,25 +67,23 @@ public:
 	 */
 	virtual ~NetworkThread()
 	{
-		finalize();
+		finalize(_segment_number);
 	}
 
 	/**
 	 * @brief Halts the IO Service and marks the network thread as stopped.
 	 */
-	void finalize()
+	virtual void finalize(int segment_number = 1)
 	{
-		if (_finalizing.exchange(true))
-			return;
+		_finalizing.exchange(true);
 	}
 
 	void join()
 	{
-		_io_service.stop();
-
-		if (_thread != nullptr && _thread->joinable()) {
+		try {
 			_thread->join();
-			_thread.reset(nullptr);
+		} catch (std::system_error &error) {
+			HLog(error) << "Error joining network thread2: " << error.what();
 		}
 	}
 
@@ -93,11 +91,12 @@ public:
 	 * @brief Initializes the network thread and runs.
 	 * @return true on success, false if thread is a nullptr.
 	 */
-	bool start()
+	virtual bool start(int segment_number = 1)
 	{
 		if (_thread != nullptr)
 			return false;
 
+		_segment_number = segment_number;
 		_thread.reset(new std::thread(&NetworkThread::run, this));
 		return true;
 	}
@@ -121,7 +120,7 @@ public:
 	 *        Once a socket is accepted or connected, its ownership is moved into a network thread.
 	 * @return a new shared pointer to a tcp::socket.
 	 */
-	std::shared_ptr<tcp::socket> get_new_socket() { return std::make_shared<tcp::socket>(_io_service); }
+	std::shared_ptr<tcp::socket> get_new_socket() { return std::make_shared<tcp::socket>(_io_context); }
 
 	/**
 	 * @brief Gets the total number of network connections or sockets
@@ -134,19 +133,19 @@ public:
 	 * @brief Issues the status of network thread whether it is finalizing or not.
 	 * @return boolean finalizing of the network thread status.
 	 */
-	bool is_finalizing() { return connection_count() > 0 && _finalizing; }
+	bool is_finalizing() { return _finalizing; }
 protected:
 	/**
 	 * @brief Run the I/O Service loop within this network thread.
 	 *        Before running, this method gives the I/O service some work
 	 *        by asynchronously running a deadline timer on @see update()
 	 */
-	void run()
+	virtual void run()
 	{
 		_update_timer.expires_from_now(boost::posix_time::milliseconds(1));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
-		_io_service.run();
+		_io_context.run();
 
 		_new_socket_queue.clear();
 		_active_sockets.clear();
@@ -158,7 +157,7 @@ protected:
 	 *        1) Issuing a routine to process the new sockets queue.
 	 *        2) Closes sockets that cannot be updated. @see Socket<SocketType>::update()
 	 */
-	void update()
+	virtual void update()
 	{
 		_update_timer.expires_from_now(boost::posix_time::milliseconds(1));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
@@ -184,6 +183,12 @@ protected:
 
 				return false;
 			}), _active_sockets.end());
+
+		if (is_finalizing()) {
+			_io_context.stop();
+			_finalizing.exchange(false);
+			HLog(info) << "Network thread " << (void *) (_thread.get()) << " has been finalized.";
+		}
 	}
 
 	/**
@@ -219,6 +224,7 @@ protected:
 	}
 
 private:
+	int _segment_number{1};
 	std::atomic<int32_t> _connections;
 	std::atomic<bool> _finalizing;
 
@@ -229,7 +235,7 @@ private:
 
 	std::mutex _new_socket_queue_lock;
 
-	boost::asio::io_service _io_service;
+	boost::asio::io_context _io_context;
 	boost::asio::deadline_timer _update_timer;
 };
 }

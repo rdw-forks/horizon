@@ -1,4 +1,4 @@
-/***************************************************
+a/***************************************************
  *       _   _            _                        *
  *      | | | |          (_)                       *
  *      | |_| | ___  _ __ _ _______  _ __          *
@@ -7,6 +7,7 @@
  *      \_| |_/\___/|_|  |_/___\___/|_| |_|        *
  ***************************************************
  * This file is part of Horizon (c).
+ *
  * Copyright (c) 2019 Sagun K. (sagunxp@gmail.com).
  * Copyright (c) 2019 Horizon Dev Team.
  *
@@ -26,38 +27,13 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
-#ifndef HORIZON_CLICOMMAND_HPP
-#define HORIZON_CLICOMMAND_HPP
+#ifndef HORIZON_SERVER_DEFINITIONS
+#define HORIZON_SERVER_DEFINITIONS
 
-class CLICommand
-{
-public:
-	typedef void (*FinishFunc) (CLICommand cmd, bool success);
+#include <boost/log/trivial.hpp>
+#include <boost/log/sources/severity_logger.hpp>
 
-	CLICommand() { };
-	
-	CLICommand(char *command, FinishFunc finish_func)
-	: m_command(command), m_finish_func(finish_func)
-	{
-		//
-	}
+#define MainLog(type) BOOST_LOG_SEV(get_core_log(), boost::log::trivial::type)
+#define HLog(type) BOOST_LOG_SEV(this->get_core_log(), boost::log::trivial::type)
 
-	~CLICommand()
-	{
-	}
-
-	CLICommand(CLICommand &command)
-	{
-		m_command = command.m_command;
-		m_finish_func = command.m_finish_func;
-	}
-
-	CLICommand operator=(CLICommand &command)
-	{
-		return CLICommand(command);
-	}
-
-	std::string m_command;            ///< Command string.
-	FinishFunc m_finish_func;         ///< Completion handler function.
-};
-#endif //HORIZON_CLICOMMAND_HPP
+#endif /* HORIZON_SERVER_DEFINITIONS */

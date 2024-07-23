@@ -30,7 +30,6 @@
 #ifndef HORIZON_NETWORKING_SOCKETMGR_HPP
 #define HORIZON_NETWORKING_SOCKETMGR_HPP
 
-#include "Core/Logging/Logger.hpp"
 #include "Libraries/Networking/AsyncAcceptor.hpp"
 #include "Libraries/Networking/NetworkThread.hpp"
 #include "Libraries/Networking/Connector.hpp"
@@ -46,10 +45,11 @@ namespace Horizon
 {
 namespace Networking
 {
-template <class SocketType>
+template <class SocketType, class NetworkThreadType>
 class SocketMgr
 {
-	typedef std::shared_ptr<NetworkThread<SocketType>> NetworkThreadPtr;
+	typedef std::shared_ptr<NetworkThreadType> NetworkThreadPtr;
+	typedef std::unordered_map<uint32_t, NetworkThreadPtr> network_thread_map;
 public:
 	virtual ~SocketMgr()
 	{
@@ -64,14 +64,14 @@ public:
 	virtual bool StartNetworkThreads(uint32_t threads = 1)
 	{
 		for (uint32_t i = 0; i < threads; i++) {
-			NetworkThreadPtr network_thr = std::make_shared<NetworkThread<SocketType>>();
+			NetworkThreadPtr network_thr = std::make_shared<NetworkThreadType>();
 
 			if (network_thr == nullptr) {
 				HLog(error) << "Networking: Error in creating threads, SocketMgr::StartThreadForNetworks.";
 				return false;
 			}
 
-			network_thr->start();
+			network_thr->start(i + 1);
 
 			_thread_map.insert(std::make_pair(i, network_thr));
 		}
@@ -92,7 +92,6 @@ public:
 			while (thr->is_finalizing())
 				;
 			thr->join();
-			HLog(info) << "Finalized network thread " << (void *) thr.get();
 			it = _thread_map.erase(it);
 		}
 
@@ -151,9 +150,11 @@ public:
 		return std::make_pair(NetworkThreadPtr(_thread_map.at(min_idx))->get_new_socket(), min_idx);
 	}
 
+	network_thread_map &get_thread_map() { return _thread_map; }
+
 private:
 	uint64_t _last_socket_id{0};                                      ///< ID of the last socket connection. Used for new connection IDs.
-	std::unordered_map<uint32_t, NetworkThreadPtr> _thread_map;       ///< Unordered map of threads with a unique integer as the key.
+	network_thread_map _thread_map;       ///< Unordered map of threads with a unique integer as the key.
 };
 }
 }

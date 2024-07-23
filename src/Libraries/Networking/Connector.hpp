@@ -34,7 +34,7 @@
 #include "Server/Common/Server.hpp"
 
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <thread>
 #include <functional>
 

@@ -42,22 +42,72 @@ namespace Horizon
 {
 namespace Char
 {
+	
+class CharNetworkThread : public MainframeComponent, public Networking::NetworkThread<CharSocket>
+{
+public:
+	CharNetworkThread() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
+
+	bool start(int segment_number = 1)
+	{
+		if (!Networking::NetworkThread<CharSocket>::start(segment_number))
+			return false;
+
+		initialize(segment_number);
+		return true;
+	}
+
+	void run() override
+	{
+		Networking::NetworkThread<CharSocket>::run();
+	}
+
+	void update() override
+	{
+		Networking::NetworkThread<CharSocket>::update();
+
+		get_system_routine_manager().process_queue();
+	}
+
+	virtual void initialize(int segment_number = 1) override 
+	{ 
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
+	}
+
+	virtual void finalize(int segment_number = 1) override 
+	{
+		Networking::NetworkThread<CharSocket>::finalize(segment_number);
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false); 
+	}
+
+	virtual bool is_initialized() override { return _is_initialized.load(); }
+protected:
+	std::atomic<bool> _is_initialized;
+};
+
 /**
  * Manager of client sockets and initialization of the packet db * @brief Singleton class
  */
-class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<CharSocket>, public MainframeComponent
+class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<CharSocket, CharNetworkThread>
 {
-	typedef Horizon::Networking::AcceptSocketMgr<CharSocket> BaseSocketMgr;
+	typedef Horizon::Networking::AcceptSocketMgr<CharSocket, CharNetworkThread> BaseSocketMgr;
 public:
-	ClientSocketMgr() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
-
-	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
+	static ClientSocketMgr *Instance()
 	{
-		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
+		static ClientSocketMgr instance;
+		return &instance;
+	}
+
+	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
+	{
+		if (!BaseSocketMgr::start(io_context, listen_ip, port, threads))
 			return false;
 
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, true);
+		for (auto i : get_thread_map()) {
+			sChar->register_component(Horizon::System::RUNTIME_NETWORKING, (std::dynamic_pointer_cast<CharNetworkThread>(i.second->shared_from_this())));
+		}
 		return true;
 	}
 
@@ -65,29 +115,20 @@ public:
 	{
 		if (!BaseSocketMgr::stop_network())
 			return false;
-
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, false);
-
 		return true;
 	}
-
-	virtual void initialize(int segment_number = 1) override { this->initialize(); }
-	virtual void finalize(int segment_number = 1) override { stop(); }
-
-	virtual bool is_initialized() override { return _is_initialized.load(); }
 
 	void update_sessions(uint64_t time)
 	{
 		auto socket_map = get_sockets();
 
 		for (auto s : socket_map) {
-			s.second->get_session()->update(time);
+			if (s.second->get_session() != nullptr)
+				s.second->get_session()->update(time);
 		}
 	}
-protected:
-	std::atomic<bool> _is_initialized;
 };
 }
 }
+#define sClientSocketMgr Horizon::Char::ClientSocketMgr::Instance()
 #endif /* HORIZON_CHAR_CLIENTSOCKETMGR_HPP */

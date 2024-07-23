@@ -87,18 +87,18 @@ public:
 	void initialize();
 	void finalize();
 
+	void post_initialize();
+	void post_finalize();
+
 	s_zone_server_configuration &config() { return _config; }
 
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 
 	void verify_connected_sessions();
 
-	ZoneRuntime &get_runtime() { return _runtime; }
-
 protected:
 	TaskScheduler _task_scheduler;
 	s_zone_server_configuration _config;
-	ZoneRuntime _runtime;
 };
 
 class ZoneServer : public ZoneMainframe
@@ -115,14 +115,21 @@ public:
 
 	bool read_config();
 	void initialize();
+	void finalize();
 
 	s_zone_server_configuration &config() { return _zone_server_config; }
+
+	std::shared_ptr<ZoneRuntime> get_runtime() { return _runtime; }
 
 	uint64_t to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3);
 	void from_uuid(uint64_t unit_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3);
 
+	ClientSocketMgr &get_client_socket_mgr() { return _client_socket_mgr; }
+
 private:
 	s_zone_server_configuration _zone_server_config;
+	std::shared_ptr<ZoneRuntime> _runtime;
+	ClientSocketMgr _client_socket_mgr;
 };
 }
 }

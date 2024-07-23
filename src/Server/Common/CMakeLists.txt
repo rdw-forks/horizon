@@ -25,7 +25,6 @@
 # along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ###################################################
 
-add_subdirectory(CLI)
 add_subdirectory(Definitions)
 add_subdirectory(Interfaces)
 add_subdirectory(Base)
@@ -34,10 +33,13 @@ add_subdirectory(Configuration)
 set(DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(MAIN_COMMON_HEADERS
-	${DIR}/Server.hpp)
+	${DIR}/Server.hpp
+	${DIR}/System.hpp
+	${DIR}/ServerDefinitions.hpp)
 
 set(MAIN_COMMON_SOURCES
-	${DIR}/Server.cpp)
+	${DIR}/Server.cpp
+	${DIR}/System.cpp)
 
 set(COMMON_HEADERS
 	${COMMON_DEFINITION_HEADERS}

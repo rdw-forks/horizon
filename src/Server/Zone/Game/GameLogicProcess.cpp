@@ -50,14 +50,14 @@ void GameLogicProcess::initialize(int segment_number)
 		ExpDB->load();
 		ExpDB->load_status_point_table();
 		JobDB->load();
-		ItemDB->load();
-		ItemDB->load_refine_db();
-		ItemDB->load_weapon_target_size_modifiers_db();
-		ItemDB->load_weapon_attribute_modifiers_db();
-		StatusEffectDB->load();
-		SkillDB->load();
-		MonsterDB->load();
-		StorageDB->load();
+		//ItemDB->load();
+		//ItemDB->load_refine_db();
+		//ItemDB->load_weapon_target_size_modifiers_db();
+		//ItemDB->load_weapon_attribute_modifiers_db();
+		//StatusEffectDB->load();
+		//SkillDB->load();
+		//MonsterDB->load();
+		//StorageDB->load();
 		static_db_loaded = true;
 	}
 	
