@@ -46,7 +46,7 @@ using namespace std;
  * Char Constructor
  */
 CharServer::CharServer()
-: Server(), _update_timer(_io_context)
+: Server(), _update_timer(_io_context_global)
 {
 	//
 }
@@ -248,7 +248,8 @@ void CharServer::initialize_core()
 	sClientSocketMgr->start(get_io_context(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
-						  MAX_NETWORK_THREADS);
+						  MAX_NETWORK_THREADS,
+						  general_conf().is_test_run());
 
 	Server::initialize();
 
@@ -283,31 +284,4 @@ void CharServer::initialize_core()
 	signals.cancel();
 
 	set_shutdown_stage(SHUTDOWN_CLEANUP_COMPLETE);
-}
-
-/**
- * Main entry point of the char-server application.
- * @param argc
- * @param argv
- * @return integer of shutdown signal.
- */
-int main(int argc, const char * argv[])
-{
-	std::srand(std::time(nullptr));
-	
-	/* Parse Command Line Arguments */
-	if (argc > 1)
-		sChar->parse_exec_args(argv, argc);
-
-	/* Read Char Configuration */
-	if (!sChar->read_config())
-		exit(1); // Stop process if the file can't be read.
-
-	/* Initialize the Common Core */
-	sChar->initialize_core();
-
-	/* Core Cleanup */
-	HLog(info) << "Server shutting down...";
-
-	return 0;
 }

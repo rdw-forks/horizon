@@ -32,7 +32,7 @@
 
 #include "Server/pch.hpp"
 
-#include "Common/Server.hpp"
+#include "Server/Common/Server.hpp"
 
 namespace Horizon
 {

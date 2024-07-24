@@ -41,8 +41,6 @@ set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/Server/Common)
 set(SERVER_DIR ${PROJECT_SOURCE_DIR}/src/Server)
 set(ZONE_DIR ${SERVER_DIR}/Zone)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /MTd")
-
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(TEST_SOURCE ${TEST_SOURCES})
@@ -80,6 +78,58 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${COMMON_DIR}/Configuration/Horizon.hpp)
 			set (ADD_LIBS OpenSSL::SSL ${LUA_LIBRARIES} ${Readline_LIBRARY})
 			set (ADD_INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
+	elseif (TEST_NAME STREQUAL "AuthServerTest")
+		CollectSourceFiles(
+    		${SERVER_DIR}/Auth
+			AUTH_PRIVATE_SOURCES
+		)
+		list(REMOVE_ITEM AUTH_PRIVATE_SOURCES REGEX "${SERVER_DIR}/Auth/Main.cpp")
+		set (ADD_SOURCES
+			${AUTH_PRIVATE_SOURCES}
+			${COMMON_SOURCES}
+			${COMMON_HEADERS}
+			${CORE_SOURCES}
+			${UTILITY_SOURCES}
+		)
+		set (ADD_LIBS 
+			${Boost_LIBRARIES}
+			networking
+			${Readline_LIBRARY}
+			${LUA_LIBRARIES}
+			OpenSSL::SSL
+		)
+		set (ADD_INCLUDE_DIRS 
+			${Boost_INCLUDE_DIRS}
+			${PUBLIC_INCLUDES}
+			${Readline_INCLUDE_DIR}
+			${LUA_INCLUDE_DIR}
+			${SOL2_INCLUDE_DIR})
+	elseif (TEST_NAME STREQUAL "CharServerTest")
+		CollectSourceFiles(
+    		${SERVER_DIR}/Char
+			CHAR_PRIVATE_SOURCES
+		)
+		list(REMOVE_ITEM CHAR_PRIVATE_SOURCES REGEX "${SERVER_DIR}/Char/Main.cpp")
+		set (ADD_SOURCES
+			${CHAR_PRIVATE_SOURCES}
+			${COMMON_SOURCES}
+			${COMMON_HEADERS}
+			${CORE_SOURCES}
+			${UTILITY_SOURCES}
+		)
+		set (ADD_LIBS 
+			${Boost_LIBRARIES}
+			networking
+			${Readline_LIBRARY}
+			${LUA_LIBRARIES}
+			OpenSSL::SSL
+		)
+		set (ADD_INCLUDE_DIRS 
+			${Boost_INCLUDE_DIRS}
+			${PUBLIC_INCLUDES}
+			${Readline_INCLUDE_DIR}
+			${LUA_INCLUDE_DIR}
+			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "ZoneSystemTest")
 		set (ADD_SOURCES
 			${SERVER_DIR}/pch.hpp

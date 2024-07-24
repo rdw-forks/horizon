@@ -40,7 +40,7 @@ using namespace Horizon::Auth;
  * Horizon Constructor.
  */
 AuthServer::AuthServer()
-: Server(), _update_timer(_io_context)
+: Server(), _update_timer(_io_context_global)
 {
 }
 
@@ -183,6 +183,9 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
  */
 void AuthServer::initialize_cli_commands()
 {
+	if (general_conf().is_test_run())
+		return;
+		
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
 }
@@ -229,7 +232,11 @@ void AuthServer::initialize_core()
 	signals.async_wait(std::bind(&SignalHandler, std::placeholders::_1, std::placeholders::_2));
 
 	// Start Horizon Network
-	sClientSocketMgr->start(get_io_context(), general_conf().get_listen_ip(), general_conf().get_listen_port(), MAX_NETWORK_THREADS);
+	sClientSocketMgr->start(get_io_context(), 
+		general_conf().get_listen_ip(), 
+		general_conf().get_listen_port(), 
+		MAX_NETWORK_THREADS,
+		general_conf().is_test_run());
 	
 	// Initialize core.
 	Server::initialize();
@@ -262,37 +269,4 @@ void AuthServer::initialize_core()
 	signals.cancel();
 
 	set_shutdown_stage(SHUTDOWN_CLEANUP_COMPLETE);
-}
-
-/**
- * Main Runtime Method
- * @param argc
- * @param argv
- * @return
- */
-int main(int argc, const char * argv[])
-{
-	std::srand(std::time(nullptr));
-	
-	if (argc > 1)
-		sAuth->parse_exec_args(argv, argc);
-
-	/*
-	 * Read Configuration Settings for
-	 * the Horizon Server.
-	 */
-	if (!sAuth->read_config())
-		exit(1); // Stop process if the file can't be read.
-
-	/**
-	 * Initialize the Common Core
-	 */
-	sAuth->initialize_core();
-
-	/*
-	 * Core Cleanup
-	 */
-	HLog(info) << "Server shutting down...";
-
-	return 0;
 }

@@ -100,9 +100,9 @@ public:
 		return &instance;
 	}
 
-	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1)
+	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false)
 	{
-		if (!BaseSocketMgr::start(io_context, listen_ip, port, threads))
+		if (!BaseSocketMgr::start(io_context, listen_ip, port, threads, minimal))
 			return false;
 
 		for (auto i : get_thread_map()) {

@@ -50,7 +50,6 @@ target_link_libraries(char
         networking
         ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
-		${MYSQL_LIBRARIES}
 		OpenSSL::SSL
 )
 
