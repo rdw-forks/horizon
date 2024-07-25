@@ -130,7 +130,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${Readline_INCLUDE_DIR}
 			${LUA_INCLUDE_DIR}
 			${SOL2_INCLUDE_DIR})
-	elseif (TEST_NAME STREQUAL "ZoneSystemTest")
+	elseif (TEST_NAME STREQUAL "ZoneServerTest")
 		set (ADD_SOURCES
 			${SERVER_DIR}/pch.hpp
 			${COMMON_SOURCES}

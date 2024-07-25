@@ -85,7 +85,7 @@ void ScriptManager::start()
 	bool value = _is_initialized;
 	_is_initialized.compare_exchange_strong(value, true);
 
-	while (!sZone->general_conf().is_test_run() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+	while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 		update(std::time(nullptr));
 	}
 }

@@ -27,7 +27,7 @@
 
 #include "AuthClientInterface.hpp"
 
-#include "Common/Configuration/Database.hpp"
+#include "Server/Common/Configuration/Database.hpp"
 
 #include "Server/Auth/Auth.hpp"
 #include "Server/Auth/Packets/TransmittedPackets.hpp"

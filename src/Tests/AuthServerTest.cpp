@@ -27,17 +27,6 @@
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 #include "Server/Auth/Auth.hpp"
-#include <boost/mysql/error_with_diagnostics.hpp>
-#include <boost/mysql/handshake_params.hpp>
-#include <boost/mysql/results.hpp>
-#include <boost/mysql/static_results.hpp>
-#include <boost/mysql/tcp_ssl.hpp>
-#include <boost/describe/class.hpp>
-
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl/context.hpp>
-#include <boost/system/system_error.hpp>
 
 #define BOOST_TEST_MODULE AuthServerTest
 #include <boost/test/included/unit_test.hpp>
@@ -73,15 +62,19 @@ BOOST_AUTO_TEST_CASE(AuthServerIOContextTest)
 	}
 }
 
+
 BOOST_AUTO_TEST_CASE(AuthServerTest)
 {
 	try {
-		sAuth->general_conf().set_test_run();
+		std::thread thread = std::thread([&]() {
+			sAuth->general_conf().set_test_run(TEST_RUN_MINIMAL);
 
-		sAuth->general_conf().set_config_file_path("../../../../../config/auth-server.lua.dist");
-		sAuth->read_config();
-
-		sAuth->initialize_core();
+			sAuth->general_conf().set_config_file_path("../../../../../config/auth-server.lua.dist");
+			sAuth->read_config();
+			set_shutdown_signal(SHUTDOWN_INITIATED);
+			sAuth->initialize_core();
+		});
+		thread.join();
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
 	} catch(std::bad_alloc &e) {

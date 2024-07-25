@@ -47,7 +47,7 @@
 #include <boost/asio/ssl/context.hpp>
 #include <boost/system/system_error.hpp>
 
-#define BOOST_TEST_MODULE ZoneSystemTest
+#define BOOST_TEST_MODULE ZoneServerTest
 #include <boost/test/included/unit_test.hpp>
 #include <boost/asio/deadline_timer.hpp>
 
@@ -60,7 +60,7 @@ void function_timer(const boost::system::error_code& e)
 	}
 }
 
-BOOST_AUTO_TEST_CASE(ZoneSystemIOContextTest)
+BOOST_AUTO_TEST_CASE(ZoneServerIOContextTest)
 {
 	try {
 		boost::asio::deadline_timer timer(sZone->get_io_context());
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(ZoneSystemIOContextTest)
 	}
 }
 
-BOOST_AUTO_TEST_CASE(ZoneSystemTest)
+BOOST_AUTO_TEST_CASE(ZoneServerTest)
 {
 	/**
 	 * Fixed :
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(ZoneSystemTest)
 	 * Which resulted in the destruction of io_context before the DatabaseProcess was destroyed. Lingering _connection object caused issues without an io_context available.
 	 */
 	try {
-		sZone->general_conf().set_test_run();
+		sZone->general_conf().set_test_run(TEST_RUN_MINIMAL);
 
 		sZone->general_conf().set_config_file_path("../../../../../config/zone-server.lua.dist");
 		sZone->read_config();

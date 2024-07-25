@@ -34,8 +34,8 @@
 
 using namespace Horizon::Char;
 
-CharSession::CharSession(int64_t uid, std::shared_ptr<CharSocket> socket)
-: Horizon::Networking::Session<CharSocket, CharSession>(uid, socket)
+CharSession::CharSession(int64_t uid)
+: Horizon::Networking::Session<CharSocket, CharSession>(uid)
 {
 }
 

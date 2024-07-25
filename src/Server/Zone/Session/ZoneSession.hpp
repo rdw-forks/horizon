@@ -65,7 +65,7 @@ public:
 	//! @details This is the constructor of the class ZoneSession.
 	//! @param uid is a int64_t variable which is used to handle the unique id of the session.
 	//! @param socket is a shared pointer of type ZoneSocket which is used to handle the socket.
-	ZoneSession(int64_t uid, std::shared_ptr<ZoneSocket> socket);
+	ZoneSession(int64_t uid);
 
 	//! @details This is the destructor of the class ZoneSession.
 	//! @return void

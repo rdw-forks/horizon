@@ -230,7 +230,7 @@ void CharServer::update(uint64_t time)
 	sClientSocketMgr->manage_sockets(time);
 	sClientSocketMgr->update_sessions(time);
 	
-	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
+	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
 	} else {
@@ -249,7 +249,7 @@ void CharServer::initialize_core()
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS,
-						  general_conf().is_test_run());
+						  general_conf().is_test_run_with_network() == false);
 
 	Server::initialize();
 
@@ -260,6 +260,8 @@ void CharServer::initialize_core()
 
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
+	
+	Server::post_initialize();
 	
 	get_io_context().run();
 
@@ -279,6 +281,8 @@ void CharServer::initialize_core()
 	 * Server shutdown routine begins here...
 	 */
 	Server::finalize();
+
+	Server::post_finalize();
 
 	/* Cancel signal handling. */
 	signals.cancel();

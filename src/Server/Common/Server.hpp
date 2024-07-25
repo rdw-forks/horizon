@@ -95,8 +95,8 @@ public:
 			case Horizon::System::RUNTIME_MAIN: return "Main";
 			case Horizon::System::RUNTIME_GAMELOGIC: return "Game-logic";
 			case Horizon::System::RUNTIME_PERSISTENCE: return "Persistence";
-			//case Horizon::System::RUNTIME_DATABASE: return "Database";
-			//case Horizon::System::RUNTIME_COMMANDLINE: return "Command-Line";
+			case Horizon::System::RUNTIME_DATABASE: return "Database";
+			case Horizon::System::RUNTIME_COMMANDLINE: return "Command-Line";
 			case Horizon::System::RUNTIME_SCRIPTVM: return "Script-VM";
 			case Horizon::System::RUNTIME_NETWORKING: return "Networking";
 			default: return "Unknown";
@@ -332,8 +332,8 @@ public:
 	void initialize();
 	void finalize();
 	
-	void post_initialize();
-	void post_finalize();
+	virtual void post_initialize();
+	virtual void post_finalize();
 	
 	void print_help();
 

@@ -207,7 +207,7 @@ void MapContainerThread::start_internal()
 	int update_count = 0;
 	double average_update_per_second = 0;
 	int updates_per_second_timer = std::time(nullptr);
-	while (!sZone->general_conf().is_test_run() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+	while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 		update(std::time(nullptr));
 		update_count++;
 

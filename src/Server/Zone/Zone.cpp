@@ -72,18 +72,6 @@ void ZoneMainframe::initialize()
 	Server::initialize();
 }
 
-void ZoneMainframe::post_initialize()
-{
-	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second.ptr->is_initialized() == false) {
-			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online" << " { uuid: " << i->first << " }";
-	}
-}
-
 void ZoneMainframe::finalize()
 {
 	HLog(info) << "Server shutdown initiated ...";
@@ -98,18 +86,6 @@ void ZoneMainframe::finalize()
 	_task_scheduler.CancelAll();
 	
 	Server::finalize();
-}
-
-void ZoneMainframe::post_finalize()
-{
-	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second.ptr->is_initialized() == true) {
-			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online (Shutting Down)" << " { uuid: " << i->first << " }";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
-	}
 }
 
 void ZoneMainframe::verify_connected_sessions()
@@ -242,7 +218,7 @@ void ZoneServer::initialize()
 						  
 	ZoneMainframe::initialize();
 
-	ZoneMainframe::post_initialize();
+	Server::post_initialize();
 
 	// IO context will run here, keeping the server / main thread in a loop.
 	// Once the runtime finalizes, io_context will stop and this function will return.
@@ -254,5 +230,5 @@ void ZoneServer::finalize()
 {
 	ZoneMainframe::finalize();
 
-	ZoneMainframe::post_finalize();
+	Server::post_finalize();
 }

@@ -255,8 +255,11 @@ void Server::parse_exec_args(const char *argv[], int argc)
 		if (separated_args.size() == 1) {
             std::string arg = separated_args.at(0);
             if (arg.compare("--test-run") == 0) {
-                HLog(info) << "Horizon test mode intiated.";
-                general_conf().set_test_run();
+                HLog(info) << "Horizon test mode (without command-line, network) intiated.";
+                general_conf().set_test_run(TEST_RUN_MINIMAL);
+            } else if (arg.compare("--test-run-with-network") == 0) {
+                HLog(info) << "Horizon test mode (with network) intiated.";
+                general_conf().set_test_run(TEST_RUN_WITH_NETWORK);
             } else if (arg.compare("--help") == 0) {
 				print_help();
 			} else if (arg.compare("--version") == 0) {
@@ -362,11 +365,29 @@ void Server::finalize()
 void Server::post_initialize()
 {
 	Mainframe::post_initialize();
+	
+	for (auto i = _components.begin(); i != _components.end(); i++) {
+		while (i->second.ptr->is_initialized() == false) {
+			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online" << " { uuid: " << i->first << " }";
+	}
 }
 
 void Server::post_finalize()
 {
 	Mainframe::post_finalize();
+	
+	for (auto i = _components.begin(); i != _components.end(); i++) {
+		while (i->second.ptr->is_initialized() == true) {
+			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online (Shutting Down)" << " { uuid: " << i->first << " }";
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		}
+
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
+	}
 }
 
 bool Server::test_database_connection()

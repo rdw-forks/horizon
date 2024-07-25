@@ -59,8 +59,8 @@ void CharSocket::set_session(std::shared_ptr<CharSession> session) { std::atomic
  */
 void CharSocket::start()
 {
-	auto session = std::make_shared<CharSession>(get_socket_id(), shared_from_this());
-
+	auto session = std::make_shared<CharSession>(get_socket_id());
+	session->set_socket(shared_from_this());
 	set_session(session);
 
 	session->initialize();

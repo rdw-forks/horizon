@@ -185,7 +185,7 @@ void AuthServer::initialize_cli_commands()
 {
 	if (general_conf().is_test_run())
 		return;
-		
+
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
 }
@@ -205,14 +205,15 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 
 void AuthServer::update(uint64_t time)
 {
-	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
+	if (!general_conf().is_test_run())
+		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
 
 	getScheduler().Update();
 	
 	sClientSocketMgr->manage_sockets(time);
 	sClientSocketMgr->update_sessions(time);
 	
-	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
+	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&AuthServer::update, this, std::time(nullptr)));
 	} else {
@@ -236,17 +237,20 @@ void AuthServer::initialize_core()
 		general_conf().get_listen_ip(), 
 		general_conf().get_listen_port(), 
 		MAX_NETWORK_THREADS,
-		general_conf().is_test_run());
+		general_conf().is_test_run_with_network() == false);
 	
 	// Initialize core.
 	Server::initialize();
+	
+	Server::post_initialize();
 
 	initialize_cli_commands();
 		
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 
-	get_io_context().run();
+	while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal())
+		get_io_context().run_one();
 
 	HLog(info) << "Shutdown process initiated...";
 	
@@ -264,6 +268,8 @@ void AuthServer::initialize_core()
 	 * Server shutdown routine begins here...
 	 */
 	Server::finalize();
+	
+	Server::post_finalize();
 
 	/* Cancel signal handling. */
 	signals.cancel();

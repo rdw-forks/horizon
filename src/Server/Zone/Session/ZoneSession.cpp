@@ -37,8 +37,8 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Units;
 
-ZoneSession::ZoneSession(int64_t uid, std::shared_ptr<ZoneSocket> socket)
-: Session(uid, socket)
+ZoneSession::ZoneSession(int64_t uid)
+: Session(uid)
 {
 }
 

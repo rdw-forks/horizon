@@ -98,7 +98,7 @@ public:
 	{
 		try {
 			return _weapontype2name_db[type];
-		} catch (std::exception &e) {
+		} catch (std::exception & /*e*/) {
 			return "Unknown";
 		}
 	}

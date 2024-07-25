@@ -85,7 +85,7 @@ public:
 	 */
 	void connect_with_callback(ConnectorCallback callback, int connections = 1)
 	{
-		for (int i = 0; i < connections && get_shutdown_stage() >= SHUTDOWN_INITIATED; i++) {
+		for (int i = 0; i < connections; i++) {
 			std::shared_ptr<tcp::socket> socket;
 			uint32_t network_thread_idx;
 			boost::system::error_code error;
@@ -108,7 +108,7 @@ public:
 					callback(_connection_name, socket, network_thread_idx);
                     HLog(info) << "Successfully connected to '" << _connection_name << "' at tcp://" << _endpoint.address().to_string() << ":" << _endpoint.port();
 				}
-			} while (!socket->is_open() && get_shutdown_stage() >= SHUTDOWN_INITIATED);
+			} while (!socket->is_open());
 		}
 	}
 

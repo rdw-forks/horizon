@@ -86,10 +86,7 @@ public:
 
 	void initialize();
 	void finalize();
-
-	void post_initialize();
-	void post_finalize();
-
+	
 	s_zone_server_configuration &config() { return _config; }
 
 	TaskScheduler &getScheduler() { return _task_scheduler; }

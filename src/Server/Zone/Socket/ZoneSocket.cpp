@@ -53,7 +53,8 @@ void ZoneSocket::set_session(std::shared_ptr<ZoneSession> session) { std::atomic
  */
 void ZoneSocket::start()
 {
-	auto session = std::make_shared<ZoneSession>(get_socket_id(), shared_from_this());
+	auto session = std::make_shared<ZoneSession>(get_socket_id());
+	session->set_socket(shared_from_this());
 
 	set_session(session);
 

@@ -81,6 +81,12 @@ template <class SocketType>
 class Socket : public std::enable_shared_from_this<SocketType>
 {
 public:
+	explicit Socket(uint64_t socket_id)
+	: _socket_id(socket_id), _socket(nullptr), _read_buffer(), _closed(false), _closing(false), _is_writing_async(false)
+	{
+		_read_buffer.resize(READ_BLOCK_SIZE);
+	}
+	
 	explicit Socket(uint64_t socket_id, std::shared_ptr<tcp::socket> socket)
 	: _socket_id(socket_id), _socket(socket), _remote_ip_address(_socket->remote_endpoint().address().to_string()),
 	_remote_port(_socket->remote_endpoint().port()), _read_buffer(), _closed(false), _closing(false), _is_writing_async(false)
@@ -110,8 +116,9 @@ public:
 		if (_closed)
 			return false;
 
-		if (_is_writing_async || (_write_queue.empty() && !_closing))
+		if (_is_writing_async || (_write_queue.empty() && !_closing)) {
 			return true;
+		}
 
 		while (handle_queue())
 			;
@@ -158,7 +165,7 @@ public:
 								 boost::bind(&Socket<SocketType>::read_handler_internal, this, boost::placeholders::_1, boost::placeholders::_2));
 	}
 
-	void queue_buffer(ByteBuffer &&buffer) { _write_queue.push(std::move(buffer)); }
+	virtual void queue_buffer(ByteBuffer &&buffer) { _write_queue.push(std::move(buffer)); }
 
 	bool is_open() { return !_closed && !_closing; }
 
@@ -316,6 +323,8 @@ private:
 
 		std::shared_ptr<ByteBuffer> to_send = _write_queue.front();
 
+		HLog(debug) << "Sent bytes: " << to_send->to_string();
+		
 		std::size_t bytes_sent = write_buffer_and_send(*to_send, error);
 
 		/**

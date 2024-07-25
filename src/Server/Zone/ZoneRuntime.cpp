@@ -62,7 +62,7 @@ void ZoneRuntime::initialize()
 						  sZone->general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS,
-						  general_conf().is_test_run());
+						  general_conf().is_test_run_with_network() == false);
 
 }
 
@@ -93,10 +93,9 @@ void ZoneRuntime::run(uint64_t time)
 	// Process Horizon System Routine Queue.
 	sZone->system_routine_process_queue();
 
-	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run()) {
+	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&ZoneRuntime::run, this, std::time(nullptr)));
-		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	} else {
 		finalize();
 	}

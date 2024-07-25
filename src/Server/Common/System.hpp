@@ -78,13 +78,14 @@ enum runtime_work_run_result : int
 enum runtime_module_type : int
 {
 	RUNTIME_MAIN        = 0,
-	RUNTIME_COMMANDLINE = RUNTIME_MAIN, //.we use main because we want the main thread to print console output.
+	RUNTIME_COMMANDLINE = 1, //.we use main because we want the main thread to print console output.
 	RUNTIME_NETWORKING  = 2,
 	RUNTIME_PERSISTENCE = 3,
 	RUNTIME_GAMELOGIC   = 4,
 	RUNTIME_SCRIPTVM    = 5,
-	RUNTIME_DATABASE    = RUNTIME_MAIN, // Database utilizes main thread instead of its own separate thread.
-	RUNTIME_MODULE_MAX  = 7
+	RUNTIME_DATABASE    = 6, // Database utilizes main thread instead of its own separate thread.
+	RUNTIME_CLIENT_NETWORKING = 8,
+	RUNTIME_MODULE_MAX  = 9
 };
 
 enum runtime_synchronization_method : int
@@ -571,7 +572,7 @@ public:
 	SystemRoutineManager(runtime_module_type module_type)
 	: _module_type(module_type)
 	{
-		if (_module_type < RUNTIME_MAIN || _module_type > Horizon::System::RUNTIME_SCRIPTVM) {
+		if (_module_type < RUNTIME_MAIN || _module_type > Horizon::System::RUNTIME_CLIENT_NETWORKING) {
 			std::cerr << "SystemRoutineManager for module type (" << module_type << ") failed to start. Invalid module type." << std::endl;
 		}
 	}
