@@ -31,7 +31,10 @@
 #define HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP
 
 #include "Server/Common/System.hpp"
-#include "Server/Zone/Game/Map/MapManager.hpp"
+#include "Utility/TaskScheduler.hpp"
+#include "MapContainerThread.hpp"
+#include "Libraries/MapCache/MapCache.hpp"
+#include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 
 namespace Horizon
 {
@@ -42,15 +45,25 @@ class GameLogicProcess : public MainframeComponent
 public:
 	GameLogicProcess() : MainframeComponent(Horizon::System::RUNTIME_GAMELOGIC) { }
     void initialize(int segment_number = 1);
-    void finalize(int segment_number = 1);
-
-    MapManager &get_map_process() { return _map_manager; }
+    void finalize();
 
 	bool is_initialized() { return _is_initialized.load(); }
-    
+
+	/* Map / Maps */
+	bool manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s);
+	bool load_map_cache();
+	void start_containers();
+	
+	TaskScheduler &getScheduler() { return _scheduler; }
+
+	void on_map_update(int64_t diff);
+
 protected:
-    MapManager _map_manager;
     std::atomic<bool> _is_initialized;
+private:
+	TaskScheduler _scheduler;
+	LockedLookupTable<int32_t, std::shared_ptr<MapContainerThread>> _map_containers;
+	std::map<std::string, map_data> _maps;
 };
 }
 }

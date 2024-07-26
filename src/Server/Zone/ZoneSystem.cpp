@@ -32,12 +32,6 @@
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 #include "Server/Zone/Zone.hpp"
 
-template<>
-Horizon::System::RuntimeRoutineContext<std::shared_ptr<Horizon::Zone::s_scenario_login_request>>::RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, Horizon::System::runtime_synchronization_method sync_t) 
-: Horizon::System::RuntimeContext(component->get_system_routine_manager(), sync_t)
-{ 
-} 
-
 bool Horizon::Zone::SCENARIO_LOGIN::Login::execute()
 {
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
@@ -56,7 +50,7 @@ bool Horizon::Zone::SCENARIO_LOGIN::Login::execute()
 
 	std::string current_server = r[0].as_string();
 	if (current_server.compare("Z") == 0) { // Already on Zone.
-		ZC_REFUSE_ENTER pkt(get_parent_context()->_session);
+		ZC_REFUSE_ENTER pkt(std::dynamic_pointer_cast<SCENARIO_LOGIN>(get_runtime_context())->get_session());
 		pkt.deliver(ZONE_SERV_ERROR_REJECT);
 		return false;
 	}
@@ -99,9 +93,11 @@ bool Horizon::Zone::SCENARIO_CREATE_USER::CreateUser::execute()
 			return false;
 		}
 
-		_user = results.rows()[0];
-
-		get_parent_context()->set_result(std::make_shared<s_user_info_query_result>(_user));
+		s_user_info_query_result user = results.rows()[0];
+		
+		Horizon::System::Result<s_user_info_query_result> result = Horizon::System::Result<s_user_info_query_result>(user);
+		set_result(result);
+		std::dynamic_pointer_cast<SCENARIO_CREATE_USER>(get_runtime_context())->set_result(result);
 	}
 	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "SCENARIO_CREATE_USER: " << error.what();
@@ -122,10 +118,10 @@ bool Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer::execute()
 
 bool Horizon::Zone::SCENARIO_LOGIN_RESPONSE::LoginResponse::execute()
 {	
-	ZC_AID zc_aid(get_parent_context()->_session);
+	ZC_AID zc_aid(std::dynamic_pointer_cast<SCENARIO_LOGIN_RESPONSE>(get_runtime_context())->get_session());
 	zc_aid.deliver(_request.account_id);
 	
-	ZC_ACCEPT_ENTER2 zc_ae2(get_parent_context()->_session);
+	ZC_ACCEPT_ENTER2 zc_ae2(std::dynamic_pointer_cast<SCENARIO_LOGIN_RESPONSE>(get_runtime_context())->get_session());
 	zc_ae2.deliver(_request.current_x, _request.current_y, DIR_SOUTH, _request.font); // edit third argument to saved font.
 	return true;
 }

@@ -64,7 +64,7 @@ enum map_container_session_action
 class MapContainerThread : public std::enable_shared_from_this<MapContainerThread>
 {
 public:
-	MapContainerThread();
+	MapContainerThread(std::function<void(uint64_t)> update_callback);
 	~MapContainerThread();
 
 	//! @brief Retrieves a shared pointer to a map managed by the container.
@@ -130,6 +130,7 @@ private:
 	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
 	TaskScheduler _task_scheduler;
 	std::vector<std::shared_ptr<Unit>> _entities;                                                        ///< Non-thread-safe vector of entities within this container.
+	std::function<void(uint64_t)> _update_callback;
 };
 }
 }

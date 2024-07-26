@@ -44,6 +44,19 @@ namespace Zone
 	
 class ZoneNetworkThread : public MainframeComponent, public Networking::NetworkThread<ZoneSocket>
 {
+protected:
+	using resource_priority_type = MainframeSegmentResourceMediator::mainframe_segment_priority_type;
+	using resource_category_type = MainframeSegmentResourceMediator::mainframe_segment_resource_category;
+
+	void on_socket_removed(std::shared_ptr<ZoneSocket> socket) override
+	{
+		get_resource_mediator().add_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+	}
+
+	void on_socket_added(std::shared_ptr<ZoneSocket> socket) override
+	{
+		get_resource_mediator().remove_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+	}
 public:
 	ZoneNetworkThread() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
 
@@ -70,13 +83,17 @@ public:
 
 	virtual void initialize(int segment_number = 1) override 
 	{ 
+		get_resource_mediator().register_resource(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, resource_category_type::SEGMENT_RESOURCE_SOCKET_ID);
+
+		set_segment_number(segment_number);
+
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, true);
 	}
 
-	virtual void finalize(int segment_number = 1) override 
+	virtual void finalize() override 
 	{
-		Networking::NetworkThread<ZoneSocket>::finalize(segment_number);
+		Networking::NetworkThread<ZoneSocket>::finalize();
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, false); 
 	}

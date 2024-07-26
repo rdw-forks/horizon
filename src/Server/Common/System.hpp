@@ -35,6 +35,7 @@
 #include <vector>
 #include <memory>
 #include <map>
+#define BOOST_UUID_FORCE_AUTO_LINK 1
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
@@ -328,82 +329,60 @@ template <typename T = int>
 class ContextWithResult
 {
 public:
-	virtual bool has_result() { return true; }
-	virtual T get_result() { return _result; }
-	virtual void set_result(T result) { _result = result; }
+	ContextWithResult(T result) : _result(result) { }
+	ContextWithResult(std::vector<T> result_vector) : _result_vector(result_vector) { }
 
-	virtual std::vector<T> get_result_vector() { return _result_vector; }
-	virtual void set_result_vector(std::vector<T> result_vector) { _result_vector = result_vector; }
+	ContextWithResult(const ContextWithResult &other)
+	{
+		_result = other._result;
+		_result_vector = other._result_vector;
+	}
+
+	ContextWithResult &operator=(const ContextWithResult &other)
+	{
+		if (this != &other) {
+			_result = other._result;
+			_result_vector = other._result_vector;
+		}
+		return *this;
+	}
+	virtual T get_one() { return _result; }
+	virtual void set_one(T result) { _result = result; }
+
+	virtual bool has_many() { return _result_vector.size() > 0; }
+	virtual std::vector<T> get_many() { return _result_vector; }
+	virtual void set_many(std::vector<T> result_vector) { _result_vector = result_vector; }
 
 protected:
 	T _result;
 	std::vector<T> _result_vector;
 };
 
-template <typename T = int>
-class ContextUsesResult
+// @TODO derive from base class that is used to pass result on line 425, 
+// - pass it so we can withdraw the result for the use result in the next context of the chain.
+// - similar to how Work derives from WorkContext
+template <typename PayloadType>
+class Result : public RuntimeContext::ResultContext, public ContextWithResult<PayloadType>
 {
 public:
-	virtual bool has_use_result() { return true; }
-	virtual T get_use_result() { return _result; }
-	virtual void set_use_result(T result) { _result = result; }
-
-	virtual std::vector<T> get_use_result_vector() { return _result_vector; }
-	virtual void set_use_result_vector(std::vector<T> result_vector) { _result_vector = result_vector; }
-
-protected:
-	T _result;
-	std::vector<T> _result_vector;
+    Result(PayloadType payload) 
+	: ContextWithResult<PayloadType>(payload) { }
+    Result(std::vector<PayloadType> payload_vector) 
+	: ContextWithResult<PayloadType>(payload_vector) { }
 };
 
-template <typename ContextResultType = int, typename ContextUseResultType = int>
-class RuntimeRoutineContext 
-: public ContextWithResult<ContextResultType>,
-  public ContextUsesResult<ContextUseResultType>,
-  public RuntimeContext
+class RuntimeRoutineContext : public RuntimeContext
 {
 public:
 	RuntimeRoutineContext(Server *s,  runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 	RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 	RuntimeRoutineContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 
-	// @TODO derive from base class that is used to pass result on line 425, 
-	// - pass it so we can withdraw the result for the use result in the next context of the chain.
-	// - similar to how Work derives from WorkContext
-    template <typename PayloadType>
-    class Result : public RuntimeContext::ResultContext
-    {
-    public:
-        Result(PayloadType payload) 
-		: _payload(payload) { }
-        Result(std::vector<PayloadType> payload_vector) 
-		: _payload_vector(payload_vector) { }
-
-		PayloadType get_one() { return _payload; }
-		void set_one(PayloadType &payload) { _payload = payload; }
-
-		std::vector<PayloadType> get_many() { return _payload_vector; }
-		void set_many(std::vector<PayloadType> vec) { _payload_vector = vec; }
-
-    	PayloadType _payload;
-		std::vector<PayloadType> _payload_vector;
-    };
-
-    template <typename ParentContextType, typename RequestType = int, typename ResultType = int, typename UseResultType = int>
     class Work : public RuntimeContext::WorkContext
     {
     public:
-        Work(std::shared_ptr<ParentContextType> parent_context, RequestType request) 
-        : _parent_context(parent_context), _request(request) { }
-        Work(std::shared_ptr<ParentContextType> parent_context, RequestType request, std::shared_ptr<Result<UseResultType>> use_result) 
-        : _parent_context(parent_context), _request(request), _use_result(use_result) { }
-        
-		void set_request(RequestType request) { _request = request; }
-		RequestType &get_request() { return _request; }
-
-        void set_result(std::shared_ptr<Result<ResultType>> result) { _result = result; }
-        std::shared_ptr<Result<ResultType>> get_result() { return _result; }
-		bool has_result() { return _result != nullptr; }
+        Work(std::shared_ptr<RuntimeRoutineContext> runtime_context) 
+        : _runtime_context(runtime_context) { }
 
         virtual bool execute() 
         {
@@ -411,21 +390,12 @@ public:
 			return true;
         }
 
-		std::shared_ptr<ParentContextType> get_parent_context() { return _parent_context; }
-		void set_parent_context(std::shared_ptr<ParentContextType> parent_context) { _parent_context = parent_context; }
+		std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return _runtime_context; }
+		void set_runtime_context(std::shared_ptr<RuntimeRoutineContext> runtime_context) { _runtime_context = runtime_context; }
 		
-        std::shared_ptr<Result<ResultType>> _result;
-		std::shared_ptr<Result<UseResultType>> _use_result;
-        RequestType _request;
-		std::shared_ptr<ParentContextType> _parent_context;
+		std::shared_ptr<RuntimeRoutineContext> _runtime_context;
     };
 
-	template <typename ParentContextType>
-	void prepare(std::shared_ptr<ParentContextType> parent_context)
-	{
-		this->set_use_result(parent_context->get_result());
-		this->set_use_result_vector(parent_context->get_result_vector());
-	}
 };
 
 class RuntimeContextChain : public std::enable_shared_from_this<RuntimeContextChain>
@@ -516,8 +486,8 @@ public:
     public:
         ContextQueueManager(ContextControlAgent &control_agent, RuntimeContextChain *chain) : _control_agent(control_agent), _chain(chain) { }
 
-        void push(std::shared_ptr<RuntimeContext> seg) { _queue.push(std::move(seg)); }
-        std::shared_ptr<RuntimeContext> pop() 
+        virtual void push(std::shared_ptr<RuntimeContext> seg) { _queue.push(std::move(seg)); }
+        virtual std::shared_ptr<RuntimeContext> pop() 
         {
             if (_queue.empty())
                 return nullptr;
@@ -527,9 +497,9 @@ public:
             return ret;
         }
 
-        bool process();
+        virtual bool process();
 
-		bool is_paused() { return _paused; }
+		virtual bool is_paused() { return _paused; }
 		
         ContextControlAgent &_control_agent;
 		RuntimeContextChain *_chain;

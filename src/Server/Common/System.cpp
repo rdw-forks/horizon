@@ -30,17 +30,17 @@
 #include "System.hpp"
 #include "Server.hpp"
 
-Horizon::System::RuntimeRoutineContext<>::RuntimeRoutineContext(Server *s, runtime_synchronization_method sync_t) 
+Horizon::System::RuntimeRoutineContext::RuntimeRoutineContext(Server *s, runtime_synchronization_method sync_t) 
 : Horizon::System::RuntimeContext(s->get_system_routine_manager(), sync_t) 
 { 
 } 
 
-Horizon::System::RuntimeRoutineContext<>::RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t) 
+Horizon::System::RuntimeRoutineContext::RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t) 
 : Horizon::System::RuntimeContext(component->get_system_routine_manager(), sync_t)
 { 
 } 
 
-Horizon::System::RuntimeRoutineContext<>::RuntimeRoutineContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t)
+Horizon::System::RuntimeRoutineContext::RuntimeRoutineContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t)
 : Horizon::System::RuntimeContext(hsr_manager, sync_t)
 {
 }

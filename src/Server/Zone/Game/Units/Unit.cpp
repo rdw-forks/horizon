@@ -28,7 +28,6 @@
  **************************************************/
 
 #include "Unit.hpp"
-#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/NPC/NPC.hpp"
 #include "Server/Zone/Game/Units/Battle/Combat.hpp"

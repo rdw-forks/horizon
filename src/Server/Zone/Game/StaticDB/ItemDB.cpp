@@ -89,8 +89,8 @@ bool ItemDatabase::load()
 	
 	try {
 		std::string file_path = sZone->config().get_static_db_path().string() + "item_db.lua";
-	    sol::load_result fx = lua->load_file(file_path);
-		sol::table item_tbl = fx();
+	    lua->script_file(file_path);
+		sol::table item_tbl = lua->get<sol::table>("item_db");
 		total_entries = load_items(item_tbl, file_path);
 		auto stop = std::chrono::high_resolution_clock::now();
 		HLog(info) << "Loaded " << total_entries << " entries from '" << file_path << "' (" << std::chrono::duration_cast<std::chrono::microseconds>(stop - start).count() << "µs, Max Collisions: " << _item_db.max_collisions() << ").";

@@ -70,16 +70,232 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
+template<class... Types>
+struct type_array {
+    using as_tuple = std::tuple<Types...>;
+
+    template<std::size_t I>
+    using get = std::tuple_element_t<I, as_tuple>;
+
+    static constexpr std::size_t size = sizeof...(Types);
+};
+
+class MainframeSegmentResourceMediator
+{
+public:
+	enum mainframe_segment_priority_type
+	{
+		
+		SEGMENT_PRIORITY_PRIMARY = 0,
+		SEGMENT_PRIORITY_SECONDARY = 1,
+		SEGMENT_PRIORITY_TERTIARY = 2,
+		SEGMENT_PRIORITY_QUATERNARY = 3,
+		SEGMENT_PRIORITY_QUINARY = 4,
+		SEGMENT_PRIORITY_SENARY = 5,
+		SEGMENT_PRIORITY_SEPTENARY = 6,
+		SEGMENT_PRIORITY_OCTONARY = 7,
+		SEGMENT_PRIORITY_NONARY = 8,
+		SEGMENT_PRIORITY_DENARY = 9,
+		MAX_MAINFRAME_SEGMENT_PRIORITIES = 10
+	};
+	enum mainframe_segment_resource_category
+	{
+		SEGMENT_RESOURCE_UNKNOWN         = 0,
+		SEGMENT_RESOURCE_USER_UUID       = 1,
+		SEGMENT_RESOURCE_ACCOUNT_ID      = 2,
+		SEGMENT_RESOURCE_CHARACTER_NAME  = 3,
+		SEGMENT_RESOURCE_CHARACTER_ID    = 4,
+		SEGMENT_RESOURCE_MAP_NAME        = 5,
+		SEGMENT_RESOURCE_GUILD_ID        = 6,
+		SEGMENT_RESOURCE_PARTY_ID        = 7,
+		SEGMENT_RESOURCE_NPC_GUID        = 8,
+		SEGMENT_RESOURCE_SOCKET_ID       = 9,
+		MAX_MAINFRAME_SEGMENT_RESOURCE_CATEGORIES = 10
+	};
+
+private:
+	enum mainframe_resource_value_type
+	{
+		MAINFRAME_RESOURCE_TYPE_UINT64 = 0,
+		MAINFRAME_RESOURCE_TYPE_STRING = 1
+	};
+
+	using mainframe_type_array = type_array<uint64_t, std::string>;
+	
+    struct s_segment_storage {
+		mainframe_segment_resource_category _category; // category
+		mainframe_resource_value_type _storage_type; // key
+		union storage_union {
+			std::vector<uint64_t> vector_int64;
+			std::vector<std::string> vector_string;
+            // Constructor
+            storage_union() {}
+            // Destructor
+            ~storage_union() {}
+		} storage;
+
+    	// Default Constructor
+    	s_segment_storage()
+    	    : _category(), _storage_type(MAINFRAME_RESOURCE_TYPE_UINT64) {
+    	    new (&storage.vector_int64) std::vector<uint64_t>();
+    	}
+
+    	// Parameterized Constructor
+    	s_segment_storage(mainframe_segment_resource_category category, mainframe_resource_value_type type)
+    	    : _category(category), _storage_type(type) {
+    	    if (type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+    	        new (&storage.vector_int64) std::vector<uint64_t>();
+    	    } else if (type == MAINFRAME_RESOURCE_TYPE_STRING) {
+    	        new (&storage.vector_string) std::vector<std::string>();
+    	    }
+    	}
+
+    	// Destructor
+    	~s_segment_storage() {
+    	    if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+    	        storage.vector_int64.~vector();
+    	    } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+    	        storage.vector_string.~vector();
+    	    }
+    	}
+
+    	// Copy Constructor
+    	s_segment_storage(const s_segment_storage& other)
+    	    : _category(other._category), _storage_type(other._storage_type) {
+    	    if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+    	        new (&storage.vector_int64) std::vector<uint64_t>(other.storage.vector_int64);
+    	    } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+    	        new (&storage.vector_string) std::vector<std::string>(other.storage.vector_string);
+    	    }
+    	}
+
+    	// Copy Assignment Operator
+    	s_segment_storage& operator=(const s_segment_storage& other) {
+    	    if (this != &other) {
+    	        // Destroy current storage
+    	        if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+    	            storage.vector_int64.~vector();
+    	        } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+    	            storage.vector_string.~vector();
+    	        }
+
+    	        // Copy new storage
+    	        _category = other._category;
+    	        _storage_type = other._storage_type;
+    	        if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+    	            new (&storage.vector_int64) std::vector<uint64_t>(other.storage.vector_int64);
+    	        } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+    	            new (&storage.vector_string) std::vector<std::string>(other.storage.vector_string);
+    	        }
+    	    }
+    	    return *this;
+    	}
+	};
+
+	std::array<s_segment_storage, MAX_MAINFRAME_SEGMENT_RESOURCE_CATEGORIES> _resource_storage_map = {
+		s_segment_storage(SEGMENT_RESOURCE_UNKNOWN, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_USER_UUID, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_ACCOUNT_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_CHARACTER_NAME, MAINFRAME_RESOURCE_TYPE_STRING),
+		s_segment_storage(SEGMENT_RESOURCE_CHARACTER_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_MAP_NAME, MAINFRAME_RESOURCE_TYPE_STRING),
+		s_segment_storage(SEGMENT_RESOURCE_GUILD_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_PARTY_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_NPC_GUID, MAINFRAME_RESOURCE_TYPE_UINT64),
+		s_segment_storage(SEGMENT_RESOURCE_SOCKET_ID, MAINFRAME_RESOURCE_TYPE_UINT64)
+	};
+
+public:
+	std::array<s_segment_storage, MAX_MAINFRAME_SEGMENT_PRIORITIES> _resource_priority_map;
+
+	void register_resource(mainframe_segment_priority_type priority, mainframe_segment_resource_category category)
+	{
+		_resource_priority_map[priority] = _resource_storage_map[category];
+	}
+
+	void add_resource_value(mainframe_segment_priority_type priority, uint64_t value)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+			_resource_priority_map[priority].storage.vector_int64.push_back(value);
+		}
+	}
+
+	void add_resource_value(mainframe_segment_priority_type priority, std::string value)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+			_resource_priority_map[priority].storage.vector_string.push_back(value);
+		}
+	}
+
+	void remove_resource_value(mainframe_segment_priority_type priority, uint64_t value)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+			auto it = std::find(_resource_priority_map[priority].storage.vector_int64.begin(), _resource_priority_map[priority].storage.vector_int64.end(), value);
+			if (it != _resource_priority_map[priority].storage.vector_int64.end()) {
+				_resource_priority_map[priority].storage.vector_int64.erase(it);
+			}
+		}
+	}
+
+	void remove_resource_value(mainframe_segment_priority_type priority, std::string value)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+			auto it = std::find(_resource_priority_map[priority].storage.vector_string.begin(), _resource_priority_map[priority].storage.vector_string.end(), value);
+			if (it != _resource_priority_map[priority].storage.vector_string.end()) {
+				_resource_priority_map[priority].storage.vector_string.erase(it);
+			}
+		}
+	}
+
+	std::size_t get_resource_count(mainframe_segment_priority_type priority)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+			return _resource_priority_map[priority].storage.vector_int64.size();
+		} else if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+			return _resource_priority_map[priority].storage.vector_string.size();
+		}
+		return 0;
+	}
+
+	int64_t get_resource_index(mainframe_segment_priority_type priority, uint64_t value)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
+			auto it = std::find(_resource_priority_map[priority].storage.vector_int64.begin(), _resource_priority_map[priority].storage.vector_int64.end(), value);
+			if (it != _resource_priority_map[priority].storage.vector_int64.end()) {
+				return std::distance(_resource_priority_map[priority].storage.vector_int64.begin(), it);
+			}
+		}
+		return -1;
+	}
+
+	int64_t get_resource_index(mainframe_segment_priority_type priority, std::string value)
+	{
+		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
+			auto it = std::find(_resource_priority_map[priority].storage.vector_string.begin(), _resource_priority_map[priority].storage.vector_string.end(), value);
+			if (it != _resource_priority_map[priority].storage.vector_string.end()) {
+				return std::distance(_resource_priority_map[priority].storage.vector_string.begin(), it);
+			}
+		}
+		return -1;
+	}
+};
+
 class MainframeComponent
 {
 public:
 	MainframeComponent(Horizon::System::runtime_module_type module_type) 
 	: _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) 
 	{ }
-	virtual void initialize(int segment_number = 1) { }
-	virtual void finalize(int segment_number = 1) { }
+	virtual void initialize(int segment_number = 1) 
+	{
+		set_segment_number(segment_number);
+	}
+	virtual void finalize() { }
 
 	virtual bool is_initialized() { return false; }
+
+	void set_segment_number(int64_t segment_number) { _segment_number = segment_number; }
+	int64_t get_segment_number() { return _segment_number.load(); }
 
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
@@ -105,10 +321,15 @@ public:
 	
 	Horizon::System::SystemRoutineManager &get_system_routine_manager() { return _hsr_manager; }
 	
+	MainframeSegmentResourceMediator &get_resource_mediator() { return _resource_mediator; }
+
+
 private:
+	std::atomic<int64_t> _segment_number{0};
 	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_MAIN};
 	Horizon::System::SystemRoutineManager _hsr_manager;
 	boost::uuids::uuid _uuid;
+	MainframeSegmentResourceMediator _resource_mediator;
 };
 
 class CLICommand
@@ -159,7 +380,7 @@ public:
 	}
 
 	void initialize(int segment_number = 1) override;
-	void finalize(int segment_number = 1) override;
+	void finalize() override;
 
 	void command_complete(CLICommand /*cmd*/, bool /*success*/)
 	{
@@ -194,10 +415,15 @@ public:
 		_ssl_ctx.reset();
 	}
 	
-	void initialize(int segment_number = 1) override { HLog(error) << "Database not configured"; }
+	void initialize(int segment_number = 1) override 
+	{
+		set_segment_number(segment_number);
+		HLog(error) << "Database not configured"; 
+	}
+
 	void initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
 
-	void finalize(int segment_number = 1) override 
+	void finalize() override 
 	{
 		// Close connection object.
 		if (_connection != nullptr) {
@@ -301,6 +527,32 @@ public:
 	}
 
 	int get_component_count() { return _components.size(); }
+
+	int get_segment_number_for_component_resource(Horizon::System::runtime_module_type type, MainframeSegmentResourceMediator::mainframe_segment_priority_type priority, std::string resource)
+	{
+		for (auto c : _components) {
+			if (c.second.type == type) {
+				auto component = std::static_pointer_cast<MainframeComponent>(c.second.ptr);
+				if (component->get_resource_mediator().get_resource_index(priority, resource) != -1) {
+					return component->get_segment_number();
+				}
+			}
+		}
+		return -1;
+	}
+
+	int get_segment_number_for_component_resource(Horizon::System::runtime_module_type type, MainframeSegmentResourceMediator::mainframe_segment_priority_type priority, uint64_t resource)
+	{
+		for (auto c : _components) {
+			if (c.second.type == type) {
+				auto component = std::static_pointer_cast<MainframeComponent>(c.second.ptr);
+				if (component->get_resource_mediator().get_resource_index(priority, resource) != -1) {
+					return component->get_segment_number();
+				}
+			}
+		}
+		return -1;
+	}
 
 	MainframeComponents get_component_of_types() { return _components; }
 

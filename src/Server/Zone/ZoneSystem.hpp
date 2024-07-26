@@ -101,44 +101,68 @@ struct s_scenario_login_request
 	uint8_t gender;
 };
 
-class SCENARIO_LOGIN : public Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_scenario_login_request>>
+class SCENARIO_LOGIN : public Horizon::System::RuntimeRoutineContext
 {
 public:
-	SCENARIO_LOGIN(std::shared_ptr<ZoneSession> session, std::shared_ptr<MainframeComponent> component) 
-	: _session(session), Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_scenario_login_request>>(component) { }
+	SCENARIO_LOGIN(Horizon::System::SystemRoutineManager &srm) 
+	: Horizon::System::RuntimeRoutineContext(srm, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
 
-	class Login : public Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_scenario_login_request>>::Work<SCENARIO_LOGIN, s_scenario_login_request>
+	class Login : public Horizon::System::RuntimeRoutineContext::Work
 	{
 	public:
-		Login(std::shared_ptr<SCENARIO_LOGIN> parent_context, s_scenario_login_request request) 
-		: Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_scenario_login_request>>::Work<SCENARIO_LOGIN, s_scenario_login_request>(parent_context, request) { }
+		Login(std::shared_ptr<SCENARIO_LOGIN> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context) { }
+
+		void set_request(s_scenario_login_request req) { _request = req; }
+		s_scenario_login_request get_request() { return _request; }
 
 		bool execute();
+
+		s_scenario_login_request _request;
 	};
+
+	void set_session(std::shared_ptr<ZoneSession> session) { _session = session; }
+	std::shared_ptr<ZoneSession> get_session() { return _session; }
 
 	std::shared_ptr<ZoneSession> _session;
 };
 
-class SCENARIO_CREATE_USER : public Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_user_info_query_result>>
+class SCENARIO_CREATE_USER : public Horizon::System::RuntimeRoutineContext
 {
 public:
-	SCENARIO_CREATE_USER(std::shared_ptr<MainframeComponent> component) : Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_user_info_query_result>>(component) { }
+	SCENARIO_CREATE_USER(Horizon::System::SystemRoutineManager &srm) 
+	: Horizon::System::RuntimeRoutineContext(srm, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE),
+	 _result(s_user_info_query_result{}) { }
 
 	struct s_scenario_create_user_request
 	{
 		uint32_t char_id;
 	};
 
-	class CreateUser : public Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_user_info_query_result>>::Work<SCENARIO_CREATE_USER, s_scenario_create_user_request>
+	class CreateUser : public Horizon::System::RuntimeRoutineContext::Work
 	{
 	public:
-		CreateUser(std::shared_ptr<SCENARIO_CREATE_USER> parent_context, s_scenario_create_user_request request) 
-		: Horizon::System::RuntimeRoutineContext<std::shared_ptr<s_user_info_query_result>>::Work<SCENARIO_CREATE_USER, s_scenario_create_user_request>(parent_context, request) { }
+		CreateUser(std::shared_ptr<SCENARIO_CREATE_USER> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context), 
+		 _result(s_user_info_query_result{}) { }
+
+		void set_request(s_scenario_create_user_request req) { _request = req; }
+		s_scenario_create_user_request get_request() { return _request; }
+
+		void set_result(Horizon::System::Result<s_user_info_query_result> result) { _result = result; }
+		Horizon::System::Result<s_user_info_query_result> get_result() { return _result; }
 
 		bool execute();
+
 	private:
-		s_user_info_query_result _user;
+		Horizon::System::Result<s_user_info_query_result> _result;
+		s_scenario_create_user_request _request;
 	};
+
+	void set_result(Horizon::System::Result<s_user_info_query_result> result) { _result = result; }
+	Horizon::System::Result<s_user_info_query_result> get_result() { return _result; }
+
+	Horizon::System::Result<s_user_info_query_result> _result;
 };
 
 struct s_player_loaded_data
@@ -149,26 +173,47 @@ struct s_player_loaded_data
 	int32_t current_x, current_y;
 };
 
-class SCENARIO_CREATE_PLAYER : public Horizon::System::RuntimeRoutineContext<s_player_loaded_data, std::shared_ptr<s_user_info_query_result>>
+class SCENARIO_CREATE_PLAYER : public Horizon::System::RuntimeRoutineContext
 {
 public:
-	SCENARIO_CREATE_PLAYER(std::shared_ptr<SCENARIO_CREATE_USER> create_user_context, std::shared_ptr<MainframeComponent> component) 
-	: _create_user_context(create_user_context), Horizon::System::RuntimeRoutineContext<s_player_loaded_data, std::shared_ptr<s_user_info_query_result>>(component) { }
+	SCENARIO_CREATE_PLAYER(Horizon::System::SystemRoutineManager &srm) 
+	: Horizon::System::RuntimeRoutineContext(srm, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE),
+	 _previous_context_result(s_user_info_query_result{})
+	 { }
 
-	class CreatePlayer : public Horizon::System::RuntimeRoutineContext<s_player_loaded_data, std::shared_ptr<s_user_info_query_result>>::Work<SCENARIO_CREATE_PLAYER, s_player_loaded_data, int, s_user_info_query_result>
+	class CreatePlayer : public Horizon::System::RuntimeRoutineContext::Work
 	{
 	public:
-		CreatePlayer(std::shared_ptr<SCENARIO_CREATE_PLAYER> parent_context, s_player_loaded_data request, std::shared_ptr<Result<s_user_info_query_result>> user) 
-		: Horizon::System::RuntimeRoutineContext<s_player_loaded_data, std::shared_ptr<s_user_info_query_result>>::Work<SCENARIO_CREATE_PLAYER, s_player_loaded_data, int, s_user_info_query_result>(parent_context, request, user) 
+		CreatePlayer(std::shared_ptr<SCENARIO_CREATE_PLAYER> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context),
+		 _previous_context_result(s_user_info_query_result{})
 		{ }
+		
+		void set_request(s_player_loaded_data req) { }
+		s_player_loaded_data get_request() { return _request; }
+		
+		void set_previous_context_result(Horizon::System::Result<s_user_info_query_result> result)  { _previous_context_result = result; }
+		Horizon::System::Result<s_user_info_query_result> &get_previous_context_result() { return _previous_context_result; }
 
 		bool execute();
+
+		Horizon::System::Result<s_user_info_query_result> _previous_context_result;
+		s_player_loaded_data _request;
 	};
 
-	bool run()
+	void set_previous_context_result(Horizon::System::Result<s_user_info_query_result> result)
 	{
-		prepare<SCENARIO_CREATE_USER>(_create_user_context);
+		_previous_context_result = result;
+	}
+	
+	Horizon::System::Result<s_user_info_query_result> get_previous_context_result()
+	{
+		return _previous_context_result;
+	}
 
+	bool run() override
+	{
+		
 		// use result in work.
 		if (RuntimeRoutineContext::run()) {
 			return true;
@@ -177,14 +222,14 @@ public:
 		return false;
 	}
 
-	std::shared_ptr<SCENARIO_CREATE_USER> _create_user_context;
+	Horizon::System::Result<s_user_info_query_result> _previous_context_result;
 };
 
-class SCENARIO_LOGIN_RESPONSE : public Horizon::System::RuntimeRoutineContext<int>
+class SCENARIO_LOGIN_RESPONSE : public Horizon::System::RuntimeRoutineContext
 {
 public:
-	SCENARIO_LOGIN_RESPONSE(std::shared_ptr<ZoneSession> session, std::shared_ptr<MainframeComponent> component) 
-	: _session(session), Horizon::System::RuntimeRoutineContext<int>(component) { }
+	SCENARIO_LOGIN_RESPONSE(Horizon::System::SystemRoutineManager &srm) 
+	: Horizon::System::RuntimeRoutineContext(srm, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
 
 	struct s_scenario_login_response_request
 	{
@@ -193,14 +238,22 @@ public:
 		int8_t font;
 	};
 
-	class LoginResponse : public Horizon::System::RuntimeRoutineContext<int>::Work<SCENARIO_LOGIN_RESPONSE, s_scenario_login_response_request>
+	class LoginResponse : public Horizon::System::RuntimeRoutineContext::Work
 	{
 	public:
-		LoginResponse(std::shared_ptr<SCENARIO_LOGIN_RESPONSE> parent_context, s_scenario_login_response_request request) 
-		: Horizon::System::RuntimeRoutineContext<int>::Work<SCENARIO_LOGIN_RESPONSE, s_scenario_login_response_request>(parent_context, request) { }
+		LoginResponse(std::shared_ptr<SCENARIO_LOGIN_RESPONSE> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context) { }
 
 		bool execute();
+
+		void set_request(s_scenario_login_response_request req) { _request = req; }
+		s_scenario_login_response_request get_request() { return _request; }
+
+		s_scenario_login_response_request _request;
 	};
+
+	void set_session(std::shared_ptr<ZoneSession> session) { _session = session; }
+	std::shared_ptr<ZoneSession> get_session() { return _session; }
 
 	std::shared_ptr<ZoneSession> _session;
 };

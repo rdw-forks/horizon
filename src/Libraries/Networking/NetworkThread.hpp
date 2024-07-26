@@ -67,13 +67,13 @@ public:
 	 */
 	virtual ~NetworkThread()
 	{
-		finalize(_segment_number);
+		finalize();
 	}
 
 	/**
 	 * @brief Halts the IO Service and marks the network thread as stopped.
 	 */
-	virtual void finalize(int segment_number = 1)
+	virtual void finalize()
 	{
 		_finalizing.exchange(true);
 	}
@@ -151,6 +151,9 @@ protected:
 		_active_sockets.clear();
 	}
 
+	virtual void on_socket_removed(std::shared_ptr<SocketType> sock) = 0;
+	virtual void on_socket_added(std::shared_ptr<SocketType> sock) = 0;
+
 	/**
 	 * @brief Updates the network thread and schedules a recursive call to itself.
 	 *        This method is responsible for the following tasks -
@@ -173,6 +176,8 @@ protected:
 
 					if (sock->is_open())
 						sock->close_socket();
+
+					on_socket_removed(sock);
 
 					--_connections;
 
@@ -198,7 +203,7 @@ protected:
 	 *        2) removing / closing new sockets that are not open.
 	 *        3) Starting the new socket once added to the container. (@see Socket<SocketType>::start())
 	 */
-	void add_new_sockets()
+	virtual void add_new_sockets()
 	{
 		if (is_finalizing())
 			return;
@@ -213,6 +218,8 @@ protected:
 				_active_sockets.push_back(sock);
 				// Start receiving from the socket.
 				sock->start();
+
+				on_socket_added(sock);
 
 				++_connections; // Increment network connections.
 

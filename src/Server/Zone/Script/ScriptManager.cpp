@@ -31,7 +31,6 @@
 
 #include "Server/Common/System.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
-#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -61,10 +60,16 @@ ScriptManager::~ScriptManager()
 
 void ScriptManager::initialize(int segment_number)
 {
+	using priority_type = MainframeSegmentResourceMediator::mainframe_segment_priority_type;
+	using category_type = MainframeSegmentResourceMediator::mainframe_segment_resource_category;
+
+	get_resource_mediator().register_resource(priority_type::SEGMENT_PRIORITY_PRIMARY, category_type::SEGMENT_RESOURCE_NPC_GUID);
+
+	set_segment_number(segment_number);
 	_thread = std::thread(&ScriptManager::start, this);
 }
 
-void ScriptManager::finalize(int segment_number)
+void ScriptManager::finalize()
 {
 	if (_thread.joinable()) {
 		try {

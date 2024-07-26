@@ -22,11 +22,11 @@
             "cwd": "C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Debug\\bin\\Debug\\"
         },
         {
-            "name": "Auth",
+            "name": "[Debug] Auth",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\auth.exe",
-            "symbolSearchPath": "${workspaceFolder}\\out\\Horizon Debug\\Debug\\bin\\Debug\\",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\",
             "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
@@ -38,11 +38,11 @@
             "cwd": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\"
         },
         {
-            "name": "Char",
+            "name": "[Debug] Char",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\char.exe",
-            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon Debug\\binDebug\\",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\",
             "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
@@ -54,11 +54,11 @@
             "cwd": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\"
         },
         {
-            "name": "Zone",
+            "name": "[Debug] Zone",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\zone.exe",
-            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon Debug\\binDebug\\",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\",
             "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
@@ -68,6 +68,56 @@
                 "--with-config=config\\zone-server.lua"
             ],
             "cwd": "${workspaceFolder}\\out\\build\\Horizon Debug\\bin\\Debug\\"
-        }
+        },
+		
+        {
+            "name": "[RelWithDebInfo] Auth",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\auth.exe",
+            "symbolSearchPath": "${workspaceFolder}\\out\\Horizon Debug\\Debug\\bin\\Debug\\",
+            "console": "integratedTerminal",
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--with-config=config\\auth-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\"
+        },
+        {
+            "name": "[RelWithDebInfo] Char",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\char.exe",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\",
+            "console": "integratedTerminal",
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--with-config=config\\char-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\"
+        },
+        {
+            "name": "[RelWithDebInfo] Zone",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\zone.exe",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\",
+            "console": "integratedTerminal",
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--with-config=config\\zone-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Horizon\\bin\\RelWithDebInfo\\"
+        },
+		
     ]
 }

@@ -31,6 +31,7 @@
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/ClientDefinitions.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
+#include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"

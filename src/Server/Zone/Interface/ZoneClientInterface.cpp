@@ -37,12 +37,13 @@
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Game/Units/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
+
+#include "Server/Zone/ZoneSystem.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -60,63 +61,69 @@ ZoneClientInterface::~ZoneClientInterface()
 
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
-	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_MAIN);
 
-	boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `game_account_id` = ? AND `auth_code` = ?");
-	auto b1 = stmt.bind(account_id, auth_code);
-	boost::mysql::results results;
-	conn->execute(b1, results);
+	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN> s_login = std::make_shared<Horizon::Zone::SCENARIO_LOGIN>(sZone->get_system_routine_manager());
+	s_login->set_session(get_session());
 
-	if (results.rows().empty()) {
-		HLog(error) << "Login error! Session data for game account " << account_id << " and authentication code " << auth_code << " does not exist.";
-		return false;
-	}
+	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_USER> s_create_user = std::make_shared<Horizon::Zone::SCENARIO_CREATE_USER>(sZone->get_system_routine_manager());
 
-	auto r = results.rows()[0];
+	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN::Login> w_login = std::make_shared<Horizon::Zone::SCENARIO_LOGIN::Login>(s_login);
 
-	std::string current_server = r[0].as_string();
-	if (current_server.compare("Z") == 0) { // Already on Zone.
-		ZC_REFUSE_ENTER pkt(get_session());
-		pkt.deliver(ZONE_SERV_ERROR_REJECT);
-		return false;
-	}
+	Horizon::Zone::s_scenario_login_request w_l_request;
+	w_l_request.account_id = account_id;
+	w_l_request.char_id = char_id;
+	w_l_request.auth_code = auth_code;
+	w_l_request.client_time = client_time;
+	w_l_request.gender = gender;
 
-	stmt = conn->prepare_statement("SELECT `gender`, `group_id` FROM `game_accounts` WHERE `id` = ?");
-	auto b2 = stmt.bind(account_id);
-	conn->execute(b2, results);
+	w_login->set_request(w_l_request);
+	s_login->push(w_login);
+
+	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_USER::CreateUser> w_create_user = std::make_shared<Horizon::Zone::SCENARIO_CREATE_USER::CreateUser>(s_create_user);
+
+	Horizon::Zone::SCENARIO_CREATE_USER::s_scenario_create_user_request w_c_u_request;
+	w_c_u_request.char_id = char_id;
 	
-	if (results.rows().empty()) {
-		HLog(error) << "Login error! Game account with id " << account_id << " does not exist.";
-		return false;
-	}
-	
-	auto r2 = results.rows()[0];
+	w_create_user->set_request(w_c_u_request);
+	s_create_user->push(w_create_user);
 
-	stmt = conn->prepare_statement("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?");
-	auto b3 = stmt.bind("Z", account_id, auth_code);
-	conn->execute(b3, results);
+	chain->push(s_login);
+	chain->push(s_create_user);
 
-	uint64_t uuid = sZone->to_uuid((int8_t) UNIT_PLAYER, account_id, char_id, 0);
-	std::shared_ptr<Horizon::Zone::Units::Player> pl = std::make_shared<Horizon::Zone::Units::Player>(get_session(), uuid);
+	sZone->system_routine_queue_push(chain);
+	
+	while(s_create_user->get_context_result() == Horizon::System::RUNTIME_CONTEXT_PASS);
 
-	pl->create(char_id, r2[0].as_string(), r2[1].as_int64());
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_2 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_MAIN);
 
-	ZC_AID zc_aid(get_session());
-	zc_aid.deliver(pl->guid());
+	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_PLAYER> s_create_player;
+	s_create_player = std::make_shared<Horizon::Zone::SCENARIO_CREATE_PLAYER>(sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, 1)->get_system_routine_manager());
 	
-	ZC_ACCEPT_ENTER2 zc_ae2(get_session());
-	zc_ae2.deliver(pl->map_coords().x(), pl->map_coords().y(), DIR_SOUTH, pl->character()._font); // edit third argument to saved font.
-	
-	get_session()->set_player(pl);
+	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN_RESPONSE> s_login_response;
+	s_login_response = std::make_shared<Horizon::Zone::SCENARIO_LOGIN_RESPONSE>(sZone->get_system_routine_manager());
+	s_login_response->set_session(get_session());
 
-	// Add the player to the map after the player has been created and added to the session.
-	// This is done to prevent the player from being added to the map container before being added to the session.
-	// The player is initialized within the map container, so the player must be added to the session first.
-	pl->map()->container()->manage_session(SESSION_ACTION_ADD, get_session());
+	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer> w_create_player = std::make_shared<Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer>(s_create_player);
+	w_create_player->set_previous_context_result(s_create_user->get_result());
+	s_create_player->push(w_create_player);
+
+	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN_RESPONSE::LoginResponse> w_login_response = std::make_shared<Horizon::Zone::SCENARIO_LOGIN_RESPONSE::LoginResponse>(s_login_response);
+	Horizon::Zone::SCENARIO_LOGIN_RESPONSE::s_scenario_login_response_request w_l_r_request;
 	
-	sZone->get_client_socket_mgr().set_socket_for_removal(get_session()->get_socket());
+	w_l_r_request.account_id = account_id;
+	w_l_r_request.current_x = 2;
+	w_l_r_request.current_y = 3;
+	w_l_r_request.font = 1;
+
+	w_login_response->set_request(w_l_r_request);
+	s_login_response->push(w_login_response);
 	
-	HLog(info) << "Player (" << pl->guid() << ") " << pl->name() << " has logged in.";
+	chain_2->push(s_create_player);
+	chain_2->push(s_login_response);
+
+	sZone->system_routine_queue_push(chain_2);
+
 	return true;
 }
 
@@ -163,7 +170,8 @@ bool ZoneClientInterface::disconnect(int8_t type)
 
 	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
 	
-	sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
+	// @TODO
+	//sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
 bool ZoneClientInterface::update_session(int32_t account_id)
@@ -673,16 +681,17 @@ void ZoneClientInterface::whisper_message(const char *name, int32_t name_length,
 
 	HLog(debug) << name << " : " << message;
 
-	std::shared_ptr<Horizon::Zone::Units::Player> player = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().find_player(name);
+	// @TODO
+	//std::shared_ptr<Horizon::Zone::Units::Player> player = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->find_player(name);
 
-	ZC_ACK_WHISPER02 pkt(get_session());
-	if (player != nullptr)
-		pkt.deliver(WRT_SUCCESS, player->character()._character_id);
-	else
-		pkt.deliver(WRT_RECIPIENT_OFFLINE, 0);
-
-	ZC_WHISPER pkt2(player->get_session());
-	pkt2.deliver(get_session()->player()->name(), message, player->account()._group_id >= 99 ? true : false);
+	//ZC_ACK_WHISPER02 pkt(get_session());
+	//if (player != nullptr)
+	//	pkt.deliver(WRT_SUCCESS, player->character()._character_id);
+	//else
+	//	pkt.deliver(WRT_RECIPIENT_OFFLINE, 0);
+//
+	//ZC_WHISPER pkt2(player->get_session());
+	//pkt2.deliver(get_session()->player()->name(), message, player->account()._group_id >= 99 ? true : false);
 }
 void ZoneClientInterface::use_item(int16_t inventory_index, int32_t guid)
 {

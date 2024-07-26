@@ -237,7 +237,7 @@ void AuthServer::initialize_core()
 		general_conf().get_listen_ip(), 
 		general_conf().get_listen_port(), 
 		MAX_NETWORK_THREADS,
-		general_conf().is_test_run_with_network() == false);
+		general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
 	
 	// Initialize core.
 	Server::initialize();

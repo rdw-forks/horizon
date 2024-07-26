@@ -242,18 +242,19 @@ bool Player::load()
 		/**
 		 * Set map and coordinates for unit.
 		 */
-		MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
-		std::shared_ptr<Map> map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map(r[10].as_string());
+		// @TODO
+		//MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
+		//std::shared_ptr<Map> map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map(r[10].as_string());
 
-		if (map == nullptr) { 
-			HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
-			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map("prontera");
-		}
+		//if (map == nullptr) { 
+		//	HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
+		//	map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map("prontera");
+		//}
+		//
+		//get_session()->set_map_name(map->get_name());
 		
-		get_session()->set_map_name(map->get_name());
-		
-		set_map(map);
-		set_map_coords(mcoords);
+		//set_map(map);
+		//set_map_coords(mcoords);
 	}
 	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "Player::load:" << error.what();

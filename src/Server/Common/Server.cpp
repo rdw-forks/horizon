@@ -96,15 +96,18 @@ bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 
 void CommandLineProcess::initialize(int segment_number)
 {
+
 	_cli_thread = std::thread(std::bind(&CommandLineProcess::cli_thread_start, this));
 
 	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
 
 	bool value = _is_initialized;
 	_is_initialized.compare_exchange_strong(value, true);
+	
+	set_segment_number(segment_number);
 }
 
-void CommandLineProcess::finalize(int segment_number)
+void CommandLineProcess::finalize()
 {
 	if (_cli_thread.joinable())
 		_cli_thread.detach();
@@ -200,6 +203,8 @@ void CommandLineProcess::cli_thread_start()
 
 void DatabaseProcess::initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
 {
+	set_segment_number(segment_number);
+	
 	try {
 		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
 		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_db_io_context.get_executor(), *_ssl_ctx);

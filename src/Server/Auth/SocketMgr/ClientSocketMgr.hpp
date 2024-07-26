@@ -46,6 +46,19 @@ namespace Auth
 {
 class AuthNetworkThread : public MainframeComponent, public Networking::NetworkThread<AuthSocket>
 {
+protected:
+	using resource_priority_type = MainframeSegmentResourceMediator::mainframe_segment_priority_type;
+	using resource_category_type = MainframeSegmentResourceMediator::mainframe_segment_resource_category;
+
+	void on_socket_removed(std::shared_ptr<AuthSocket> socket) override
+	{
+		get_resource_mediator().add_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+	}
+
+	void on_socket_added(std::shared_ptr<AuthSocket> socket) override
+	{
+		get_resource_mediator().remove_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+	}
 public:
 	AuthNetworkThread() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
 
@@ -72,13 +85,18 @@ public:
 
 	virtual void initialize(int segment_number = 1) override 
 	{ 
+
+		get_resource_mediator().register_resource(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, resource_category_type::SEGMENT_RESOURCE_SOCKET_ID);
+
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, true);
+
+		set_segment_number(segment_number);
 	}
 
-	virtual void finalize(int segment_number = 1) override 
+	virtual void finalize() override 
 	{
-		Networking::NetworkThread<AuthSocket>::finalize(segment_number);
+		Networking::NetworkThread<AuthSocket>::finalize();
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, false); 
 	}

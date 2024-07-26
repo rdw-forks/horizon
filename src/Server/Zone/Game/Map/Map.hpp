@@ -47,6 +47,7 @@ namespace Zone
 	{
 		class Item;
 	}
+	class MapContainerThread;
 //! @brief The class Map is the representation of a map in the game. It contains all the cells and the grid holder. It also contains the A* pathfinder. 
 //! It is the main class for the map. It is used to get the cells, the grid holder and the pathfinder, and perform a variety of operations on them.
 //! @param _container The container that contains this map.
@@ -59,7 +60,6 @@ namespace Zone
 //! @param _obstructions The obstructions of the map.
 class Map : public std::enable_shared_from_this<Map>
 {
-friend class MapManager;
 public:
 	Map(std::weak_ptr<MapContainerThread>, std::string const &, uint16_t, uint16_t, std::vector<uint8_t> const &);
 	~Map();

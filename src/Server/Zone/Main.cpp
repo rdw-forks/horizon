@@ -29,16 +29,10 @@ int main(int argc, const char * argv[])
 	 */
 	sZone->initialize();
 
-	/* io_context LOOP */
-	
-	sZone->finalize();
 	/*
 	 * Core Cleanup
 	 */
 	HLog(info) << "Server shutting down...";
-
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG); 
-    _CrtDumpMemoryLeaks();
 
 	return 0;
 }

@@ -6,11 +6,12 @@
 #include "Server/Zone/Definitions/SkillDefinitions.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-
+#include "Server/Zone/Script/ScriptManager.hpp"
 namespace Horizon
 {
 namespace Zone
 {
+class MapContainerThread;
 class SkillExecution : public std::enable_shared_from_this<SkillExecution>
 {
 public:

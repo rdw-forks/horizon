@@ -67,7 +67,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${CORE_DIR}/Logging/Logger.cpp
 			${CORE_DIR}/Logging/Logger.hpp)
 	elseif (TEST_NAME STREQUAL "SystemRoutinesTest")
-		set (ADD_SOURCES
+		set (ADD_SOURCES ${ADD_SOURCES}
 			${COMMON_DIR}/Server.hpp
 			${COMMON_DIR}/Server.cpp
 			${COMMON_DIR}/System.hpp
@@ -76,8 +76,14 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${CORE_DIR}/Logging/Logger.hpp
 			${SERVER_DIR}/pch.hpp
 			${COMMON_DIR}/Configuration/Horizon.hpp)
-			set (ADD_LIBS OpenSSL::SSL ${LUA_LIBRARIES} ${Readline_LIBRARY})
-			set (ADD_INCLUDE_DIRS ${LUA_INCLUDE_DIR} ${SOL2_INCLUDE_DIR} ${Readline_INCLUDE_DIR})
+		set (ADD_LIBS 
+			${Boost_LIBRARIES}
+			${Readline_LIBRARY}
+			${LUA_LIBRARIES}
+			OpenSSL::SSL
+		)
+		set (ADD_INCLUDE_DIRS 
+			${Boost_INCLUDE_DIRS})
 	elseif (TEST_NAME STREQUAL "AuthServerTest")
 		CollectSourceFiles(
     		${SERVER_DIR}/Auth

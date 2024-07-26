@@ -47,7 +47,7 @@ struct general_server_configuration
 	void set_test_run(test_run_type type) { this->_test_run |= (int) type; }
 	void unset_test_run(test_run_type type) { this->_test_run &= ~((int) type); }
 
-	bool is_test_run() const { return _test_run&TEST_RUN_NONE ? false : true; }
+	bool is_test_run() const { return _test_run&TEST_RUN_NONE ? true : false; }
 	bool is_test_run_minimal() const { return _test_run&TEST_RUN_MINIMAL ? true : false; }
 	bool is_test_run_with_network() const { return _test_run&TEST_RUN_WITH_NETWORK ? true : false; }
 

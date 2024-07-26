@@ -31,13 +31,13 @@
 #include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Zone.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-#include "Server/Zone/Game/Map/MapManager.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 
 using namespace Horizon::Zone;
 
-MapContainerThread::MapContainerThread()
+MapContainerThread::MapContainerThread(std::function<void(uint64_t)> update_callback)
+: _update_callback(update_callback)
 {
 
 }
@@ -133,7 +133,7 @@ void MapContainerThread::remove_unit(std::shared_ptr<Unit> unit)
 
 //! @brief Process container finalization by cleanly disconnecting players after saving their data.
 //! Clears all managed map instances from itself.
-//! This method must not be called from within the thread itself! @see MapManager::finalize()
+//! This method must not be called from within the thread itself! @see GameLogicProcess::finalize()
 void MapContainerThread::finalize()
 {
 	std::map<int64_t, std::shared_ptr<ZoneSession>> smap = _managed_sessions.get_map();
@@ -174,9 +174,7 @@ void MapContainerThread::finalize()
 	//@TODO finalize lua manager
 	//get_lua_manager()->finalize();
 
-	if (!_thread.joinable())
-		_thread.detach();
-	else
+	if (_thread.joinable())
 		_thread.join();
 
 	HLog(info) << "Map container " << (void *) this << " has shut down.";
@@ -302,4 +300,6 @@ void MapContainerThread::update(uint64_t diff)
 	std::chrono::high_resolution_clock::time_point end_time = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<long, std::micro> elapsed_time = std::chrono::duration_cast<std::chrono::duration<long, std::micro>>(end_time - start_time);
 	//HLog(debug) << "Scheduler Update time: " << elapsed_time.count() << "us";
+
+	_update_callback(diff);
 }
