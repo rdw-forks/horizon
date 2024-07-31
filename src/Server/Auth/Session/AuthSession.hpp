@@ -55,7 +55,7 @@ class AuthSocket;
 class AuthSession : public Horizon::Networking::Session<AuthSocket, AuthSession>
 {
 public:
-	AuthSession(int64_t uid);
+	AuthSession(uint64_t uid);
 	~AuthSession();
 
 	/* */

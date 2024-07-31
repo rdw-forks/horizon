@@ -35,7 +35,7 @@
 #include "MapContainerThread.hpp"
 #include "Libraries/MapCache/MapCache.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
-
+#include "Server/Zone/Zone.hpp"
 namespace Horizon
 {
 namespace Zone
@@ -43,14 +43,20 @@ namespace Zone
 class GameLogicProcess : public MainframeComponent
 {
 public:
-	GameLogicProcess() : MainframeComponent(Horizon::System::RUNTIME_GAMELOGIC) { }
+	GameLogicProcess() 
+	: MainframeComponent(Horizon::System::RUNTIME_GAMELOGIC),
+	_resource_manager(
+		PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<std::string, std::shared_ptr<Map>>>()),
+		SecondaryResource(SEGMENT_PRIORITY_SECONDARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>())
+	)
+	{
+	}
     void initialize(int segment_number = 1);
     void finalize();
 
 	bool is_initialized() { return _is_initialized.load(); }
 
 	/* Map / Maps */
-	bool manage_session_in_map(map_container_session_action action, std::string map_name, std::shared_ptr<ZoneSession> s);
 	bool load_map_cache();
 	void start_containers();
 	
@@ -60,6 +66,14 @@ public:
 
 protected:
     std::atomic<bool> _is_initialized;
+	
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<std::string /* Map Name */, std::shared_ptr<Map>>>;
+	using SecondaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource, SecondaryResource>;
+	ResourceManager _resource_manager;
+public:
+	ResourceManager &get_resource_manager() { return _resource_manager; }
+
 private:
 	TaskScheduler _scheduler;
 	LockedLookupTable<int32_t, std::shared_ptr<MapContainerThread>> _map_containers;

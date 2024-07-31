@@ -2,8 +2,25 @@
     "version": 2,
     "configurePresets": [
         {
-            "name": "Horizon",
+            "name": "Horizon-Release",
             "displayName": "Horizon Release (x64 architecture) - Visual Studio Community 2022",
+            "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
+            "generator": "Visual Studio 17 2022",
+            "toolset": "host=x64",
+            "architecture": "x64",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
+				"CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "Horizon",
+            "displayName": "Horizon RelWithDebInfo (x64 architecture) - Visual Studio Community 2022",
             "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
             "generator": "Visual Studio 17 2022",
             "toolset": "host=x64",
@@ -20,7 +37,7 @@
         },
         {
             "name": "Horizon-Tools",
-            "displayName": "Horizon Tools Release (x64 architecture) - Visual Studio Community 2022",
+            "displayName": "Horizon Tools RelWithDebInfo (x64 architecture) - Visual Studio Community 2022",
             "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
             "generator": "Visual Studio 17 2022",
             "toolset": "host=x64",
@@ -40,7 +57,7 @@
         },
         {
             "name": "Horizon-Tests",
-            "displayName": "Horizon Tests Release (x64 architecture) - Visual Studio Community 2022",
+            "displayName": "Horizon Tests RelWithDebInfo (x64 architecture) - Visual Studio Community 2022",
             "description": "Using compilers for Visual Studio 17 2022 (x64 architecture)",
             "generator": "Visual Studio 17 2022",
             "toolset": "host=x64",
@@ -110,26 +127,32 @@
     ],
     "buildPresets": [
         {
-            "name": "Horizon",
+            "name": "Horizon-Release",
             "displayName": "Visual Studio Community 2022 Release - amd64",
+            "configurePreset": "Horizon-Release",
+            "configuration": "Release"
+        },
+        {
+            "name": "Horizon",
+            "displayName": "Visual Studio Community 2022 RelWithDebInfo - amd64",
             "configurePreset": "Horizon",
             "configuration": "RelWithDebInfo"
         },
         {
             "name": "Horizon-Tools",
-            "displayName": "Visual Studio Community 2022 Release - Tools - amd64",
+            "displayName": "Visual Studio Community 2022 RelWithDebInfo - Tools - amd64",
             "configurePreset": "Horizon-Tools",
             "configuration": "RelWithDebInfo"
         },
         {
             "name": "Horizon-Tests",
-            "displayName": "Visual Studio Community 2022 Release - Tests - amd64",
+            "displayName": "Visual Studio Community 2022 RelWithDebInfo - Tests - amd64",
             "configurePreset": "Horizon-Tests",
             "configuration": "RelWithDebInfo"
         },
         {
             "name": "Horizon x86",
-            "displayName": "Visual Studio Community 2022 Release - x86 - Debug",
+            "displayName": "Visual Studio Community 2022 RelWithDebInfo - x86 - Debug",
             "configurePreset": "Horizon x86",
             "configuration": "RelWithDebInfo"
         }

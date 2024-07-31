@@ -81,18 +81,7 @@ public:
 	//! @brief Removes a map from the container in real time. Managed maps are
 	//! saved in thread-safe tables.
 	void remove_map(std::string const &name);
-
-	//! @brief Adds a session to the session buffer, marking him for removal from the
-	//! list of managed sessions by this container on the next update.
-	void manage_session(map_container_session_action, std::shared_ptr<ZoneSession> s);
-
-	//! @brief Returns a player if found, nullptr otherwise.
-	std::shared_ptr<Units::Player> get_player(std::string const &name);
-	std::shared_ptr<Units::Player> get_player(int32_t guid);
-
-	//! @brief Returns a session if found, nullptr otherwise.
-	std::shared_ptr<ZoneSession> get_session(int64_t session_id);
-
+	
 	//! @brief Responsible for initialization of the container and is called externally.
 	//! This is mainly for members that can't be initialized from the constructor method.
 	void initialize();
@@ -126,8 +115,6 @@ private:
 
 	std::thread _thread;
 	LockedLookupTable<std::string, std::shared_ptr<Map>> _managed_maps;                     ///< Thread-safe hash-table of managed maps.
-	ThreadSafeQueue<std::pair<map_container_session_action, std::shared_ptr<ZoneSession>>> _session_buffer;         ///< Thread-safe queue of sessions to add to/remove from the container.
-	LockedLookupTable<int64_t, std::shared_ptr<ZoneSession>> _managed_sessions;             ///< Thread-safe hash table of managed sessions.
 	TaskScheduler _task_scheduler;
 	std::vector<std::shared_ptr<Unit>> _entities;                                                        ///< Non-thread-safe vector of entities within this container.
 	std::function<void(uint64_t)> _update_callback;

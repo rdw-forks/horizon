@@ -45,20 +45,21 @@ namespace Zone
 class ZoneNetworkThread : public MainframeComponent, public Networking::NetworkThread<ZoneSocket>
 {
 protected:
-	using resource_priority_type = MainframeSegmentResourceMediator::mainframe_segment_priority_type;
-	using resource_category_type = MainframeSegmentResourceMediator::mainframe_segment_resource_category;
-
 	void on_socket_removed(std::shared_ptr<ZoneSocket> socket) override
 	{
-		get_resource_mediator().add_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+		get_resource_manager().add<SEGMENT_PRIORITY_PRIMARY>(socket->get_socket_id(), socket);
 	}
 
 	void on_socket_added(std::shared_ptr<ZoneSocket> socket) override
 	{
-		get_resource_mediator().remove_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+		get_resource_manager().remove<SEGMENT_PRIORITY_PRIMARY>(socket->get_socket_id());
 	}
 public:
-	ZoneNetworkThread() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
+	ZoneNetworkThread() 
+	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
+	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSocket>>>())) 
+	{
+	}
 
 	bool start(int segment_number = 1)
 	{
@@ -83,8 +84,6 @@ public:
 
 	virtual void initialize(int segment_number = 1) override 
 	{ 
-		get_resource_mediator().register_resource(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, resource_category_type::SEGMENT_RESOURCE_SOCKET_ID);
-
 		set_segment_number(segment_number);
 
 		bool value = _is_initialized;
@@ -101,6 +100,12 @@ public:
 	virtual bool is_initialized() override { return _is_initialized.load(); }
 protected:
 	std::atomic<bool> _is_initialized;
+
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<ZoneSocket>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
+	ResourceManager _resource_manager;
+	
+	ResourceManager &get_resource_manager() { return _resource_manager; }
 };
 
 

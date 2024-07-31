@@ -105,7 +105,14 @@ private:
 	std::shared_ptr<CombatComponent> _combat_component;
 
 	std::thread _thread;
+protected:
 	std::atomic<bool> _is_initialized;
+
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t /*NPC GUID*/, std::shared_ptr<Units::NPC>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
+	ResourceManager _resource_manager;
+public:
+	ResourceManager &get_resource_manager() { return _resource_manager; }
 };
 }
 }

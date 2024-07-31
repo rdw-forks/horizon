@@ -35,17 +35,11 @@ using namespace Horizon::Zone;
 
 void PersistenceManager::initialize(int segment_number)
 {
-	using priority_type = MainframeSegmentResourceMediator::mainframe_segment_priority_type;
-	using category_type = MainframeSegmentResourceMediator::mainframe_segment_resource_category;
-
-	get_resource_mediator().register_resource(priority_type::SEGMENT_PRIORITY_PRIMARY, category_type::SEGMENT_RESOURCE_ACCOUNT_ID);
-	get_resource_mediator().register_resource(priority_type::SEGMENT_PRIORITY_SECONDARY, category_type::SEGMENT_RESOURCE_CHARACTER_ID);
-	get_resource_mediator().register_resource(priority_type::SEGMENT_PRIORITY_TERTIARY, category_type::SEGMENT_RESOURCE_CHARACTER_NAME);
-	get_resource_mediator().register_resource(priority_type::SEGMENT_PRIORITY_QUATERNARY, category_type::SEGMENT_RESOURCE_GUILD_ID);
-	get_resource_mediator().register_resource(priority_type::SEGMENT_PRIORITY_QUINARY, category_type::SEGMENT_RESOURCE_PARTY_ID);
-
 	set_segment_number(segment_number);
 	_thread = std::thread(&PersistenceManager::start, this);
+
+    bool value = _is_initialized;
+	_is_initialized.compare_exchange_strong(value, true);
 }
 
 void PersistenceManager::finalize()
@@ -59,15 +53,13 @@ void PersistenceManager::finalize()
 
 void PersistenceManager::start()
 {
-    bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, true);
-	
 	while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 		update(std::time(nullptr));
+		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	}
 }
 
 void PersistenceManager::update(uint64_t diff)
 {
-	sZone->get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE)->system_routine_process_queue();
+	get_system_routine_manager().process_queue();
 }

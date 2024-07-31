@@ -38,8 +38,6 @@ set(PRIVATE_SOURCES
 	${DIR}/Main.cpp
 	${DIR}/Zone.hpp
 	${DIR}/Zone.cpp
-	${DIR}/ZoneRuntime.cpp
-	${DIR}/ZoneRuntime.hpp
 	${DIR}/ZoneSystem.cpp
 	${DIR}/ZoneSystem.hpp
 	${DIR}/Interface/ZoneClientInterface.cpp

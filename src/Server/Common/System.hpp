@@ -30,6 +30,7 @@
 #ifndef HORIZON_SYSTEM_ROUTINES_HPP
 #define HORIZON_SYSTEM_ROUTINES_HPP
 
+#include "Core/Logging/Logger.hpp"
 #include <boost/lockfree/spsc_queue.hpp>
 #include <optional>
 #include <vector>
@@ -86,7 +87,10 @@ enum runtime_module_type : int
 	RUNTIME_SCRIPTVM    = 5,
 	RUNTIME_DATABASE    = 6, // Database utilizes main thread instead of its own separate thread.
 	RUNTIME_CLIENT_NETWORKING = 8,
-	RUNTIME_MODULE_MAX  = 9
+	RUNTIME_HTTP_SERVICE= 9,
+	RUNTIME_WEB_SOCKET  = 10,
+	RUNTIME_RUNTIME     = 11,
+	RUNTIME_MODULE_MAX  = 12
 };
 
 enum runtime_synchronization_method : int
@@ -132,10 +136,16 @@ public:
     class WorkContext
     {
     public:
+		WorkContext() : _uuid(boost::uuids::random_generator()()) { }
+
         virtual bool execute() 
 		{
 			return true;
 		}
+
+		std::string get_uuid_string() { return boost::uuids::to_string(_uuid); }
+
+		boost::uuids::uuid _uuid;
     };
 
     class WorkControlAgent
@@ -329,6 +339,7 @@ template <typename T = int>
 class ContextWithResult
 {
 public:
+	ContextWithResult() { }
 	ContextWithResult(T result) : _result(result) { }
 	ContextWithResult(std::vector<T> result_vector) : _result_vector(result_vector) { }
 
@@ -365,6 +376,7 @@ template <typename PayloadType>
 class Result : public RuntimeContext::ResultContext, public ContextWithResult<PayloadType>
 {
 public:
+	Result() { }
     Result(PayloadType payload) 
 	: ContextWithResult<PayloadType>(payload) { }
     Result(std::vector<PayloadType> payload_vector) 
@@ -378,11 +390,16 @@ public:
 	RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 	RuntimeRoutineContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 
-    class Work : public RuntimeContext::WorkContext
-    {
+	void status_message(std::string message) { HLog(info) << "{s:" << get_uuid_string() << "}" << message; }
+	void warning_message(std::string message) {  HLog(warning) << "{s:" << get_uuid_string() << "}" << message; }
+	void error_message(std::string message) {  HLog(error) << "{s:" << get_uuid_string() << "}" << message; }
+
+    class Work : public RuntimeContext::WorkContext, public std::enable_shared_from_this<Work>
+	{
     public:
         Work(std::shared_ptr<RuntimeRoutineContext> runtime_context) 
-        : _runtime_context(runtime_context) { }
+        : _runtime_context(runtime_context), _message_agent(runtime_context, this) { }
+		~Work() { }
 
         virtual bool execute() 
         {
@@ -392,10 +409,58 @@ public:
 
 		std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return _runtime_context; }
 		void set_runtime_context(std::shared_ptr<RuntimeRoutineContext> runtime_context) { _runtime_context = runtime_context; }
-		
+
+	protected:
+		class MessageAgent
+		{
+		public:
+			MessageAgent(std::shared_ptr<RuntimeRoutineContext> runtime_context, Work *work) 
+			: _runtime_context(runtime_context), _work(work) { }
+			~MessageAgent() { }
+
+			void set_status_message(std::string message) { 
+				_status_message = message;				
+				if (_status_message.size() > 0)
+					_runtime_context->status_message("{w:" + _work->get_uuid_string() + "}: " + _status_message);
+			}
+			std::string get_status_message() {return _status_message; }
+
+			void set_warning_message(std::string message) { 
+				_warning_message = message; 
+				if (_warning_message.size() > 0)
+					_runtime_context->warning_message("{w:" + _work->get_uuid_string() + "}: " + _warning_message);
+			}
+			std::string get_warning_message() { return _warning_message; }
+
+			void set_error_message(std::string message) {
+				_error_message = message;
+				if (_error_message.size() > 0)
+					_runtime_context->error_message("{w:" + _work->get_uuid_string() + "}: " + _error_message);
+			}
+			std::string get_error_message() { return _error_message; }
+
+		protected:
+			std::string _status_message{""};
+			std::string _warning_message{""};
+			std::string _error_message{""};
+			std::shared_ptr<RuntimeRoutineContext> _runtime_context;
+			Work *_work;
+		};
+
+	public:
+		MessageAgent &get_message_agent() { return _message_agent; }
+	protected:
 		std::shared_ptr<RuntimeRoutineContext> _runtime_context;
+		MessageAgent _message_agent;
     };
 
+	std::mutex &get_runtime_synchronization_mutex() { return _runtime_synchronization_mutex; }
+
+	std::vector<std::string> _status_messages;
+	std::vector<std::string> _warning_messages;
+	std::vector<std::string> _error_messages;
+	
+	std::mutex _runtime_synchronization_mutex;
 };
 
 class RuntimeContextChain : public std::enable_shared_from_this<RuntimeContextChain>
@@ -542,7 +607,7 @@ public:
 	SystemRoutineManager(runtime_module_type module_type)
 	: _module_type(module_type)
 	{
-		if (_module_type < RUNTIME_MAIN || _module_type > Horizon::System::RUNTIME_CLIENT_NETWORKING) {
+		if (_module_type < RUNTIME_MAIN || _module_type >= Horizon::System::RUNTIME_MODULE_MAX) {
 			std::cerr << "SystemRoutineManager for module type (" << module_type << ") failed to start. Invalid module type." << std::endl;
 		}
 	}

@@ -42,6 +42,12 @@
 #include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
+#include "Server/Common/System.hpp"
+#include "Server/Common/Server.hpp"
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/random_generator.hpp>
 
 #include "Server/Zone/ZoneSystem.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -61,13 +67,8 @@ ZoneClientInterface::~ZoneClientInterface()
 
 bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t auth_code, uint32_t client_time, uint8_t gender)
 {	
-	std::shared_ptr<Horizon::System::RuntimeContextChain> chain = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_MAIN);
-
-	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN> s_login = std::make_shared<Horizon::Zone::SCENARIO_LOGIN>(sZone->get_system_routine_manager());
-	s_login->set_session(get_session());
-
-	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_USER> s_create_user = std::make_shared<Horizon::Zone::SCENARIO_CREATE_USER>(sZone->get_system_routine_manager());
-
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_RUNTIME);
+	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN> s_login = std::make_shared<Horizon::Zone::SCENARIO_LOGIN>(sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager());
 	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN::Login> w_login = std::make_shared<Horizon::Zone::SCENARIO_LOGIN::Login>(s_login);
 
 	Horizon::Zone::s_scenario_login_request w_l_request;
@@ -77,52 +78,54 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 	w_l_request.client_time = client_time;
 	w_l_request.gender = gender;
 
+	s_login->get_runtime_synchronization_mutex().lock();
+	s_login->set_session(get_session());
 	w_login->set_request(w_l_request);
+	s_login->get_runtime_synchronization_mutex().unlock();
 	s_login->push(w_login);
 
-	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_USER::CreateUser> w_create_user = std::make_shared<Horizon::Zone::SCENARIO_CREATE_USER::CreateUser>(s_create_user);
-
-	Horizon::Zone::SCENARIO_CREATE_USER::s_scenario_create_user_request w_c_u_request;
-	w_c_u_request.char_id = char_id;
-	
-	w_create_user->set_request(w_c_u_request);
-	s_create_user->push(w_create_user);
-
 	chain->push(s_login);
-	chain->push(s_create_user);
 
-	sZone->system_routine_queue_push(chain);
-	
-	while(s_create_user->get_context_result() == Horizon::System::RUNTIME_CONTEXT_PASS);
+	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_resource_manager().add<SEGMENT_PRIORITY_PRIMARY>(get_session()->get_session_id(), get_session());
 
-	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_2 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_MAIN);
+	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain);
+
+	while(s_login->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS);
+
+	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_2 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_RUNTIME);
 
 	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_PLAYER> s_create_player;
 	s_create_player = std::make_shared<Horizon::Zone::SCENARIO_CREATE_PLAYER>(sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, 1)->get_system_routine_manager());
-	
-	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN_RESPONSE> s_login_response;
-	s_login_response = std::make_shared<Horizon::Zone::SCENARIO_LOGIN_RESPONSE>(sZone->get_system_routine_manager());
-	s_login_response->set_session(get_session());
 
 	std::shared_ptr<Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer> w_create_player = std::make_shared<Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer>(s_create_player);
-	w_create_player->set_previous_context_result(s_create_user->get_result());
+	s_create_player->get_runtime_synchronization_mutex().lock();
+	w_create_player->set_request(Horizon::Zone::s_player_loaded_data{(int32_t)account_id});
+	s_create_player->set_previous_context_result(s_login->get_result());
+	s_create_player->set_session(get_session());
+	s_create_player->get_runtime_synchronization_mutex().unlock();
 	s_create_player->push(w_create_player);
+
+	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN_RESPONSE> s_login_response;
+	s_login_response = std::make_shared<Horizon::Zone::SCENARIO_LOGIN_RESPONSE>(sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager());
+	s_login_response->get_runtime_synchronization_mutex().lock();
+	s_login_response->set_session(get_session());
+	s_login_response->get_runtime_synchronization_mutex().unlock();
 
 	std::shared_ptr<Horizon::Zone::SCENARIO_LOGIN_RESPONSE::LoginResponse> w_login_response = std::make_shared<Horizon::Zone::SCENARIO_LOGIN_RESPONSE::LoginResponse>(s_login_response);
 	Horizon::Zone::SCENARIO_LOGIN_RESPONSE::s_scenario_login_response_request w_l_r_request;
-	
+
 	w_l_r_request.account_id = account_id;
-	w_l_r_request.current_x = 2;
-	w_l_r_request.current_y = 3;
+	w_l_r_request.current_x = s_login->get_result().get_one().current_x;
+	w_l_r_request.current_y = s_login->get_result().get_one().current_y;
 	w_l_r_request.font = 1;
 
 	w_login_response->set_request(w_l_r_request);
 	s_login_response->push(w_login_response);
-	
+
 	chain_2->push(s_create_player);
 	chain_2->push(s_login_response);
 
-	sZone->system_routine_queue_push(chain_2);
+	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain_2);
 
 	return true;
 }
@@ -132,18 +135,26 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
  */
 bool ZoneClientInterface::restart(uint8_t type)
 {
-	ZC_RESTART_ACK rpkt(get_session());
-	
-	switch (type) {
-		case 0:
-			HLog(info) << "Character is being respawned.";
-			break;
-		default:
-			rpkt.deliver(type);
-			HLog(info) << "Character has moved to the character server.";
-			break;
-	}
-	
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager());
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> w_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask>(s_task);
+	s_task->get_runtime_synchronization_mutex().lock();
+	s_task->set_session(get_session());
+	w_task->set_task([type](std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> task) {
+		std::shared_ptr<ZoneSession> session = std::dynamic_pointer_cast<Horizon::Zone::ActiveRuntimeScenario>(task->get_runtime_context())->get_session();
+		ZC_RESTART_ACK rpkt(session);
+		switch (type) {
+			case 0:
+				task->get_message_agent().set_status_message("Character (GUID:" + std::to_string(session->player()->guid()) + ") is being respawned.");
+				break;
+			default:
+				task->get_message_agent().set_status_message("Character (GUID:" + std::to_string(session->player()->guid()) + ") has moved to the character server.");
+				break;
+		};
+		rpkt.deliver(type);
+	});
+	s_task->get_runtime_synchronization_mutex().unlock();
+	s_task->push(w_task);
+	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(s_task);
 	return true;
 }
 
@@ -164,13 +175,19 @@ void ZoneClientInterface::pvpinfo(int character_id, int account_id)
 }
 bool ZoneClientInterface::disconnect(int8_t type)
 {
-	ZC_ACK_REQ_DISCONNECT pkt(get_session());
-	
-	HLog(debug) << "ZoneClientInterface::disconnect: Type :" << type;
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager());
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> w_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask>(s_task);
+	s_task->get_runtime_synchronization_mutex().lock();
+	s_task->set_session(get_session());
+	w_task->set_task([type](std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> task) {
+		std::shared_ptr<ZoneSession> session = std::dynamic_pointer_cast<Horizon::Zone::ActiveRuntimeScenario>(task->get_runtime_context())->get_session();
+		ZC_ACK_REQ_DISCONNECT rpkt(session);
+		rpkt.deliver(type);
+	});
+	s_task->get_runtime_synchronization_mutex().unlock();
+	s_task->push(w_task);
+	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(s_task);
 
-	pkt.deliver(type); // 0 => Quit, 1 => Wait for 10 seconds
-	
-	// @TODO
 	//sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }

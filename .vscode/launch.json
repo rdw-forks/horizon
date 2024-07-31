@@ -22,6 +22,54 @@
             "cwd": "C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Debug\\bin\\Debug\\"
         },
         {
+            "name": "[Release] Auth",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\auth.exe",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\",
+            "console": "integratedTerminal",
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--with-config=config\\auth-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\"
+        },
+        {
+            "name": "[Release] Char",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\char.exe",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\",
+            "console": "integratedTerminal",
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--with-config=config\\char-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\"
+        },
+        {
+            "name": "[Release] Zone",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\zone.exe",
+            "symbolSearchPath": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\",
+            "console": "integratedTerminal",
+            "logging": {
+              "moduleLoad": false,
+              "trace": true
+            },
+            "args": [
+                "--with-config=config\\zone-server.lua"
+            ],
+            "cwd": "${workspaceFolder}\\out\\build\\Horizon-Release\\bin\\Release\\"
+        },
+        {
             "name": "[Debug] Auth",
             "type": "cppvsdbg",
             "request": "launch",

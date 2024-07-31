@@ -29,6 +29,7 @@ int main(int argc, const char * argv[])
 	 */
 	sZone->initialize();
 
+	sZone->finalize();
 	/*
 	 * Core Cleanup
 	 */

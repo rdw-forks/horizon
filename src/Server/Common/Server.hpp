@@ -70,214 +70,114 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
-template<class... Types>
-struct type_array {
-    using as_tuple = std::tuple<Types...>;
-
-    template<std::size_t I>
-    using get = std::tuple_element_t<I, as_tuple>;
-
-    static constexpr std::size_t size = sizeof...(Types);
+enum mainframe_segment_priority_type
+{
+	SEGMENT_PRIORITY_PRIMARY = 0,
+	SEGMENT_PRIORITY_SECONDARY = 1,
+	SEGMENT_PRIORITY_TERTIARY = 2,
+	SEGMENT_PRIORITY_QUATERNARY = 3,
+	SEGMENT_PRIORITY_QUINARY = 4,
+	SEGMENT_PRIORITY_SENARY = 5,
+	SEGMENT_PRIORITY_SEPTENARY = 6,
+	SEGMENT_PRIORITY_OCTONARY = 7,
+	SEGMENT_PRIORITY_NONARY = 8,
+	SEGMENT_PRIORITY_DENARY = 9,
+	MAX_MAINFRAME_SEGMENT_PRIORITIES = 10
 };
 
-class MainframeSegmentResourceMediator
+template <typename Key, typename Value>
+struct s_segment_storage {
+	using key_type = Key;
+	using value_type = Value;
+	LockedLookupTable<Key, Value> _table;
+	s_segment_storage() { }
+	~s_segment_storage() { }
+	// add value
+	void add(Key key, Value value) { _table.insert(key, value); }
+	// remove value
+	void remove(Key key) { _table.erase(key); }
+	// get value
+	Value get(Key key, Value const &default_value = Value()) { return _table.at(key, default_value); }
+	// get size
+	int size() { return _table.size(); }
+	// clear
+	void clear() { _table.clear(); }
+};
+
+template <class Storage>
+class SharedPriorityResourceMedium
 {
 public:
-	enum mainframe_segment_priority_type
+	SharedPriorityResourceMedium(int priority, std::shared_ptr<Storage> storage) : _priority(priority), _storage(storage) { }
+	
+	int64_t get_priority() { return _priority; }
+	Storage get_storage() { return _storage; }
+	// add
+	void add(typename Storage::key_type key, typename Storage::value_type value) { _storage->add(key, value); }
+	// remove
+	void remove(typename Storage::key_type key) { _storage->remove(key); }
+	// get
+	typename Storage::value_type get(typename Storage::key_type key, typename Storage::value_type default_value = typename Storage::value_type()) { return _storage->get(key, default_value); }
+	// size
+	int size() { return _storage->size(); }
+	// clear
+	void clear() { _storage->clear(); }
+protected:
+	int64_t _priority;
+	std::shared_ptr<Storage> _storage;
+};
+
+template <typename... SharedPriorityResourceMediums>
+class SharedPriorityResourceManager {
+public:
+	SharedPriorityResourceManager(SharedPriorityResourceMediums... mediums) : _resources(mediums...) { }
+
+	// copy constructor
+	SharedPriorityResourceManager(const SharedPriorityResourceManager &other) : _resources(other._resources) { }
+	// move constructor
+	SharedPriorityResourceManager(SharedPriorityResourceManager &&other) : _resources(std::move(other._resources)) { }
+	// copy assignment
+	SharedPriorityResourceManager &operator=(const SharedPriorityResourceManager &other) { _resources = other._resources; return *this; }
+	// move assignment
+	SharedPriorityResourceManager &operator=(SharedPriorityResourceManager &&other) { _resources = std::move(other._resources); return *this; }
+	
+    template <std::size_t Priority = int>
+    auto& get() {
+        return std::get<Priority>(_resources);
+    }
+
+	template <std::size_t Index, typename Key, typename Value>
+	void add(Key key, Value value) 
 	{
-		
-		SEGMENT_PRIORITY_PRIMARY = 0,
-		SEGMENT_PRIORITY_SECONDARY = 1,
-		SEGMENT_PRIORITY_TERTIARY = 2,
-		SEGMENT_PRIORITY_QUATERNARY = 3,
-		SEGMENT_PRIORITY_QUINARY = 4,
-		SEGMENT_PRIORITY_SENARY = 5,
-		SEGMENT_PRIORITY_SEPTENARY = 6,
-		SEGMENT_PRIORITY_OCTONARY = 7,
-		SEGMENT_PRIORITY_NONARY = 8,
-		SEGMENT_PRIORITY_DENARY = 9,
-		MAX_MAINFRAME_SEGMENT_PRIORITIES = 10
-	};
-	enum mainframe_segment_resource_category
+		std::get<Index>(_resources).add(key, value);
+	}
+
+	template <std::size_t Index, typename Key>
+	void remove(Key key) 
 	{
-		SEGMENT_RESOURCE_UNKNOWN         = 0,
-		SEGMENT_RESOURCE_USER_UUID       = 1,
-		SEGMENT_RESOURCE_ACCOUNT_ID      = 2,
-		SEGMENT_RESOURCE_CHARACTER_NAME  = 3,
-		SEGMENT_RESOURCE_CHARACTER_ID    = 4,
-		SEGMENT_RESOURCE_MAP_NAME        = 5,
-		SEGMENT_RESOURCE_GUILD_ID        = 6,
-		SEGMENT_RESOURCE_PARTY_ID        = 7,
-		SEGMENT_RESOURCE_NPC_GUID        = 8,
-		SEGMENT_RESOURCE_SOCKET_ID       = 9,
-		MAX_MAINFRAME_SEGMENT_RESOURCE_CATEGORIES = 10
-	};
+		std::get<Index>(_resources).remove(key);
+	}
+
+	template <std::size_t Index, typename Key, typename Value>
+	Value get(Key key, Value const &default_value = Value()) 
+	{
+		return std::get<Index>(_resources).get(key, default_value);
+	}
+
+	template <std::size_t Index>
+	int size() 
+	{
+		return std::get<Index>(_resources).size();
+	}
+
+	template <std::size_t Index>
+	void clear() 
+	{
+		std::get<Index>(_resources).clear();
+	}
 
 private:
-	enum mainframe_resource_value_type
-	{
-		MAINFRAME_RESOURCE_TYPE_UINT64 = 0,
-		MAINFRAME_RESOURCE_TYPE_STRING = 1
-	};
-
-	using mainframe_type_array = type_array<uint64_t, std::string>;
-	
-    struct s_segment_storage {
-		mainframe_segment_resource_category _category; // category
-		mainframe_resource_value_type _storage_type; // key
-		union storage_union {
-			std::vector<uint64_t> vector_int64;
-			std::vector<std::string> vector_string;
-            // Constructor
-            storage_union() {}
-            // Destructor
-            ~storage_union() {}
-		} storage;
-
-    	// Default Constructor
-    	s_segment_storage()
-    	    : _category(), _storage_type(MAINFRAME_RESOURCE_TYPE_UINT64) {
-    	    new (&storage.vector_int64) std::vector<uint64_t>();
-    	}
-
-    	// Parameterized Constructor
-    	s_segment_storage(mainframe_segment_resource_category category, mainframe_resource_value_type type)
-    	    : _category(category), _storage_type(type) {
-    	    if (type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-    	        new (&storage.vector_int64) std::vector<uint64_t>();
-    	    } else if (type == MAINFRAME_RESOURCE_TYPE_STRING) {
-    	        new (&storage.vector_string) std::vector<std::string>();
-    	    }
-    	}
-
-    	// Destructor
-    	~s_segment_storage() {
-    	    if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-    	        storage.vector_int64.~vector();
-    	    } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-    	        storage.vector_string.~vector();
-    	    }
-    	}
-
-    	// Copy Constructor
-    	s_segment_storage(const s_segment_storage& other)
-    	    : _category(other._category), _storage_type(other._storage_type) {
-    	    if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-    	        new (&storage.vector_int64) std::vector<uint64_t>(other.storage.vector_int64);
-    	    } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-    	        new (&storage.vector_string) std::vector<std::string>(other.storage.vector_string);
-    	    }
-    	}
-
-    	// Copy Assignment Operator
-    	s_segment_storage& operator=(const s_segment_storage& other) {
-    	    if (this != &other) {
-    	        // Destroy current storage
-    	        if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-    	            storage.vector_int64.~vector();
-    	        } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-    	            storage.vector_string.~vector();
-    	        }
-
-    	        // Copy new storage
-    	        _category = other._category;
-    	        _storage_type = other._storage_type;
-    	        if (_storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-    	            new (&storage.vector_int64) std::vector<uint64_t>(other.storage.vector_int64);
-    	        } else if (_storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-    	            new (&storage.vector_string) std::vector<std::string>(other.storage.vector_string);
-    	        }
-    	    }
-    	    return *this;
-    	}
-	};
-
-	std::array<s_segment_storage, MAX_MAINFRAME_SEGMENT_RESOURCE_CATEGORIES> _resource_storage_map = {
-		s_segment_storage(SEGMENT_RESOURCE_UNKNOWN, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_USER_UUID, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_ACCOUNT_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_CHARACTER_NAME, MAINFRAME_RESOURCE_TYPE_STRING),
-		s_segment_storage(SEGMENT_RESOURCE_CHARACTER_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_MAP_NAME, MAINFRAME_RESOURCE_TYPE_STRING),
-		s_segment_storage(SEGMENT_RESOURCE_GUILD_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_PARTY_ID, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_NPC_GUID, MAINFRAME_RESOURCE_TYPE_UINT64),
-		s_segment_storage(SEGMENT_RESOURCE_SOCKET_ID, MAINFRAME_RESOURCE_TYPE_UINT64)
-	};
-
-public:
-	std::array<s_segment_storage, MAX_MAINFRAME_SEGMENT_PRIORITIES> _resource_priority_map;
-
-	void register_resource(mainframe_segment_priority_type priority, mainframe_segment_resource_category category)
-	{
-		_resource_priority_map[priority] = _resource_storage_map[category];
-	}
-
-	void add_resource_value(mainframe_segment_priority_type priority, uint64_t value)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-			_resource_priority_map[priority].storage.vector_int64.push_back(value);
-		}
-	}
-
-	void add_resource_value(mainframe_segment_priority_type priority, std::string value)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-			_resource_priority_map[priority].storage.vector_string.push_back(value);
-		}
-	}
-
-	void remove_resource_value(mainframe_segment_priority_type priority, uint64_t value)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-			auto it = std::find(_resource_priority_map[priority].storage.vector_int64.begin(), _resource_priority_map[priority].storage.vector_int64.end(), value);
-			if (it != _resource_priority_map[priority].storage.vector_int64.end()) {
-				_resource_priority_map[priority].storage.vector_int64.erase(it);
-			}
-		}
-	}
-
-	void remove_resource_value(mainframe_segment_priority_type priority, std::string value)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-			auto it = std::find(_resource_priority_map[priority].storage.vector_string.begin(), _resource_priority_map[priority].storage.vector_string.end(), value);
-			if (it != _resource_priority_map[priority].storage.vector_string.end()) {
-				_resource_priority_map[priority].storage.vector_string.erase(it);
-			}
-		}
-	}
-
-	std::size_t get_resource_count(mainframe_segment_priority_type priority)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-			return _resource_priority_map[priority].storage.vector_int64.size();
-		} else if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-			return _resource_priority_map[priority].storage.vector_string.size();
-		}
-		return 0;
-	}
-
-	int64_t get_resource_index(mainframe_segment_priority_type priority, uint64_t value)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_UINT64) {
-			auto it = std::find(_resource_priority_map[priority].storage.vector_int64.begin(), _resource_priority_map[priority].storage.vector_int64.end(), value);
-			if (it != _resource_priority_map[priority].storage.vector_int64.end()) {
-				return std::distance(_resource_priority_map[priority].storage.vector_int64.begin(), it);
-			}
-		}
-		return -1;
-	}
-
-	int64_t get_resource_index(mainframe_segment_priority_type priority, std::string value)
-	{
-		if (_resource_priority_map[priority]._storage_type == MAINFRAME_RESOURCE_TYPE_STRING) {
-			auto it = std::find(_resource_priority_map[priority].storage.vector_string.begin(), _resource_priority_map[priority].storage.vector_string.end(), value);
-			if (it != _resource_priority_map[priority].storage.vector_string.end()) {
-				return std::distance(_resource_priority_map[priority].storage.vector_string.begin(), it);
-			}
-		}
-		return -1;
-	}
+    std::tuple<SharedPriorityResourceMediums...> _resources;
 };
 
 class MainframeComponent
@@ -315,21 +215,21 @@ public:
 			case Horizon::System::RUNTIME_COMMANDLINE: return "Command-Line";
 			case Horizon::System::RUNTIME_SCRIPTVM: return "Script-VM";
 			case Horizon::System::RUNTIME_NETWORKING: return "Networking";
+			case Horizon::System::RUNTIME_RUNTIME: return "Runtime";
+			case Horizon::System::RUNTIME_CLIENT_NETWORKING: return "Client-Networking"; 
+			case Horizon::System::RUNTIME_HTTP_SERVICE: "Http Service";
+			case Horizon::System::RUNTIME_WEB_SOCKET: "Web Socket Service";
 			default: return "Unknown";
 		}
 	}
 	
 	Horizon::System::SystemRoutineManager &get_system_routine_manager() { return _hsr_manager; }
-	
-	MainframeSegmentResourceMediator &get_resource_mediator() { return _resource_mediator; }
-
 
 private:
 	std::atomic<int64_t> _segment_number{0};
 	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_MAIN};
 	Horizon::System::SystemRoutineManager _hsr_manager;
 	boost::uuids::uuid _uuid;
-	MainframeSegmentResourceMediator _resource_mediator;
 };
 
 class CLICommand
@@ -440,7 +340,6 @@ public:
 protected:
 	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
     std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
-	boost::asio::io_context _db_io_context;
 	std::atomic<bool> _is_initialized;
 };
 
@@ -525,34 +424,21 @@ public:
 		}
 		return count;
 	}
+	
+	template <typename ComponentType, std::size_t Priority, typename Key>
+	int get_segment_number_for_resource(Horizon::System::runtime_module_type module_t, Key resource_key)
+	{
+		
+		for (int i = 0; i < get_registered_component_count_of_type(module_t); i++) {
+			auto component = get_component_of_type<ComponentType>(module_t, i + 1);
+			if (component->get_resource_manager().get<Priority>().get(resource_key) != nullptr)
+				return i + 1;
+		}
+
+		return 0;
+	}
 
 	int get_component_count() { return _components.size(); }
-
-	int get_segment_number_for_component_resource(Horizon::System::runtime_module_type type, MainframeSegmentResourceMediator::mainframe_segment_priority_type priority, std::string resource)
-	{
-		for (auto c : _components) {
-			if (c.second.type == type) {
-				auto component = std::static_pointer_cast<MainframeComponent>(c.second.ptr);
-				if (component->get_resource_mediator().get_resource_index(priority, resource) != -1) {
-					return component->get_segment_number();
-				}
-			}
-		}
-		return -1;
-	}
-
-	int get_segment_number_for_component_resource(Horizon::System::runtime_module_type type, MainframeSegmentResourceMediator::mainframe_segment_priority_type priority, uint64_t resource)
-	{
-		for (auto c : _components) {
-			if (c.second.type == type) {
-				auto component = std::static_pointer_cast<MainframeComponent>(c.second.ptr);
-				if (component->get_resource_mediator().get_resource_index(priority, resource) != -1) {
-					return component->get_segment_number();
-				}
-			}
-		}
-		return -1;
-	}
 
 	MainframeComponents get_component_of_types() { return _components; }
 

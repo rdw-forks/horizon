@@ -36,10 +36,18 @@ namespace Horizon
 {
 namespace Zone
 {
+	namespace Units
+	{
+		class Player;
+	}
 class PersistenceManager : public MainframeComponent
 {
 public:
-	PersistenceManager() : MainframeComponent(Horizon::System::RUNTIME_PERSISTENCE) { }
+	PersistenceManager() 
+	: MainframeComponent(Horizon::System::RUNTIME_PERSISTENCE),
+	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()))
+	{
+	}
     void initialize(int segment_number = 1);
     void finalize();
     void start();
@@ -50,6 +58,11 @@ public:
 private:
     std::thread _thread;
 	std::atomic<bool> _is_initialized;
+
+protected:
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
+	ResourceManager _resource_manager;
 };
 }
 }

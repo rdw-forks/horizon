@@ -429,13 +429,13 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		// If the map is not managed by the destination container, 
 		// remove the session from the current container and add it to the destination container
 		if (!dest_map->container()->get_map(map()->get_name())) {
-			map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
-			dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
+			//map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
+			//dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
 
 		map()->sub_user_count();
 		dest_map->add_user_count();
-
+		
 		get_session()->set_map_name(dest_map->get_name());
 
 		if (coords == MapCoords(0, 0))

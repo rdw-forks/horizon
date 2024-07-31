@@ -36,7 +36,7 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Units;
 
-ZoneSession::ZoneSession(int64_t uid)
+ZoneSession::ZoneSession(uint64_t uid)
 : Session(uid)
 {
 }
@@ -141,5 +141,5 @@ void ZoneSession::update(uint32_t /*diff*/)
  */
 void ZoneSession::perform_cleanup()
 {
-	sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
+	//sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_map_name(), shared_from_this());
 }

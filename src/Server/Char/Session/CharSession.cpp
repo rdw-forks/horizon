@@ -34,7 +34,7 @@
 
 using namespace Horizon::Char;
 
-CharSession::CharSession(int64_t uid)
+CharSession::CharSession(uint64_t uid)
 : Horizon::Networking::Session<CharSocket, CharSession>(uid)
 {
 }

@@ -35,7 +35,7 @@
 
 using namespace Horizon::Auth;
 
-AuthSession::AuthSession(int64_t uid)
+AuthSession::AuthSession(uint64_t uid)
 : Networking::Session<AuthSocket, AuthSession>(uid)
 {
 }

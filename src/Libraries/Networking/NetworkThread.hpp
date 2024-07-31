@@ -230,6 +230,8 @@ protected:
 		_new_socket_queue.clear();
 	}
 
+protected:
+	SocketContainer _active_sockets;
 private:
 	int _segment_number{1};
 	std::atomic<int32_t> _connections;
@@ -237,7 +239,6 @@ private:
 
 	std::unique_ptr<std::thread> _thread;
 
-	SocketContainer _active_sockets;
 	SocketContainer _new_socket_queue;
 
 	std::mutex _new_socket_queue_lock;

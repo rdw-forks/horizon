@@ -30,6 +30,7 @@
 #include "Zone.hpp"
 
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
+#include <boost/bind/bind.hpp>
 
 using namespace std;
 using namespace Horizon::Zone;
@@ -114,7 +115,7 @@ void ZoneMainframe::verify_connected_sessions()
  * Zone Main server constructor.
  */
 ZoneServer::ZoneServer()
-: ZoneMainframe(_zone_server_config), _runtime(std::make_shared<ZoneRuntime>(general_conf()))
+: ZoneMainframe(_zone_server_config), _update_timer(_io_context_global)
 {
 }
 
@@ -123,7 +124,6 @@ ZoneServer::ZoneServer()
  */
 ZoneServer::~ZoneServer()
 {
-	_runtime.reset();
 }
 
 #define config_error(setting_name, default) \
@@ -203,6 +203,30 @@ void SignalHandler(int signal)
 	}
 }
 
+void ZoneServer::update(int64_t diff)
+{
+	// Disable command line on test runs.
+	if (!general_conf().is_test_run())
+		sZone->get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
+
+	/**
+	 * Process Packets.
+	 */
+	sZone->get_client_socket_mgr().manage_sockets(diff);
+    sZone->get_client_socket_mgr().update_sessions(diff);
+
+	// Process Horizon System Routine Queue.
+	sZone->system_routine_process_queue();
+
+	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
+	} else {
+		if (!_io_context_global.stopped())
+			_io_context_global.stop();
+	}
+}
+
 void ZoneServer::initialize()
 {
 	// Install a signal handler
@@ -211,9 +235,23 @@ void ZoneServer::initialize()
 	signal(SIGQUIT, SignalHandler);
 #endif
 	signal(SIGTERM, SignalHandler);
-
-	// Initialize mainframe runtime. This is where the mainframe begins its routines of working during its lifetime.
-	get_runtime()->initialize();
+	
+	// We declare this here since the responsibility of starting the network is of 
+	// the Runtime level. It must remain lower than the mainframe, because
+	// we're using the mainframe's io_context and it will be destroyed after the destruction of
+	// the ClientSocketMgr class. This fixes the issue of dangling pointers and memory access violations.
+	sZone->get_client_socket_mgr().start(_io_context_global,
+						  sZone->general_conf().get_listen_ip(),
+						  general_conf().get_listen_port(),
+						  MAX_NETWORK_THREADS,
+						  general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
+	
+	// Initialize Runtime
+	register_component<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME, std::make_shared<Horizon::Zone::ZoneRuntime>());
+	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->initialize();
+	
+	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
 						  
 	ZoneMainframe::initialize();
 
@@ -227,7 +265,26 @@ void ZoneServer::initialize()
 
 void ZoneServer::finalize()
 {
-	ZoneMainframe::finalize();
+	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->finalize();
 
+	// Stop the client socket manager here because the io_context will be stopped later.
+	// If this is stopped before the io_context, it will cause a dangling pointer.
+	sZone->get_client_socket_mgr().stop();
+
+	ZoneMainframe::finalize();
+	
 	Server::post_finalize();
+}
+
+void ZoneRuntime::start()
+{
+	while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+		update(std::time(nullptr));
+		std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
+	};
+}
+
+void ZoneRuntime::update(int64_t diff)
+{
+	get_system_routine_manager().process_queue();
 }

@@ -46,8 +46,6 @@ if (WITH_TESTS)
 	set(ZONE_TESTING_SOURCES
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Zone.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Zone.cpp
-		${CMAKE_SOURCE_DIR}/src/Server/Zone/ZoneRuntime.cpp
-		${CMAKE_SOURCE_DIR}/src/Server/Zone/ZoneRuntime.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/ZoneSystem.cpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/ZoneSystem.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Interface/ZoneClientInterface.cpp

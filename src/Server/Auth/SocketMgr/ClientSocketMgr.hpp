@@ -47,20 +47,21 @@ namespace Auth
 class AuthNetworkThread : public MainframeComponent, public Networking::NetworkThread<AuthSocket>
 {
 protected:
-	using resource_priority_type = MainframeSegmentResourceMediator::mainframe_segment_priority_type;
-	using resource_category_type = MainframeSegmentResourceMediator::mainframe_segment_resource_category;
-
 	void on_socket_removed(std::shared_ptr<AuthSocket> socket) override
 	{
-		get_resource_mediator().add_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+		get_resource_manager().add<SEGMENT_RESOURCE_PRIMARY>(socket->get_socket_id(), socket);
 	}
 
 	void on_socket_added(std::shared_ptr<AuthSocket> socket) override
 	{
-		get_resource_mediator().remove_resource_value(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, socket->get_socket_id());
+		get_resource_manager().remove<SEGMENT_RESOURCE_PRIMARY>(socket->get_socket_id());
 	}
 public:
-	AuthNetworkThread() : MainframeComponent(Horizon::System::RUNTIME_NETWORKING) { }
+	AuthNetworkThread() 
+	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
+	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<AuthSocket>>>()))
+	{
+	}
 
 	bool start(int segment_number = 1)
 	{
@@ -85,9 +86,6 @@ public:
 
 	virtual void initialize(int segment_number = 1) override 
 	{ 
-
-		get_resource_mediator().register_resource(resource_priority_type::SEGMENT_PRIORITY_PRIMARY, resource_category_type::SEGMENT_RESOURCE_SOCKET_ID);
-
 		bool value = _is_initialized;
 		_is_initialized.compare_exchange_strong(value, true);
 
@@ -102,8 +100,15 @@ public:
 	}
 
 	virtual bool is_initialized() override { return _is_initialized.load(); }
+
 protected:
 	std::atomic<bool> _is_initialized;
+	
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<AuthSocket>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
+	ResourceManager _resource_manager;
+public:
+	ResourceManager &get_resource_manager() { return _resource_manager; }
 };
 /**
  * Manager of client sockets and initialization of the packet db * @brief Singleton class

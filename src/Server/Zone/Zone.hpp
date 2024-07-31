@@ -38,7 +38,6 @@
 #include "Server/Zone/Script/ScriptManager.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Server.hpp"
-#include "ZoneRuntime.hpp"
 
 namespace Horizon
 {
@@ -58,6 +57,7 @@ namespace Horizon
 {
 namespace Zone
 {
+
 struct s_zone_server_configuration
 {
 	boost::filesystem::path &get_mapcache_path() { return _mapcache_path; }
@@ -98,6 +98,51 @@ protected:
 	s_zone_server_configuration _config;
 };
 
+class ZoneRuntime : public MainframeComponent
+{
+public:
+	ZoneRuntime() 
+	: MainframeComponent(Horizon::System::RUNTIME_RUNTIME),
+	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>()))
+	{
+	}
+
+	virtual void initialize(int segment_number = 1) override
+	{
+		set_segment_number(segment_number);
+
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, true);
+
+		_thread = std::thread(&ZoneRuntime::start, this);
+	}
+
+	virtual void finalize() override
+	{
+		if (_thread.joinable())
+			_thread.join();
+
+		bool value = _is_initialized;
+		_is_initialized.compare_exchange_strong(value, false);
+	}
+
+	void start();
+	virtual void update(int64_t diff);
+
+	bool is_initialized() { return _is_initialized; }
+	
+protected:
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
+	ResourceManager _resource_manager;
+public:
+	ResourceManager &get_resource_manager() { return _resource_manager; }
+private:
+	std::thread _thread;
+	std::atomic<bool> _is_initialized;
+
+};
+
 class ZoneServer : public ZoneMainframe
 {
 public:
@@ -114,19 +159,19 @@ public:
 	void initialize();
 	void finalize();
 
-	s_zone_server_configuration &config() { return _zone_server_config; }
+	void update(int64_t diff);
 
-	std::shared_ptr<ZoneRuntime> get_runtime() { return _runtime; }
+	s_zone_server_configuration &config() { return _zone_server_config; }
 
 	uint64_t to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3);
 	void from_uuid(uint64_t unit_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3);
 
 	ClientSocketMgr &get_client_socket_mgr() { return _client_socket_mgr; }
-
+	
 private:
 	s_zone_server_configuration _zone_server_config;
-	std::shared_ptr<ZoneRuntime> _runtime;
 	ClientSocketMgr _client_socket_mgr;
+	boost::asio::deadline_timer _update_timer;
 };
 }
 }

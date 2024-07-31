@@ -86,7 +86,7 @@ public:
 	{
 		_read_buffer.resize(READ_BLOCK_SIZE);
 	}
-	
+
 	explicit Socket(uint64_t socket_id, std::shared_ptr<tcp::socket> socket)
 	: _socket_id(socket_id), _socket(socket), _remote_ip_address(_socket->remote_endpoint().address().to_string()),
 	_remote_port(_socket->remote_endpoint().port()), _read_buffer(), _closed(false), _closing(false), _is_writing_async(false)
@@ -351,6 +351,8 @@ private:
 		// Return true if the queue is not empty. Indicating that the sending operation was successful.
 		return !_write_queue.empty() && bytes_sent;
 	}
+
+	std::shared_ptr<tcp::socket> get_socket() { return _socket; }
 
 private:
 	uint64_t _socket_id;
