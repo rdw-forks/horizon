@@ -675,8 +675,8 @@ struct item_viewport_entry : public viewport_entry
 {
 	item_viewport_entry operator = (item_viewport_entry const &right)
 	{
-		unit_type = right.unit_type;
-		guid = right.guid;
+		_unit_type = right._unit_type;
+		_guid = right._guid;
 		item_id = right.item_id;
 		is_identified = right.is_identified;
 		x = right.x;
