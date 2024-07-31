@@ -8,10 +8,6 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "LoggingTest"
 
-// Setting this to 0x0602 (Windows 8) or higher will cause linking to fail.
-// It works with 0x0601 (Windows 7).
-#define  _WIN32_WINNT   0x0602
-
 #include <boost/test/unit_test.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>

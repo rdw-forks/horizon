@@ -101,7 +101,17 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 # Fix: error LNK2038: mismatch detected for 'boost_log_abi': value 'v2_mt_nt6' doesn't match value 'v2_mt_nt62'
-add_definitions(-D_WIN32_WINNT=0x0602)
+if (WIN32)
+    if (CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL 10.0.2)
+		message(STATUS "Target system is Windows 11. Enabling hotfixes for library linkage...")
+		add_definitions(-D_WIN32_WINNT=0x0602)
+	elseif (CMAKE_SYSTEM_VERSION VERSION_GREATER_EQUAL 10.0.1)
+		message(STATUS "Target system is Windows 10. Enabling hotfixes for library linkage...")
+		add_definitions(-D_WIN32_WINNT=0x0601)
+    else()
+        message(STATUS "Target system is older than Windows 10, it is unsupported.")
+    endif()
+endif()
 
 #################
 # OpenSSL Library
