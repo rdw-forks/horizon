@@ -273,7 +273,7 @@ item_viewport_entry ZoneClientInterface::create_viewport_item_entry(std::shared_
 	if (item == nullptr)
 		return entry;
 	
-	entry.guid = item->guid();
+	entry._guid = item->guid();
 	entry.item_id = item->config()->item_id;
 	entry.x = item->map_coords().x();
 	entry.y = item->map_coords().y();
