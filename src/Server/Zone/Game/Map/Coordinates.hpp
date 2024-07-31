@@ -32,6 +32,7 @@
 
 #include <cinttypes>
 #include <cassert>
+#include <cmath>
 
 template <int16_t MAX_COORDINATES>
 class Coordinates

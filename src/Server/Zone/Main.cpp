@@ -2,7 +2,6 @@
 
 #include <random>
 #include <ctime>
-#include <crtdbg.h>
 
 /**
  * Zone Server Main runtime entrypoint.

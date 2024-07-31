@@ -12,7 +12,7 @@ endif (NOT WITHOUT_SERVERS)
 #################
 # Horizon Project Tests
 #################
-if (WITH_TESTS)
+if (WITH_TESTS AND WITHOUT_SERVERS)
 	add_subdirectory(Server/Common)
 	add_subdirectory(Server/Zone/Packets)
 	add_subdirectory(Server/Zone/Game)
@@ -58,7 +58,9 @@ if (WITH_TESTS)
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/SocketMgr/ClientSocketMgr.cpp
 	)
 	add_subdirectory(Tests)
-endif (WITH_TESTS)
+elseif(WITH_TEST)
+	add_subdirectory(Tests)
+endif ()
 
 #################
 # Horizon Project Tools

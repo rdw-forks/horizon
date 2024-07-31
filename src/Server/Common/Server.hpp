@@ -31,6 +31,7 @@
 #define HORIZON_SERVER_HPP
 
 #include "Core/Logging/Logger.hpp"
+#include "Core/Multithreading/LockedLookupTable.hpp"
 
 #include "System.hpp"
 #include <boost/lexical_cast.hpp>
@@ -52,6 +53,7 @@
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
 #include <sol/sol.hpp>
+#include <thread>
 
 #define TERMINAL_STR "Horizon $> "
 
@@ -141,7 +143,7 @@ public:
 	// move assignment
 	SharedPriorityResourceManager &operator=(SharedPriorityResourceManager &&other) { _resources = std::move(other._resources); return *this; }
 	
-    template <std::size_t Priority = int>
+    template <std::size_t Priority>
     auto& get() {
         return std::get<Priority>(_resources);
     }
@@ -217,8 +219,8 @@ public:
 			case Horizon::System::RUNTIME_NETWORKING: return "Networking";
 			case Horizon::System::RUNTIME_RUNTIME: return "Runtime";
 			case Horizon::System::RUNTIME_CLIENT_NETWORKING: return "Client-Networking"; 
-			case Horizon::System::RUNTIME_HTTP_SERVICE: "Http Service";
-			case Horizon::System::RUNTIME_WEB_SOCKET: "Web Socket Service";
+			case Horizon::System::RUNTIME_HTTP_SERVICE: return "Http Service";
+			case Horizon::System::RUNTIME_WEB_SOCKET: return "Web Socket Service";
 			default: return "Unknown";
 		}
 	}
@@ -250,6 +252,12 @@ public:
 	}
 
 	CLICommand(CLICommand &command)
+	{
+		m_command = command.m_command;
+		m_finish_func = command.m_finish_func;
+	}
+	
+	CLICommand(CLICommand &&command)
 	{
 		m_command = command.m_command;
 		m_finish_func = command.m_finish_func;
@@ -294,7 +302,7 @@ public:
 	 */
 	bool clicmd_shutdown(std::string /*cmd*/);
 
-	bool is_initialized() { return _is_initialized; }
+	bool is_initialized() override { return _is_initialized; }
 
 private:
 	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
@@ -336,7 +344,7 @@ public:
 
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection() { return _connection; }
 
-	bool is_initialized() { return _is_initialized.load(); }
+	bool is_initialized() override { return _is_initialized.load(); }
 protected:
 	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
     std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
@@ -431,7 +439,7 @@ public:
 		
 		for (int i = 0; i < get_registered_component_count_of_type(module_t); i++) {
 			auto component = get_component_of_type<ComponentType>(module_t, i + 1);
-			if (component->get_resource_manager().get<Priority>().get(resource_key) != nullptr)
+			if (component->get_resource_manager().template get<Priority>().get(resource_key) != nullptr)
 				return i + 1;
 		}
 

@@ -76,7 +76,7 @@ bool Horizon::System::RuntimeContextChain::ContextQueueManager::process()
 					}
 				}
 
-				if (context->get_context_result() == RUNTIME_CONTEXT_STATE_WAITING) {
+				if (context->get_context_state() == RUNTIME_CONTEXT_STATE_WAITING) {
 					context->set_context_state(RUNTIME_CONTEXT_STATE_ACTIVE);
 				}
 				/* Don't check the pass or fail of the context. */
@@ -86,7 +86,7 @@ bool Horizon::System::RuntimeContextChain::ContextQueueManager::process()
 						context->set_context_state(RUNTIME_CONTEXT_STATE_WAITING);
 					}
 				}
-				if (context->get_context_result() == RUNTIME_CONTEXT_STATE_WAITING) {
+				if (context->get_context_state() == RUNTIME_CONTEXT_STATE_WAITING) {
 					context->set_context_state(RUNTIME_CONTEXT_STATE_ACTIVE);
 				}
 				/* check context result whether pass or fail. */

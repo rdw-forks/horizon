@@ -34,13 +34,18 @@ CollectSourceFiles(
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(auth
+set(AUTH_TARGET_SOURCES 
 	${PRIVATE_SOURCES}
 	${COMMON_SOURCES}
 	${COMMON_HEADERS}
-    ${CORE_SOURCES}
-    ${UTILITY_SOURCES}
+	${CORE_SOURCES}
+	${UTILITY_SOURCES})
+
+add_executable(auth
+	${AUTH_TARGET_SOURCES}
 )
+
+set(AUTH_TARGET_SOURCES ${AUTH_TARGET_SOURCES} PARENT_SCOPE)
 
 target_link_libraries(auth
 	PUBLIC

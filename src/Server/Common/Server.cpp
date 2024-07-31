@@ -33,6 +33,7 @@
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Libraries/Networking/Buffer/ByteBuffer.hpp"
 #include "version.hpp"
+
 #include <boost/algorithm/algorithm.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -350,7 +351,7 @@ void Server::initialize()
 	/**
 	 * Initialize Commandline Interface
 	 */
-	if (general_conf().is_test_run()) {
+	if (general_conf().is_test_run() && general_conf().is_test_run_minimal()) {
 		HLog(info) << "Command line not supported during test-runs... skipping.";
 	} else {
 		HLog(info) << "Horizon Command-Line initializing...";
@@ -361,7 +362,7 @@ void Server::initialize()
 
 void Server::finalize()
 {
-	if (!general_conf().is_test_run())
+	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
 	
 	get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();

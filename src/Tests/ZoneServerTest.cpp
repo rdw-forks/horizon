@@ -105,6 +105,8 @@ BOOST_AUTO_TEST_CASE(ZoneServerTest)
 		sZone->config().set_script_root_path(std::string("../../../../../scripts/"));
 
 		sZone->initialize();
+
+		sZone->finalize();
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
 	} catch(std::bad_alloc &e) {

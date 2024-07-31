@@ -5268,8 +5268,8 @@ ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 #else
 	buf() << (int16_t) 110;
 #endif
-	buf() << (int8_t) _entry.unit_type;
-	buf() << _entry.guid;
+	buf() << (int8_t) _entry._unit_type;
+	buf() << _entry._guid;
 	buf() << _entry.character_id;
 	buf() << _entry.speed;
 	buf() << _entry.body_state;
@@ -5333,8 +5333,8 @@ ByteBuffer &ZC_NOTIFY_NEWENTRY11::serialize()
 
 	buf() << _packet_id;
 	buf() << _packet_length;
-	buf() << (int8_t) _entry.unit_type;
-	buf() << _entry.guid;
+	buf() << (int8_t) _entry._unit_type;
+	buf() << _entry._guid;
 	buf() << _entry.character_id;
 	buf() << _entry.speed;
 	buf() << _entry.body_state;
@@ -5400,8 +5400,8 @@ ByteBuffer &ZC_NOTIFY_STANDENTRY11::serialize()
 #else
 	buf() << (int16_t) 104;
 #endif
-	buf() << (int8_t) _entry.unit_type;
-	buf() << _entry.guid;
+	buf() << (int8_t) _entry._unit_type;
+	buf() << _entry._guid;
 	buf() << _entry.character_id;
 	buf() << _entry.speed;
 	buf() << _entry.body_state;

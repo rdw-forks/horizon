@@ -61,7 +61,7 @@ public:
 	{
 	}
 
-	bool start(int segment_number = 1)
+	bool start(int segment_number = 1) override
 	{
 		if (!Networking::NetworkThread<ZoneSocket>::start(segment_number))
 			return false;

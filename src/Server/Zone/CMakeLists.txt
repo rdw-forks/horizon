@@ -50,9 +50,7 @@ set(PRIVATE_SOURCES
 	${DIR}/SocketMgr/ClientSocketMgr.cpp
 )
 
-GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
-
-add_executable(zone
+set(ZONE_TARGET_SOURCES
 	${PRIVATE_SOURCES}
 	${COMMON_SOURCES}
 	${COMMON_HEADERS}
@@ -65,6 +63,14 @@ add_executable(zone
 	${PERSISTENCE_SOURCES}
 	${INTERFACE_SOURCES}
 )
+
+GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_executable(zone
+	${ZONE_TARGET_SOURCES}
+)
+
+set(ZONE_TARGET_SOURCES ${ZONE_TARGET_SOURCES} PARENT_SCOPE)
 
 target_precompile_headers(zone
 	PUBLIC

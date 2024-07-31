@@ -183,7 +183,7 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
  */
 void AuthServer::initialize_cli_commands()
 {
-	if (general_conf().is_test_run())
+	if (general_conf().is_test_run() && general_conf().is_test_run_minimal())
 		return;
 
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
@@ -205,7 +205,7 @@ void SignalHandler(const boost::system::error_code &error, int /*signal*/)
 
 void AuthServer::update(uint64_t time)
 {
-	if (!general_conf().is_test_run())
+	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
 
 	getScheduler().Update();

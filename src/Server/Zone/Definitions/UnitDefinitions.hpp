@@ -580,16 +580,16 @@ enum unit_viewport_notification_type
 
 struct viewport_entry
 {
-	unit_type unit_type{UNIT_PLAYER};
-	uint32_t guid{ 0 };
+	unit_type _unit_type{UNIT_PLAYER};
+	uint32_t _guid{ 0 };
 };
 
 struct unit_viewport_entry : public viewport_entry
 {
 	virtual unit_viewport_entry operator = (unit_viewport_entry const &right)
 	{
-		unit_type = right.unit_type;
-		guid = right.guid;
+		_unit_type = right._unit_type;
+		_guid = right._guid;
 		character_id = right.character_id;
 		speed = right.speed;
 		body_state = right.body_state;

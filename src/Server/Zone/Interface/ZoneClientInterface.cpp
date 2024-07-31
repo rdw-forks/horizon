@@ -296,8 +296,8 @@ unit_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<U
 	if (status == nullptr)
 		return entry;
 
-	entry.guid = unit->guid();
-	entry.unit_type = unit->type();
+	entry._guid = unit->guid();
+	entry._unit_type = unit->type();
 	entry.speed = status->movement_speed()->total();
 	entry.body_state = 0;
 	entry.health_state = 0;
@@ -337,7 +337,7 @@ unit_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<U
 	entry.body_style_id = 0;
 	std::strncpy(entry.name, unit->name().c_str(), unit->name().size());
 	
-	switch (entry.unit_type)
+	switch (entry._unit_type)
 	{
 		case UNIT_PLAYER:
 			entry.character_id = unit->downcast<Horizon::Zone::Units::Player>()->character()._character_id;

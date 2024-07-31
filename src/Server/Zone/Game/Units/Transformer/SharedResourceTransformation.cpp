@@ -54,12 +54,12 @@ template <typename T> SharedResourceTransformation<T>::SharedResourceTransformat
 
 template <typename T>
 PreparatoryTo<T>::PreparatoryTo(std::shared_ptr<T> before_resource) 
-: SharedResourceTransformation(before_resource) 
+: SharedResourceTransformation<T>(before_resource) 
 { }
 
 template <typename T>
 SubsequentTo<T>::SubsequentTo(std::shared_ptr<T> before_resource, std::shared_ptr<T> after_resource) 
-: SharedResourceTransformation(before_resource, after_resource) 
+: SharedResourceTransformation<T>(before_resource, after_resource) 
 { }
 
 template <typename T>

@@ -34,11 +34,17 @@ CollectSourceFiles(
 
 GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(char
+set(CHAR_TARGET_SOURCES
 	${PRIVATE_SOURCES}
 	${COMMON_SOURCES}
 	${CORE_SOURCES}
-    ${UTILITY_SOURCES})
+	${UTILITY_SOURCES}
+)
+
+add_executable(char
+	${CHAR_TARGET_SOURCES})
+
+set(CHAR_TARGET_SOURCES ${CHAR_TARGET_SOURCES} PARENT_SCOPE)
 
 target_precompile_headers(char
 	PUBLIC
