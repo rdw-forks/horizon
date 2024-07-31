@@ -49,12 +49,12 @@ class AuthNetworkThread : public MainframeComponent, public Networking::NetworkT
 protected:
 	void on_socket_removed(std::shared_ptr<AuthSocket> socket) override
 	{
-		get_resource_manager().add<SEGMENT_RESOURCE_PRIMARY>(socket->get_socket_id(), socket);
+		get_resource_manager().add<SEGMENT_PRIORITY_PRIMARY>(socket->get_socket_id(), socket);
 	}
 
 	void on_socket_added(std::shared_ptr<AuthSocket> socket) override
 	{
-		get_resource_manager().remove<SEGMENT_RESOURCE_PRIMARY>(socket->get_socket_id());
+		get_resource_manager().remove<SEGMENT_PRIORITY_PRIMARY>(socket->get_socket_id());
 	}
 public:
 	AuthNetworkThread() 
