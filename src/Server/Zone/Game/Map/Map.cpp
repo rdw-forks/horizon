@@ -107,7 +107,7 @@ void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int ident
 	item->initialize();
 
 	s_grid_notify_item_drop_entry entry;
-	entry._guid = item->guid();
+	entry.guid = item->guid();
 	entry.item_id = item->config()->item_id;
 	entry.type = item->config()->type;
 	entry.is_identified = identified;
