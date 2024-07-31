@@ -89,7 +89,7 @@ check_cxx_source_compiles("
 #################################
 set(BOOST_REQUIRED_VERSION 1.82.0)
 
-set(BOOST_COMPONENTS locale filesystem log log_setup)
+set(BOOST_COMPONENTS locale filesystem log log_setup charconv)
 
 if (WITH_TESTS)
 	set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
