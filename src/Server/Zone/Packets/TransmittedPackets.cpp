@@ -1544,7 +1544,7 @@ void ZC_ITEM_ENTRY::deliver(item_viewport_entry entry)
 ByteBuffer &ZC_ITEM_ENTRY::serialize()
 {
 	buf() << _packet_id;
-	buf() << _entry.guid;
+	buf() << _entry._guid;
 	buf() << _entry.item_id;
 	buf() << _entry.is_identified;
 	buf() << _entry.x;
