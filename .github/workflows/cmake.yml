@@ -14,11 +14,11 @@ env:
   MYSQL_DATABASE: horizon
   MYSQL_HOSTNAME: localhost
   LINUX_BOOST_ROOT: "/home/sephus/boost_1_85_0"
-strategy:
-  matrix:
-    build_type: ${{env.BUILD_TYPES}}
 jobs:
   Debian-GCC-Libraries:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     runs-on: Debian
     steps:
     - name: Checkout
@@ -28,6 +28,9 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
   Debian-GCC-Tests-Tools:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Libraries
     runs-on: Debian
     steps:
@@ -39,6 +42,9 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-ALL-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -56,6 +62,9 @@ jobs:
           /"${{github.workspace}}/build/bin/${{matrix.build_type}}/test/${t}";
         done
   Debian-GCC-Run-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-ALL-ASAN
     runs-on: Debian
     steps: 
@@ -69,6 +78,9 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -80,6 +92,9 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-ALL-TSAN
     runs-on: Debian
     steps: 
@@ -93,6 +108,9 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: [ Debian-GCC-Run-TSAN, Debian-GCC-Run-ASAN ]
     runs-on: Debian
     steps:
@@ -104,6 +122,9 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Upload-Artifact:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Servers
     runs-on: Debian
     steps:
@@ -113,6 +134,9 @@ jobs:
         name: artifacts bin
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
   Debian-Clang-Libraries:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     runs-on: Debian
     steps:
     - name: Checkout
@@ -122,6 +146,9 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
   Debian-Clang-Tests-Tools:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Libraries
     runs-on: Debian
     steps:
@@ -139,6 +166,9 @@ jobs:
           /"${{github.workspace}}/build/bin/${{matrix.build_type}}/test/${t}";
         done
   Debian-Clang-ALL-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -150,6 +180,9 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-ALL-ASAN
     runs-on: Debian
     steps: 
@@ -163,6 +196,9 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -174,6 +210,9 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-ALL-TSAN
     runs-on: Debian
     steps: 
@@ -187,6 +226,9 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: [ Debian-Clang-Run-ASAN, Debian-Clang-Run-TSAN ]
     runs-on: Debian
     steps:
@@ -198,6 +240,9 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Upload-Artifact:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Servers
     runs-on: Debian
     steps:
@@ -208,6 +253,9 @@ jobs:
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
 
   Windows-Libraries:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     runs-on: Windows
     steps:
     - name: Checkout
@@ -218,6 +266,9 @@ jobs:
         cmake --build build --config ${{matrix.build_type}}
 
   Windows-Tests:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Libraries
     runs-on: Windows
     steps:
@@ -232,6 +283,9 @@ jobs:
       run: ./horizon.sh run-tests "build\test\${{matrix.build_type}}"
       
   Windows-Tools:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Tests
     runs-on: Windows
     steps:
@@ -244,6 +298,9 @@ jobs:
         cmake --build build --config ${{matrix.build_type}}
 
   Windows-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: [ Windows-Tests, Windows-Tools, Windows-Libraries ]
     runs-on: Windows
     steps:
@@ -256,6 +313,9 @@ jobs:
         cmake --build build --config ${{matrix.build_type}}
 
   Windows-Run-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Servers
     runs-on: Windows
     steps:
@@ -275,6 +335,9 @@ jobs:
       run: ./zone.exe --with-config="config\zone-server.lua.dist" --test-run 
 
   Windows-Upload-Artifact:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Run-Servers
     runs-on: Windows
     steps:
