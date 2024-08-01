@@ -8,7 +8,7 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+  BUILD_TYPES: [ "Debug", "RelWithDebInfo", "Release" ]
   MYSQL_PASSWORD: horizon
   MYSQL_USERNAME: root
   MYSQL_DATABASE: horizon
@@ -16,6 +16,9 @@ env:
   LINUX_BOOST_ROOT: "/home/sephus/boost_1_85_0"
 jobs:
   Debian-GCC-Libraries:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     runs-on: Debian
     steps:
     - name: Checkout
@@ -23,8 +26,11 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
   Debian-GCC-Tests-Tools:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Libraries
     runs-on: Debian
     steps:
@@ -33,9 +39,12 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-ALL-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -44,28 +53,34 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
         files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          /"${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/test/${t}";
+          /"${{github.workspace}}/build/bin/${{matrix.build_type}}/test/${t}";
         done
   Debian-GCC-Run-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-ALL-ASAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/config -r
-        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/db -r
-        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/scripts -r
-        cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{matrix.build_type}}/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
+        cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -74,22 +89,28 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-ALL-TSAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/config -r
-        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/db -r
-        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/scripts -r
-        cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{matrix.build_type}}/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
+        cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: [ Debian-GCC-Run-TSAN, Debian-GCC-Run-ASAN ]
     runs-on: Debian
     steps:
@@ -98,9 +119,12 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Upload-Artifact:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-GCC-Servers
     runs-on: Debian
     steps:
@@ -108,8 +132,11 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: artifacts bin
-        path: ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}\**\*
+        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
   Debian-Clang-Libraries:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     runs-on: Debian
     steps:
     - name: Checkout
@@ -117,8 +144,11 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
   Debian-Clang-Tests-Tools:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Libraries
     runs-on: Debian
     steps:
@@ -127,15 +157,18 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
         files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          /"${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/test/${t}";
+          /"${{github.workspace}}/build/bin/${{matrix.build_type}}/test/${t}";
         done
   Debian-Clang-ALL-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -144,22 +177,28 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-ASAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-ALL-ASAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/config -r
-        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/db -r
-        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/scripts -r
-        cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{matrix.build_type}}/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
+        cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -168,22 +207,28 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-TSAN:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-ALL-TSAN
     runs-on: Debian
     steps: 
     - name: Run
       run: |
-        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/config -r
-        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/db -r
-        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}/scripts -r
-        cd ${{github.workspace}}/build/bin/${{env.BUILD_TYPE}}
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{matrix.build_type}}/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
+        cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: [ Debian-Clang-Run-ASAN, Debian-Clang-Run-TSAN ]
     runs-on: Debian
     steps:
@@ -192,9 +237,12 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Upload-Artifact:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Debian-Clang-Servers
     runs-on: Debian
     steps:
@@ -202,9 +250,12 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: artifacts bin
-        path: ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}\**\*
+        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
 
   Windows-Libraries:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     runs-on: Windows
     steps:
     - name: Checkout
@@ -212,9 +263,12 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DWITHOUT_SERVERS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{env.BUILD_TYPE}}
+        cmake --build build --config ${{matrix.build_type}}
 
   Windows-Tests:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Libraries
     runs-on: Windows
     steps:
@@ -224,11 +278,14 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DWITHOUT_SERVERS=1 -WITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{env.BUILD_TYPE}}
+        cmake --build build --config ${{matrix.build_type}}
     - name: Run
-      run: ./horizon.sh run-tests "build\test\${{env.BUILD_TYPE}}"
+      run: ./horizon.sh run-tests "build\test\${{matrix.build_type}}"
       
   Windows-Tools:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Tests
     runs-on: Windows
     steps:
@@ -238,9 +295,12 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DWITHOUT_SERVERS=1 -WITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{env.BUILD_TYPE}}
+        cmake --build build --config ${{matrix.build_type}}
 
   Windows-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: [ Windows-Tests, Windows-Tools, Windows-Libraries ]
     runs-on: Windows
     steps:
@@ -250,28 +310,34 @@ jobs:
     - name: Configure Step & Build
       run: |
         cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{env.BUILD_TYPE}}
+        cmake --build build --config ${{matrix.build_type}}
 
   Windows-Run-Servers:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Servers
     runs-on: Windows
     steps:
     - name: Copy Configuration
       run: |
-        Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}\config
-        Xcopy /E /I ${{github.workspace}}\db ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}\db
-        Xcopy /E /I ${{github.workspace}}\scripts ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}\scripts
+        Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
+        Xcopy /E /I ${{github.workspace}}\db ${{github.workspace}}\build\bin\${{matrix.build_type}}\db
+        Xcopy /E /I ${{github.workspace}}\scripts ${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts
     - name: Auth
-      working-directory: ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}
+      working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
       run: ./auth.exe --with-config="config\auth-server.lua.dist" --test-run 
     - name: Char
-      working-directory: ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}
+      working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
       run: ./char.exe --with-config="config\char-server.lua.dist" --test-run
     - name: Zone
-      working-directory: ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}
+      working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
       run: ./zone.exe --with-config="config\zone-server.lua.dist" --test-run 
 
   Windows-Upload-Artifact:
+    strategy:
+      matrix:
+        build_type: ${{env.BUILD_TYPES}}
     needs: Windows-Run-Servers
     runs-on: Windows
     steps:
@@ -279,7 +345,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
         name: artifacts bin
-        path: ${{github.workspace}}\build\bin\${{env.BUILD_TYPE}}\**\*
+        path: ${{github.workspace}}\build\bin\${{env.matrix.build_type}}\**\*
     # Uncomment when we have some more information on why its failing?  
     #- name: Run Auth
     #  working-directory: ${{github.workspace}}\build\bin\Release
