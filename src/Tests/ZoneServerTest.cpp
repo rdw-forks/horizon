@@ -93,16 +93,16 @@ BOOST_AUTO_TEST_CASE(ZoneServerTest)
 	try {
 		sZone->general_conf().set_test_run(TEST_RUN_MINIMAL);
 
-		sZone->general_conf().set_config_file_path("../../../../../config/zone-server.lua.dist");
+		sZone->general_conf().set_config_file_path("../../config/zone-server.lua.dist");
 		sZone->read_config();
 	
-		sZone->config().set_static_db_path(std::string("../../../../../db/"));
+		sZone->config().set_static_db_path(std::string("../../db/"));
 		HLog(info) << "Static database path set to " << sZone->config().get_static_db_path() << "";
 
-		sZone->config().set_mapcache_path(std::string("../../../../../db/maps.dat"));
+		sZone->config().set_mapcache_path(std::string("../../db/maps.dat"));
 		HLog(info) << "Mapcache file name is set to " << sZone->config().get_mapcache_path() << ", it will be read while initializing maps.";
 
-		sZone->config().set_script_root_path(std::string("../../../../../scripts/"));
+		sZone->config().set_script_root_path(std::string("../../scripts/"));
 
 		sZone->initialize();
 

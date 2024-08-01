@@ -75,7 +75,7 @@ public:
 
 		_acceptor->set_socket_factory(std::bind(&BaseSocketMgr::get_new_socket, this));
 
-		if (!minimal)
+		if (minimal == false)
 			_acceptor->async_accept_with_callback(std::bind(&AcceptSocketMgr<SocketType, NetworkThreadType>::on_socket_open, this, std::placeholders::_1, std::placeholders::_2));
 
 		HLog(info) << "Networking initialized, listening on " << listen_ip << "@" << port << ".";

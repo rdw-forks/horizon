@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(AuthServerTest)
 		std::thread thread = std::thread([&]() {
 			sAuth->general_conf().set_test_run(TEST_RUN_MINIMAL);
 
-			sAuth->general_conf().set_config_file_path("../../../../../config/auth-server.lua.dist");
+			sAuth->general_conf().set_config_file_path("../../config/auth-server.lua.dist");
 			sAuth->read_config();
 			set_shutdown_signal(SHUTDOWN_INITIATED);
 			sAuth->initialize_core();

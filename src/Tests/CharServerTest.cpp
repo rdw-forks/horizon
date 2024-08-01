@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(CharServerTest)
 	try {
 		sChar->general_conf().set_test_run(TEST_RUN_MINIMAL);
 
-		sChar->general_conf().set_config_file_path("../../../../../config/char-server.lua.dist");
+		sChar->general_conf().set_config_file_path("../../config/char-server.lua.dist");
 		sChar->read_config();
 
 		sChar->initialize_core();
