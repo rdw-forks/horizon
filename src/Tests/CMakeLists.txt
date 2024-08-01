@@ -85,7 +85,11 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			OpenSSL::SSL
 		)
 		set (ADD_INCLUDE_DIRS 
-			${Boost_INCLUDE_DIRS})
+			${Boost_INCLUDE_DIRS}
+			${Readline_INCLUDE_DIR}
+			${PUBLIC_INCLUDES}
+			${LUA_INCLUDE_DIR}
+			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "AuthServerTest")
 		CollectSourceFiles(
     		${SERVER_DIR}/Auth
