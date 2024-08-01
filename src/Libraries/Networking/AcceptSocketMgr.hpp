@@ -64,7 +64,7 @@ public:
 		try {
 			_acceptor = std::make_unique<AsyncAcceptor>(io_context, listen_ip, port);
 		} catch (boost::system::system_error const &error) {
-			HLog(error) << "Exception caught in AcceptSocketMgr::Start (" << listen_ip.c_str() << ", " << port << ") " << error.what();
+			HLog(error) << "Exception caught in AcceptSocketMgr::start (" << listen_ip.c_str() << ", " << port << ") " << error.what();
 			return false;
 		}
 

@@ -48,8 +48,8 @@ struct general_server_configuration
 	void unset_test_run(test_run_type type) { this->_test_run &= ~((int) type); }
 
 	bool is_test_run() const { return _test_run > 0; }
-	bool is_test_run_minimal() const { return _test_run&TEST_RUN_MINIMAL == TEST_RUN_MINIMAL ? true : false; }
-	bool is_test_run_with_network() const { return _test_run&TEST_RUN_WITH_NETWORK == TEST_RUN_WITH_NETWORK ? true : false; }
+	bool is_test_run_minimal() const { return (_test_run&TEST_RUN_MINIMAL) == TEST_RUN_MINIMAL ? true : false; }
+	bool is_test_run_with_network() const { return (_test_run&TEST_RUN_WITH_NETWORK) == TEST_RUN_WITH_NETWORK ? true : false; }
 
 	/* Configuration File Path */
 	const boost::filesystem::path &get_config_file_path() const { return _config_file_path; }

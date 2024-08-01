@@ -104,8 +104,9 @@ BOOST_AUTO_TEST_CASE(ZoneServerTest)
 
 		sZone->config().set_script_root_path(std::string("scripts/"));
 
+		set_shutdown_stage(SHUTDOWN_INITIATED);
+		
 		sZone->initialize();
-
 		sZone->finalize();
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;

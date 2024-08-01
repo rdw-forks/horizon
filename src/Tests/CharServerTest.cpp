@@ -81,6 +81,7 @@ BOOST_AUTO_TEST_CASE(CharServerTest)
 		sChar->general_conf().set_config_file_path("config/char-server.lua.dist");
 		sChar->read_config();
 
+		set_shutdown_stage(SHUTDOWN_INITIATED);
 		sChar->initialize_core();
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
