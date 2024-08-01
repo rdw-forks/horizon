@@ -8,7 +8,6 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPES: [ "Debug", "RelWithDebInfo", "Release" ]
   MYSQL_PASSWORD: horizon
   MYSQL_USERNAME: root
   MYSQL_DATABASE: horizon
@@ -18,7 +17,7 @@ jobs:
   Debian-GCC-Libraries:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     runs-on: Debian
     steps:
     - name: Checkout
@@ -30,7 +29,7 @@ jobs:
   Debian-GCC-Tests-Tools:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-GCC-Libraries
     runs-on: Debian
     steps:
@@ -44,7 +43,7 @@ jobs:
   Debian-GCC-ALL-ASAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -64,7 +63,7 @@ jobs:
   Debian-GCC-Run-ASAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-GCC-ALL-ASAN
     runs-on: Debian
     steps: 
@@ -80,7 +79,7 @@ jobs:
   Debian-GCC-ALL-TSAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-GCC-Tests-Tools
     runs-on: Debian
     steps:
@@ -94,7 +93,7 @@ jobs:
   Debian-GCC-Run-TSAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-GCC-ALL-TSAN
     runs-on: Debian
     steps: 
@@ -110,7 +109,7 @@ jobs:
   Debian-GCC-Servers:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: [ Debian-GCC-Run-TSAN, Debian-GCC-Run-ASAN ]
     runs-on: Debian
     steps:
@@ -124,7 +123,7 @@ jobs:
   Debian-GCC-Upload-Artifact:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-GCC-Servers
     runs-on: Debian
     steps:
@@ -136,7 +135,7 @@ jobs:
   Debian-Clang-Libraries:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     runs-on: Debian
     steps:
     - name: Checkout
@@ -148,7 +147,7 @@ jobs:
   Debian-Clang-Tests-Tools:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-Clang-Libraries
     runs-on: Debian
     steps:
@@ -168,7 +167,7 @@ jobs:
   Debian-Clang-ALL-ASAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -182,7 +181,7 @@ jobs:
   Debian-Clang-Run-ASAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-Clang-ALL-ASAN
     runs-on: Debian
     steps: 
@@ -198,7 +197,7 @@ jobs:
   Debian-Clang-ALL-TSAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-Clang-Tests-Tools
     runs-on: Debian
     steps:
@@ -212,7 +211,7 @@ jobs:
   Debian-Clang-Run-TSAN:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-Clang-ALL-TSAN
     runs-on: Debian
     steps: 
@@ -228,7 +227,7 @@ jobs:
   Debian-Clang-Servers:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: [ Debian-Clang-Run-ASAN, Debian-Clang-Run-TSAN ]
     runs-on: Debian
     steps:
@@ -242,7 +241,7 @@ jobs:
   Debian-Clang-Upload-Artifact:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Debian-Clang-Servers
     runs-on: Debian
     steps:
@@ -255,7 +254,7 @@ jobs:
   Windows-Libraries:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     runs-on: Windows
     steps:
     - name: Checkout
@@ -268,7 +267,7 @@ jobs:
   Windows-Tests:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Windows-Libraries
     runs-on: Windows
     steps:
@@ -285,7 +284,7 @@ jobs:
   Windows-Tools:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Windows-Tests
     runs-on: Windows
     steps:
@@ -300,7 +299,7 @@ jobs:
   Windows-Servers:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: [ Windows-Tests, Windows-Tools, Windows-Libraries ]
     runs-on: Windows
     steps:
@@ -315,7 +314,7 @@ jobs:
   Windows-Run-Servers:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Windows-Servers
     runs-on: Windows
     steps:
@@ -337,7 +336,7 @@ jobs:
   Windows-Upload-Artifact:
     strategy:
       matrix:
-        build_type: ${{env.BUILD_TYPES}}
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
     needs: Windows-Run-Servers
     runs-on: Windows
     steps:
