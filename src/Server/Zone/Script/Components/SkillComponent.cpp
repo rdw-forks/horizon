@@ -213,49 +213,46 @@ void SkillComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void SkillComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-	state->new_usertype<skill_learnt_info>("SkillLearntInfo",
-		"skill_id", &skill_learnt_info::skill_id,
-		"level", &skill_learnt_info::level,
-		"learn_type", &skill_learnt_info::learn_type
-	);
+	sol::usertype<skill_learnt_info> config_1 = state->new_usertype<skill_learnt_info>("SkillLearntInfo");
+	config_1["skill_id"] = &skill_learnt_info::skill_id;
+	config_1["level"] = &skill_learnt_info::level;
+	config_1["learn_type"] = &skill_learnt_info::learn_type;
 
-	state->new_usertype<skill_config_data>("SkillConfigData",
-		"skill_id", &skill_config_data::skill_id,
-		"name", &skill_config_data::name,
-		"desc", &skill_config_data::desc,
-		"max_level", &skill_config_data::max_level,
-		"primary_type", &skill_config_data::primary_type,
-		"secondary_type", &skill_config_data::secondary_type,
-		"dmg_property", &skill_config_data::dmg_property,
-		"cast_time_options", &skill_config_data::cast_time_options,
-		"skill_delay_options", &skill_config_data::skill_delay_options,
-		"weapon_type", &skill_config_data::weapon_type,
-		"ammunition_type", &skill_config_data::ammunition_type,
-		"placement_flag", &skill_config_data::placement_flag,
-		"get_cast_time", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+	sol::usertype<skill_config_data> config_2 = state->new_usertype<skill_config_data>("SkillConfigData");
+	config_2["skill_id"] = &skill_config_data::skill_id;
+	config_2["name"] = &skill_config_data::name;
+	config_2["desc"] = &skill_config_data::desc;
+	config_2["max_level"] = &skill_config_data::max_level;
+	config_2["primary_type"] = &skill_config_data::primary_type;
+	config_2["secondary_type"] = &skill_config_data::secondary_type;
+	config_2["dmg_property"] = &skill_config_data::dmg_property;
+	config_2["cast_time_options"] = &skill_config_data::cast_time_options;
+	config_2["skill_delay_options"] = &skill_config_data::skill_delay_options;
+	config_2["weapon_type"] = &skill_config_data::weapon_type;
+	config_2["ammunition_type"] = &skill_config_data::ammunition_type;
+	config_2["placement_flag"] = &skill_config_data::placement_flag;
+	config_2["get_cast_time"] = [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
 		{
 			return skd->cast_time[skill_lv - 1];
-		},
-		"get_element", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		};
+	config_2["get_element"] = [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
 		{
 			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
 			return skd->element[skill_lv - 1];
-		},
-		"get_use_range", [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
+		};
+	config_2["get_use_range"] = [] (std::shared_ptr<const skill_config_data> skd, int16_t skill_lv)
 		{
 			// TODO: see how to return error in case of skill_lv is < 0 or > MAX_SKILL_LEVEL
 			return skd->use_range[skill_lv - 1];
-		}
-	);
+		};
 
-	state->new_usertype<SkillExecution>("SkillExecution", 
-		"execute_on_target", sol::resolve<void(int)>(&SkillExecution::execute),
-		"execute_on_ground", sol::resolve<void(MapCoords)>(&SkillExecution::execute),
-		"execute_on_ground_xy", sol::resolve<void(int16_t, int16_t)>(&SkillExecution::execute),
-		"execute_on_ground_with_message", sol::resolve<void(MapCoords, std::string)>(&SkillExecution::execute),
-		"execute_on_ground_xy_with_message", sol::resolve<void(int16_t, int16_t, std::string)>(&SkillExecution::execute),
-		"get_skill_cast_data", &SkillExecution::get_skill_cast_data
-	);
+	sol::usertype<SkillExecution> config_3 = state->new_usertype<SkillExecution>("SkillExecution");
+	config_3["execute_on_target"] = sol::resolve<void(int)>(&SkillExecution::execute);
+	config_3["execute_on_ground"] = sol::resolve<void(MapCoords)>(&SkillExecution::execute);
+	config_3["execute_on_ground_xy"] = sol::resolve<void(int16_t, int16_t)>(&SkillExecution::execute);
+	config_3["execute_on_ground_with_message"] = sol::resolve<void(MapCoords, std::string)>(&SkillExecution::execute);
+	config_3["execute_on_ground_xy_with_message"] = sol::resolve<void(int16_t, int16_t, std::string)>(&SkillExecution::execute);
+	config_3["get_skill_cast_data"] = &SkillExecution::get_skill_cast_data;
 }
 
 void SkillComponent::sync_functions(std::shared_ptr<sol::state> state)

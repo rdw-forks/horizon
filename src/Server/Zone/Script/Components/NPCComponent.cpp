@@ -42,14 +42,13 @@ void NPCComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-	state->new_usertype<NPC>("NPC",
-		"unit", [](std::shared_ptr<Horizon::Zone::Units::NPC> npc) { return npc->shared_from_this(); },
-		"name", &NPC::name,
-		"map_coords", &NPC::map_coords,
-		"get_nearby_unit", &NPC::get_nearby_unit,
-		"init", &NPC::initialize,
-		"set_map", &NPC::set_map
-	);
+	sol::usertype<NPC> config_1 = state->new_usertype<NPC>("NPC");
+	config_1["unit"] = [](std::shared_ptr<Horizon::Zone::Units::NPC> npc) { return npc->shared_from_this(); };
+	config_1["name"] = &NPC::name;
+	config_1["map_coords"] = &NPC::map_coords;
+	config_1["get_nearby_unit"] = &NPC::get_nearby_unit;
+	config_1["init"] = &NPC::initialize;
+	config_1["set_map"] = &NPC::set_map;
 }
 
 void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)

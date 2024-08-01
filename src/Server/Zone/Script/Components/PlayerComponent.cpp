@@ -68,26 +68,26 @@ void PlayerComponent::sync_data_types(std::shared_ptr<sol::state> state)
         "notify_all", &Assets::Storage::notify_all
     );
 
-    state->new_usertype<Horizon::Zone::Units::Player>("Player",
-        "unit", [](std::shared_ptr<Horizon::Zone::Units::Player> player) { return player->shared_from_this(); },
-        "send_npc_dialog", &Horizon::Zone::Units::Player::send_npc_dialog,
-        "send_npc_next_dialog", &Horizon::Zone::Units::Player::send_npc_next_dialog,
-        "send_npc_close_dialog", &Horizon::Zone::Units::Player::send_npc_close_dialog,
-        "send_npc_menu_list", &Horizon::Zone::Units::Player::send_npc_menu_list,
-        "move_to_map", &Horizon::Zone::Units::Player::move_to_map,
-        "inventory", &Horizon::Zone::Units::Player::inventory,
-        "storage", &Horizon::Zone::Units::Player::get_storage,
-        "message", [] (std::shared_ptr<Horizon::Zone::Units::Player> player, std::string const &message)
-        {
-            player->get_session()->clif()->notify_chat(message);
-        },
-        "job_change", & Horizon::Zone::Units::Player::job_change,
-        "perform_action", & Horizon::Zone::Units::Player::perform_action,
-        "get_learnt_skill", & Horizon::Zone::Units::Player::get_learnt_skill,
-        "perform_skill", & Horizon::Zone::Units::Player::perform_skill,
-        "on_skill_failure", & Horizon::Zone::Units::Player::on_skill_failure
-    );
+    sol::usertype<Horizon::Zone::Units::Player> a = state->new_usertype<Horizon::Zone::Units::Player>("Player");
 
+	a["unit"] = [](std::shared_ptr<Horizon::Zone::Units::Player> player) { return player->shared_from_this(); };
+	
+    a["send_npc_dialog"] = &Horizon::Zone::Units::Player::send_npc_dialog;
+    a["send_npc_next_dialog"] = &Horizon::Zone::Units::Player::send_npc_next_dialog;
+    a["send_npc_close_dialog"] = &Horizon::Zone::Units::Player::send_npc_close_dialog;
+    a["send_npc_menu_list"] = &Horizon::Zone::Units::Player::send_npc_menu_list;
+    a["move_to_map"] = &Horizon::Zone::Units::Player::move_to_map;
+    a["inventory"] = &Horizon::Zone::Units::Player::inventory;
+    a["storage"] = &Horizon::Zone::Units::Player::get_storage;
+    a["message"] = [] (std::shared_ptr<Horizon::Zone::Units::Player> player, std::string const &message)
+	{
+		player->get_session()->clif()->notify_chat(message);
+	};
+	a["job_change"] = &Horizon::Zone::Units::Player::job_change;
+    a["perform_action"] = &Horizon::Zone::Units::Player::perform_action;
+    a["get_learnt_skill"] = &Horizon::Zone::Units::Player::get_learnt_skill;
+    a["perform_skill"] = &Horizon::Zone::Units::Player::perform_skill;
+    a["on_skill_failure"] = &Horizon::Zone::Units::Player::on_skill_failure;
 }
 
 void PlayerComponent::sync_functions(std::shared_ptr<sol::state> state)
