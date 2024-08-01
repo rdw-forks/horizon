@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
   Debian-GCC-Tests-Tools:
     strategy:
@@ -37,7 +37,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-ALL-ASAN:
@@ -51,7 +51,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
         files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
@@ -87,7 +87,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-TSAN:
@@ -117,7 +117,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Upload-Artifact:
@@ -142,7 +142,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
   Debian-Clang-Tests-Tools:
     strategy:
@@ -155,7 +155,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
         files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
@@ -175,7 +175,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-ASAN:
@@ -205,7 +205,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-TSAN:
@@ -235,7 +235,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Upload-Artifact:
@@ -261,7 +261,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Build
       run: |
-        cmake -B build -DWITHOUT_SERVERS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}}
 
   Windows-Tests:
@@ -276,7 +276,7 @@ jobs:
     
     - name: Build
       run: |
-        cmake -B build -DWITHOUT_SERVERS=1 -WITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -WITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}}
     - name: Run
       run: ./horizon.sh run-tests "build\test\${{matrix.build_type}}"
@@ -293,7 +293,7 @@ jobs:
       
     - name: Build
       run: |
-        cmake -B build -DWITHOUT_SERVERS=1 -WITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -WITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}}
 
   Windows-Servers:
@@ -308,7 +308,7 @@ jobs:
    
     - name: Configure Step & Build
       run: |
-        cmake -B build -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}}
 
   Windows-Run-Servers:
