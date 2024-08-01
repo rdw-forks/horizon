@@ -14,12 +14,13 @@ endif (NOT WITHOUT_SERVERS)
 #################
 if (WITH_TESTS AND WITHOUT_SERVERS)
 	add_subdirectory(Server/Common)
-	add_subdirectory(Server/Zone/Packets)
-	add_subdirectory(Server/Zone/Game)
-	add_subdirectory(Server/Zone/Persistence)
-	add_subdirectory(Server/Zone/Script)
-	add_subdirectory(Server/Zone/Interface)
+	CollectSourceFiles(
+    	${PROJECT_SOURCE_DIR}/src/Server/Auth
+		AUTH_TARGET_SOURCES
+	)
+	list(REMOVE_ITEM AUTH_TARGET_SOURCES REGEX "${CMAKE_CURRENT_SOURCE_DIR}/Auth/Main.cpp")
 	set(AUTH_TESTING_SOURCES
+		${AUTH_TARGET_SOURCES}
 		${CMAKE_SOURCE_DIR}/src/Server/Auth/Auth.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Auth/Auth.cpp
 		${CMAKE_SOURCE_DIR}/src/Server/Auth/Interface/AuthClientInterface.cpp
@@ -35,7 +36,13 @@ if (WITH_TESTS AND WITHOUT_SERVERS)
 		${CORE_SOURCES}
 		${UTILITY_SOURCES}
 	)
+	CollectSourceFiles(
+    	${PROJECT_SOURCE_DIR}/src/Server/Char
+		CHAR_TARGET_SOURCES
+	)
+	list(REMOVE_ITEM CHAR_TARGET_SOURCES REGEX "${CMAKE_CURRENT_SOURCE_DIR}/Char/Main.cpp")
 	set(CHAR_TESTING_SOURCES
+		${CHAR_TARGET_SOURCES}
 		${CMAKE_SOURCE_DIR}/src/Server/Char/Char.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Char/Char.cpp
 		${CMAKE_SOURCE_DIR}/src/Server/Char/Interface/CharClientInterface.cpp
@@ -51,6 +58,11 @@ if (WITH_TESTS AND WITHOUT_SERVERS)
 		${CORE_SOURCES}
 		${UTILITY_SOURCES}
 	)
+	add_subdirectory(Server/Zone/Packets)
+	add_subdirectory(Server/Zone/Game)
+	add_subdirectory(Server/Zone/Persistence)
+	add_subdirectory(Server/Zone/Script)
+	add_subdirectory(Server/Zone/Interface)
 	set(ZONE_TESTING_SOURCES
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Zone.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Zone.cpp
