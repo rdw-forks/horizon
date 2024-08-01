@@ -30,6 +30,10 @@ if (WITH_TESTS AND WITHOUT_SERVERS)
 		${CMAKE_SOURCE_DIR}/src/Server/Auth/Socket/AuthSocket.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Auth/SocketMgr/ClientSocketMgr.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Auth/SocketMgr/ClientSocketMgr.cpp
+		${COMMON_SOURCES}
+		${COMMON_HEADERS}
+		${CORE_SOURCES}
+		${UTILITY_SOURCES}
 	)
 	set(CHAR_TESTING_SOURCES
 		${CMAKE_SOURCE_DIR}/src/Server/Char/Char.hpp
@@ -42,6 +46,10 @@ if (WITH_TESTS AND WITHOUT_SERVERS)
 		${CMAKE_SOURCE_DIR}/src/Server/Char/Socket/CharSocket.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Char/SocketMgr/ClientSocketMgr.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Char/SocketMgr/ClientSocketMgr.cpp
+		${COMMON_SOURCES}
+		${COMMON_HEADERS}
+		${CORE_SOURCES}
+		${UTILITY_SOURCES}
 	)
 	set(ZONE_TESTING_SOURCES
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Zone.hpp
@@ -56,6 +64,16 @@ if (WITH_TESTS AND WITHOUT_SERVERS)
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/Socket/ZoneSocket.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/SocketMgr/ClientSocketMgr.hpp
 		${CMAKE_SOURCE_DIR}/src/Server/Zone/SocketMgr/ClientSocketMgr.cpp
+		${COMMON_SOURCES}
+		${COMMON_HEADERS}
+		${CORE_SOURCES}
+		${UTILITY_SOURCES}
+		${PACKET_SOURCES}
+		${PACKET_HEADERS}
+		${GAME_SOURCES}
+		${SCRIPT_SOURCES}
+		${PERSISTENCE_SOURCES}
+		${INTERFACE_SOURCES}
 	)
 	add_subdirectory(Tests)
 elseif(WITH_TEST)
