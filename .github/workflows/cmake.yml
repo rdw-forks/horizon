@@ -58,7 +58,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          /"${{github.workspace}}/build/bin/test/${t}";
+          /"${{github.workspace}}/build/bin/${t}";
         done
   Debian-GCC-Run-ASAN:
     strategy:
@@ -162,7 +162,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          /"${{github.workspace}}/build/bin/test/${t}";
+          /"${{github.workspace}}/build/bin/${t}";
         done
   Debian-Clang-ALL-ASAN:
     strategy:
