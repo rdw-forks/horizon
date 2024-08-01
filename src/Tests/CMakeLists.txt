@@ -66,6 +66,8 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 		set (ADD_SOURCES
 			${CORE_DIR}/Logging/Logger.cpp
 			${CORE_DIR}/Logging/Logger.hpp)
+		set(ADD_LIBS ${Boost_LIBRARIES})
+		set(ADD_INCLUDE_DIRS ${Boost_INCLUDE_DIRS})
 	elseif (TEST_NAME STREQUAL "SystemRoutinesTest")
 		set (ADD_SOURCES ${ADD_SOURCES}
 			${COMMON_DIR}/Server.hpp
@@ -90,12 +92,8 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			AUTH_PRIVATE_SOURCES
 		)
 		list(REMOVE_ITEM AUTH_PRIVATE_SOURCES REGEX "${SERVER_DIR}/Auth/Main.cpp")
-		set (ADD_SOURCES
-			${AUTH_PRIVATE_SOURCES}
-			${COMMON_SOURCES}
-			${COMMON_HEADERS}
-			${CORE_SOURCES}
-			${UTILITY_SOURCES}
+		set (ADD_SOURCES	
+			${AUTH_TESTING_SOURCES}
 		)
 		set (ADD_LIBS 
 			${Boost_LIBRARIES}
@@ -111,17 +109,8 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${LUA_INCLUDE_DIR}
 			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "CharServerTest")
-		CollectSourceFiles(
-    		${SERVER_DIR}/Char
-			CHAR_PRIVATE_SOURCES
-		)
-		list(REMOVE_ITEM CHAR_PRIVATE_SOURCES REGEX "${SERVER_DIR}/Char/Main.cpp")
 		set (ADD_SOURCES
-			${CHAR_PRIVATE_SOURCES}
-			${COMMON_SOURCES}
-			${COMMON_HEADERS}
-			${CORE_SOURCES}
-			${UTILITY_SOURCES}
+			${CHAR_TESTING_SOURCES}
 		)
 		set (ADD_LIBS 
 			${Boost_LIBRARIES}
@@ -138,17 +127,6 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "ZoneServerTest")
 		set (ADD_SOURCES
-			${SERVER_DIR}/pch.hpp
-			${COMMON_SOURCES}
-			${COMMON_HEADERS}
-			${CORE_SOURCES}
-			${UTILITY_SOURCES}
-			${PACKET_SOURCES}
-			${PACKET_HEADERS}
-			${GAME_SOURCES}
-			${SCRIPT_SOURCES}
-			${PERSISTENCE_SOURCES}
-			${INTERFACE_SOURCES}
 			${ZONE_TESTING_SOURCES}
 		)
 		set (ADD_LIBS 
@@ -192,22 +170,5 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			PROPERTIES
 			LINK_FLAGS "-pagezero_size 10000 -image_base 100000000"
 			)
-	endif()
-
-	# Set the runtime output directory.
-	set_target_properties(${TEST_NAME} PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY ${TEST_DIR}
-		FOLDER "Tests")
-
-	# Finally add it to test execution.
-	# Notice the WORKING_DIRECTORY and COMMAND.
-	add_test(NAME ${TEST_NAME}
-			WORKING_DIRECTORY ${TEST_DIR}
-			COMMAND ${TEST_NAME})
-
-	if (APPLE)
-	install(TARGETS ${TEST_NAME}
-		DESTINATION ${TEST_DIR}
-		CONFIGURATIONS ${CMAKE_BUILD_TYPE})
 	endif()
 endforeach(TEST_SOURCE)
