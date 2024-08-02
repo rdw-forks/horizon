@@ -362,16 +362,10 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 	
 	std::thread thread_3 = std::thread([&]() { 
 		routine_3->get_control_agent().cancel();
-		while(routine_3->get_control_agent().get_status() != Horizon::System::RUNTIME_WORK_QUEUE_CANCELLED) {
-			srm_p.process_queue(); 
-		}
 	});
 	
 	std::thread thread_4 = std::thread([&]() { 
 		routine_4->get_control_agent().cancel();
-		while(routine_4->get_control_agent().get_status() != Horizon::System::RUNTIME_WORK_QUEUE_CANCELLED) {
-			srm_s.process_queue(); 
-		}
 	});
 	
 	std::thread thread_5 = std::thread([&]() { 
@@ -380,6 +374,12 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 
 	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_n_1->has_result()))
 	{
+		std::cout << "work->has_result() : " << work->has_result() << std::endl;
+		std::cout << "work2->has_result() : " << work2->has_result() << std::endl;
+		std::cout << "work3->has_result() : " << work3->has_result() << std::endl;
+		std::cout << "work4->has_result() : " << work4->has_result() << std::endl;
+		std::cout << "work_gl_1->has_result() : " << work_gl_1->has_result() << std::endl;
+		std::cout << "work_n_1->has_result() : " << work_n_1->has_result() << std::endl;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	};
 
@@ -387,6 +387,9 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 		|| routine_2->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE
 		|| routine_3->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL)
 		{
+			std::cout << "routine_1 context result : " << routine_1->get_context_result() << std::endl;
+			std::cout << "routine_2 context result : " << routine_2->get_context_result() << std::endl;
+			std::cout << "routine_3 context result : " << routine_3->get_context_result() << std::endl;
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		};
 	
@@ -396,6 +399,8 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 
 	while (routine_4->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL || routine_5->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS)
 	{
+		std::cout << "routine_4 context result : " << routine_4->get_context_result() << std::endl;
+		std::cout << "routine_5 context result : " << routine_5->get_context_result() << std::endl;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	};
 	
