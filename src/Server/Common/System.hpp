@@ -190,7 +190,7 @@ public:
         {
             runtime_work_queue_status status = get_status();
 
-            if (status == RUNTIME_WORK_QUEUE_CANCELLED || status == RUNTIME_WORK_QUEUE_COMPLETED)
+            if (status == RUNTIME_WORK_QUEUE_CANCELLED)
                 return false;
 
             _status.store(RUNTIME_WORK_QUEUE_CANCELLED);
