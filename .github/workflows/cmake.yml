@@ -131,7 +131,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Debian-GCC-Servers
+    needs: Debian-GCC-Run-Servers
     runs-on: Debian
     steps:
     - name: Checkout
@@ -255,7 +255,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Debian-Clang-Servers
+    needs: Debian-Clang-Run-Servers
     runs-on: Debian
     steps:
     - name: Checkout
