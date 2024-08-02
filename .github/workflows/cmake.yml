@@ -13,6 +13,7 @@ env:
   MYSQL_DATABASE: horizon
   MYSQL_HOSTNAME: localhost
   LINUX_BOOST_ROOT: "/home/sephus/boost_1_85_0"
+  PARALLEL_BUILD: 8
 jobs:
   Debian-GCC-Libraries:
     strategy:
@@ -25,7 +26,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
   Debian-GCC-Tests-Tools:
     strategy:
       matrix:
@@ -38,7 +39,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/db -r
@@ -61,7 +62,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-ASAN:
     strategy:
@@ -91,7 +92,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Run-TSAN:
     strategy:
@@ -121,7 +122,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
   Debian-GCC-Upload-Artifact:
     strategy:
@@ -146,7 +147,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
   Debian-Clang-Tests-Tools:
     strategy:
       matrix:
@@ -159,7 +160,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/db -r
@@ -182,7 +183,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-ASAN:
     strategy:
@@ -212,7 +213,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Run-TSAN:
     strategy:
@@ -242,7 +243,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
         cmake --build ${{github.workspace}}/build --target install
   Debian-Clang-Upload-Artifact:
     strategy:
@@ -268,7 +269,7 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
 
   Windows-Tests:
     strategy:
@@ -283,7 +284,7 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
     - name: Run
       run: ./horizon.sh run-tests "build\test\${{matrix.build_type}}"
       
@@ -300,7 +301,7 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
 
   Windows-Servers:
     strategy:
@@ -315,7 +316,7 @@ jobs:
     - name: Configure Step & Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${PARALLEL_BUILD}
 
   Windows-Run-Servers:
     strategy:
