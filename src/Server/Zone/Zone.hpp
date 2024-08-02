@@ -129,7 +129,7 @@ public:
 	void start();
 	virtual void update(int64_t diff);
 
-	bool is_initialized() { return _is_initialized; }
+	bool is_initialized() override { return _is_initialized; }
 	
 protected:
 	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>;
