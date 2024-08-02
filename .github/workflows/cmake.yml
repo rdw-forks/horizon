@@ -310,28 +310,18 @@ jobs:
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}} --parallel ${{env.PARALLEL_BUILD}}
-
-  Windows-Run-Servers:
-    strategy:
-      matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Windows-Servers
-    runs-on: Windows
-    steps:
-    - name: Copy Configuration
-      run: |
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
         Xcopy /E /I ${{github.workspace}}\db ${{github.workspace}}\build\bin\${{matrix.build_type}}\db
         Xcopy /E /I ${{github.workspace}}\scripts ${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts
     - name: Auth
       working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      run: ./auth.exe --with-config="config\auth-server.lua.dist" --test-run 
+      run: auth.exe --with-config="config\auth-server.lua.dist" --test-run 
     - name: Char
       working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      run: ./char.exe --with-config="config\char-server.lua.dist" --test-run
+      run: char.exe --with-config="config\char-server.lua.dist" --test-run
     - name: Zone
       working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      run: ./zone.exe --with-config="config\zone-server.lua.dist" --test-run 
+      run: zone.exe --with-config="config\zone-server.lua.dist" --test-run 
 
   Windows-Upload-Artifact:
     strategy:
