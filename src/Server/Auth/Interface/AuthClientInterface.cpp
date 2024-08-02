@@ -78,7 +78,7 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 		if (results.rows().empty()) {
 			HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
 
-			enum game_account_gender_type gender;
+			enum game_account_gender_type gender{ACCOUNT_GENDER_NONE};
 
 			HLog(info) << "Creating a new account for user '" << username << "' with password '" << password << "'.";
 

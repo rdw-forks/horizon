@@ -111,8 +111,7 @@ public:
 	{
 		set_segment_number(segment_number);
 
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, true);
+		_is_initialized.exchange(true);
 
 		_thread = std::thread(&ZoneRuntime::start, this);
 	}
@@ -122,14 +121,14 @@ public:
 		if (_thread.joinable())
 			_thread.join();
 
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, false);
+		_is_finalized.exchange(true);
 	}
 
 	void start();
 	virtual void update(int64_t diff);
 
 	bool is_initialized() override { return _is_initialized; }
+	bool is_finalized() override { return _is_finalized; }
 	
 protected:
 	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>;
@@ -139,7 +138,8 @@ public:
 	ResourceManager &get_resource_manager() { return _resource_manager; }
 private:
 	std::thread _thread;
-	std::atomic<bool> _is_initialized;
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 
 };
 

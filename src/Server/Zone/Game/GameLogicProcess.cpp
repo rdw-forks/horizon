@@ -71,8 +71,7 @@ void GameLogicProcess::initialize(int segment_number)
 	load_map_cache();
 	start_containers();
 
-    bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, true);
+	_is_initialized.exchange(true);
 }
 
 void GameLogicProcess::finalize()
@@ -82,8 +81,7 @@ void GameLogicProcess::finalize()
 		cont.second->finalize();
 	}
 
-    bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, false);
+	_is_finalized.exchange(true);
 }
 
 bool GameLogicProcess::load_map_cache()

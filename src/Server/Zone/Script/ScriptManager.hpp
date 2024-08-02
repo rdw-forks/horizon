@@ -77,7 +77,8 @@ public:
 
 	std::shared_ptr<sol::state> lua_state() { return _lua_state; }
 
-	bool is_initialized() { return _is_initialized.load(); }
+	bool is_initialized() override { return _is_initialized.load(); }
+	bool is_finalized() override { return _is_finalized.load(); }
 
 	void initialize(int segment_number = 1);
 	void finalize();
@@ -106,7 +107,8 @@ private:
 
 	std::thread _thread;
 protected:
-	std::atomic<bool> _is_initialized;
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 
 	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t /*NPC GUID*/, std::shared_ptr<Units::NPC>>>;
 	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;

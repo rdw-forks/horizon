@@ -195,6 +195,7 @@ public:
 	virtual void finalize() { }
 
 	virtual bool is_initialized() { return false; }
+	virtual bool is_finalized() { return false; }
 
 	void set_segment_number(int64_t segment_number) { _segment_number = segment_number; }
 	int64_t get_segment_number() { return _segment_number.load(); }
@@ -303,13 +304,15 @@ public:
 	bool clicmd_shutdown(std::string /*cmd*/);
 
 	bool is_initialized() override { return _is_initialized; }
+	bool is_finalized() override { return _is_finalized; }
 
 private:
 	std::unordered_map<std::string, std::function<bool(std::string)>> _cli_function_map;
 	// CLI command holder to be thread safe
 	std::queue<CLICommand> _cli_cmd_queue;
 	std::thread _cli_thread;
-	std::atomic<bool> _is_initialized;
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 };
 
 class DatabaseProcess : public MainframeComponent
@@ -327,6 +330,7 @@ public:
 	{
 		set_segment_number(segment_number);
 		HLog(error) << "Database not configured"; 
+		_is_initialized.exchange(true);
 	}
 
 	void initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
@@ -338,17 +342,19 @@ public:
 			_connection->close();
 		}
 		
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, false);
+		_is_finalized.exchange(true);
 	}
 
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection() { return _connection; }
 
 	bool is_initialized() override { return _is_initialized.load(); }
+	bool is_finalized() override { return _is_finalized.load(); }
+
 protected:
 	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
     std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
-	std::atomic<bool> _is_initialized;
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 };
 
 struct mainframe_component_state_holder

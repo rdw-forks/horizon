@@ -38,8 +38,7 @@ void PersistenceManager::initialize(int segment_number)
 	set_segment_number(segment_number);
 	_thread = std::thread(&PersistenceManager::start, this);
 
-    bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, true);
+	_is_initialized.exchange(true);
 }
 
 void PersistenceManager::finalize()
@@ -47,8 +46,7 @@ void PersistenceManager::finalize()
 	if (_thread.joinable())
 	    _thread.join();
     
-    bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, false);
+	_is_finalized.exchange(true);
 }
 
 void PersistenceManager::start()

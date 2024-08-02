@@ -64,8 +64,7 @@ void ScriptManager::initialize(int segment_number)
 {
 	set_segment_number(segment_number);
 	_thread = std::thread(&ScriptManager::start, this);
-	bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, true);
+	_is_initialized.exchange(true);
 }
 
 void ScriptManager::finalize()
@@ -80,8 +79,7 @@ void ScriptManager::finalize()
 
 	_script_files.clear();
 
-	bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, false);
+	_is_finalized.exchange(true);
 }
 
 void ScriptManager::start()

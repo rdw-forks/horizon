@@ -54,7 +54,8 @@ public:
     void initialize(int segment_number = 1);
     void finalize();
 
-	bool is_initialized() { return _is_initialized.load(); }
+	bool is_initialized() override { return _is_initialized.load(); }
+	bool is_finalized() override { return _is_finalized.load(); }
 
 	/* Map / Maps */
 	bool load_map_cache();
@@ -65,7 +66,8 @@ public:
 	void on_map_update(int64_t diff);
 
 protected:
-    std::atomic<bool> _is_initialized;
+    std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 	
 	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<std::string /* Map Name */, std::shared_ptr<Map>>>;
 	using SecondaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>;

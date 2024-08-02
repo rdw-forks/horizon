@@ -85,21 +85,21 @@ public:
 
 	virtual void initialize(int segment_number = 1) override 
 	{
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, true);
+		_is_initialized.exchange(true);
 		set_segment_number(segment_number);
 	}
 
 	virtual void finalize() override 
 	{
 		Networking::NetworkThread<CharSocket>::finalize();
-		bool value = _is_initialized;
-		_is_initialized.compare_exchange_strong(value, false); 
+		_is_finalized.exchange(true);
 	}
 
 	virtual bool is_initialized() override { return _is_initialized.load(); }
+	virtual bool is_finalized() override { return _is_finalized.load(); }
 protected:
-	std::atomic<bool> _is_initialized;
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 	
 protected:
 using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<CharSocket>>>;

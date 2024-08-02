@@ -101,11 +101,10 @@ void CommandLineProcess::initialize(int segment_number)
 	_cli_thread = std::thread(std::bind(&CommandLineProcess::cli_thread_start, this));
 
 	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
-
-	bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, true);
 	
 	set_segment_number(segment_number);
+
+	_is_initialized.exchange(true);
 }
 
 void CommandLineProcess::finalize()
@@ -113,8 +112,7 @@ void CommandLineProcess::finalize()
 	if (_cli_thread.joinable())
 		_cli_thread.detach();
 
-	bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, false);
+	_is_finalized.exchange(true);
 }
 
 void CommandLineProcess::process()
@@ -213,12 +211,10 @@ void DatabaseProcess::initialize(int segment_number, std::string host, int port,
 		auto endpoints = resolver.resolve(host, std::to_string(port));
 		boost::mysql::handshake_params params(user, pass, database);
 		_connection->connect(*endpoints.begin(), params);
+		_is_initialized.exchange(true);
 	} catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();
 	}
-
-	bool value = _is_initialized;
-	_is_initialized.compare_exchange_strong(value, true);
 }
 
 /* Public */
@@ -373,12 +369,7 @@ void Server::post_initialize()
 	Mainframe::post_initialize();
 	
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second.ptr->is_initialized() == false) {
-			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online" << " { uuid: " << i->first << " }";
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { uuid: " << i->first << " }";
 	}
 }
 
@@ -387,12 +378,7 @@ void Server::post_finalize()
 	Mainframe::post_finalize();
 	
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		while (i->second.ptr->is_initialized() == true) {
-			HLog(error) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Online (Shutting Down)" << " { uuid: " << i->first << " }";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-		}
-
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': Offline" << " { uuid: " << i->first << " }";
+		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { uuid: " << i->first << " }";
 	}
 }
 

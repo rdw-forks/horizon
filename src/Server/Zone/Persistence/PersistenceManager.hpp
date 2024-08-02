@@ -53,16 +53,20 @@ public:
     void start();
     void update(uint64_t diff);
 
-	bool is_initialized() { return _is_initialized.load(); }
+	bool is_initialized() override { return _is_initialized.load(); }
+	bool is_finalized() override { return _is_finalized.load(); }
     
 private:
     std::thread _thread;
-	std::atomic<bool> _is_initialized;
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
 
 protected:
 	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>;
 	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
 	ResourceManager _resource_manager;
+public:
+	ResourceManager& get_resource_manager() { return _resource_manager; }
 };
 }
 }
