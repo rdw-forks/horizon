@@ -307,7 +307,10 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 	auto work = std::make_shared<TestWork>(routine_1);
 	work->set_request(work_request{20});
 	work->execute();
-	while(!work->has_result());
+	while(!work->has_result()) 
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	};
     auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1);
 	work2->set_request(work_request{30});
     auto work3 = std::make_shared<TestWork>(routine_1);

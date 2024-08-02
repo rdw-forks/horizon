@@ -264,9 +264,10 @@ void CharServer::initialize_core()
 	
 	Server::post_initialize();
 	
-	while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-		get_io_context().run_one();
-	};
+	if (!general_conf().is_test_run_minimal())
+		while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+			get_io_context().run_one();
+		};
 
 	HLog(info) << "Shutdown process initiated...";
 

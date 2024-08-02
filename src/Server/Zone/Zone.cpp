@@ -259,8 +259,9 @@ void ZoneServer::initialize()
 
 	// IO context will run here, keeping the server / main thread in a loop.
 	// Once the runtime finalizes, io_context will stop and this function will return.
-	while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
-		_io_context_global.run_one();
+	if (!general_conf().is_test_run_minimal())
+		while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
+			_io_context_global.run_one();
 }
 
 void ZoneServer::finalize()

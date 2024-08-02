@@ -193,7 +193,7 @@ public:
             if (status == RUNTIME_WORK_QUEUE_CANCELLED || status == RUNTIME_WORK_QUEUE_COMPLETED)
                 return false;
 
-            _status.compare_exchange_strong(status, RUNTIME_WORK_QUEUE_CANCELLED);
+            _status.store(RUNTIME_WORK_QUEUE_CANCELLED);
             return true;
         }
 

@@ -249,8 +249,9 @@ void AuthServer::initialize_core()
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
 
-	while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal())
-		get_io_context().run_one();
+	if (!general_conf().is_test_run_minimal())
+		while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
+			get_io_context().run_one();
 
 	HLog(info) << "Shutdown process initiated...";
 	
