@@ -331,7 +331,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Windows-Run-Servers
+    needs: Windows-Servers
     runs-on: Windows
     steps:
     - name: Checkout
