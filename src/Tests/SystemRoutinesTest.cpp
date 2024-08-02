@@ -121,6 +121,7 @@ public:
 
 BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
 {
+	std::cout << "SystemRoutinesTest" << std::endl;
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
     std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
 
@@ -129,7 +130,9 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
 	auto work = std::make_shared<TestWork>(routine_1);
 	work->set_request(work_request{20});
 	work->execute();
-	while(!work->has_result());
+	while(!work->has_result()) {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	};
     auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1);
 	work2->set_request(work_request{30});
 	work2->set_previous_result(work->get_result());
@@ -155,6 +158,7 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
 
 BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
 {
+	std::cout << "RuntimeRoutineContextChainTest" << std::endl;
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
 	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_1 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_MAIN);
 
@@ -188,7 +192,15 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
 
 	std::thread t = std::thread([&](){ srm.process_queue(); });
 
-	while (!work->has_result() || !work2->has_result() || !work3->has_result() || !work4->has_result());
+	while (!work->has_result() || !work2->has_result() || !work3->has_result() || !work4->has_result()) 
+	{
+		// Wait for the work to finish. Also placed here due to this reason:
+		// The issue you're encountering is likely due to the fact that an empty while loop can cause the CPU to spin indefinitely, 
+		// consuming 100% of a CPU core and potentially leading to a deadlock or other synchronization issues. 
+		// This can prevent other threads from making progress, especially if they need CPU time to update the condition that the while loop is waiting on.
+		// Solution: You can add a small sleep inside the while loop to yield control and allow other threads to run.
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
 	
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 600);
@@ -200,6 +212,7 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
 
 BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
 {
+	std::cout << "SystemRoutinesDispatchTest" << std::endl;
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
     Horizon::System::SystemRoutineManager srm_gl(Horizon::System::RUNTIME_GAMELOGIC);
     Horizon::System::SystemRoutineManager srm_p(Horizon::System::RUNTIME_PERSISTENCE);
@@ -259,7 +272,10 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
 		std::cout << "Work_P_1 Executed on Thread 3." << std::endl; 
 	});
 
-	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_p_1->has_result()));
+	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_p_1->has_result()))
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	};
 
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 1000);
@@ -275,6 +291,7 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
 
 BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 {
+	std::cout << "SystemRoutinesSynchronizationTest" << std::endl;
     Horizon::System::SystemRoutineManager srm(Horizon::System::RUNTIME_MAIN);
     Horizon::System::SystemRoutineManager srm_gl(Horizon::System::RUNTIME_GAMELOGIC);
     Horizon::System::SystemRoutineManager srm_p(Horizon::System::RUNTIME_PERSISTENCE);
@@ -358,17 +375,26 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 		while(!work_n_1->has_result()) { srm_n.process_queue(); }
 	});
 
-	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_n_1->has_result()));
+	while (!(work->has_result() && work2->has_result() && work3->has_result() && work4->has_result() && work_gl_1->has_result() && work_n_1->has_result()))
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	};
 
 	while (routine_1->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE
 		|| routine_2->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE
-		|| routine_3->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL);
+		|| routine_3->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL)
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+		};
 	
 	BOOST_CHECK_EQUAL(routine_1->get_context_result(), Horizon::System::RUNTIME_CONTEXT_PASS);
 	BOOST_CHECK_EQUAL(routine_2->get_context_result(), Horizon::System::RUNTIME_CONTEXT_PASS);
 	BOOST_CHECK_EQUAL(routine_3->get_context_result(), Horizon::System::RUNTIME_CONTEXT_FAIL);
 
-	while (routine_4->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL || routine_5->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS);
+	while (routine_4->get_context_result() != Horizon::System::RUNTIME_CONTEXT_FAIL || routine_5->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	};
 	
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 600);
