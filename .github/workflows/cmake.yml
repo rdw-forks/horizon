@@ -9,11 +9,11 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   MYSQL_PASSWORD: horizon
-  MYSQL_USERNAME: root
+  MYSQL_USERNAME: horizon
   MYSQL_DATABASE: horizon
-  MYSQL_HOSTNAME: localhost
-  LINUX_BOOST_ROOT: "/home/sephus/boost_1_85_0"
-  LINUX_BOOST_LIBRARYDIR: "/home/sephus/boost_1_85_0/stage/lib"
+  MYSQL_HOSTNAME: "15.235.163.198"
+  LINUX_BOOST_ROOT: "/home/debian/boost_1_85_0"
+  LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
   PARALLEL_BUILD: 2
 jobs:
   Debian-GCC-Tests-Tools:
