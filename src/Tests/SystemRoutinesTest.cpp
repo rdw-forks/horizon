@@ -362,10 +362,16 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 	
 	std::thread thread_3 = std::thread([&]() { 
 		routine_3->get_control_agent().cancel();
+		while(routine_3->get_control_agent().get_status() != Horizon::System::RUNTIME_WORK_QUEUE_CANCELLED) {
+			srm_p.process_queue(); 
+		}
 	});
 	
 	std::thread thread_4 = std::thread([&]() { 
 		routine_4->get_control_agent().cancel();
+		while(routine_4->get_control_agent().get_status() != Horizon::System::RUNTIME_WORK_QUEUE_CANCELLED) {
+			srm_s.process_queue(); 
+		}
 	});
 	
 	std::thread thread_5 = std::thread([&]() { 
