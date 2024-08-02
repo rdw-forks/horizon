@@ -59,7 +59,7 @@ public:
 	~AuthSession();
 
 	/* */
-	void initialize();
+	void initialize() override;
 	virtual void update(uint32_t diff) override;
 	
 	std::unique_ptr<AuthClientInterface> &clif() { return _clif; }

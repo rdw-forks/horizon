@@ -51,7 +51,7 @@ public:
 	~Item();
 
     void initialize();
-    bool finalize();
+    bool finalize() override;
 
     std::shared_ptr<item_entry_data> entry() { return _entry; }
     std::shared_ptr<const item_config_data> config() const { return _config; }
