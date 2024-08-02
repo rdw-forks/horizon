@@ -317,15 +317,13 @@ jobs:
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
         Xcopy /E /I ${{github.workspace}}\db ${{github.workspace}}\build\bin\${{matrix.build_type}}\db
         Xcopy /E /I ${{github.workspace}}\scripts ${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts
-    - name: Auth
+    - name: Run
       working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      run: auth.exe --with-config="config\auth-server.lua.dist" --test-run 
-    - name: Char
-      working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      run: char.exe --with-config="config\char-server.lua.dist" --test-run
-    - name: Zone
-      working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      run: zone.exe --with-config="config\zone-server.lua.dist" --test-run 
+      run: |
+      cd ${{github.workspace}}\build\bin\${{matrix.build_type}}
+      auth.exe --with-config="config\auth-server.lua.dist" --test-run 
+      char.exe --with-config="config\char-server.lua.dist" --test-run
+      zone.exe --with-config="config\zone-server.lua.dist" --test-run 
 
   Windows-Upload-Artifact:
     strategy:
