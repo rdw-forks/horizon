@@ -320,10 +320,10 @@ jobs:
     - name: Run
       working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
       run: |
-      cd ${{github.workspace}}\build\bin\${{matrix.build_type}}
-      auth.exe --with-config="config\auth-server.lua.dist" --test-run 
-      char.exe --with-config="config\char-server.lua.dist" --test-run
-      zone.exe --with-config="config\zone-server.lua.dist" --test-run 
+        cd ${{github.workspace}}\build\bin\${{matrix.build_type}}
+        auth.exe --with-config="config\auth-server.lua.dist" --test-run 
+        char.exe --with-config="config\char-server.lua.dist" --test-run
+        zone.exe --with-config="config\zone-server.lua.dist" --test-run 
 
   Windows-Upload-Artifact:
     strategy:
