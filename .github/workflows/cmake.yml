@@ -29,6 +29,8 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.PARALLEL_BUILD}}
         cmake --build ${{github.workspace}}/build --target install
+    - name: Run
+      run: |
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/scripts -r
@@ -153,6 +155,8 @@ jobs:
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.PARALLEL_BUILD}}
         cmake --build ${{github.workspace}}/build --target install
+    - name: Run
+      run: |
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/scripts -r
