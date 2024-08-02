@@ -122,7 +122,7 @@ public:
 		return &instance;
 	}
 
-	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false)
+	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false) override
 	{
 		if (!BaseSocketMgr::start(io_context, listen_ip, port, threads, minimal))
 			return false;

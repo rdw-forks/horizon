@@ -123,7 +123,7 @@ public:
 		return &instance;
 	}
 	
-	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = MAX_NETWORK_THREADS, bool minimal = false);
+	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = MAX_NETWORK_THREADS, bool minimal = false) override;
 
 	bool stop()
 	{
