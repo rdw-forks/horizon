@@ -115,7 +115,8 @@ endif()
 
 message(STATUS "Hotfix: Enabling dynamic linkage for Boost.Log library...")
 add_definitions(-DBOOST_LOG_DYN_LINK)
-
+message(STATUS "Hotfix: Enabling dynamic linkage for Boost.Test library...")
+add_definitions(-DBOOST_TEST_DYN_LINK)
 #################
 # OpenSSL Library
 #################
