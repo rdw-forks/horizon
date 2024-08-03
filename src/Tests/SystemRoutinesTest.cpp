@@ -37,6 +37,7 @@
 #include <iostream>
 #include <future>
 #include <memory>
+#include <thread>
 
 #include "Server/Common/System.hpp"
 
