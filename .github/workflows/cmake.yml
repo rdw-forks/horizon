@@ -290,7 +290,7 @@ jobs:
         $files = Get-ChildItem -Path "${{github.workspace}}/src/Tests" -Filter "*Test.cpp" -Recurse
         foreach ($file in $files) {
           $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
-          & "${{github.workspace}}/build/bin/$t"
+          & "${{github.workspace}}\build\bin\${{matrix.build_type}}\$t"
         }
       
   Windows-Tools:
