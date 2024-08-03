@@ -51,8 +51,8 @@ public:
 	)
 	{
 	}
-    void initialize(int segment_number = 1);
-    void finalize();
+    void initialize(int segment_number = 1) override;
+    void finalize() override;
 
 	bool is_initialized() override { return _is_initialized.load(); }
 	bool is_finalized() override { return _is_finalized.load(); }

@@ -80,8 +80,8 @@ public:
 	bool is_initialized() override { return _is_initialized.load(); }
 	bool is_finalized() override { return _is_finalized.load(); }
 
-	void initialize(int segment_number = 1);
-	void finalize();
+	void initialize(int segment_number = 1) override;
+	void finalize() override;
 	void prepare_lua_state(std::shared_ptr<sol::state> &lua);
 
 	void start();

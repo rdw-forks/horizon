@@ -48,8 +48,8 @@ public:
 	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()))
 	{
 	}
-    void initialize(int segment_number = 1);
-    void finalize();
+    void initialize(int segment_number = 1) override;
+    void finalize() override;
     void start();
     void update(uint64_t diff);
 
