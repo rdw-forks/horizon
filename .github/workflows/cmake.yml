@@ -282,7 +282,6 @@ jobs:
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}}
-        cmake --build build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
@@ -308,7 +307,6 @@ jobs:
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}}
-        cmake --build build --target install --config ${{matrix.build_type}}
 
   Windows-Servers:
     strategy:
