@@ -102,6 +102,12 @@ if (WITH_COVERAGE)
 	endif()
 endif()
 
+message(STATUS "Auth Server Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Auth Server Build Directory: ${CMAKE_CURRENT_BINARY_DIR}")
+message(STATUS "Auth Server Source Directory: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "Auth Server Project Directory: ${PROJECT_SOURCE_DIR}")
+message(STATUS "Auth Server Install Directory: ${CMAKE_INSTALL_PREFIX}")
+
 install(TARGETS auth
     DESTINATION ${CMAKE_INSTALL_PREFIX}
     CONFIGURATIONS ${CMAKE_BUILD_TYPE})
