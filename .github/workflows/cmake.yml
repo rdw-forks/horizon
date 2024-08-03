@@ -27,6 +27,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -51,6 +52,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
   Debian-GCC-Run-ASAN:
     strategy:
@@ -80,6 +82,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
   Debian-GCC-Run-TSAN:
     strategy:
@@ -109,6 +112,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
   Debian-GCC-Run-Servers:
     strategy:
@@ -149,6 +153,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -173,6 +178,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS= -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
   Debian-Clang-Run-ASAN:
     strategy:
@@ -202,6 +208,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
   Debian-Clang-Run-TSAN:
     strategy:
@@ -231,6 +238,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
   Debian-Clang-Run-Servers:
     strategy:
@@ -273,7 +281,8 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}} --target install
+        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
@@ -298,7 +307,8 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}} --target install
+        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --target install --config ${{matrix.build_type}}
 
   Windows-Servers:
     strategy:
@@ -313,7 +323,7 @@ jobs:
     - name: Configure Step & Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-        cmake --build build --config ${{matrix.build_type}} --target install
+        cmake --build build --config ${{matrix.build_type}}
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
         Xcopy /E /I ${{github.workspace}}\db ${{github.workspace}}\build\bin\${{matrix.build_type}}\db
         Xcopy /E /I ${{github.workspace}}\scripts ${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts
