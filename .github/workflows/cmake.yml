@@ -283,7 +283,12 @@ jobs:
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
         cmake --build build --config ${{matrix.build_type}} --parallel ${{env.WINDOWS_PARALLEL}}
     - name: Run
-      run: ./horizon.sh run-tests "build\test\${{matrix.build_type}}"
+      run: |
+        $files = Get-ChildItem -Path "${{github.workspace}}/src/Tests" -Filter "*Test.cpp" -Recurse
+        foreach ($file in $files) {
+          $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
+          & "${{github.workspace}}/build/bin/$t"
+        }
       
   Windows-Tools:
     strategy:
