@@ -39,6 +39,7 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sinks.hpp>
 
 class Logger
 {
@@ -62,11 +63,16 @@ public:
     
     void colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm);
 
+    void shutdown();
 protected:
     logtype _core_log;
     
     std::atomic<bool> _initialized;
+	
+    boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>> _consoleSink;
+    boost::shared_ptr<boost::log::sinks::synchronous_sink<boost::log::sinks::text_file_backend>> _fileSink;
 };
 
 #define HLog(type) BOOST_LOG_SEV(Logger().getInstance()->get_core_log(), boost::log::trivial::type)
+#define HLogShutdown Logger().getInstance()->shutdown()
 #endif //HORIZON_LOGGER_H

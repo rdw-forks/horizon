@@ -29,7 +29,6 @@
 
 #include "Logger.hpp"
 #include <iostream>
-#include <boost/log/sinks.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
@@ -107,25 +106,39 @@ void Logger::initialize()
         % boost::log::expressions::smessage;
 
     /* console sink */
-    auto sink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>>();
-    boost::log::core::get()->add_sink(sink);
+    _consoleSink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>>();
+    boost::log::core::get()->add_sink(_consoleSink);
     
     boost::shared_ptr<std::ostream> stream{&std::clog, boost::null_deleter{}};
-    sink->locked_backend()->add_stream(stream);
+    _consoleSink->locked_backend()->add_stream(stream);
     
-    sink->set_formatter(std::bind(&Logger::colored_formatter, this, std::placeholders::_1, std::placeholders::_2));
+    _consoleSink->set_formatter(std::bind(&Logger::colored_formatter, this, std::placeholders::_1, std::placeholders::_2));
 
     /* fs sink */
-    auto fsSink = boost::log::add_file_log(
+    _fileSink = boost::log::add_file_log(
         boost::log::keywords::target = "logs",
         boost::log::keywords::file_name = "logs/log_%Y-%m-%d_%H-%M-%S.%N.log",
         boost::log::keywords::rotation_size = 10 * 1024 * 1024,
         boost::log::keywords::min_free_space = 30 * 1024 * 1024,
         boost::log::keywords::open_mode = std::ios_base::app);
     
-    fsSink->set_formatter(logFmt);
+    _fileSink->set_formatter(logFmt);
     
-    fsSink->locked_backend()->auto_flush(true);
+    _fileSink->locked_backend()->auto_flush(true);
 
     _initialized.store(true);
+}
+
+void Logger::shutdown() {
+    // Remove and flush the console sink
+    if (_consoleSink) {
+        boost::log::core::get()->remove_sink(_consoleSink);
+        _consoleSink.reset();
+    }
+
+    // Remove and flush the file sink
+    if (_fileSink) {
+        boost::log::core::get()->remove_sink(_fileSink);
+        _fileSink.reset();
+    }
 }

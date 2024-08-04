@@ -31,5 +31,7 @@ int main(int argc, const char * argv[])
 	 */
 	HLog(info) << "Server shutting down...";
 
+	HLogShutdown;
+	
 	return 0;
 }

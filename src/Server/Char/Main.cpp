@@ -26,5 +26,7 @@ int main(int argc, const char * argv[])
 	/* Core Cleanup */
 	HLog(info) << "Server shutting down...";
 
+	HLogShutdown;
+	
 	return 0;
 }

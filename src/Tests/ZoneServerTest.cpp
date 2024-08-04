@@ -108,6 +108,7 @@ BOOST_AUTO_TEST_CASE(ZoneServerTest)
 		
 		sZone->initialize();
 		sZone->finalize();
+		HLogShutdown;
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
 	} catch(std::bad_alloc &e) {

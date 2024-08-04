@@ -75,6 +75,7 @@ BOOST_AUTO_TEST_CASE(AuthServerTest)
 			sAuth->initialize_core();
 		});
 		thread.join();
+		HLogShutdown;
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
 	} catch(std::bad_alloc &e) {

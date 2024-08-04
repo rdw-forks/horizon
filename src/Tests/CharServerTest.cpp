@@ -83,6 +83,7 @@ BOOST_AUTO_TEST_CASE(CharServerTest)
 
 		set_shutdown_stage(SHUTDOWN_INITIATED);
 		sChar->initialize_core();
+		HLogShutdown;
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
 	} catch(std::bad_alloc &e) {
