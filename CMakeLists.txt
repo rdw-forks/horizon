@@ -51,8 +51,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/macros")
 # Set static linking for all libraries Unix, Linux not Windows
 #################################
 if (NOT MSVC)
-	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-	set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc")
+	set(CMAKE_EXE_LINKER_FLAGS "-static")
 endif()
 
 #################################
