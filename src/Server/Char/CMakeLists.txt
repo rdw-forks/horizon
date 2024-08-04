@@ -88,7 +88,7 @@ target_include_directories(char
 )
 
 if (NOT MSVC)
-target_link_options(${TEST_NAME} PRIVATE -Wl,-Bdynamic -lc -lreadline -lncurses -ltinfo -ltermcap -Wl,-Bstatic)
+target_link_options(char PRIVATE -Wl,-Bdynamic -lc -lreadline -lncurses -ltinfo -ltermcap -Wl,-Bstatic)
 endif()
 
 # Enable CMP0091 for MSVC Builds
