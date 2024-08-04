@@ -267,7 +267,7 @@ void ZoneServer::initialize()
 void ZoneServer::finalize()
 {
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->finalize();
-
+	
 	// Stop the client socket manager here because the io_context will be stopped later.
 	// If this is stopped before the io_context, it will cause a dangling pointer.
 	sZone->get_client_socket_mgr().stop();

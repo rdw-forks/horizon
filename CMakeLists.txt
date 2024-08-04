@@ -29,12 +29,16 @@
 #################################
 # Project Setup
 #################################
-cmake_minimum_required (VERSION 3.7 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.15 FATAL_ERROR)
+#################################
+# Project Policies
+#################################
+cmake_policy(SET CMP0091 NEW)
+
+project("Horizon")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(PROJECT_NAME "Horizon")
 
-project (${PROJECT_NAME})
 enable_language(CXX)
 enable_language(C)
 
@@ -56,6 +60,13 @@ endif()
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+#################################
+# Set static linking for all libraries Unix, Linux not Windows
+#################################
+if (NOT MSVC)
+	set(CMAKE_EXE_LINKER_FLAGS "-static")
+endif()
 
 #################################
 # INCLUDE COMPONENTS
@@ -83,13 +94,12 @@ check_cxx_source_compiles("
 	int main() { std::wregex r(L\".*\"); }"
 				STD_HAS_WORKING_WREGEX)
 
-
 #################################
 # Boost Library
 #################################
 set(BOOST_REQUIRED_VERSION 1.82.0)
 
-set(BOOST_COMPONENTS locale filesystem log log_setup charconv)
+set(BOOST_COMPONENTS locale filesystem system log log_setup charconv crc format lockfree multi_array mysql uuid)
 
 if (WITH_TESTS)
 	set(BOOST_COMPONENTS ${BOOST_COMPONENTS} unit_test_framework)
@@ -97,6 +107,23 @@ endif()
 
 # Remove warnings for new versions of Boost
 set(Boost_NO_WARN_NEW_VERSIONS 1)
+# Enable static linking for Boost
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+
+# Ensure that BOOST_FILESYSTEM_DYN_LINK is not defined
+if(DEFINED BOOST_FILESYSTEM_DYN_LINK)
+    unset(BOOST_FILESYSTEM_DYN_LINK CACHE)
+endif()
+# Ensure that BOOST_FILESYSTEM_DYN_LINK is not defined
+if(DEFINED BOOST_LOG_DYN_LINK)
+    unset(BOOST_LOG_DYN_LINK CACHE)
+endif()
+
+# Define BOOST_FILESYSTEM_STATIC_LINK for static linking
+add_definitions(-DBOOST_FILESYSTEM_STATIC_LINK)
+# Define BOOST_LOG_STATIC_LINK for static linking
+add_definitions(-DBOOST_LOG_STATIC_LINK)
 
 find_package(Boost ${BOOST_REQUIRED_VERSION} REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
@@ -113,24 +140,23 @@ if (WIN32)
     endif()
 endif()
 
-message(STATUS "Hotfix: Enabling dynamic linkage for Boost.Log library...")
-add_definitions(-DBOOST_LOG_DYN_LINK)
-message(STATUS "Hotfix: Enabling dynamic linkage for Boost.Test library...")
-add_definitions(-DBOOST_TEST_DYN_LINK)
 #################
 # OpenSSL Library
 #################
+set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
 #################
 # Readline Library
 #################
 set(Readline_FIND_REQUIRED true)
+set(Readline_USE_STATIC_LIBS TsRUE)
 include(FindReadline)
 
 ###############
 # Lua
 ###############
+set(LUA_USE_STATIC_LIBS TRUE)
 find_package(Lua 5.0 REQUIRED)
 
 ###############
@@ -145,6 +171,7 @@ endif()
 #################
 # Find ZLIB
 #################
+set(ZLIB_USE_STATIC_LIBS TRUE)
 find_package(ZLIB REQUIRED)
 
 #################

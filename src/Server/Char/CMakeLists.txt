@@ -100,6 +100,12 @@ if (WITH_COVERAGE)
 	endif()
 endif()
 
+# Enable CMP0091 for MSVC Builds
+if (MSVC)
+set_property(TARGET char PROPERTY
+	MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif(MSVC)
+
 install(TARGETS char
     DESTINATION ${CMAKE_INSTALL_PREFIX}
     CONFIGURATIONS ${CMAKE_BUILD_TYPE})

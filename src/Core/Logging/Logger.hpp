@@ -34,8 +34,6 @@
 #include <atomic>
 #include <mutex>
 
-#define BOOST_LOG_DYN_LINK 1
-
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/sources/severity_logger.hpp>
@@ -70,7 +68,7 @@ protected:
     std::atomic<bool> _initialized;
 	
     boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>> _consoleSink;
-    boost::shared_ptr<boost::log::sinks::synchronous_sink<boost::log::sinks::text_file_backend>> _fileSink;
+    boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend>> _fileSink;
 };
 
 #define HLog(type) BOOST_LOG_SEV(Logger().getInstance()->get_core_log(), boost::log::trivial::type)

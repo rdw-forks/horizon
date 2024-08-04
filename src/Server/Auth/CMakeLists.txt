@@ -88,7 +88,6 @@ target_include_directories(auth
 		${CMAKE_CURRENT_BINARY_DIR}
 )
 
-
 if (WITH_COVERAGE)
 	target_compile_options(auth INTERFACE
 		-O0        # no optimization
@@ -101,6 +100,12 @@ if (WITH_COVERAGE)
 		target_link_libraries(auth INTERFACE --coverage)
 	endif()
 endif()
+
+# Enable CMP0091 for MSVC Builds
+if (MSVC)
+set_property(TARGET auth PROPERTY
+	MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif(MSVC)
 
 install(TARGETS auth
     DESTINATION ${CMAKE_INSTALL_PREFIX}

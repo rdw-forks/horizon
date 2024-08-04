@@ -163,6 +163,11 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${Boost_INCLUDE_DIRS}
 			${ADD_INCLUDE_DIRS})
 
+	if (MSVC)
+		set_property(TARGET ${TEST_NAME} PROPERTY
+			MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+	endif(MSVC)
+
 	# Sol2 LUA linker flags on macOS to avoid crashes.
 	# @see http://luajit.org/install.html
 	if (APPLE AND TEST_NAME STREQUAL "Sol2Test")
