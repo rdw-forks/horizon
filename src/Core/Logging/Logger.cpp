@@ -72,13 +72,7 @@ void Logger::colored_formatter(boost::log::record_view const& rec, boost::log::f
 }
 
 void Logger::initialize()
-{
-    /* init boost log 
-     * 1. Add common attributes
-     * 2. set log filter to trace
-     */
-    boost::log::add_common_attributes();
-    
+{   
     boost::log::core::get()->add_global_attribute("Scope",
         boost::log::attributes::named_scope());
     
@@ -115,7 +109,7 @@ void Logger::initialize()
     _consoleSink->set_formatter(std::bind(&Logger::colored_formatter, this, std::placeholders::_1, std::placeholders::_2));
 
     /* fs sink */
-    _fileSink = boost::log::add_file_log(
+    _fileSink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend>>(
         boost::log::keywords::target = "logs",
         boost::log::keywords::file_name = "logs/log_%Y-%m-%d_%H-%M-%S.%N.log",
         boost::log::keywords::rotation_size = 10 * 1024 * 1024,
@@ -125,6 +119,12 @@ void Logger::initialize()
     _fileSink->set_formatter(logFmt);
     
     _fileSink->locked_backend()->auto_flush(true);
+
+    // Add the file sink to the core
+    boost::log::core::get()->add_sink(_fileSink);
+
+    // Add common attributes
+    boost::log::add_common_attributes();
 
     _initialized.store(true);
 }
