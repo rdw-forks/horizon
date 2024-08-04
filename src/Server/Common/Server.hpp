@@ -313,6 +313,7 @@ private:
 	std::thread _cli_thread;
 	std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
+	std::atomic<bool> _is_running_command{false};
 };
 
 class DatabaseProcess : public MainframeComponent

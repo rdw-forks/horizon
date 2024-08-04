@@ -136,8 +136,7 @@ void CommandLineProcess::process()
 		
 			if (cmd_func) {
 				ret = cmd_func(command.m_command);
-			} else {
-				HLog(info) << "Command '" << command.m_command << "' not found!";
+				_is_running_command.exchange(false);
 			}
 		
 			if (command.m_finish_func != nullptr)
@@ -151,15 +150,26 @@ void CommandLineProcess::process()
 
 void CommandLineProcess::cli_thread_start()
 {
-	printf("\a");
-
 	while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
 	{
-		char *command_str;
-
+		std::string command;
 		try {
-			command_str = readline(TERMINAL_STR);
-			rl_bind_key('\t', rl_complete);
+			while(_is_running_command.load() == true)
+			{
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+			};
+			std::cout << TERMINAL_STR;
+			std::getline(std::cin, command);
+			std::flush(std::cout);
+			if (command.size()) {
+				std::vector<std::string> separated_args;
+				boost::algorithm::split(separated_args, command, boost::algorithm::is_any_of(" "));
+
+				if (find(separated_args[0]) == nullptr)
+					HLog(error) << "Command '" << separated_args[0] << "' not found.";
+				else
+					_is_running_command.exchange(true);
+			}
 		} catch(std::bad_alloc &e) {
 			HLog(error) << "Failed to allocate memory for command line input.";
 			set_shutdown_stage(SHUTDOWN_INITIATED);
@@ -172,26 +182,8 @@ void CommandLineProcess::cli_thread_start()
 			break;
 		}
 
-		if (command_str != nullptr) {
-			int size = 0;
-			for (int x = 0; command_str[x]; ++x) {
-				if (command_str[x] == '\r' || command_str[x] == '\n') {
-					command_str[x] = 0;
-					break;
-				}
-				size++;
-			}
-
-			if (!*command_str || size == 0) {
-				free(command_str);
-				fflush(stdout);
-				continue;
-			}
-
-			fflush(stdout);
-			queue(CLICommand(command_str, std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));
-			add_history(command_str);
-			std::free(command_str);
+		if (command.size()) {
+			queue(CLICommand((char *)command.c_str(), std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));
 			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL * 1)); // Sleep until core has updated.
 		} else if (feof(stdin)) {
 			set_shutdown_stage(SHUTDOWN_INITIATED);
