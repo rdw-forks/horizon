@@ -117,7 +117,7 @@ endif()
 
 
 if (NOT MSVC)
-target_link_options(zone PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+target_link_options(zone PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses -ltinfo)
 endif()
 
 # Enable CMP0091 for MSVC Builds

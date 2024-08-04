@@ -48,7 +48,7 @@ target_link_libraries(mcache
 )
 
 if (NOT MSVC)
-target_link_options(mcache PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+target_link_options(mcache PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses -ltinfo)
 endif()
 
 set(INCLUDE_DIRS

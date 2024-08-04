@@ -43,7 +43,7 @@ target_include_directories(grf
 		${Boost_INCLUDE_DIRS})
 
 if (NOT MSVC)
-target_link_options(grf PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+target_link_options(grf PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses -ltinfo)
 endif()
 
 #Enable policy CMP0091 for MSVC builds

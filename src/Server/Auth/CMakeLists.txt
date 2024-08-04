@@ -95,7 +95,7 @@ set_property(TARGET auth PROPERTY
 endif(MSVC)
 
 if (NOT MSVC)
-target_link_options(auth PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+target_link_options(auth PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses -ltinfo)
 endif()
 
 install(TARGETS auth
