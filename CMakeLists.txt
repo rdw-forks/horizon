@@ -147,13 +147,6 @@ endif()
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 find_package(OpenSSL REQUIRED)
 
-#################
-# Readline Library
-#################
-set(Readline_FIND_REQUIRED true)
-set(Readline_USE_STATIC_LIBS $<$<WIN32:TRUE>:FALSE>)
-include(FindReadline)
-
 ###############
 # Lua
 ###############
