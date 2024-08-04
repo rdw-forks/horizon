@@ -51,7 +51,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} -DCMAKE_CXX_FLAGS="-gdwarf-2" -DCMAKE_C_FLAGS="-gdwarf-2"
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
       # Run the servers with ASAN enabled, not under gdb because LeakSanitizer doesn't run under gdb.
@@ -62,9 +62,9 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        ./auth --with-config="config/auth-server.lua.dist" --test-run
-        ./char --with-config="config/char-server.lua.dist" --test-run
-        ./zone --with-config="config/zone-server.lua.dist" --test-run
+        valgrind --leak-check=full --log-file=auth.valgrind.log ./auth --with-config="config/auth-server.lua.dist" --test-run
+        valgrind --leak-check=full --log-file=chat.valgrind.log ./char --with-config="config/char-server.lua.dist" --test-run
+        valgrind --leak-check=full --log-file=zone.valgrind.log ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
     strategy:
       matrix:
@@ -108,9 +108,9 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-Upload-Artifact:
     strategy:
       matrix:
@@ -169,9 +169,9 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        ./auth --with-config="config/auth-server.lua.dist" --test-run
-        ./char --with-config="config/char-server.lua.dist" --test-run
-        ./zone --with-config="config/zone-server.lua.dist" --test-run
+        valgrind --leak-check=full --log-file=auth.valgrind.log ./auth --with-config="config/auth-server.lua.dist" --test-run
+        valgrind --leak-check=full --log-file=char.valgrind.log ./char --with-config="config/char-server.lua.dist" --test-run
+        valgrind --leak-check=full --log-file=zone.valgrind.log ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
     strategy:
       matrix:
@@ -215,9 +215,9 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-Upload-Artifact:
     strategy:
       matrix:
