@@ -88,24 +88,13 @@ target_include_directories(auth
 		${CMAKE_CURRENT_BINARY_DIR}
 )
 
-if (WITH_COVERAGE)
-	target_compile_options(auth INTERFACE
-		-O0        # no optimization
-		-g         # generate debug info
-		--coverage # sets all required flags
-	)
-	if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-		target_link_options(auth INTERFACE --coverage)
-	else()
-		target_link_libraries(auth INTERFACE --coverage)
-	endif()
-endif()
-
 # Enable CMP0091 for MSVC Builds
 if (MSVC)
 set_property(TARGET auth PROPERTY
 	MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)
+
+target_link_options(auth PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
 
 install(TARGETS auth
     DESTINATION ${CMAKE_INSTALL_PREFIX}

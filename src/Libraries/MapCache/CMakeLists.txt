@@ -47,6 +47,8 @@ target_link_libraries(mcache
 		${LUA_LIBRARIES}
 )
 
+target_link_options(mcache PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
+
 set(INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/src
 )

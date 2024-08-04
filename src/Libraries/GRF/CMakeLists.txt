@@ -42,6 +42,9 @@ target_include_directories(grf
 		${PROJECT_SOURCE_DIR}/src
 		${Boost_INCLUDE_DIRS})
 
+
+target_link_options(grf PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
+
 #Enable policy CMP0091 for MSVC builds
 if (MSVC)
 	set_property(TARGET grf PROPERTY

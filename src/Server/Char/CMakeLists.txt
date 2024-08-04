@@ -87,18 +87,7 @@ target_include_directories(char
 		${CMAKE_CURRENT_BINARY_DIR}
 )
 
-if (WITH_COVERAGE)
-	target_compile_options(char INTERFACE
-		-O0        # no optimization
-		-g         # generate debug info
-		--coverage # sets all required flags
-	)
-	if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-		target_link_options(char INTERFACE --coverage)
-	else()
-		target_link_libraries(char INTERFACE --coverage)
-	endif()
-endif()
+target_link_options(char PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
 
 # Enable CMP0091 for MSVC Builds
 if (MSVC)
