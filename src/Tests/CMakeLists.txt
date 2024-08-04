@@ -151,8 +151,8 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 	add_executable(${TEST_NAME} ${TEST_SOURCE} ${ADD_SOURCES})
 
 	if (NOT MSVC)
-target_link_options(${TEST_NAME} PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses -ltinfo)
-endif()
+		target_link_options(${TEST_NAME} PRIVATE -Wl,-Bdynamic -lc -lreadline -lncurses -ltinfo -ltermcap -Wl,-Bstatic)
+	endif()
 
 	# Link Boost libraries and additional required dependencies.
 	target_link_libraries(${TEST_NAME}

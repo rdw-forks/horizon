@@ -51,7 +51,7 @@ CollectIncludeDirectories(
 )
 
 if (NOT MSVC)
-target_link_options(mapcache PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses -ltinfo)
+target_link_options(${TEST_NAME} PRIVATE -Wl,-Bdynamic -lc -lreadline -lncurses -ltinfo -ltermcap -Wl,-Bstatic)
 endif()
 
 # LuaJit linker flags for macOS to avoid crashes.

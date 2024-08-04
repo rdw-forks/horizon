@@ -51,7 +51,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/macros")
 # Set static linking for all libraries Unix, Linux not Windows
 #################################
 if (NOT MSVC)
-	set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 	set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
 
@@ -151,7 +150,7 @@ find_package(OpenSSL REQUIRED)
 # Readline Library
 #################
 set(Readline_FIND_REQUIRED true)
-set(Readline_USE_STATIC_LIBS TsRUE)
+set(Readline_USE_STATIC_LIBS $<$<WIN32:TRUE>:FALSE>)
 include(FindReadline)
 
 ###############
