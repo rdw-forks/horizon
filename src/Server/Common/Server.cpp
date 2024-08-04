@@ -38,12 +38,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include <iomanip>
-#if defined(__APPLE__) || defined(__MACH__)
-#include <editline/readline.h>
-#else
-#include <readline/readline.h>
-#include <readline/history.h>
-#endif
 #include <signal.h>
 
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
@@ -223,7 +217,6 @@ Server::Server() : Mainframe(general_conf())
 	HLog(info) << "Branch: " << _BRANCH;
 	HLog(info) << "Copyright: " << VER_LEGALCOPYRIGHT_STR;
 	HLog(info) << "Boost Version: v" << (BOOST_VERSION / 100000) << "." << (BOOST_VERSION / 100 % 1000) << "." << (BOOST_VERSION % 100);
-	HLog(info) << "Readline Version: v" << RL_READLINE_VERSION;
     HLog(info) << "Client Information: " << CLIENT_TYPE << " " << PACKET_VERSION;
 }
 

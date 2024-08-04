@@ -55,7 +55,6 @@ target_link_libraries(char
 	PUBLIC
         ${Boost_LIBRARIES}
         networking
-        ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		OpenSSL::SSL
 )
@@ -80,16 +79,11 @@ target_include_directories(char
 	PUBLIC
 		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
-        ${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
 	PRIVATE
 		${CMAKE_CURRENT_BINARY_DIR}
 )
-
-if (NOT MSVC)
-target_link_options(char PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
-endif()
 
 # Enable CMP0091 for MSVC Builds
 if (MSVC)

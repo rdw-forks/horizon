@@ -51,7 +51,6 @@ target_link_libraries(auth
 	PUBLIC
 		${Boost_LIBRARIES}
         networking
-        ${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		OpenSSL::SSL
 )
@@ -81,7 +80,6 @@ target_include_directories(auth
 	PUBLIC
 		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
-        ${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
 	PRIVATE
@@ -93,10 +91,6 @@ if (MSVC)
 set_property(TARGET auth PROPERTY
 	MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)
-
-if (NOT MSVC)
-target_link_options(auth PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
-endif()
 
 install(TARGETS auth
     DESTINATION ${CMAKE_INSTALL_PREFIX}

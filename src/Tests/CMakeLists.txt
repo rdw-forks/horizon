@@ -76,13 +76,11 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${COMMON_DIR}/Configuration/Horizon.hpp)
 		set (ADD_LIBS 
 			${Boost_LIBRARIES}
-			${Readline_LIBRARY}
 			${LUA_LIBRARIES}
 			OpenSSL::SSL
 		)
 		set (ADD_INCLUDE_DIRS 
 			${Boost_INCLUDE_DIRS}
-			${Readline_INCLUDE_DIR}
 			${PUBLIC_INCLUDES}
 			${LUA_INCLUDE_DIR}
 			${SOL2_INCLUDE_DIR})
@@ -98,14 +96,12 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 		set (ADD_LIBS 
 			${Boost_LIBRARIES}
 			networking
-			${Readline_LIBRARY}
 			${LUA_LIBRARIES}
 			OpenSSL::SSL
 		)
 		set (ADD_INCLUDE_DIRS 
 			${Boost_INCLUDE_DIRS}
 			${PUBLIC_INCLUDES}
-			${Readline_INCLUDE_DIR}
 			${LUA_INCLUDE_DIR}
 			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "CharServerTest")
@@ -115,14 +111,12 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 		set (ADD_LIBS 
 			${Boost_LIBRARIES}
 			networking
-			${Readline_LIBRARY}
 			${LUA_LIBRARIES}
 			OpenSSL::SSL
 		)
 		set (ADD_INCLUDE_DIRS 
 			${Boost_INCLUDE_DIRS}
 			${PUBLIC_INCLUDES}
-			${Readline_INCLUDE_DIR}
 			${LUA_INCLUDE_DIR}
 			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "ZoneServerTest")
@@ -133,14 +127,12 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
         	${Boost_LIBRARIES}
 			networking
 			mcache
-			${Readline_LIBRARY}
 			${LUA_LIBRARIES}
 			OpenSSL::SSL
 		)
 		set (ADD_INCLUDE_DIRS 
 			${Boost_INCLUDE_DIRS}
 			${PUBLIC_INCLUDES}
-			${Readline_INCLUDE_DIR}
 			${LUA_INCLUDE_DIR}
 			${SOL2_INCLUDE_DIR})
 	elseif (TEST_NAME STREQUAL "MySQLTest")
@@ -149,10 +141,6 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 
 	# Add test executable.
 	add_executable(${TEST_NAME} ${TEST_SOURCE} ${ADD_SOURCES})
-
-	if (NOT MSVC)
-		target_link_options(${TEST_NAME} PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
-	endif()
 
 	# Link Boost libraries and additional required dependencies.
 	target_link_libraries(${TEST_NAME}

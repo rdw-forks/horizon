@@ -81,7 +81,6 @@ target_link_libraries(zone
         ${Boost_LIBRARIES}
 		networking
 		mcache
-		${Readline_LIBRARY}
 		${LUA_LIBRARIES}
 		OpenSSL::SSL
 )
@@ -99,7 +98,6 @@ target_include_directories(zone
 	PUBLIC
 		${Boost_INCLUDE_DIRS}
 		${PUBLIC_INCLUDES}
-		${Readline_INCLUDE_DIR}
 		${LUA_INCLUDE_DIR}
 		${SOL2_INCLUDE_DIR}
 	PRIVATE
@@ -113,11 +111,6 @@ if (APPLE)
 			PROPERTIES
 			LINK_FLAGS "${LUAJIT_LINK_FLAGS}"
 	)
-endif()
-
-
-if (NOT MSVC)
-target_link_options(zone PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
 endif()
 
 # Enable CMP0091 for MSVC Builds
