@@ -65,6 +65,12 @@ jobs:
         valgrind --leak-check=full --log-file=auth.valgrind.log ./auth --with-config="config/auth-server.lua.dist" --test-run
         valgrind --leak-check=full --log-file=chat.valgrind.log ./char --with-config="config/char-server.lua.dist" --test-run
         valgrind --leak-check=full --log-file=zone.valgrind.log ./zone --with-config="config/zone-server.lua.dist" --test-run
+        cat auth.valgrind.log
+        cat char.valgrind.log
+        cat zone.valgrind.log
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-ALL-TSAN:
     strategy:
       matrix:
@@ -172,6 +178,12 @@ jobs:
         valgrind --leak-check=full --log-file=auth.valgrind.log ./auth --with-config="config/auth-server.lua.dist" --test-run
         valgrind --leak-check=full --log-file=char.valgrind.log ./char --with-config="config/char-server.lua.dist" --test-run
         valgrind --leak-check=full --log-file=zone.valgrind.log ./zone --with-config="config/zone-server.lua.dist" --test-run
+        cat auth.valgrind.log
+        cat char.valgrind.log
+        cat zone.valgrind.log
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-ALL-TSAN:
     strategy:
       matrix:
