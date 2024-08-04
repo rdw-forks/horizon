@@ -116,7 +116,9 @@ if (APPLE)
 endif()
 
 
-target_link_options(zone PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
+if (NOT MSVC)
+target_link_options(zone PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+endif()
 
 # Enable CMP0091 for MSVC Builds
 if (MSVC)

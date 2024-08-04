@@ -94,7 +94,9 @@ set_property(TARGET auth PROPERTY
 	MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)
 
-target_link_options(auth PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
+if (NOT MSVC)
+target_link_options(auth PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+endif()
 
 install(TARGETS auth
     DESTINATION ${CMAKE_INSTALL_PREFIX}

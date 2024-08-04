@@ -87,7 +87,9 @@ target_include_directories(char
 		${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_options(char PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic)
+if (NOT MSVC)
+target_link_options(char PRIVATE -Wl,-Bdynamic -lc -Wl,-Bstatic -lncurses)
+endif()
 
 # Enable CMP0091 for MSVC Builds
 if (MSVC)
