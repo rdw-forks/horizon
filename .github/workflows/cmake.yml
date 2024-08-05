@@ -62,12 +62,6 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        valgrind --leak-check=full --log-file=auth.valgrind.log ./auth --with-config="config/auth-server.lua.dist" --test-run
-        valgrind --leak-check=full --log-file=chat.valgrind.log ./char --with-config="config/char-server.lua.dist" --test-run
-        valgrind --leak-check=full --log-file=zone.valgrind.log ./zone --with-config="config/zone-server.lua.dist" --test-run
-        cat auth.valgrind.log
-        cat char.valgrind.log
-        cat zone.valgrind.log
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
@@ -175,12 +169,6 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        valgrind --leak-check=full --log-file=auth.valgrind.log ./auth --with-config="config/auth-server.lua.dist" --test-run
-        valgrind --leak-check=full --log-file=char.valgrind.log ./char --with-config="config/char-server.lua.dist" --test-run
-        valgrind --leak-check=full --log-file=zone.valgrind.log ./zone --with-config="config/zone-server.lua.dist" --test-run
-        cat auth.valgrind.log
-        cat char.valgrind.log
-        cat zone.valgrind.log
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
