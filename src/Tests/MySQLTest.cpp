@@ -121,32 +121,36 @@ void test_connection(std::shared_ptr<boost::mysql::tcp_ssl_connection> conn)
 
 BOOST_AUTO_TEST_CASE(MySQLTest)
 {
-    std::string host = "localhost";
-    int port = 3306;
-    std::string user = "horizon";
-    std::string pass = "horizon";
-    std::string schema = "horizon";
+	try {
+		std::string host = "localhost";
+		int port = 3306;
+		std::string user = "horizon";
+		std::string pass = "horizon";
+		std::string schema = "horizon";
 
-    boost::asio::io_context ctx;
-    boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::tls_client);
+		boost::asio::io_context ctx;
+		boost::asio::ssl::context ssl_ctx(boost::asio::ssl::context::tls_client);
 
-    std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = std::make_shared<boost::mysql::tcp_ssl_connection>(ctx.get_executor(), ssl_ctx);
+		std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = std::make_shared<boost::mysql::tcp_ssl_connection>(ctx.get_executor(), ssl_ctx);
 
-    boost::asio::ip::tcp::resolver resolver(ctx.get_executor());
+		boost::asio::ip::tcp::resolver resolver(ctx.get_executor());
 
-    auto endpoints = resolver.resolve(host, boost::mysql::default_port_string);
+		auto endpoints = resolver.resolve(host, boost::mysql::default_port_string);
 
-    boost::mysql::handshake_params params(user, pass, schema);
+		boost::mysql::handshake_params params(user, pass, schema);
 
-    conn->connect(*endpoints.begin(), params);
+		conn->connect(*endpoints.begin(), params);
 
-    const char *sql = "SELECT 'Hello World!'";
-    boost::mysql::results result;
-    conn->execute(sql, result);
+		const char *sql = "SELECT 'Hello World!'";
+		boost::mysql::results result;
+		conn->execute(sql, result);
 
-    std::cout << "Result: " << result.rows().at(0).at(0) << std::endl;
+		std::cout << "Result: " << result.rows().at(0).at(0) << std::endl;
 
-    test_connection(conn);
-    
-    conn->close();
+		test_connection(conn);
+			
+		conn->close();
+	} catch(boost::mysql::error_with_diagnostics &e) {
+		std::cerr << "Exception caught: " << e.what() << std::endl;
+	}
 }
