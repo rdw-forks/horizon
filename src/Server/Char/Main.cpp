@@ -21,12 +21,7 @@ int main(int argc, const char * argv[])
 		exit(1); // Stop process if the file can't be read.
 
 	/* Initialize the Common Core */
-	sChar->initialize_core();
+	sChar->initialize();
 
-	/* Core Cleanup */
-	HLog(info) << "Server shutting down...";
-
-	HLogShutdown;
-	
 	return 0;
 }

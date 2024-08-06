@@ -334,7 +334,7 @@ public:
 		_is_initialized.exchange(true);
 	}
 
-	void initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
+	void initialize(boost::asio::io_context &io_context, int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
 
 	void finalize() override 
 	{
@@ -366,15 +366,6 @@ struct mainframe_component_state_holder
 };
 
 typedef std::map<std::string, mainframe_component_state_holder> MainframeComponents;
-
-/**
- * Core IO Service
- * @note moved from Server to Mainframe, because the DatabaseProcess was throwning an
- * Access Violation Exception when trying to access the io_context from Server.
- * The error was due to the fact that the DatabaseProcess ended after the io_context from Server
- * was destructed. This is a tricky situation that needs to be remembered.
- */
-extern boost::asio::io_context _io_context_global;
 
 class Mainframe
 {
@@ -468,6 +459,7 @@ public:
 	boost::asio::io_context &get_io_context();
 	
 protected:
+	boost::asio::io_context _io_context_global;
 	MainframeComponents _components;
 	general_server_configuration _config;
 private:
@@ -482,8 +474,8 @@ public:
 
 	void parse_exec_args(const char *argv[], int argc);
 
-	void initialize();
-	void finalize();
+	virtual void initialize();
+	virtual void finalize();
 	
 	virtual void post_initialize();
 	virtual void post_finalize();

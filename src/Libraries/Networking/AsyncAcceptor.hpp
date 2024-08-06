@@ -91,19 +91,19 @@ public:
 		std::tie(socket, thread_index) = _socket_factory();
 
 		_acceptor->async_accept(*socket, [this, socket, callback, thread_index] (boost::system::error_code error)
-		   {
-			   if (!error) {
-				   try {
-					   socket->non_blocking(true);
-					   callback(std::move(socket), thread_index);
-				   } catch (boost::system::system_error const &err) {
-					   HLog(error) << "Networking: AsyncAcceptor failed to initialize client's socket :" << err.what();
-				   }
-			   }
+			{
+				if (!error) {
+					try {
+						socket->non_blocking(true);
+						callback(std::move(socket), thread_index);
+					} catch (boost::system::system_error const &err) {
+						HLog(error) << "Networking: AsyncAcceptor failed to initialize client's socket :" << err.what();
+					}
+				}
 
-			   if (!_closed)
-				   this->async_accept_with_callback(callback);
-		   });
+				if (!_closed)
+					this->async_accept_with_callback(callback);
+			});
 	}
 
 	/**
@@ -146,9 +146,13 @@ public:
 		if (_closed.exchange(true))
 			return;
 
+		_socket->close();
+
 		boost::system::error_code error;
 		_acceptor->close(error);
 
+		_acceptor.reset();
+		_socket.reset();
 		if (error)
 			HLog(error) << "Failed to close acceptor: " << error.message().c_str();
 	}

@@ -46,7 +46,7 @@ using namespace std;
  * Char Constructor
  */
 CharServer::CharServer()
-: Server(), _update_timer(_io_context_global)
+: Server(), _update_timer(get_io_context())
 {
 	//
 }
@@ -235,11 +235,21 @@ void CharServer::update(uint64_t time)
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
 	} else {
-		get_io_context().stop();
+		/**
+		 * Cancel all pending tasks.
+		 */
+		getScheduler().CancelAll();
+
+		/**
+		 * Stop all networks
+		 */
+		sClientSocketMgr->stop();
+
+		finalize();
 	}
 }
 
-void CharServer::initialize_core()
+void CharServer::initialize()
 {
 	/* Core Signal Handler  */
 	boost::asio::signal_set signals(get_io_context(), SIGINT, SIGTERM);
@@ -264,22 +274,28 @@ void CharServer::initialize_core()
 	
 	Server::post_initialize();
 	
-	if (!general_conf().is_test_run_minimal())
-		while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-			get_io_context().run_one();
-		};
+	// Run the io_context until stop is called from the internal, finalizing thread.
+	// After stopping, execution will continue through the next line onwards.
+	// We actually finalize on this thread and not in any of io_context's internal threads.
+	get_io_context().run();
 
+	/* Cancel signal handling. */
+	signals.cancel();
+
+	/* Core Cleanup */
+	HLog(info) << "Server shutting down...";
+	
+	HLogShutdown;
+
+	set_shutdown_stage(SHUTDOWN_CLEANUP_COMPLETE);
+}
+
+void CharServer::finalize()
+{
 	HLog(info) << "Shutdown process initiated...";
 
-	/**
-	 * Cancel all pending tasks.
-	 */
-	getScheduler().CancelAll();
-
-	/**
-	 * Stop all networks
-	 */
-	sClientSocketMgr->stop();
+	if (!get_io_context().stopped())
+		get_io_context().stop();
 
 	/**
 	 * Server shutdown routine begins here...
@@ -287,9 +303,4 @@ void CharServer::initialize_core()
 	Server::finalize();
 
 	Server::post_finalize();
-
-	/* Cancel signal handling. */
-	signals.cancel();
-
-	set_shutdown_stage(SHUTDOWN_CLEANUP_COMPLETE);
 }

@@ -43,8 +43,6 @@
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
-boost::asio::io_context _io_context_global = boost::asio::io_context();
-
 Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
 Mainframe::~Mainframe() 
 {
@@ -186,14 +184,14 @@ void CommandLineProcess::cli_thread_start()
 	}
 }
 
-void DatabaseProcess::initialize(int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
+void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
 {
 	set_segment_number(segment_number);
 	
 	try {
 		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
-		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_io_context_global.get_executor(), *_ssl_ctx);
-		boost::asio::ip::tcp::resolver resolver(_io_context_global.get_executor());
+		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), *_ssl_ctx);
+		boost::asio::ip::tcp::resolver resolver(io_context.get_executor());
 		auto endpoints = resolver.resolve(host, std::to_string(port));
 		boost::mysql::handshake_params params(user, pass, database);
 		_connection->connect(*endpoints.begin(), params);
@@ -299,7 +297,9 @@ bool Server::parse_common_configs(sol::table &tbl)
 		
 		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
 
-		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(1,
+		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
+			get_io_context(),
+			1,
 			general_conf().get_db_host(), 
 			general_conf().get_db_port(), 
 			general_conf().get_db_user(), 

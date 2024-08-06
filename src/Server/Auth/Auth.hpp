@@ -70,7 +70,9 @@ public:
 
 	bool read_config();
 
-	void initialize_core();
+	void initialize() override;
+	void finalize() override;
+
 	/* CLI */
 	void initialize_cli_commands();
 	bool clicmd_reload_config(std::string /*cmd*/);

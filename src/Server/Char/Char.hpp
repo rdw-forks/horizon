@@ -118,7 +118,8 @@ public:
 	bool read_config();
 	void initialize_cli_commands();
 
-	void initialize_core();
+	void initialize() override;
+	void finalize() override;
 
 	character_server_configuration &config() { return _char_server_config; }
 

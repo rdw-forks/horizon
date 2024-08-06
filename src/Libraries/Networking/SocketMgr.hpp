@@ -90,7 +90,9 @@ public:
 			thr->finalize();
 			// Wait for thread to finalize all sockets.
 			while (thr->is_finalizing())
-				;
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			};
 			thr->join();
 			it = _thread_map.erase(it);
 		}

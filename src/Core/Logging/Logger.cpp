@@ -132,12 +132,14 @@ void Logger::initialize()
 void Logger::shutdown() {
     // Remove and flush the console sink
     if (_consoleSink) {
+		_consoleSink->flush();
         boost::log::core::get()->remove_sink(_consoleSink);
         _consoleSink.reset();
     }
 
     // Remove and flush the file sink
     if (_fileSink) {
+		_fileSink->flush();
         boost::log::core::get()->remove_sink(_fileSink);
         _fileSink.reset();
     }

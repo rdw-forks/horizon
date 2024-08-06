@@ -27,14 +27,5 @@ int main(int argc, const char * argv[])
 	 * Initialize the Common Core
 	 */
 	sZone->initialize();
-
-	sZone->finalize();
-	/*
-	 * Core Cleanup
-	 */
-	HLog(info) << "Server shutting down...";
-
-	HLogShutdown;
-	
 	return 0;
 }

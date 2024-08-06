@@ -24,14 +24,7 @@ int main(int argc, const char * argv[])
 	/**
 	 * Initialize the Common Core
 	 */
-	sAuth->initialize_core();
-
-	/*
-	 * Core Cleanup
-	 */
-	HLog(info) << "Server shutting down...";
-
-	HLogShutdown;
+	sAuth->initialize();
 	
 	return 0;
 }

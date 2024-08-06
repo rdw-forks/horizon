@@ -115,7 +115,7 @@ void ZoneMainframe::verify_connected_sessions()
  * Zone Main server constructor.
  */
 ZoneServer::ZoneServer()
-: ZoneMainframe(_zone_server_config), _update_timer(_io_context_global)
+: ZoneMainframe(_zone_server_config), _update_timer(get_io_context())
 {
 }
 
@@ -218,12 +218,15 @@ void ZoneServer::update(int64_t diff)
 	// Process Horizon System Routine Queue.
 	sZone->system_routine_process_queue();
 
-	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
-	} else {
-		if (!_io_context_global.stopped())
-			_io_context_global.stop();
+	} else {	
+		// Stop the client socket manager here because the io_context will be stopped later.
+		// If this is stopped before the io_context, it will cause a dangling pointer.
+		get_client_socket_mgr().stop();
+
+		finalize();
 	}
 }
 
@@ -240,7 +243,7 @@ void ZoneServer::initialize()
 	// the Runtime level. It must remain lower than the mainframe, because
 	// we're using the mainframe's io_context and it will be destroyed after the destruction of
 	// the ClientSocketMgr class. This fixes the issue of dangling pointers and memory access violations.
-	sZone->get_client_socket_mgr().start(_io_context_global,
+	sZone->get_client_socket_mgr().start(get_io_context(),
 						  sZone->general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
 						  MAX_NETWORK_THREADS,
@@ -257,20 +260,24 @@ void ZoneServer::initialize()
 
 	Server::post_initialize();
 
-	// IO context will run here, keeping the server / main thread in a loop.
-	// Once the runtime finalizes, io_context will stop and this function will return.
-	if (!general_conf().is_test_run_minimal())
-		while(get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
-			_io_context_global.run_one();
+	// Run the io_context until stop is called from the internal, finalizing thread.
+	// After stopping, execution will continue through the next line onwards.
+	// We actually finalize on this thread and not in any of io_context's internal threads.
+	get_io_context().run();
+	/*
+	 * Core Cleanup
+	 */
+	HLog(info) << "Server shutting down...";
+
+	HLogShutdown;
 }
 
 void ZoneServer::finalize()
 {
+	if (!get_io_context().stopped())
+		get_io_context().stop();
+
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->finalize();
-	
-	// Stop the client socket manager here because the io_context will be stopped later.
-	// If this is stopped before the io_context, it will cause a dangling pointer.
-	sZone->get_client_socket_mgr().stop();
 
 	ZoneMainframe::finalize();
 	
