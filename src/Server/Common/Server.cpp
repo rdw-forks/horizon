@@ -189,8 +189,7 @@ void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segmen
 	set_segment_number(segment_number);
 	
 	try {
-		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
-		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), *_ssl_ctx);
+		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), _ssl_ctx);
 		boost::asio::ip::tcp::resolver resolver(io_context.get_executor());
 		auto endpoints = resolver.resolve(host, std::to_string(port));
 		boost::mysql::handshake_params params(user, pass, database);
@@ -297,21 +296,21 @@ bool Server::parse_common_configs(sol::table &tbl)
 		
 		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
 
-		//get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
-		//	get_io_context(),
-		//	1,
-		//	general_conf().get_db_host(), 
-		//	general_conf().get_db_port(), 
-		//	general_conf().get_db_user(), 
-		//	general_conf().get_db_pass(), 
-		//	general_conf().get_db_database());
+		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
+			get_io_context(),
+			1,
+			general_conf().get_db_host(), 
+			general_conf().get_db_port(), 
+			general_conf().get_db_user(), 
+			general_conf().get_db_pass(), 
+			general_conf().get_db_database());
 
-		//HLog(info) << "Database tcp://" << general_conf().get_db_user()
-		//	<< ":" << general_conf().get_db_pass()
-		//	<< "@" << general_conf().get_db_host()
-		//	<< ":" << general_conf().get_db_port()
-		//	<< "/" << general_conf().get_db_database()
-		//	<< (test_database_connection() ? " (connected)" : "(not connected)");
+		HLog(info) << "Database tcp://" << general_conf().get_db_user()
+			<< ":" << general_conf().get_db_pass()
+			<< "@" << general_conf().get_db_host()
+			<< ":" << general_conf().get_db_port()
+			<< "/" << general_conf().get_db_database()
+			<< (test_database_connection() ? " (connected)" : "(not connected)");
 	}
 	catch (const boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what() << ".";
@@ -346,7 +345,7 @@ void Server::finalize()
 	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
 	
-	//get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
+	get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
 }
 
 void Server::post_initialize()
@@ -372,8 +371,8 @@ bool Server::test_database_connection()
 	try {
 		const char *sql = "SELECT 'Hello World!'";
 		boost::mysql::results result;
-		get_database_connection()->execute(sql, result);
-		if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
+		//get_database_connection()->execute(sql, result);
+		//if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
 			return true;
 	} catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();

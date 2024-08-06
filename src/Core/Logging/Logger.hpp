@@ -71,6 +71,52 @@ protected:
     boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend>> _fileSink;
 };
 
-#define HLog(type) BOOST_LOG_SEV(Logger().getInstance()->get_core_log(), boost::log::trivial::type)
+class HLogString
+{
+public:
+    HLogString(boost::log::trivial::severity_level level)
+        : level_(level) {}
+
+    template <typename T>
+    HLogString& operator<<(const T& msg)
+    {
+        oss_ << msg;
+        return *this;
+    }
+
+    // Overload for std::ostream manipulators like std::hex, std::endl
+    HLogString& operator<<(std::ostream& (*manip)(std::ostream&))
+    {
+        oss_ << manip;
+        return *this;
+    }
+
+    // Overload for std::string
+    HLogString& operator<<(const std::string& msg)
+    {
+        oss_ << msg;
+        return *this;
+    }
+
+    // Overload for const char*
+    HLogString& operator<<(const char* msg)
+    {
+        oss_ << msg;
+        return *this;
+    }
+
+    ~HLogString()
+    {
+		auto &lg = Logger().getInstance()->get_core_log();
+		lg.lock();
+        BOOST_LOG_SEV(lg, level_) << oss_.str();
+		lg.unlock();
+    }
+
+private:
+    boost::log::trivial::severity_level level_;
+    std::ostringstream oss_;
+};
+#define HLog(type) HLogString(boost::log::trivial::type)
 #define HLogShutdown Logger().getInstance()->shutdown()
 #endif //HORIZON_LOGGER_H

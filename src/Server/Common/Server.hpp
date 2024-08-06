@@ -324,7 +324,6 @@ public:
 	~DatabaseProcess() 
 	{ 
 		_connection.reset();
-		_ssl_ctx.reset();
 	}
 	
 	void initialize(int segment_number = 1) override 
@@ -352,7 +351,7 @@ public:
 	bool is_finalized() override { return _is_finalized.load(); }
 
 protected:
-	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
+	boost::asio::ssl::context _ssl_ctx{boost::asio::ssl::context::tls_client};
     std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
 	std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
