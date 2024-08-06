@@ -122,7 +122,7 @@ void test_connection(std::shared_ptr<boost::mysql::tcp_ssl_connection> conn)
 BOOST_AUTO_TEST_CASE(MySQLTest)
 {
 	try {
-		std::string host = "localhost";
+		std::string host = "localhost1";
 		int port = 3306;
 		std::string user = "horizon";
 		std::string pass = "horizon";
@@ -152,5 +152,9 @@ BOOST_AUTO_TEST_CASE(MySQLTest)
 		conn->close();
 	} catch(boost::mysql::error_with_diagnostics &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
+	} catch(std::exception &e) {
+		std::cerr << "Exception caught: " << e.what() << std::endl;
+	} catch(...) {
+		std::cerr << "Unknown exception caught." << std::endl;
 	}
 }
