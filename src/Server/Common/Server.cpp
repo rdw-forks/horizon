@@ -47,6 +47,7 @@ Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_m
 Mainframe::~Mainframe() 
 {
 	_components.clear();
+	_io_context_global.~io_context();
 }
 
 void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }

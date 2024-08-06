@@ -269,7 +269,7 @@ void CharServer::initialize()
 		context.Repeat();
 	});
 
-	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+	_update_timer.expires_from_now(boost::posix_time::seconds(0));
 	_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
 	
 	Server::post_initialize();

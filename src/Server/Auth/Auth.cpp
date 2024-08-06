@@ -92,7 +92,7 @@ bool AuthServer::read_config()
 			c._type = cfg.get<uint16_t>("Type");
 			c._is_new = cfg.get<uint16_t>("IsNew");
 			
-			sAuth->get_auth_config().add_char_server(c);
+			get_auth_config().add_char_server(c);
 			
 			HLog(info) << "Character server '" << c._name << "' is configured.";
 		});
@@ -101,7 +101,7 @@ bool AuthServer::read_config()
 		return false;
 	}
 	
-	int char_server_count = sAuth->get_auth_config().get_char_servers().size();
+	int char_server_count = get_auth_config().get_char_servers().size();
 	HLog(info) << char_server_count << " character servers were configured.";
 	
 	/**
@@ -125,7 +125,7 @@ bool AuthServer::clicmd_reload_config(std::string /*cmd*/)
 {
 	HLog(info) << "Reloading configuration from '" << general_conf().get_config_file_path() << "'";
 
-	return sAuth->read_config();
+	return read_config();
 }
 
 bool AuthServer::clicmd_create_new_account(std::string cmd)
@@ -153,20 +153,20 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	int character_slots = separated_args.size() >= 9 ? std::stoi(separated_args[8]) : 3;
 	
 	try {
-		auto b1 = sAuth->get_database_connection()->prepare_statement("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username);
+		auto b1 = get_database_connection()->prepare_statement("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username);
 		boost::mysql::results results;
-		sAuth->get_database_connection()->execute(b1, results);
+		get_database_connection()->execute(b1, results);
 
 		if (!results.rows().empty()) {
 			HLog(error) << "Account with username '" << username << "' already exists.";
 			return false;
 		}
 
-		boost::mysql::statement stmt = sAuth->get_database_connection()->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
+		boost::mysql::statement stmt = get_database_connection()->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
 			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
 		auto b2 = stmt.bind(username, password, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
 				email, birthdate, character_slots, pincode, group_id, (int)ACCOUNT_STATE_NONE);
-		sAuth->get_database_connection()->execute(b2, results);
+		get_database_connection()->execute(b2, results);
 	}
 	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();

@@ -41,38 +41,9 @@
 
 #define BOOST_TEST_MODULE AuthServerTest
 #include <boost/test/included/unit_test.hpp>
-#include <boost/asio/deadline_timer.hpp>
 
-void function_timer(const boost::system::error_code& e)
-{
-	std::cout << "Timer executed" << std::endl;
-	if(e)
-	{
-		std::cerr << "Error: " << e.message() << std::endl;
-	}
-}
-
-BOOST_AUTO_TEST_CASE(CharServerIOContextTest)
-{
-	try {
-		boost::asio::deadline_timer timer(sChar->get_io_context());
-
-		timer.expires_from_now(boost::posix_time::seconds(1));
-		timer.async_wait(std::bind(&function_timer, boost::asio::placeholders::error));
-
-		sChar->get_io_context().run();
-		sChar->get_io_context().stop();
-	} catch(std::length_error &e) {
-		std::cerr << "Exception caught: " << e.what() << std::endl;
-	} catch(std::bad_alloc &e) {
-		std::cerr << "Exception caught: " << e.what() << std::endl;
-	} catch(std::exception &e) {
-		std::cerr << "Exception caught: " << e.what() << std::endl;
-	} catch(...) {
-		std::cerr << "Unknown exception caught." << std::endl;
-	}
-}
-
+// One one test in this file as the server is a singleton and we can't have multiple instances of it.
+// If another test was created, the object would be destroyed and the second test would fail / crash.
 BOOST_AUTO_TEST_CASE(CharServerTest)
 {
 	try {
@@ -82,8 +53,7 @@ BOOST_AUTO_TEST_CASE(CharServerTest)
 		sChar->read_config();
 
 		set_shutdown_stage(SHUTDOWN_INITIATED);
-		sChar->initialize_core();
-		HLogShutdown;
+		sChar->initialize();
 	} catch(std::length_error &e) {
 		std::cerr << "Exception caught: " << e.what() << std::endl;
 	} catch(std::bad_alloc &e) {
