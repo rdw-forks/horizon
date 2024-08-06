@@ -100,7 +100,7 @@ void Logger::initialize()
         % boost::log::expressions::smessage;
 
     /* console sink */
-    _consoleSink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>>();
+    _consoleSink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>>(false);
     boost::log::core::get()->add_sink(_consoleSink);
     
     boost::shared_ptr<std::ostream> stream{&std::clog, boost::null_deleter{}};
@@ -114,7 +114,8 @@ void Logger::initialize()
         boost::log::keywords::file_name = "logs/log_%Y-%m-%d_%H-%M-%S.%N.log",
         boost::log::keywords::rotation_size = 10 * 1024 * 1024,
         boost::log::keywords::min_free_space = 30 * 1024 * 1024,
-        boost::log::keywords::open_mode = std::ios_base::app);
+        boost::log::keywords::open_mode = std::ios_base::app,
+		boost::log::keywords::start_thread = false);
     
     _fileSink->set_formatter(logFmt);
     

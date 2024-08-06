@@ -371,8 +371,8 @@ bool Server::test_database_connection()
 	try {
 		const char *sql = "SELECT 'Hello World!'";
 		boost::mysql::results result;
-		//get_database_connection()->execute(sql, result);
-		//if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
+		get_database_connection()->execute(sql, result);
+		if (result.rows().at(0).at(0).as_string().compare("Hello World!") == 0)
 			return true;
 	} catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();
