@@ -47,7 +47,6 @@ Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_m
 Mainframe::~Mainframe() 
 {
 	_components.clear();
-	_io_context_global.~io_context();
 }
 
 void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
@@ -298,21 +297,21 @@ bool Server::parse_common_configs(sol::table &tbl)
 		
 		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
 
-		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
-			get_io_context(),
-			1,
-			general_conf().get_db_host(), 
-			general_conf().get_db_port(), 
-			general_conf().get_db_user(), 
-			general_conf().get_db_pass(), 
-			general_conf().get_db_database());
+		//get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
+		//	get_io_context(),
+		//	1,
+		//	general_conf().get_db_host(), 
+		//	general_conf().get_db_port(), 
+		//	general_conf().get_db_user(), 
+		//	general_conf().get_db_pass(), 
+		//	general_conf().get_db_database());
 
-		HLog(info) << "Database tcp://" << general_conf().get_db_user()
-			<< ":" << general_conf().get_db_pass()
-			<< "@" << general_conf().get_db_host()
-			<< ":" << general_conf().get_db_port()
-			<< "/" << general_conf().get_db_database()
-			<< (test_database_connection() ? " (connected)" : "(not connected)");
+		//HLog(info) << "Database tcp://" << general_conf().get_db_user()
+		//	<< ":" << general_conf().get_db_pass()
+		//	<< "@" << general_conf().get_db_host()
+		//	<< ":" << general_conf().get_db_port()
+		//	<< "/" << general_conf().get_db_database()
+		//	<< (test_database_connection() ? " (connected)" : "(not connected)");
 	}
 	catch (const boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what() << ".";
@@ -347,7 +346,7 @@ void Server::finalize()
 	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
 	
-	get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
+	//get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
 }
 
 void Server::post_initialize()

@@ -122,7 +122,7 @@ void test_connection(std::shared_ptr<boost::mysql::tcp_ssl_connection> conn)
 BOOST_AUTO_TEST_CASE(MySQLTest)
 {
 	try {
-		std::string host = "localhost1";
+		std::string host = "localhost";
 		int port = 3306;
 		std::string user = "horizon";
 		std::string pass = "horizon";

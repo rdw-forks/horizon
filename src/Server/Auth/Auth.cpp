@@ -226,7 +226,7 @@ void AuthServer::update(uint64_t time)
 		/**
 		 * Stop all networks
 		 */
-		sClientSocketMgr->stop();
+		//sClientSocketMgr->stop();
 
 		finalize();
 	}
@@ -244,11 +244,11 @@ void AuthServer::initialize()
 	signals.async_wait(std::bind(&SignalHandler, std::placeholders::_1, std::placeholders::_2));
 
 	// Start Horizon Network
-	sClientSocketMgr->start(get_io_context(), 
-		general_conf().get_listen_ip(), 
-		general_conf().get_listen_port(), 
-		MAX_NETWORK_THREADS,
-		general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
+	//sClientSocketMgr->start(get_io_context(), 
+	//	general_conf().get_listen_ip(), 
+	//	general_conf().get_listen_port(), 
+	//	MAX_NETWORK_THREADS,
+	//	general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
 	
 	// Initialize core.
 	Server::initialize();
