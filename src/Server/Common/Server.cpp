@@ -189,7 +189,8 @@ void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segmen
 	set_segment_number(segment_number);
 	
 	try {
-		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), _ssl_ctx);
+		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
+		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), *_ssl_ctx);
 		boost::asio::ip::tcp::resolver resolver(io_context.get_executor());
 		auto endpoints = resolver.resolve(host, std::to_string(port));
 		boost::mysql::handshake_params params(user, pass, database);
