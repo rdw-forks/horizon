@@ -44,7 +44,6 @@
 #include <boost/mysql/handshake_params.hpp>
 #include <boost/mysql/results.hpp>
 #include <boost/mysql/tcp_ssl.hpp>
-#include <boost/mysql/any_connection.hpp>
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -325,6 +324,7 @@ public:
 	~DatabaseProcess() 
 	{ 
 		_connection.reset();
+		_ssl_ctx.reset();
 	}
 	
 	void initialize(int segment_number = 1) override 
@@ -346,14 +346,14 @@ public:
 		_is_finalized.exchange(true);
 	}
 
-	std::shared_ptr<boost::mysql::any_connection> get_connection() { return _connection; }
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection() { return _connection; }
 
 	bool is_initialized() override { return _is_initialized.load(); }
 	bool is_finalized() override { return _is_finalized.load(); }
 
 protected:
-	boost::asio::ssl::context _ssl_ctx{boost::asio::ssl::context::tls_client};
-    std::shared_ptr<boost::mysql::any_connection> _connection{nullptr};
+	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
+    std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
 	std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
 };
@@ -487,7 +487,7 @@ public:
 	/* Common Configuration */
 	bool parse_common_configs(sol::table &cfg);
 
-	std::shared_ptr<boost::mysql::any_connection> get_database_connection() 
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_database_connection() 
 	{ 
 		return get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->get_connection();
 	}
