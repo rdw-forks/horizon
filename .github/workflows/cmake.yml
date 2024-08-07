@@ -115,7 +115,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: [ Debian-GCC-ALL-TSAN, Debian-GCC-ALL-ASAN ]
+    needs: [ Debian-GCC-ALL-TSAN, Debian-GCC-ALL-ASAN, Debian-GCC-ALL-LSAN ]
     runs-on: Debian
     steps:
     - name: Checkout
@@ -268,7 +268,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: [ Debian-Clang-ALL-ASAN, Debian-Clang-ALL-TSAN ]
+    needs: [ Debian-Clang-ALL-ASAN, Debian-Clang-ALL-TSAN, Debian-Clang-ALL-LSAN, Debian-Clang-ALL-ESAN ]
     runs-on: Debian
     steps:
     - name: Checkout
