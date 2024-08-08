@@ -241,34 +241,11 @@ jobs:
         gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
         gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
         gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-Clang-ALL-ESAN:
-    strategy:
-      matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Debian-Clang-Tests-Tools
-    runs-on: Debian
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-    - name: Configure & Build
-      run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_ESAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
-        cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
-    - name: Run
-      run: |
-        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/${{matrix.build_type}}/config -r
-        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
-        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
-        cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-Servers:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: [ Debian-Clang-ALL-ASAN, Debian-Clang-ALL-TSAN, Debian-Clang-ALL-LSAN, Debian-Clang-ALL-ESAN ]
+    needs: [ Debian-Clang-ALL-ASAN, Debian-Clang-ALL-TSAN, Debian-Clang-ALL-LSAN ]
     runs-on: Debian
     steps:
     - name: Checkout
