@@ -108,9 +108,9 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-GCC-Servers:
     strategy:
       matrix:
@@ -238,9 +238,9 @@ jobs:
         cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/${{matrix.build_type}}/db -r
         cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/${{matrix.build_type}}/scripts -r
         cd ${{github.workspace}}/build/bin/${{matrix.build_type}}
-        gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
-        gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
+        ./auth --with-config="config/auth-server.lua.dist" --test-run
+        ./char --with-config="config/char-server.lua.dist" --test-run
+        ./zone --with-config="config/zone-server.lua.dist" --test-run
   Debian-Clang-Servers:
     strategy:
       matrix:
