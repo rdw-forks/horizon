@@ -56,6 +56,10 @@ struct auth_config_type {
     std::vector<char_server> _char_servers;
 };
 
+const int SALT_LEN = 16;
+const int HASH_LEN = 32;
+const int ITERATIONS = 10000;
+
 class AuthServer : public Server
 {
 public:
@@ -73,10 +77,25 @@ public:
 	void initialize() override;
 	void finalize() override;
 
+	void generate_salt(std::vector<unsigned char>& salt) {
+	    salt.resize(SALT_LEN);
+	    if (!RAND_bytes(salt.data(), SALT_LEN)) {
+	        throw std::runtime_error("Failed to generate salt");
+	    }
+	}
+
+	void hash_password(const std::string& password, const std::vector<unsigned char>& salt, std::vector<unsigned char>& hash) {
+	    hash.resize(HASH_LEN);
+	    if (!PKCS5_PBKDF2_HMAC(password.c_str(), password.length(), salt.data(), salt.size(), ITERATIONS, EVP_sha256(), HASH_LEN, hash.data())) {
+	        throw std::runtime_error("Failed to hash password");
+	    }
+	}
+
 	/* CLI */
 	void initialize_cli_commands();
 	bool clicmd_reload_config(std::string /*cmd*/);
 	bool clicmd_create_new_account(std::string /*cmd*/);
+	bool clicmd_reset_password(std::string /*cmd*/);
 
 	/* Task Scheduler */
 	TaskScheduler &getScheduler() { return _task_scheduler; }

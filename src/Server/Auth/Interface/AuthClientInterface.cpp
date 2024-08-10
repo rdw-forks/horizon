@@ -47,7 +47,6 @@ AuthClientInterface::~AuthClientInterface()
 	
 }
 
-
 bool AuthClientInterface::process_login(std::string username, std::string password, uint16_t version, uint16_t client_type)
 {
 	AC_ACCEPT_LOGIN acal(get_session());
@@ -66,42 +65,52 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 			username = username.substr(0, pos);
 			gender = ACCOUNT_GENDER_FEMALE;
 		}
-
-		//std::string salt = sAuth->get_auth_config()._password_salt_mix.c_str();
-		//std::string hash = argon2.gen_hash(password, salt);
+	
+		std::vector<unsigned char> salt;
+		std::vector<unsigned char> hash;
 
 		auto conn = sAuth->get_database_connection();
-		auto b1 = conn->prepare_statement("SELECT * `game_accounts` WHERE `username` = ?").bind(username);
-		boost::mysql::results results;
-		conn->execute(b1, results);
+		try {
+			boost::mysql::statement stmt = conn->prepare_statement("SELECT * FROM `game_accounts` WHERE `username` = ?");
+			auto b1 = stmt.bind(username);
+			boost::mysql::results results;
+			conn->execute(b1, results);
 
-		if (results.rows().empty()) {
-			HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
+			if (results.rows().empty()) {
+				HLog(info) << "Recieved connection request for unknown account '" << username << "'.";
 
-			enum game_account_gender_type gender{ACCOUNT_GENDER_NONE};
+				HLog(info) << "Creating a new account for user '" << username << "' with password '" << password << "'.";
 
-			HLog(info) << "Creating a new account for user '" << username << "' with password '" << password << "'.";
+				sAuth->generate_salt(salt);
 
-			try {
-				boost::mysql::statement stmt = conn->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `salt`, `gender`, `group_id`, `state`, `login_count`, `last_login`, `last_ip`, `character_slots`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-				auto b2 = stmt.bind(username, password, "", (gender == (int)ACCOUNT_GENDER_FEMALE ? "F" : "M"), 0, (int)ACCOUNT_STATE_NONE, 1, std::time(nullptr), get_session()->get_socket()->remote_ip_address(), 3);
-				conn->execute(b2, results);
-				uint32_t aid = results.last_insert_id();
-				acal.deliver(aid, aid, 0, gender);
+				sAuth->hash_password(password, salt, hash);
 
-				stmt = conn->prepare_statement("REPLACE INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
-				auto b3 = stmt.bind(results.last_insert_id(), aid, PACKET_VERSION, client_type, 3, 0, std::time(nullptr), "A");
-				conn->execute(b3, results);
+				try {
+					boost::mysql::statement stmt = conn->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `salt`, `email`, `birth_date`, `gender`, `group_id`, `state`, `login_count`, `last_login`, `last_ip`, `character_slots`, `pincode`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+					auto b2 = stmt.bind(username, hash, salt, "a@a.com", "0000-00-00", gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 0, (int)ACCOUNT_STATE_NONE, 1, boost::mysql::date::now(), get_session()->get_socket()->remote_ip_address(), 3, "0000");
+					boost::mysql::results results2;
+					conn->execute(b2, results2);
+					uint32_t aid = results2.last_insert_id();
+					acal.deliver(aid, aid, 0, gender);
 
-				HLog(info) << "Session (" << aid << ") has been initiated.";
-				HLog(info) << "Request for authorization of account '" << username << "' (" << aid << ")" << " has been granted.";
+					stmt = conn->prepare_statement("REPLACE INTO `session_data` (`auth_code`, `game_account_id`, `client_version`, `client_type`, `character_slots`, `group_id`, `connect_time`, `current_server`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+					auto b3 = stmt.bind(results2.last_insert_id(), aid, PACKET_VERSION, client_type, 3, 0, std::time(nullptr), "A");
+					boost::mysql::results results3;
+					conn->execute(b3, results3);
+
+					HLog(info) << "Session (" << aid << ") has been initiated.";
+					HLog(info) << "Request for authorization of account '" << username << "' (" << aid << ")" << " has been granted.";
+				}
+				catch (std::exception& error) {
+					HLog(error) << error.what();
+					acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
+					return false;
+				}
+				return true;
 			}
-			catch (std::exception& error) {
-				HLog(error) << error.what();
-				acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
-				return false;
-			}
-			return true;
+		}
+		catch (std::exception& error) {
+			HLog(error) << error.what();
 		}
 		
 		acrl.deliver(login_error_codes::ERR_SESSION_CONNECTED, block_date, 0);
@@ -122,18 +131,23 @@ bool AuthClientInterface::process_login(std::string username, std::string passwo
 			return false;
 		}
 
-		std::string hash = results.rows()[0][2].as_string();
-		// std::string salt = res.front().salt;
+		std::vector<unsigned char> hash(results.rows()[0][2].as_blob().begin(), results.rows()[0][2].as_blob().end());
+		std::vector<unsigned char> salt(results.rows()[0][3].as_blob().begin(), results.rows()[0][3].as_blob().end());
 
-		uint32_t aid = results.rows()[0][0].as_uint64();
-		uint32_t group_id = results.rows()[0][6].as_int64();
-		uint32_t gender = results.rows()[0][4].as_string().compare("M") == 0 ? 0 : 1;
+		std::vector<unsigned char> hash_check;
 
-		if (password.compare(hash) != 0) {
+		sAuth->hash_password(password, salt, hash_check);
+
+		// compare salt_vec with salt and hash_vec with hash
+		if (hash_check != hash) {
 			HLog(info) << "Incorrect password for account '" << username << "' with password '" << password << "'.";
 			acrl.deliver(login_error_codes::ERR_INCORRECT_PASSWORD, block_date, 0);
 			return false;
 		}
+		
+		uint32_t aid = results.rows()[0][0].as_uint64();
+		uint32_t group_id = results.rows()[0][6].as_int64();
+		uint32_t gender = results.rows()[0][4].as_string().compare("M") == 0 ? 0 : 1;
 
 		stmt = conn->prepare_statement("SELECT * FROM `session_data` WHERE `game_account_id` = ?");
 		auto b2 = stmt.bind(aid);

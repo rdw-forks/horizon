@@ -162,9 +162,14 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 			return false;
 		}
 
-		boost::mysql::statement stmt = get_database_connection()->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
-			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
-		auto b2 = stmt.bind(username, password, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
+		std::vector<unsigned char> salt;
+		std::vector<unsigned char> hash;
+
+		sAuth->generate_salt(salt);
+		sAuth->hash_password(password, salt, hash);
+		boost::mysql::statement stmt = get_database_connection()->prepare_statement("INSERT INTO `game_accounts` (`username`, `hash`, `salt`, `gender`, `email`, `birth_date`, `character_slots`, `pincode`, `group_id`, `state`) "
+			"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+		auto b2 = stmt.bind(username, hash, salt, gender == ACCOUNT_GENDER_MALE ? "M" : (gender == ACCOUNT_GENDER_FEMALE ? "F" : "NA"), 
 				email, birthdate, character_slots, pincode, group_id, (int)ACCOUNT_STATE_NONE);
 		get_database_connection()->execute(b2, results);
 	}
@@ -178,6 +183,52 @@ bool AuthServer::clicmd_create_new_account(std::string cmd)
 	return true;
 }
 
+bool AuthServer::clicmd_reset_password(std::string cmd)
+{
+	std::vector<std::string> separated_args;
+	std::string help_str = "Usage: reset-password <username> <new_password>";
+
+	boost::algorithm::split(separated_args, cmd, boost::algorithm::is_any_of(" "));
+
+	if (separated_args.size() < 3) {
+		HLog(error) << "reset-password command requires 2 arguments.";
+		HLog(error) << help_str;
+		return false;
+	}
+
+	std::string username = separated_args[1];
+	std::string new_password = separated_args[2];
+
+	try {
+		auto b1 = get_database_connection()->prepare_statement("SELECT `id` FROM game_accounts WHERE `username` = ?").bind(username);
+		boost::mysql::results results;
+		get_database_connection()->execute(b1, results);
+
+		if (results.rows().empty()) {
+			HLog(error) << "Account with username '" << username << "' does not exist.";
+			return false;
+		}
+
+		std::vector<unsigned char> salt;
+
+		sAuth->generate_salt(salt);
+
+		std::vector<unsigned char> hash;
+		sAuth->hash_password(new_password, salt, hash);
+
+		boost::mysql::statement stmt = get_database_connection()->prepare_statement("UPDATE `game_accounts` SET `hash` = ?, `salt` = ? WHERE `username` = ?");
+		auto b2 = stmt.bind(hash, salt, username);
+		get_database_connection()->execute(b2, results);
+
+		HLog(info) << "Password for account '" << username << "' has been reset successfully.";
+	}
+	catch (boost::mysql::error_with_diagnostics &error) {
+		HLog(error) << error.what();
+		return false;
+	}
+	return true;
+}
+
 /**
  * Initialize CLI Comamnds
  */
@@ -188,6 +239,7 @@ void AuthServer::initialize_cli_commands()
 
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reloadconf", std::bind(&AuthServer::clicmd_reload_config, this, std::placeholders::_1));
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("create-account", std::bind(&AuthServer::clicmd_create_new_account, this, std::placeholders::_1));
+	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reset-password", std::bind(&AuthServer::clicmd_reset_password, this, std::placeholders::_1));
 }
 
 /**

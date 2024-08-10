@@ -71,44 +71,45 @@ protected:
     boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend>> _fileSink;
 };
 
-class HLogString
+class HLogStream
 {
 public:
-    HLogString(boost::log::trivial::severity_level level)
+    HLogStream(boost::log::trivial::severity_level level)
         : level_(level) {}
 
     template <typename T>
-    HLogString& operator<<(const T& msg)
+    HLogStream& operator<<(const T& msg)
     {
         oss_ << msg;
         return *this;
     }
 
     // Overload for std::ostream manipulators like std::hex, std::endl
-    HLogString& operator<<(std::ostream& (*manip)(std::ostream&))
+    HLogStream& operator<<(std::ostream& (*manip)(std::ostream&))
     {
         oss_ << manip;
         return *this;
     }
 
     // Overload for std::string
-    HLogString& operator<<(const std::string& msg)
+    HLogStream& operator<<(const std::string& msg)
     {
         oss_ << msg;
         return *this;
     }
 
     // Overload for const char*
-    HLogString& operator<<(const char* msg)
+    HLogStream& operator<<(const char* msg)
     {
         oss_ << msg;
         return *this;
     }
 
-    ~HLogString()
+    ~HLogStream()
     {
 		auto &lg = Logger().getInstance()->get_core_log();
 		lg.lock();
+		std::cout << oss_.str() << std::endl;
         BOOST_LOG_SEV(lg, level_) << oss_.str();
 		lg.unlock();
     }
@@ -117,6 +118,6 @@ private:
     boost::log::trivial::severity_level level_;
     std::ostringstream oss_;
 };
-#define HLog(type) HLogString(boost::log::trivial::type)
+#define HLog(type) HLogStream(boost::log::trivial::type)
 #define HLogShutdown Logger().getInstance()->shutdown()
 #endif //HORIZON_LOGGER_H
