@@ -156,6 +156,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 			${ADD_INCLUDE_DIRS})
 
 	if (MSVC)
+		target_compile_definitions(${TEST_NAME} PRIVATE _CRTDBG_MAP_ALLOC)
 		set_property(TARGET ${TEST_NAME} PROPERTY
 			MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 	endif(MSVC)

@@ -267,6 +267,7 @@ void AuthServer::initialize()
 
 	/* Cancel signal handling. */
 	signals.cancel();
+	signals.clear();
 
 	/*
 	 * Core Cleanup

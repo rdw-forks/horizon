@@ -360,6 +360,7 @@ protected:
 
 struct mainframe_component_state_holder
 {
+	~mainframe_component_state_holder() { ptr.reset(); }
 	Horizon::System::runtime_module_type type;
 	std::shared_ptr<MainframeComponent> ptr;
 	int segment_number;
@@ -417,7 +418,7 @@ public:
 		mainframe_component_state_holder holder;
 		holder.segment_number = get_registered_component_count_of_type(type) + 1;
 		holder.type = type;
-		holder.ptr = std::dynamic_pointer_cast<MainframeComponent>(component);
+		holder.ptr = std::static_pointer_cast<MainframeComponent>(component);
 		_components.insert(std::pair(component->get_uuid_string(), holder)); 
 	}
 

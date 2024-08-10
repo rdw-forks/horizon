@@ -46,7 +46,10 @@ std::atomic<int> _shutdown_signal = 0;
 Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
 Mainframe::~Mainframe() 
 {
-	_components.clear();
+	for (auto it = _components.begin(); it != _components.end();) {
+		it->second.ptr.reset();
+		it = _components.erase(it);
+	}
 }
 
 void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
@@ -296,7 +299,7 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
 		
 		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
-
+		
 		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
 			get_io_context(),
 			1,
@@ -305,7 +308,7 @@ bool Server::parse_common_configs(sol::table &tbl)
 			general_conf().get_db_user(), 
 			general_conf().get_db_pass(), 
 			general_conf().get_db_database());
-
+		
 		HLog(info) << "Database tcp://" << general_conf().get_db_user()
 			<< ":" << general_conf().get_db_pass()
 			<< "@" << general_conf().get_db_host()
