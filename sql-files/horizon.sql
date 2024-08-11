@@ -47,7 +47,7 @@ CREATE TABLE `game_accounts` (
   KEY `id` (`id`),
   KEY `email` (`email`),
   KEY `last_ip` (`last_ip`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 CREATE TABLE `characters` (

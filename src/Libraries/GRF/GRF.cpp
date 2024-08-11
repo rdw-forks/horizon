@@ -43,6 +43,7 @@
 #include <boost/locale.hpp>
 #include <thread>
 #include <fstream>
+#include <iomanip>
 
 GRF::GRF()
 {
@@ -203,10 +204,18 @@ grf_load_result_type GRF::load()
 	if (!grf_ifs.read((char *) grf_header, 0x2e))
 		return GRF_LOAD_INCOMPLETE_HEADER;
 
+    std::cout << "grf_header contents:" << std::endl;
+    for (int i = 0; i < 0x2e; ++i) {
+        std::cout << "Byte " << std::setw(2) << std::setfill('0') << i << ": "
+                  << "0x" << std::hex << std::setw(2) << std::setfill('0') << (int)grf_header[i]
+                  << " ('" << (isprint(grf_header[i]) ? (char)grf_header[i] : '.') << "')"
+                  << std::endl;
+    }
+
 	if (std::strcmp((const char *) grf_header, "Master of Magic") != 0)
 		return GRF_LOAD_MAGIC_ERROR;
 
-	if (!grf_ifs.seekg(GetLong(grf_header + 0x1e), grf_ifs.cur))
+	if (grf_ifs.seekg(GetLongLong(grf_header + 0x1e), std::ios::cur).fail())
 		return GRF_LOAD_FORMAT_ERROR;
 
 	// Set GRF Version.

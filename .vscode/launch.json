@@ -8,18 +8,18 @@
             "name": "MapCache",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\out\\build\\Debug-Tools\\bin\\Debug\\mapcache.exe",
+            "program": "${workspaceFolder}\\out\\build\\Horizon Tools Debug\\bin\\Debug\\mapcache.exe",
             "console": "integratedTerminal",
             "logging": {
               "moduleLoad": false,
               "trace": true
             },
             "args": [
-                "--config=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Debug\\bin\\Debug\\map_list.lua",
-                "--grf-config=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Debug\\bin\\Debug\\grf_list.lua",
-                "--output=C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Debug\\bin\\Debug\\maps.dat"
+                "--config=${workspaceFolder}\\out\\build\\Horizon Tools Debug\\bin\\Debug\\map_list.lua",
+                "--grf-config=${workspaceFolder}\\out\\build\\Horizon Tools Debug\\bin\\Debug\\grf_config.lua",
+                "--output=${workspaceFolder}\\out\\build\\Horizon Tools Debug\\bin\\Debug\\maps.dat"
             ],
-            "cwd": "C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Debug\\bin\\Debug\\"
+            "cwd": "C:\\Users\\Sagun Khosla\\Desktop\\Repos\\horizon\\out\\build\\Horizon Tools Debug\\bin\\Debug\\"
         },
         {
             "name": "[Release] Auth",
