@@ -109,7 +109,6 @@ public:
     {
 		auto &lg = Logger().getInstance()->get_core_log();
 		lg.lock();
-		std::cout << oss_.str() << std::endl;
         BOOST_LOG_SEV(lg, level_) << oss_.str();
 		lg.unlock();
     }
