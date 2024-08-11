@@ -41,7 +41,7 @@ static inline std::string color(uint16_t color) { return "\033[" + std::to_strin
  
 void Logger::colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm)
 {
-    static auto date_time_formatter = boost::log::expressions::stream << boost::log::expressions::format_date_time<boost::posix_time::ptime >("TimeStamp", "%H:%M:%S");
+    static auto date_time_formatter = boost::log::expressions::stream << boost::log::expressions::format_date_time<boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f");
 
     strm << "[";
     date_time_formatter(rec, strm);
@@ -100,7 +100,7 @@ void Logger::initialize()
         % boost::log::expressions::smessage;
 
     /* console sink */
-    _consoleSink = boost::make_shared<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>>(false);
+    _consoleSink = boost::make_shared<boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend>>();
     boost::log::core::get()->add_sink(_consoleSink);
     
     boost::shared_ptr<std::ostream> stream{&std::clog, boost::null_deleter{}};

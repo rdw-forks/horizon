@@ -58,6 +58,8 @@ public:
     void initialize();
     
     logtype &get_core_log() { return _core_log; }
+
+	boost::shared_ptr<boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend>> get_console_sink() { return _consoleSink; }
     
     void colored_formatter(boost::log::record_view const& rec, boost::log::formatting_ostream& strm);
 
@@ -67,7 +69,7 @@ protected:
     
     std::atomic<bool> _initialized;
 	
-    boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_ostream_backend>> _consoleSink;
+    boost::shared_ptr<boost::log::sinks::synchronous_sink<boost::log::sinks::text_ostream_backend>> _consoleSink;
     boost::shared_ptr<boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend>> _fileSink;
 };
 
