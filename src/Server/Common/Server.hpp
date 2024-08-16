@@ -441,7 +441,7 @@ public:
 		
 		for (int i = 0; i < get_registered_component_count_of_type(module_t); i++) {
 			auto component = get_component_of_type<ComponentType>(module_t, i + 1);
-			if (component->get_resource_manager().get_resource<Priority, Key, Value>(resource_key, resource_not_found_value) != resource_not_found_value)
+			if (component->get_resource_manager().template get_resource<Priority, Key, Value>(resource_key, resource_not_found_value) != resource_not_found_value)
 				return i + 1;
 		}
 

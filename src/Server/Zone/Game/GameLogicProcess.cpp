@@ -256,7 +256,7 @@ void GameLogicProcess::MonsterSpawnAgent::spawn_monsters(std::string map_name)
 
 							std::shared_ptr<Horizon::Zone::GameLogicProcess> container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
 
-							std::shared_ptr<Map> map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+							std::shared_ptr<Map> map = container->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
 
 							if (map->get_user_count() == 0)
 								return;
@@ -276,7 +276,7 @@ void GameLogicProcess::MonsterSpawnAgent::spawn_monsters(std::string map_name)
 
 			std::shared_ptr<Horizon::Zone::GameLogicProcess> container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
 
-			std::shared_ptr<Map> map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+			std::shared_ptr<Map> map = container->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
 
 			this->spawn_monster_internal(map, msd->spawn_dataset_id, msd->monster_id, msd->amount - msd->dead_amount, msd->x, msd->y, msd->x_area, msd->y_area);
 		}

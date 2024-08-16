@@ -70,7 +70,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			if (segment_number == 0)
 				return;
 
-			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
 
 			if (map == nullptr)
 				return;
@@ -102,7 +102,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			if (segment_number == 0)
 				return;
 
-			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
 
 			if (map == nullptr)
 				return;
@@ -136,7 +136,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			if (segment_number == 0)
 				return;
 
-			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
 
 			if (map == nullptr)
 				return;
@@ -169,7 +169,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			if (segment_number == 0)
 				return;
 
-			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
 
 			if (map == nullptr)
 				return;

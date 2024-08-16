@@ -251,7 +251,7 @@ bool Player::load()
 		
 		auto container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
 		
-		std::shared_ptr<Map> map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(r[10].as_string(), nullptr);
+		std::shared_ptr<Map> map = container->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(r[10].as_string(), nullptr);
 
 		if (map == nullptr) { 
 			HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
@@ -260,7 +260,7 @@ bool Player::load()
 			if (segment_number == 0)
 				return false;
 
-			map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>("prontera", nullptr);
+			map = container->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>("prontera", nullptr);
 			
 			if (map == nullptr) {
 				HLog(error) << "Player::load: Default map prontera does not exist.";
@@ -445,7 +445,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 	{
 		// If the map is not managed by the destination container, 
 		// remove the session from the current container and add it to the destination container
-		if (dest_map->container()->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map()->get_name(), nullptr) == nullptr) {
+		if (dest_map->container()->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map()->get_name(), nullptr) == nullptr) {
 			//map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
 			//dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
