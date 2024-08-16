@@ -33,6 +33,8 @@
 #include "Server/Zone/Definitions/NPCDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 
+#include "Utility/TaskScheduler.hpp"
+
 #include "Server/Zone/Script/Components/StatusEffectComponent.hpp"
 #include "Server/Zone/Script/Components/SkillComponent.hpp"
 #include "Server/Zone/Script/Components/CombatComponent.hpp"
@@ -86,7 +88,7 @@ public:
 
 	void start();
 	void update(uint64_t diff);
-	
+
 	TaskScheduler &getScheduler() { return _scheduler; }
 	
 private:
