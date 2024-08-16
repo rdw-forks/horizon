@@ -138,7 +138,7 @@ public:
 	SharedPriorityResourceManager(SharedPriorityResourceMediums... mediums) : _resources(mediums...) { }
 
 	// copy constructor
-	SharedPriorityResourceManager(const SharedPriorityResourceManager &other) : _resources(other._resources) { }
+	SharedPriorityResourceManager(const SharedPriorityResourceManager &other) : _resources(std::move(other._resources)) { }
 	// move constructor
 	SharedPriorityResourceManager(SharedPriorityResourceManager &&other) : _resources(std::move(other._resources)) { }
 	// copy assignment

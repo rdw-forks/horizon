@@ -120,9 +120,9 @@ class PassiveRuntimeScenario : public Horizon::System::RuntimeRoutineContext
 {
 public:
 	PassiveRuntimeScenario(std::shared_ptr<MainframeComponent> component, Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t) 
-	: Horizon::System::RuntimeRoutineContext(component->get_system_routine_manager(), sync_t) { }
+	: Horizon::System::RuntimeRoutineContext(component->get_system_routine_manager(), sync_t), _component(component), _module_type(module_t) { }
 
-	std::shared_ptr<MainframeComponent> get_component() { return _component.expired() ? _component.lock() : nullptr; }
+	std::shared_ptr<MainframeComponent> get_component() { return _component.expired() == false ? _component.lock() : nullptr; }
 	
 	Horizon::System::runtime_module_type get_module_type() { return _module_type; }
 

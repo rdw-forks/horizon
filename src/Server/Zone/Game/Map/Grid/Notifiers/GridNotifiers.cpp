@@ -43,6 +43,7 @@
 #include "Server/Zone/Game/Map/Grid/GridRefManager.hpp"
 #include "Server/Zone/Game/Map/Path/AStar.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
+#include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone::Units;
 
@@ -418,11 +419,11 @@ void GridNPCTrigger::check_and_trigger(GridRefManager<T> &m)
 
 
     	//@TODO npc check and trigger script for npc in range
-        //std::shared_ptr<npc_db_data> const &nd = npc->map()->container()->get_lua_manager()->npc()->get_npc_from_db(npc->guid());
-        //if (nd != nullptr && nd->trigger_range && _predicate(npc, nd->trigger_range)) {
-        //    std::shared_ptr<Player> player = _source.lock()->downcast<Player>();
-        //    _source.lock()->map()->container()->get_lua_manager()->npc()->contact_npc_for_player(player, npc->guid());
-        //}
+        std::shared_ptr<npc_db_data> const &nd = sZone->get_component_of_type<Horizon::Zone::ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM)->npc()->get_npc_from_db(npc->guid());
+        if (nd != nullptr && nd->trigger_range && _predicate(npc, nd->trigger_range)) {
+            std::shared_ptr<Player> player = _source.lock()->downcast<Player>();
+			sZone->get_component_of_type<Horizon::Zone::ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM)->npc()->contact_npc_for_player(player, npc->guid());
+        }
     }
 }
 

@@ -54,6 +54,11 @@ void ZoneMainframe::initialize()
 		context.Repeat();
 	});
 
+	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
+		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
+		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
+	}
+
 	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
 		register_component(Horizon::System::RUNTIME_SCRIPTVM, std::make_shared<ScriptManager>());
 		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->initialize(i + 1);
@@ -62,11 +67,6 @@ void ZoneMainframe::initialize()
 	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++) {
 		register_component(Horizon::System::RUNTIME_PERSISTENCE, std::make_shared<PersistenceManager>());
 		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->initialize(i + 1);
-	}
-
-	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
-		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
-		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
 	}
 
 	Server::initialize();

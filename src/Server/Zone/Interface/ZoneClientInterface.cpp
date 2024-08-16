@@ -677,10 +677,10 @@ void ZoneClientInterface::parse_chat_message(std::string message)
 	int msg_first_char = get_session()->player()->name().size() + 3;
 
 	// @TODO @commands
-	//if (message[msg_first_char] == '@') {
-	//	get_session()->player()->map()->container()->get_lua_manager()->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
-	//	return;
-	//}
+	if (message[msg_first_char] == '@') {
+		sZone->get_component_of_type<Horizon::Zone::ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM)->player()->perform_command_from_player(get_session()->player(), &message[msg_first_char + 1]);
+		return;
+	}
 
 	ByteBuffer buf;
 

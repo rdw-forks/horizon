@@ -323,7 +323,7 @@ private:
 
 		std::shared_ptr<ByteBuffer> to_send = _write_queue.front();
 
-		HLog(debug) << "Sent bytes: " << to_send->to_string();
+		//HLog(debug) << "Sent bytes: " << to_send->to_string();
 		
 		std::size_t bytes_sent = write_buffer_and_send(*to_send, error);
 

@@ -47,8 +47,7 @@ public:
     
     void sync_definitions(std::shared_ptr<sol::state> state);
     void sync_data_types(std::shared_ptr<sol::state> state);
-    void sync_functions(std::shared_ptr<sol::state> state) { }
-    void sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<GameLogicProcess> container);
+    void sync_functions(std::shared_ptr<sol::state> state);
 
     void add_npc_to_db(uint32_t guid, std::shared_ptr<npc_db_data> const &data) { _npc_db.insert(guid, data); }
     std::shared_ptr<npc_db_data> get_npc_from_db(uint32_t guid) { return _npc_db.at(guid); }

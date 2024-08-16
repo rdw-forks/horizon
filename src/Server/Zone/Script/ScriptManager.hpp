@@ -87,6 +87,8 @@ public:
 	void start();
 	void update(uint64_t diff);
 	
+	TaskScheduler &getScheduler() { return _scheduler; }
+	
 private:
 	void load_constants();
 	void load_scripts();
@@ -113,6 +115,7 @@ protected:
 	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t /*NPC GUID*/, std::shared_ptr<Units::NPC>>>;
 	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
 	ResourceManager _resource_manager;
+	TaskScheduler _scheduler;
 public:
 	ResourceManager &get_resource_manager() { return _resource_manager; }
 };

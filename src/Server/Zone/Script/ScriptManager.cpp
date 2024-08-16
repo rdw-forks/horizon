@@ -64,7 +64,21 @@ void ScriptManager::initialize(int segment_number)
 {
 	set_segment_number(segment_number);
 	_thread = std::thread(&ScriptManager::start, this);
+	
+	for (int i = 0; i < sZone->get_registered_component_count_of_type(Horizon::System::RUNTIME_GAMELOGIC); i++)
+		while (sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->is_initialized() == false)
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			
+	initialize_basic_state(_lua_state);
+	initialize_monster_state(_lua_state);
+	initialize_npc_state(_lua_state);
+	initialize_player_state(_lua_state);
+
+	load_constants();
+	load_scripts();
+
 	_is_initialized.exchange(true);
+
 }
 
 void ScriptManager::finalize()
@@ -93,20 +107,10 @@ void ScriptManager::start()
 
 void ScriptManager::update(uint64_t diff)
 {
+	getScheduler().Update();
+
 	get_system_routine_manager().process_queue();
 }
-
-// @TODO Initialize for container function and design
-//void ScriptManager::initialize_for_container()
-//{
-//	initialize_basic_state(_lua_state);
-//	initialize_monster_state(_lua_state);
-//	initialize_npc_state(_lua_state);
-//	initialize_player_state(_lua_state);
-//
-//	load_constants();
-//	load_scripts();
-//}
 
 void ScriptManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 {
@@ -125,18 +129,18 @@ void ScriptManager::initialize_basic_state(std::shared_ptr<sol::state> state)
 	
 	state->set_function("get_time", get_sys_time);
 	// @TODO Schedule Function
-	//state->set_function("schedule", [this] (uint32_t time, sol::function fn) {
-	//	_container.lock()->getScheduler().Schedule(
-	//	  Milliseconds(time),
-	//	  [fn] (TaskContext context) {
-	//	    sol::protected_function_result result = fn();
-	//	    if (!result.valid()) {
-	//				sol::error err = result;
-	//				HLog(error) << "ScriptManager::initialize_basic_state: Error on scheduled function: " << err.what();
-	//			}
-	//	  }
-	//	);
-	//});
+	state->set_function("schedule", [this] (uint32_t time, sol::function fn) {
+		getScheduler().Schedule(
+		  Milliseconds(time),
+		  [fn] (TaskContext context) {
+		    sol::protected_function_result result = fn();
+		    if (!result.valid()) {
+					sol::error err = result;
+					HLog(error) << "ScriptManager::initialize_basic_state: Error on scheduled function: " << err.what();
+				}
+		  }
+		);
+	});
 
 	_map_component->sync_definitions(state);
 	_map_component->sync_data_types(state);
@@ -225,7 +229,7 @@ void ScriptManager::initialize_npc_state(std::shared_ptr<sol::state> state)
 	_npc_component->sync_definitions(state);
 	_npc_component->sync_data_types(state);
 	// @TODO NPC Component Functions
-	//_npc_component->sync_functions(state, _container.lock());
+	_npc_component->sync_functions(state);
 
 	(*state)["npc_component"] = true;
 }
@@ -238,7 +242,7 @@ void ScriptManager::initialize_monster_state(std::shared_ptr<sol::state> state)
 	_monster_component->sync_definitions(state);
 	_monster_component->sync_data_types(state);
 	// @TODO Monster component functions
-	//_monster_component->sync_functions(state, _container.lock());
+	_monster_component->sync_functions(state);
 
 
 	(*state)["monster_component"] = true;
@@ -265,8 +269,7 @@ void ScriptManager::load_scripts()
 			}
 			count++;
 		});
-		// @TODO Message
-		//HLog(info) << "Read " << count << " NPC scripts from '" << script_root_path << "' for map container " << (void *)_container.lock().get() << ".";
+		HLog(info) << "Read " << count << " NPC scripts from '" << script_root_path << "'.";
 	} catch (sol::error &e) {
 		HLog(warning) << "Failed to load included script files from '" << script_root_path << "', reason: " << e.what();
 	}
@@ -278,8 +281,7 @@ void ScriptManager::load_constants()
 	try {
 		_lua_state->script_file(file_path + "definitions/constants.lua");
 		sol::table const_table = _lua_state->get<sol::table>("constants");
-		// @TODO Message
-		//HLog(info) << "Read constants from '" << file_path << "' for map container " << (void *)_container.lock().get() << ".";
+		HLog(info) << "Read constants from '" << file_path << "'.";
 	} catch (sol::error &e) {
 		HLog(error) << "Failed to read constants from '" << file_path << "', reason: " << e.what();
 	}

@@ -117,28 +117,28 @@ bool Player::initialize()
 	// On map entry processing.
 	on_map_enter();
 
-	// @TODO Initialize Player, npc and monster components for player's lua state.
-	//map()->container()->get_lua_manager()->initialize_player_state(lua_state());
+	// @TODO (multithreaded support, multi-segment support) Initialize Player, npc and monster components for player's lua state.
+	sZone->get_component_of_type<Horizon::Zone::ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM)->initialize_player_state(lua_state());
 
 	// required for npc component definitions upon triggering
-	//map()->container()->get_lua_manager()->initialize_npc_state(lua_state());
+	sZone->get_component_of_type<Horizon::Zone::ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM)->initialize_npc_state(lua_state());
 
-	// required for triggering monster components upon monster kill events etc.
-	//map()->container()->get_lua_manager()->initialize_monster_state(lua_state());
+ 	// required for triggering monster components upon monster kill events etc.
+	sZone->get_component_of_type<Horizon::Zone::ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM)->initialize_monster_state(lua_state());
 
-	//try {
-	//	std::string script_root_path = sZone->config().get_script_root_path().string();
-	//	sol::load_result fx = lua_state()->load_file(script_root_path + "internal/on_login_event.lua");
-	//	sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
-	//	if (!result.valid()) {
-	//		sol::error err = result;
-	//		HLog(error) << "Player::initialize: " << err.what();
-	//		return false;
-	//	}
-	//} catch (sol::error &e) {
-	//	HLog(error) << "Player::initialize: " << e.what();
-	//	return false;
-	//}
+	try {
+		std::string script_root_path = sZone->config().get_script_root_path().string();
+		sol::load_result fx = lua_state()->load_file(script_root_path + "internal/on_login_event.lua");
+		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
+		if (!result.valid()) {
+			sol::error err = result;
+			HLog(error) << "Player::initialize: " << err.what();
+			return false;
+		}
+	} catch (sol::error &e) {
+		HLog(error) << "Player::initialize: " << e.what();
+		return false;
+	}
 
 
 	// Ensure grid for unit.

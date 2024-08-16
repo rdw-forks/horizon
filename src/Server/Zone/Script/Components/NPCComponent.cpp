@@ -53,7 +53,7 @@ void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	config_1["set_map"] = &NPC::set_map;
 }
 
-void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<GameLogicProcess> container)
+void NPCComponent::sync_functions(std::shared_ptr<sol::state> state)
 {
 	state->set_function("cast_unit_to_npc",
 		[](std::shared_ptr<Unit> e)
@@ -62,7 +62,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		});
 
 	state->set_function("NewNPC",
-		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
+		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
 			std::shared_ptr<Map> map;
 
 			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
@@ -93,7 +93,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		});
 
 	state->set_function("DupNPC",
-		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::shared_ptr<NPC> duplicate) {
+		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::shared_ptr<NPC> duplicate) {
 
 			std::shared_ptr<Map> map;
 			
@@ -128,7 +128,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		});
 
 	state->set_function("SilentNPC",
-		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
+		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
 			std::shared_ptr<Map> map;
 
 			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
@@ -157,11 +157,8 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		});
 
 	state->set_function("Warp",
-		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, std::string const &script, uint16_t trigger_range) 
+		[this] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, std::string const &script, uint16_t trigger_range) 
 		{
-			if (container == nullptr)
-				return;
-			
 			std::shared_ptr<Map> map;
 
 			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);

@@ -140,8 +140,7 @@ bool Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN::RegisterMonsterSpawn::execu
 	std::lock_guard<std::mutex> lock(get_runtime_context()->get_runtime_synchronization_mutex());
 	std::shared_ptr<Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN> scenario = std::dynamic_pointer_cast<Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN>(get_runtime_context());
 	std::shared_ptr<Horizon::Zone::GameLogicProcess> game_logic = std::static_pointer_cast<Horizon::Zone::GameLogicProcess>(scenario->get_component());
-	auto resource_manager = game_logic->get_resource_manager();
-	auto map = resource_manager.template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(_request.data.map_name, nullptr);
+	auto map = game_logic->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(_request.data.map_name, nullptr);
 	
 	if (map == nullptr) {
 		get_message_agent().set_error_message("Error registering monster spawn in map " + _request.data.map_name + ", map does not exist.");
