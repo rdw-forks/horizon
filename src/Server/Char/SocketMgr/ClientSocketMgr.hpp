@@ -48,17 +48,17 @@ class CharNetworkThread : public MainframeComponent, public Networking::NetworkT
 protected:
 	void on_socket_removed(std::shared_ptr<CharSocket> socket) override
 	{
-		get_resource_manager().remove<SEGMENT_PRIORITY_PRIMARY>(socket->get_socket_id());
+		get_resource_manager().remove<RESOURCE_PRIORITY_PRIMARY>(socket->get_socket_id());
 	}
 
 	void on_socket_added(std::shared_ptr<CharSocket> socket) override
 	{
-		get_resource_manager().add<SEGMENT_PRIORITY_PRIMARY>(socket->get_socket_id(), socket);
+		get_resource_manager().add<RESOURCE_PRIORITY_PRIMARY>(socket->get_socket_id(), socket);
 	}
 public:
 	CharNetworkThread() 
 	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
-	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<CharSocket>>>())) 
+	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<CharSocket>>>())) 
 	{
 	}
 

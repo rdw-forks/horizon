@@ -37,7 +37,6 @@
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Game/Units/Item/Item.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
-#include "Server/Zone/Game/Map/MapContainerThread.hpp"
 #include "Server/Zone/Game/StaticDB/SkillDB.hpp"
 #include "Server/Zone/Game/SkillSystem/SkillExecution.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
@@ -86,11 +85,14 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 
 	chain->push(s_login);
 
-	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_resource_manager().add<SEGMENT_PRIORITY_PRIMARY>(get_session()->get_session_id(), get_session());
+	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_resource_manager().add<RESOURCE_PRIORITY_PRIMARY>(get_session()->get_session_id(), get_session());
 
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain);
 
-	while(s_login->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS);
+	while(s_login->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS)
+	{
+		std::this_thread::sleep_for(std::chrono::microseconds(100));
+	};
 
 	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_2 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_RUNTIME);
 
@@ -127,6 +129,11 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain_2);
 
+	while(s_login_response->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS) {
+		std::this_thread::sleep_for(std::chrono::microseconds(100));
+	}
+
+	get_session()->player()->initialize();
 	return true;
 }
 
@@ -155,6 +162,7 @@ bool ZoneClientInterface::restart(uint8_t type)
 	s_task->get_runtime_synchronization_mutex().unlock();
 	s_task->push(w_task);
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(s_task);
+
 	return true;
 }
 
@@ -228,10 +236,22 @@ bool ZoneClientInterface::update_session(int32_t account_id)
 }
 bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t dir)
 {
-	if (get_session()->player() == nullptr)
-		return false;
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager());
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> w_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask>(s_task);
+	s_task->get_runtime_synchronization_mutex().lock();
+	s_task->set_session(get_session());
+	w_task->set_task([x, y](std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> task) {
+		std::shared_ptr<ZoneSession> session = std::dynamic_pointer_cast<Horizon::Zone::ActiveRuntimeScenario>(task->get_runtime_context())->get_session();
 
-	get_session()->player()->walk_to_coordinates(x, y);
+		if (session->player() == nullptr)
+			return;
+
+		session->player()->walk_to_coordinates(x, y);
+	});
+	s_task->get_runtime_synchronization_mutex().unlock();
+	s_task->push(w_task);
+	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager().push(s_task);
+
 	return true;
 }
 bool ZoneClientInterface::notify_time()

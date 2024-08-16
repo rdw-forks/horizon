@@ -61,7 +61,7 @@ void ZoneSession::initialize()
 		// since player is the map owning thread's responsibility, we wait for the
 		// session to start by letting the client send a CZ_ENTER packet.
 		// When the packet is sent, the player will be created by the Networking Thread.
-		// Initialized by the MapContainerThread.
+		// Initialized by the GameLogicProcess.
 		set_initialized(true);
 	}
 	catch (std::exception& error) {
@@ -105,7 +105,7 @@ void ZoneSession::transmit_buffer(ByteBuffer _buffer, std::size_t size)
 
 /**
  * @brief Update loop for each Zone Session.
- * @thread called from MapContainerThread.
+ * @thread called from Runtime. @see Horizon::System::RUNTIME_RUNTIME
  */
 void ZoneSession::update(uint32_t /*diff*/)
 {

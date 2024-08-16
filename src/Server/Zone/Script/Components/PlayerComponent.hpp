@@ -40,12 +40,12 @@ namespace Zone
     {
         class Player;
     }
-class MapContainerThread;
+class GameLogicProcess;
 class PlayerComponent : public LUAComponent
 {
 public:
     PlayerComponent() { }
-    PlayerComponent(std::shared_ptr<MapContainerThread> container) : LUAComponent(container) { }
+    PlayerComponent(std::shared_ptr<GameLogicProcess> container) : LUAComponent(container) { }
     ~PlayerComponent() { }
     void sync_definitions(std::shared_ptr<sol::state> state);
     void sync_data_types(std::shared_ptr<sol::state> state);

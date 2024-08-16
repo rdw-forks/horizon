@@ -45,7 +45,7 @@ class PersistenceManager : public MainframeComponent
 public:
 	PersistenceManager() 
 	: MainframeComponent(Horizon::System::RUNTIME_PERSISTENCE),
-	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()))
+	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()))
 	{
 	}
     void initialize(int segment_number = 1) override;

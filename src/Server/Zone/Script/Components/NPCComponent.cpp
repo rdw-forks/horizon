@@ -29,8 +29,10 @@
 #include "NPCComponent.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Common/Server.hpp"
 #include "Server/Zone/Game/Units/NPC/NPC.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Zone.hpp"
 
 using namespace Horizon::Zone;
@@ -51,7 +53,7 @@ void NPCComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	config_1["set_map"] = &NPC::set_map;
 }
 
-void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<MapContainerThread> container)
+void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared_ptr<GameLogicProcess> container)
 {
 	state->set_function("cast_unit_to_npc",
 		[](std::shared_ptr<Unit> e)
@@ -62,8 +64,16 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 	state->set_function("NewNPC",
 		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir, std::string const &script_file) {
 			std::shared_ptr<Map> map;
-			
-			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
+
+			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+			if (segment_number == 0)
+				return;
+
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+
+			if (map == nullptr)
+				return;
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
@@ -87,7 +97,15 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 
 			std::shared_ptr<Map> map;
 			
-			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
+			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+			if (segment_number == 0)
+				return;
+
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+
+			if (map == nullptr)
+				return;
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
@@ -113,7 +131,15 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 		[this, container] (std::string const &name, std::string const &map_name, uint16_t x, uint16_t y, uint32_t job_id, directions dir) {
 			std::shared_ptr<Map> map;
 
-			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
+			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+			if (segment_number == 0)
+				return;
+
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+
+			if (map == nullptr)
+				return;
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
@@ -138,7 +164,15 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state, std::shared
 			
 			std::shared_ptr<Map> map;
 
-			MAP_CONTAINER_THREAD_ASSERT_MAP(map, container, map_name);
+			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+			if (segment_number == 0)
+				return;
+
+			map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+
+			if (map == nullptr)
+				return;
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, script);
 			npc->initialize();

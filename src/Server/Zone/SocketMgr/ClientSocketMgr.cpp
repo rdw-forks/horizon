@@ -7,7 +7,7 @@ bool Horizon::Zone::ClientSocketMgr::start(boost::asio::io_context &io_context, 
 		return false;
 	
 	for (auto i : get_thread_map()) {
-		sZone->register_component(Horizon::System::RUNTIME_NETWORKING, (std::dynamic_pointer_cast<ZoneNetworkThread>(i.second->shared_from_this())));
+		sZone->register_component(Horizon::System::RUNTIME_NETWORKING, (std::dynamic_pointer_cast<ZoneNetworkThread>(i.second)));
 	}
 
 	return true;

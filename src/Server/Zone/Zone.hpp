@@ -103,7 +103,7 @@ class ZoneRuntime : public MainframeComponent
 public:
 	ZoneRuntime() 
 	: MainframeComponent(Horizon::System::RUNTIME_RUNTIME),
-	_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>()))
+	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>()))
 	{
 	}
 

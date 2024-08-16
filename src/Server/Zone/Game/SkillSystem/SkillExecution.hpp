@@ -11,7 +11,7 @@ namespace Horizon
 {
 namespace Zone
 {
-class MapContainerThread;
+class GameLogicProcess;
 class SkillExecution : public std::enable_shared_from_this<SkillExecution>
 {
 public:
@@ -36,12 +36,12 @@ private:
 		//_lua_mgr = map->container()->get_lua_manager();
 		//_lua_state = lua_manager()->lua_state();
 	}
-	std::shared_ptr<MapContainerThread> map_container() { return _map_container_thread.lock(); }
+	std::shared_ptr<GameLogicProcess> map_container() { return _map_container_thread.lock(); }
 	std::shared_ptr<ScriptManager> lua_manager() { return _lua_mgr.lock(); }
 	std::shared_ptr<sol::state> lua_state() { return _lua_state.lock(); }
 
 	std::weak_ptr<Map> _map;
-	std::weak_ptr<MapContainerThread> _map_container_thread;
+	std::weak_ptr<GameLogicProcess> _map_container_thread;
 	std::weak_ptr<ScriptManager> _lua_mgr;
 	std::weak_ptr<sol::state> _lua_state;
 	std::shared_ptr<Unit> _initial_source{nullptr};

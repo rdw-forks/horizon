@@ -31,7 +31,10 @@
 #define HORIZON_ZONE_ZONESYSTEM_HPP
 
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Definitions/MonsterDefinitions.hpp"
+
 #include "Server/Common/System.hpp"
+#include "Server/Common/Server.hpp"
 
 #include <boost/mysql/error_with_diagnostics.hpp>
 #include <boost/mysql/handshake_params.hpp>
@@ -111,8 +114,23 @@ public:
 	void set_session(std::shared_ptr<ZoneSession> session) { _session = session; }
 
 	std::shared_ptr<ZoneSession> _session;
-
 };
+
+class PassiveRuntimeScenario : public Horizon::System::RuntimeRoutineContext
+{
+public:
+	PassiveRuntimeScenario(std::shared_ptr<MainframeComponent> component, Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t) 
+	: Horizon::System::RuntimeRoutineContext(component->get_system_routine_manager(), sync_t) { }
+
+	std::shared_ptr<MainframeComponent> get_component() { return _component.expired() ? _component.lock() : nullptr; }
+	
+	Horizon::System::runtime_module_type get_module_type() { return _module_type; }
+
+protected:
+	std::weak_ptr<MainframeComponent> _component;
+	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_RUNTIME};
+};
+
 class SCENARIO_LOGIN : public ActiveRuntimeScenario
 {
 public:
@@ -240,6 +258,84 @@ public:
 		std::function<void(std::shared_ptr<GenericTask> send_packet)> get_task() { return _generic_task; }
 
 		std::function<void(std::shared_ptr<GenericTask> send_packet)> _generic_task;
+	};
+};
+
+class SCENARIO_REGISTER_MONSTER_SPAWN : public PassiveRuntimeScenario
+{
+public:
+	SCENARIO_REGISTER_MONSTER_SPAWN(std::shared_ptr<MainframeComponent> component)
+	: PassiveRuntimeScenario(component, Horizon::System::RUNTIME_GAMELOGIC, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
+
+	struct s_register_monster_spawn_request
+	{
+		monster_spawn_data data;
+	};
+
+	class RegisterMonsterSpawn : public Horizon::System::RuntimeRoutineContext::Work
+	{
+	public:
+		RegisterMonsterSpawn(std::shared_ptr<SCENARIO_REGISTER_MONSTER_SPAWN> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context) { }
+
+		bool execute();
+
+		void set_request(s_register_monster_spawn_request request) { _request = request; }
+		s_register_monster_spawn_request get_request() { return _request; }
+
+		s_register_monster_spawn_request _request;
+	};
+};
+
+class SCENARIO_SPAWN_MONSTERS_IN_MAP : public PassiveRuntimeScenario
+{
+public:
+	SCENARIO_SPAWN_MONSTERS_IN_MAP(std::shared_ptr<MainframeComponent> component) 
+	: PassiveRuntimeScenario(component, Horizon::System::RUNTIME_GAMELOGIC, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
+
+	struct s_spawn_monster_request
+	{
+		std::string map_name;
+	};
+
+	class SpawnMonsters : public Horizon::System::RuntimeRoutineContext::Work
+	{
+	public:
+		SpawnMonsters(std::shared_ptr<SCENARIO_SPAWN_MONSTERS_IN_MAP> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context) { }
+
+		bool execute();
+
+		void set_request(s_spawn_monster_request request) { _request = request; }
+		s_spawn_monster_request get_request() { return _request; }
+
+		s_spawn_monster_request _request;
+	};
+};
+
+class SCENARIO_REMOVE_MONSTERS_IN_MAP : public PassiveRuntimeScenario
+{
+public:
+	SCENARIO_REMOVE_MONSTERS_IN_MAP(std::shared_ptr<MainframeComponent> component) 
+	: PassiveRuntimeScenario(component, Horizon::System::RUNTIME_GAMELOGIC, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
+
+	struct s_remove_monster_request
+	{
+		std::string map_name;
+	};
+
+	class RemoveMonsters : public Horizon::System::RuntimeRoutineContext::Work
+	{
+	public:
+		RemoveMonsters(std::shared_ptr<SCENARIO_REMOVE_MONSTERS_IN_MAP> parent_context) 
+		: Horizon::System::RuntimeRoutineContext::Work(parent_context) { }
+
+		bool execute();
+
+		void set_request(s_remove_monster_request request) { _request = request; }
+		s_remove_monster_request get_request() { return _request; }
+
+		s_remove_monster_request _request;
 	};
 };
 }

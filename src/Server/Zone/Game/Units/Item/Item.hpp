@@ -39,7 +39,6 @@ namespace Horizon
 {
 namespace Zone
 {
-class MapContainerThread;
 class Map;
 namespace Units
 {

@@ -28,6 +28,7 @@
  **************************************************/
 
 #include "ZoneSystem.hpp"
+#include "Server/Common/System.hpp"
 #include "Server/Common/Server.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 #include "Server/Zone/Zone.hpp"
@@ -76,7 +77,7 @@ bool Horizon::Zone::SCENARIO_LOGIN::Login::execute()
 
 	auto resource_manager = sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_resource_manager();
 	auto active_scenario = std::dynamic_pointer_cast<ActiveRuntimeScenario>(get_runtime_context());
-	resource_manager.add<SEGMENT_PRIORITY_PRIMARY>(active_scenario->get_session()->get_session_id(), active_scenario->get_session());
+	resource_manager.add<RESOURCE_PRIORITY_PRIMARY>(active_scenario->get_session()->get_session_id(), active_scenario->get_session());
 	get_message_agent().set_status_message("Login of game account " + std::to_string(_request.account_id) + " is successful.");
 	return true;
 }
@@ -106,9 +107,9 @@ bool Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer::execute()
 	pl->create(login_info.id, r2[0].as_string(), r2[1].as_int64());
 	std::dynamic_pointer_cast<ActiveRuntimeScenario>(get_runtime_context())->get_session()->set_player(pl);
 
-	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, SEGMENT_PRIORITY_PRIMARY, std::string>(Horizon::System::RUNTIME_GAMELOGIC, login_info.current_map);
+	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, login_info.current_map, nullptr);
 	auto resource_manager = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager();
-	resource_manager.add<SEGMENT_PRIORITY_SECONDARY>(pl->guid(), pl);
+	resource_manager.add<RESOURCE_PRIORITY_SECONDARY>(pl->guid(), pl);
 	
 	get_message_agent().set_status_message("Player (char_id: " + std::to_string(login_info.id) + ") created successfully.");
 	return true;
@@ -131,5 +132,60 @@ bool Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask::execute()
 {
 	std::lock_guard<std::mutex> lock(get_runtime_context()->get_runtime_synchronization_mutex());
 	get_task()(std::dynamic_pointer_cast<GenericTask>(shared_from_this()));
+	return true;
+}
+
+bool Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN::RegisterMonsterSpawn::execute()
+{
+	std::lock_guard<std::mutex> lock(get_runtime_context()->get_runtime_synchronization_mutex());
+	std::shared_ptr<Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN> scenario = std::dynamic_pointer_cast<Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN>(get_runtime_context());
+	std::shared_ptr<Horizon::Zone::GameLogicProcess> game_logic = std::static_pointer_cast<Horizon::Zone::GameLogicProcess>(scenario->get_component());
+	auto resource_manager = game_logic->get_resource_manager();
+	auto map = resource_manager.get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(_request.data.map_name, nullptr);
+	
+	if (map == nullptr) {
+		get_message_agent().set_error_message("Error registering monster spawn in map " + _request.data.map_name + ", map does not exist.");
+		return false;
+	}
+
+	game_logic->get_monster_spawn_agent().register_monster_spawn_info(_request.data.spawn_dataset_id, std::make_shared<monster_spawn_data>(_request.data));
+
+	get_message_agent().set_status_message("Monster spawn registered in map " + _request.data.map_name + ".");
+	return true;
+}
+
+bool Horizon::Zone::SCENARIO_SPAWN_MONSTERS_IN_MAP::SpawnMonsters::execute()
+{
+	std::lock_guard<std::mutex> lock(get_runtime_context()->get_runtime_synchronization_mutex());
+	std::shared_ptr<Horizon::Zone::SCENARIO_SPAWN_MONSTERS_IN_MAP> scenario = std::dynamic_pointer_cast<Horizon::Zone::SCENARIO_SPAWN_MONSTERS_IN_MAP>(get_runtime_context());
+	std::shared_ptr<Horizon::Zone::GameLogicProcess> game_logic = std::static_pointer_cast<Horizon::Zone::GameLogicProcess>(scenario->get_component());
+	auto resource_manager = game_logic->get_resource_manager();
+	auto map = resource_manager.get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(_request.map_name, nullptr);
+	
+	if (map == nullptr) {
+		get_message_agent().set_error_message("Error spawning monsters in map " + _request.map_name + ", map does not exist.");
+		return false;
+	}
+
+	game_logic->get_monster_spawn_agent().spawn_monsters(_request.map_name);
+	get_message_agent().set_status_message("Monsters spawned in map " + _request.map_name + ".");
+	return true;
+}
+
+bool Horizon::Zone::SCENARIO_REMOVE_MONSTERS_IN_MAP::RemoveMonsters::execute()
+{
+	std::lock_guard<std::mutex> lock(get_runtime_context()->get_runtime_synchronization_mutex());
+	std::shared_ptr<Horizon::Zone::SCENARIO_REMOVE_MONSTERS_IN_MAP> scenario = std::dynamic_pointer_cast<Horizon::Zone::SCENARIO_REMOVE_MONSTERS_IN_MAP>(get_runtime_context());
+	std::shared_ptr<Horizon::Zone::GameLogicProcess> game_logic = std::static_pointer_cast<Horizon::Zone::GameLogicProcess>(scenario->get_component());
+	auto resource_manager = game_logic->get_resource_manager();
+	auto map = resource_manager.get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(_request.map_name, nullptr);
+	
+	if (map == nullptr) {
+		get_message_agent().set_error_message("Error removing monsters in map " + _request.map_name + ", map does not exist.");
+		return false;
+	}
+
+	game_logic->get_monster_spawn_agent().despawn_monsters(_request.map_name);
+	get_message_agent().set_status_message("Monsters removed in map " + _request.map_name + ".");
 	return true;
 }

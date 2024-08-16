@@ -126,19 +126,19 @@ bool Player::initialize()
 	// required for triggering monster components upon monster kill events etc.
 	//map()->container()->get_lua_manager()->initialize_monster_state(lua_state());
 
-	try {
-		std::string script_root_path = sZone->config().get_script_root_path().string();
-		sol::load_result fx = lua_state()->load_file(script_root_path + "internal/on_login_event.lua");
-		sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
-		if (!result.valid()) {
-			sol::error err = result;
-			HLog(error) << "Player::initialize: " << err.what();
-			return false;
-		}
-	} catch (sol::error &e) {
-		HLog(error) << "Player::initialize: " << e.what();
-		return false;
-	}
+	//try {
+	//	std::string script_root_path = sZone->config().get_script_root_path().string();
+	//	sol::load_result fx = lua_state()->load_file(script_root_path + "internal/on_login_event.lua");
+	//	sol::protected_function_result result = fx(shared_from_this()->downcast<Player>(), VER_PRODUCTVERSION_STR);
+	//	if (!result.valid()) {
+	//		sol::error err = result;
+	//		HLog(error) << "Player::initialize: " << err.what();
+	//		return false;
+	//	}
+	//} catch (sol::error &e) {
+	//	HLog(error) << "Player::initialize: " << e.what();
+	//	return false;
+	//}
 
 
 	// Ensure grid for unit.
@@ -243,18 +243,35 @@ bool Player::load()
 		 * Set map and coordinates for unit.
 		 */
 		// @TODO
-		//MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
-		//std::shared_ptr<Map> map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map(r[10].as_string());
+		MapCoords mcoords(r[11].as_uint64(), r[12].as_uint64());
+		int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, r[10].as_string(), nullptr);
 
-		//if (map == nullptr) { 
-		//	HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
-		//	map = sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().get_map("prontera");
-		//}
-		//
-		//get_session()->set_map_name(map->get_name());
+		if (segment_number == 0)
+			return false;
 		
-		//set_map(map);
-		//set_map_coords(mcoords);
+		auto container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
+		
+		std::shared_ptr<Map> map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(r[10].as_string(), nullptr);
+
+		if (map == nullptr) { 
+			HLog(warning) << "Player::load: Map " << r[10].as_string() << " does not exist, setting to default map.";
+			segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, "prontera", nullptr);
+
+			if (segment_number == 0)
+				return false;
+
+			map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>("prontera", nullptr);
+			
+			if (map == nullptr) {
+				HLog(error) << "Player::load: Default map prontera does not exist.";
+				return false;
+			}
+		}
+		
+		get_session()->set_map_name(map->get_name());
+		
+		set_map(map);
+		set_map_coords(mcoords);
 	}
 	catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << "Player::load:" << error.what();
@@ -428,7 +445,7 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 	{
 		// If the map is not managed by the destination container, 
 		// remove the session from the current container and add it to the destination container
-		if (!dest_map->container()->get_map(map()->get_name())) {
+		if (dest_map->container()->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map()->get_name(), nullptr) == nullptr) {
 			//map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
 			//dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
 		}
@@ -501,8 +518,8 @@ void Player::pickup_item(int32_t guid)
 
 	if (inventory()->add_item(item) == Horizon::Zone::Assets::inventory_addition_result_type::INVENTORY_ADD_SUCCESS) {	
 		item->finalize();
-		std::shared_ptr<MapContainerThread> container = item->map()->container();
-		container->remove_unit(item);
+		std::shared_ptr<GameLogicProcess> container = item->map()->container();
+		container->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(item->guid());
 		get_session()->clif()->notify_item_removal_from_floor(item->guid());
 		get_session()->clif()->notify_action(item->guid(), PLAYER_ACT_ITEM_PICKUP);
 	}
@@ -537,8 +554,9 @@ void Player::on_map_enter()
 {
     //get_packet_handler()->Send_ZC_MAPPROPERTY_R2(get_map());
 
-	if (!is_initialized())
+	if (!is_initialized()) {
 		return;
+	}
 		
 	inventory()->notify_all();
 

@@ -51,7 +51,7 @@ namespace Networking
  *        Once started, the object blocks to handle I/O events and requires explicit stopping.
  */
 template <class SocketType>
-class NetworkThread : public std::enable_shared_from_this<NetworkThread<SocketType>>
+class NetworkThread
 {
 	typedef std::vector<std::shared_ptr<SocketType>> SocketContainer;
 public:

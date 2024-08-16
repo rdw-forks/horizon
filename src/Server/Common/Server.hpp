@@ -72,18 +72,18 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
-enum mainframe_segment_priority_type
+enum mainframe_resource_priority_type
 {
-	SEGMENT_PRIORITY_PRIMARY = 0,
-	SEGMENT_PRIORITY_SECONDARY = 1,
-	SEGMENT_PRIORITY_TERTIARY = 2,
-	SEGMENT_PRIORITY_QUATERNARY = 3,
-	SEGMENT_PRIORITY_QUINARY = 4,
-	SEGMENT_PRIORITY_SENARY = 5,
-	SEGMENT_PRIORITY_SEPTENARY = 6,
-	SEGMENT_PRIORITY_OCTONARY = 7,
-	SEGMENT_PRIORITY_NONARY = 8,
-	SEGMENT_PRIORITY_DENARY = 9,
+	RESOURCE_PRIORITY_PRIMARY = 0,
+	RESOURCE_PRIORITY_SECONDARY = 1,
+	RESOURCE_PRIORITY_TERTIARY = 2,
+	RESOURCE_PRIORITY_QUATERNARY = 3,
+	RESOURCE_PRIORITY_QUINARY = 4,
+	RESOURCE_PRIORITY_SENARY = 5,
+	RESOURCE_PRIORITY_SEPTENARY = 6,
+	RESOURCE_PRIORITY_OCTONARY = 7,
+	RESOURCE_PRIORITY_NONARY = 8,
+	RESOURCE_PRIORITY_DENARY = 9,
 	MAX_MAINFRAME_SEGMENT_PRIORITIES = 10
 };
 
@@ -124,6 +124,9 @@ public:
 	int size() { return _storage->size(); }
 	// clear
 	void clear() { _storage->clear(); }
+
+	std::map<typename Storage::key_type, typename Storage::value_type> get_map() { return _storage->_table.get_map(); }
+
 protected:
 	int64_t _priority;
 	std::shared_ptr<Storage> _storage;
@@ -144,7 +147,7 @@ public:
 	SharedPriorityResourceManager &operator=(SharedPriorityResourceManager &&other) { _resources = std::move(other._resources); return *this; }
 	
     template <std::size_t Priority>
-    auto& get() {
+    auto& get_medium() {
         return std::get<Priority>(_resources);
     }
 
@@ -161,7 +164,7 @@ public:
 	}
 
 	template <std::size_t Index, typename Key, typename Value>
-	Value get(Key key, Value const &default_value = Value()) 
+	Value get_resource(Key key, Value const &default_value = Value()) 
 	{
 		return std::get<Index>(_resources).get(key, default_value);
 	}
@@ -182,7 +185,7 @@ private:
     std::tuple<SharedPriorityResourceMediums...> _resources;
 };
 
-class MainframeComponent
+class MainframeComponent : public std::enable_shared_from_this<MainframeComponent>
 {
 public:
 	MainframeComponent(Horizon::System::runtime_module_type module_type) 
@@ -432,13 +435,13 @@ public:
 		return count;
 	}
 	
-	template <typename ComponentType, std::size_t Priority, typename Key>
-	int get_segment_number_for_resource(Horizon::System::runtime_module_type module_t, Key resource_key)
+	template <typename ComponentType, std::size_t Priority, typename Key, typename Value>
+	int get_segment_number_for_resource(Horizon::System::runtime_module_type module_t, Key resource_key, Value resource_not_found_value)
 	{
 		
 		for (int i = 0; i < get_registered_component_count_of_type(module_t); i++) {
 			auto component = get_component_of_type<ComponentType>(module_t, i + 1);
-			if (component->get_resource_manager().template get<Priority>().get(resource_key) != nullptr)
+			if (component->get_resource_manager().get_resource<Priority, Key, Value>(resource_key, resource_not_found_value) != resource_not_found_value)
 				return i + 1;
 		}
 

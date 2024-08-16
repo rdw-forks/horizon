@@ -47,7 +47,7 @@ namespace Zone
 	{
 		class Item;
 	}
-	class MapContainerThread;
+	class GameLogicProcess;
 //! @brief The class Map is the representation of a map in the game. It contains all the cells and the grid holder. It also contains the A* pathfinder. 
 //! It is the main class for the map. It is used to get the cells, the grid holder and the pathfinder, and perform a variety of operations on them.
 //! @param _container The container that contains this map.
@@ -61,10 +61,10 @@ namespace Zone
 class Map : public std::enable_shared_from_this<Map>
 {
 public:
-	Map(std::weak_ptr<MapContainerThread>, std::string const &, uint16_t, uint16_t, std::vector<uint8_t> const &);
+	Map(std::weak_ptr<GameLogicProcess>, std::string const &, uint16_t, uint16_t, std::vector<uint8_t> const &);
 	~Map();
 
-	std::shared_ptr<MapContainerThread> container() { return _container.expired() == false ? _container.lock() : nullptr; }
+	std::shared_ptr<GameLogicProcess> container() { return _container.expired() == false ? _container.lock() : nullptr; }
 
 	std::string const &get_name() { return _name; }
 
@@ -160,7 +160,7 @@ public:
 	void add_item_drop(int item_id, MapCoords map_coords, int amount, int identified);
 	void add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, MapCoords map_coords);
 private:
-	std::weak_ptr<MapContainerThread> _container;
+	std::weak_ptr<GameLogicProcess> _container;
 	std::string _name{""};
 	uint16_t _width{0}, _height{0};
 	GridCoords _max_grids;

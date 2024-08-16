@@ -51,7 +51,7 @@ _unit_component(std::make_shared<UnitComponent>()),
 _skill_component(std::make_shared<SkillComponent>()),
 _status_effect_component(std::make_shared<StatusEffectComponent>()),
 _combat_component(std::make_shared<CombatComponent>()),
-_resource_manager(PrimaryResource(SEGMENT_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::NPC>>>()))
+_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::NPC>>>()))
 {
 }
 

@@ -220,8 +220,7 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 		break;
 	}
 
-	//@TODO Deregister spawned monster on monster death
-	//map()->container()->get_lua_manager()->monster()->deregister_single_spawned_monster(uuid());
+	map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(guid());
 
 	return;
 }

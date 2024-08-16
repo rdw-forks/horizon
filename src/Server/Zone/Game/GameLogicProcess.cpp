@@ -37,6 +37,8 @@
 #include "Server/Zone/Game/StaticDB/StatusEffectDB.hpp"
 #include "Server/Zone/Game/StaticDB/StorageDB.hpp"
 
+#include "Server/Zone/Game/Units/Mob/Hostile/Monster.hpp"
+
 #include "Server/Common/Configuration/Horizon.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"
@@ -68,17 +70,27 @@ void GameLogicProcess::initialize(int segment_number)
 		StorageDB->load();
 		static_db_loaded = true;
 	}
+
 	load_map_cache();
-	start_containers();
+	start_internal();
+
+	get_monster_spawn_agent().initialize(std::static_pointer_cast<GameLogicProcess>(shared_from_this()));
 
 	_is_initialized.exchange(true);
 }
 
 void GameLogicProcess::finalize()
 {
-	std::map<int32_t, std::shared_ptr<MapContainerThread>> container_map = _map_containers.get_map();
-	for (auto &cont : container_map) {
-		cont.second->finalize();
+	this->get_resource_manager().clear<RESOURCE_PRIORITY_PRIMARY>();
+	this->get_resource_manager().clear<RESOURCE_PRIORITY_SECONDARY>();
+	this->get_resource_manager().clear<RESOURCE_PRIORITY_TERTIARY>();
+
+	if (_thread.joinable()) {
+		try {
+			_thread.join();
+		} catch(std::exception &e) {
+			HLog(error) << "GameLogicProcess::finalize: " << e.what();
+		}
 	}
 
 	_is_finalized.exchange(true);
@@ -126,32 +138,21 @@ bool GameLogicProcess::load_map_cache()
 	return true;
 }
 
-void GameLogicProcess::start_containers()
+void GameLogicProcess::start_internal()
 {
-	int container_idx = 0, map_counter = 0, total_maps = 0;
+	int total_maps = 0;
 	int mcache_size = _maps.size();
 	int max_maps_per_thread = std::ceil((double) mcache_size / MAX_GAME_LOGIC_THREADS);
 	int container_max = get_segment_number() * max_maps_per_thread;
 	int container_min = (get_segment_number() - 1) * max_maps_per_thread;
 
-	_map_containers.insert(0, std::make_shared<MapContainerThread>(std::bind(&GameLogicProcess::on_map_update, this, std::placeholders::_1)));
-
 	auto map_i = _maps.begin();
 	for (int i = container_min; i < container_max; i++)
 	{
-		std::shared_ptr<Map> map = std::make_shared<Map>(_map_containers.at(container_idx), map_i->second.name(), map_i->second.width(), map_i->second.height(), map_i->second.getCells());
+		std::shared_ptr<Map> map = std::make_shared<Map>(std::static_pointer_cast<GameLogicProcess>(shared_from_this()), map_i->second.name(), map_i->second.width(), map_i->second.height(), map_i->second.getCells());
 		
-		this->get_resource_manager().add<SEGMENT_PRIORITY_PRIMARY>(map_i->second.name(), map);
-		(_map_containers.at(container_idx))->add_map(std::move(map));
+		this->get_resource_manager().add<RESOURCE_PRIORITY_PRIMARY>(map_i->second.name(), map);
 
-		if (max_maps_per_thread - 1 == map_counter) {
-			(_map_containers.at(container_idx))->initialize();
-			(_map_containers.at(container_idx))->start();
-			map_counter = 0;
-			container_idx++;
-		}
-
-		map_counter++;
 		total_maps++;
 		map_i++;
 	}
@@ -159,9 +160,177 @@ void GameLogicProcess::start_containers()
 	HLog(info) << "Started map container " << get_segment_number() << " (" << container_min + 1 << " to " << container_max << " maps) for a total of " << container_max - container_min << " out of "  << mcache_size << " maps.";
 
 	_maps.clear();
+
+	_thread = std::thread([this]() {
+		while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
+			this->update(std::time(nullptr));
+			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		};
+	});
 }
 
-void GameLogicProcess::on_map_update(int64_t diff)
+void GameLogicProcess::update(uint64_t diff)
 {
+	// Update the entities.
+	for (auto unit_it : this->get_resource_manager().get_medium<RESOURCE_PRIORITY_TERTIARY>().get_map())
+		unit_it.second->update(diff);
+
+	getScheduler().Update();
+
 	get_system_routine_manager().process_queue();
+}
+
+void GameLogicProcess::MonsterSpawnAgent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::Zone::Units::Monster> monster) 
+{
+	uint8_t type = 0;
+	uint32_t guid = 0;
+	uint16_t spawn_dataset_id = 0;
+	uint8_t spawn_id = 0;
+
+	sZone->from_uuid(monster->uuid(), type, guid, spawn_dataset_id, spawn_id);
+
+	std::shared_ptr<monster_spawn_data> msd = get_monster_spawn_info(spawn_dataset_id);
+
+	if (msd == nullptr) {
+		HLog(error) << "Couldn't find monster spawn data for monster " << monster->uuid() << ", spawn_dataset_id " << spawn_dataset_id << ", monster_id " << monster->job_id() << " and spawn_id " << spawn_id << ".";
+		return;
+	}
+
+	std::shared_ptr<Map> map = monster->map();
+
+	msd->dead_amount++;
+	// Set the spawn time cache. This is used to calculate the time to spawn the monster.
+	monster_spawn_data::s_monster_spawn_time_cache spawn_time_cache;
+	spawn_time_cache.dead_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+	spawn_time_cache.spawn_time = msd->spawn_delay_base + std::rand() % (msd->spawn_delay_variance + 1);
+	msd->dead_spawn_time_list.emplace(monster->uuid(), spawn_time_cache);
+
+	get_container()->getScheduler().Schedule(
+		Milliseconds(spawn_time_cache.spawn_time), 
+		monster->get_scheduler_task_id(UNIT_SCHEDULE_MONSTER_RESPAWN),
+		[this, monster, map, msd](TaskContext /*&context*/) {
+			if (map->get_user_count() == 0)
+				return;
+
+			this->spawn_monster_internal(map, msd->spawn_dataset_id, msd->monster_id, 1, msd->x, msd->y, msd->x_area, msd->y_area);
+			msd->dead_spawn_time_list.erase(monster->uuid());
+			msd->dead_amount--;
+		});
+}
+
+void GameLogicProcess::MonsterSpawnAgent::spawn_monsters(std::string map_name)
+{
+	auto monster_spawn_map = _monster_spawn_db.get_map();
+
+	for (auto i = monster_spawn_map.begin(); i != monster_spawn_map.end(); i++) {
+		std::shared_ptr<monster_spawn_data> msd = (*i).second;
+		if (map_name.compare(msd->map_name) == 0) {
+			if (msd->dead_amount > 0) {
+				for (auto dead_it = msd->dead_spawn_time_list.begin(); dead_it != msd->dead_spawn_time_list.end();) {
+					int64_t dead_monster_spawn_uuid = dead_it->first;
+					monster_spawn_data::s_monster_spawn_time_cache dead_stc = dead_it->second;
+					
+					uint8_t type = 0;
+					uint32_t guid = 0;
+					uint16_t spawn_dataset_id = 0;
+					uint8_t spawn_id = 0;
+
+					sZone->from_uuid(dead_monster_spawn_uuid, type, guid, spawn_dataset_id, spawn_id);
+
+					int64_t since_death_ms = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - dead_stc.dead_time);
+
+					int64_t time_to_spawn_ms = dead_stc.spawn_time - since_death_ms;
+
+					if (time_to_spawn_ms < 0)
+						time_to_spawn_ms = 0;
+
+					this->get_container()->getScheduler().Schedule(
+						Milliseconds(time_to_spawn_ms),
+						((uint64_t) guid << 32) + (int) UNIT_SCHEDULE_MONSTER_RESPAWN,
+						[this, map_name, msd](TaskContext /*&context*/) {
+							int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+							if (segment_number == 0)
+								return;
+
+							std::shared_ptr<Horizon::Zone::GameLogicProcess> container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
+
+							std::shared_ptr<Map> map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+
+							if (map->get_user_count() == 0)
+								return;
+
+							this->spawn_monster_internal(map, msd->spawn_dataset_id, msd->monster_id, 1, msd->x, msd->y, msd->x_area, msd->y_area);
+						});
+
+					dead_it = msd->dead_spawn_time_list.erase(dead_it);
+					msd->dead_amount--;
+				}
+			}
+
+			int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+			if (segment_number == 0)
+				return;
+
+			std::shared_ptr<Horizon::Zone::GameLogicProcess> container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
+
+			std::shared_ptr<Map> map = container->get_resource_manager().get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map_name, nullptr);
+
+			this->spawn_monster_internal(map, msd->spawn_dataset_id, msd->monster_id, msd->amount - msd->dead_amount, msd->x, msd->y, msd->x_area, msd->y_area);
+		}
+	}
+}
+
+void GameLogicProcess::MonsterSpawnAgent::despawn_monsters(std::string map_name)
+{
+	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, map_name, nullptr);
+
+	if (segment_number == 0)
+		return;
+
+	std::shared_ptr<Horizon::Zone::GameLogicProcess> container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
+
+	if (container == nullptr)
+		return;
+
+	auto monster_spawned_map = container->get_resource_manager().get_medium<RESOURCE_PRIORITY_TERTIARY>().get_map();
+
+	for (auto i = monster_spawned_map.begin(); i != monster_spawned_map.end();)
+		if ((*i).second->map()->get_name() == map_name) {
+			(*i).second->finalize();
+			container->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>((*i).second->guid());
+			i = monster_spawned_map.erase(i);
+		}
+}
+
+void GameLogicProcess::MonsterSpawnAgent::spawn_monster_internal(std::shared_ptr<Map> map, int spawn_dataset_id, int monster_id, int16_t amount, int16_t x, int16_t y, int16_t x_area, int16_t y_area)
+{
+	std::shared_ptr<const monster_config_data> md = MonsterDB->get_monster_by_id(monster_id);
+	
+	if (md == nullptr) {
+		HLog(warning) << "Monster " << monster_id << " set for spawn in " << map->get_name() << " does not exist in the database.";
+		return;
+	}
+
+	std::shared_ptr<std::vector<std::shared_ptr<const monster_skill_config_data>>> mskd = MonsterDB->get_monster_skill_by_id(monster_id);
+	
+	for (int i = 0; i < amount; i++) {
+		MapCoords mcoords = MapCoords(x, y);
+		if (mcoords == MapCoords(0, 0))
+			mcoords = map->get_random_accessible_coordinates();
+		else if (x_area && y_area) {
+			if ((mcoords = map->get_random_coordinates_in_walkable_area(x, y, x_area, y_area)) == MapCoords(0, 0)) {
+				HLog(warning) << "Couldn't spawn monster " << md->name << " in area, spawning it on random co-ordinates.";
+				mcoords = map->get_random_accessible_coordinates();
+			}
+		}
+		std::shared_ptr<Horizon::Zone::Units::Monster> monster = std::make_shared<Horizon::Zone::Units::Monster>(spawn_dataset_id, i, map, mcoords, md, mskd);
+		
+		monster->initialize();
+		map->container()->get_resource_manager().add<RESOURCE_PRIORITY_TERTIARY>(monster->guid(), monster);
+	}
+
+	return;
 }
