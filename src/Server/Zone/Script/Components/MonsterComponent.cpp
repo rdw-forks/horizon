@@ -192,7 +192,7 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state)
 			request.data = spwd;
 			work->set_request(request);
 			scenario->get_runtime_synchronization_mutex().unlock();
-			scenario->push(work);
-			container->system_routine_queue_push(scenario);
+			scenario->push(std::move(work));
+			container->system_routine_queue_push(std::move(scenario));
 		});
 }

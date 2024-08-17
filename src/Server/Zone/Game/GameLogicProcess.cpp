@@ -85,6 +85,8 @@ void GameLogicProcess::finalize()
 	this->get_resource_manager().clear<RESOURCE_PRIORITY_SECONDARY>();
 	this->get_resource_manager().clear<RESOURCE_PRIORITY_TERTIARY>();
 
+	get_monster_spawn_agent().clear_monster_spawn_info();
+
 	if (_thread.joinable()) {
 		try {
 			_thread.join();
@@ -178,6 +180,11 @@ void GameLogicProcess::update(uint64_t diff)
 	getScheduler().Update();
 
 	get_system_routine_manager().process_queue();
+}
+
+void GameLogicProcess::MonsterSpawnAgent::~MonsterSpawnAgent()
+{
+	
 }
 
 void GameLogicProcess::MonsterSpawnAgent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::Zone::Units::Monster> monster) 

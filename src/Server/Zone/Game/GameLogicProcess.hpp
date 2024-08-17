@@ -50,8 +50,7 @@ class GameLogicProcess : public MainframeComponent
 class MonsterSpawnAgent
 {
 public:
-	MonsterSpawnAgent() { }
-	~MonsterSpawnAgent() { }
+	~MonsterSpawnAgent();
 
 	void initialize(std::shared_ptr<GameLogicProcess> game_logic_process)
 	{
@@ -71,7 +70,8 @@ public:
     
 	void register_monster_spawn_info(uint32_t id, std::shared_ptr<monster_spawn_data> data) { _monster_spawn_db.insert(id, data); }
     std::shared_ptr<monster_spawn_data> get_monster_spawn_info(uint32_t id) { return _monster_spawn_db.at(id); }
-
+	void clear_monster_spawn_info() { _monster_spawn_db.clear(); }
+	
     int32_t _last_monster_spawn_id{0};
 private:
 	std::weak_ptr<GameLogicProcess> _game_logic_process;
