@@ -57,7 +57,8 @@ _resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_
 
 ScriptManager::~ScriptManager()
 {
-
+	if (_lua_state != nullptr)
+		_lua_state.reset();
 }
 
 void ScriptManager::initialize(int segment_number)
