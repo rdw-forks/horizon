@@ -182,9 +182,9 @@ void GameLogicProcess::update(uint64_t diff)
 	get_system_routine_manager().process_queue();
 }
 
-void GameLogicProcess::MonsterSpawnAgent::~MonsterSpawnAgent()
+GameLogicProcess::MonsterSpawnAgent::~MonsterSpawnAgent()
 {
-	
+
 }
 
 void GameLogicProcess::MonsterSpawnAgent::reschedule_single_monster_spawn(std::shared_ptr<Horizon::Zone::Units::Monster> monster) 
