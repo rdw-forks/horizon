@@ -144,7 +144,7 @@ void GameLogicProcess::start_internal()
 {
 	int total_maps = 0;
 	int mcache_size = _maps.size();
-	int max_maps_per_thread = std::ceil((double) mcache_size / MAX_GAME_LOGIC_THREADS);
+	int max_maps_per_thread = std::ceil((double) mcache_size / sZone->config().max_game_logic_threads());
 	int container_max = get_segment_number() * max_maps_per_thread;
 	int container_min = (get_segment_number() - 1) * max_maps_per_thread;
 
@@ -305,10 +305,12 @@ void GameLogicProcess::MonsterSpawnAgent::despawn_monsters(std::string map_name)
 	auto monster_spawned_map = container->get_resource_manager().get_medium<RESOURCE_PRIORITY_TERTIARY>().get_map();
 
 	for (auto i = monster_spawned_map.begin(); i != monster_spawned_map.end();)
-		if ((*i).second->map()->get_name() == map_name) {
+		if ((*i).second->map()->get_name() == map_name && (*i).second->type() == UNIT_MONSTER) {
 			(*i).second->finalize();
-			container->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>((*i).second->guid());
+			container->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>((*i).second->uuid());
 			i = monster_spawned_map.erase(i);
+		} else {
+			i++;
 		}
 }
 

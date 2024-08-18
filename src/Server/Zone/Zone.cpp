@@ -54,41 +54,11 @@ void ZoneMainframe::initialize()
 		context.Repeat();
 	});
 
-	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
-		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
-		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
-	}
-
-	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
-		register_component(Horizon::System::RUNTIME_SCRIPTVM, std::make_shared<ScriptManager>());
-		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->initialize(i + 1);
-	}
-
-	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++) {
-		register_component(Horizon::System::RUNTIME_PERSISTENCE, std::make_shared<PersistenceManager>());
-		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->initialize(i + 1);
-	}
-
 	Server::initialize();
 }
 
 void ZoneMainframe::finalize()
 {
-	HLog(info) << "Server shutdown initiated ...";
-
-	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
-		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->finalize();
-		deregister_component(Horizon::System::RUNTIME_GAMELOGIC, i + 1);
-	}
-	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++) {
-		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->finalize();
-		deregister_component(Horizon::System::RUNTIME_PERSISTENCE, i + 1);
-	}
-	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
-		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->finalize();
-		deregister_component(Horizon::System::RUNTIME_SCRIPTVM, i + 1);
-	}
-
 	_task_scheduler.CancelAll();
 	
 	Server::finalize();
@@ -166,8 +136,19 @@ bool ZoneServer::read_config()
 	HLog(info) << "Script root path is set to " << config().get_script_root_path() << ", it will be used for all scripting references.";
 
 	config().set_session_max_timeout(tbl.get_or("session_max_timeout", 60));
-
 	HLog(info) << "Session maximum timeout set to '" << config().session_max_timeout() << "'.";
+
+	config().set_max_network_threads(tbl.get_or("max_network_threads", 1));
+	HLog(info) << "Maximum network threads set to '" << config().max_network_threads() << "'.";
+
+	config().set_max_game_logic_threads(tbl.get_or("max_game_logic_threads", 1));
+	HLog(info) << "Maximum game logic threads set to '" << config().max_game_logic_threads() << "'.";
+
+	config().set_max_persistence_threads(tbl.get_or("max_persistence_threads", 1));
+	HLog(info) << "Maximum persistence threads set to '" << config().max_persistence_threads() << "'.";
+
+	config().set_max_script_vm_threads(tbl.get_or("max_script_vm_threads", 1));
+	HLog(info) << "Maximum script VM threads set to '" << config().max_script_vm_threads() << "'.";
 
 	/**
 	 * Process Configuration that is common between servers.
@@ -252,13 +233,28 @@ void ZoneServer::initialize()
 	sZone->get_client_socket_mgr().start(get_io_context(),
 						  sZone->general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
-						  MAX_NETWORK_THREADS,
+						  config().max_network_threads(),
 						  general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
 	
 	// Initialize Runtime
 	register_component<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME, std::make_shared<Horizon::Zone::ZoneRuntime>());
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->initialize();
 	
+	for (int i = 0; i < config().max_game_logic_threads(); i++) {
+		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
+		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
+	}
+
+	for (int i = 0; i < config().max_script_vm_threads(); i++) {
+		register_component(Horizon::System::RUNTIME_SCRIPTVM, std::make_shared<ScriptManager>());
+		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->initialize(i + 1);
+	}
+
+	for (int i = 0; i < config().max_persistence_threads(); i++) {
+		register_component(Horizon::System::RUNTIME_PERSISTENCE, std::make_shared<PersistenceManager>());
+		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->initialize(i + 1);
+	}
+
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
 						  
@@ -280,11 +276,26 @@ void ZoneServer::initialize()
 
 void ZoneServer::finalize()
 {
+	HLog(info) << "Server shutdown initiated ...";
+	
 	if (!get_io_context().stopped())
 		get_io_context().stop();
 
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->finalize();
 	deregister_component(Horizon::System::RUNTIME_RUNTIME);
+
+	for (int i = 0; i < config().max_game_logic_threads(); i++) {
+		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->finalize();
+		deregister_component(Horizon::System::RUNTIME_GAMELOGIC, i + 1);
+	}
+	for (int i = 0; i < config().max_persistence_threads(); i++) {
+		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->finalize();
+		deregister_component(Horizon::System::RUNTIME_PERSISTENCE, i + 1);
+	}
+	for (int i = 0; i < config().max_script_vm_threads(); i++) {
+		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->finalize();
+		deregister_component(Horizon::System::RUNTIME_SCRIPTVM, i + 1);
+	}
 
 	ZoneMainframe::finalize();
 	

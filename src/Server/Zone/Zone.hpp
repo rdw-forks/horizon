@@ -72,10 +72,26 @@ struct s_zone_server_configuration
     std::time_t session_max_timeout() { return _session_max_timeout; }
     void set_session_max_timeout(std::time_t timeout) { _session_max_timeout = timeout; }
 	
+	int max_network_threads() { return _max_network_threads; }
+	void set_max_network_threads(int threads) { _max_network_threads = threads; }
+
+	int max_game_logic_threads() { return _max_game_logic_threads; }
+	void set_max_game_logic_threads(int threads) { _max_game_logic_threads = threads; }
+
+	int max_persistence_threads() { return _max_persistence_threads; }
+	void set_max_persistence_threads(int threads) { _max_persistence_threads = threads; }
+
+	int max_script_vm_threads() { return _max_script_vm_threads; }
+	void set_max_script_vm_threads(int threads) { _max_script_vm_threads = threads; }
+
 	boost::filesystem::path _static_db_path;
 	boost::filesystem::path _mapcache_path;
     std::time_t _session_max_timeout;
 	boost::filesystem::path _script_root_path;
+	int _max_network_threads{1};
+	int _max_game_logic_threads{1};
+	int _max_persistence_threads{1};
+	int _max_script_vm_threads{1};
 };
 
 class ZoneMainframe : public Server

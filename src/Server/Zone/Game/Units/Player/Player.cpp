@@ -519,7 +519,7 @@ void Player::pickup_item(int32_t guid)
 	if (inventory()->add_item(item) == Horizon::Zone::Assets::inventory_addition_result_type::INVENTORY_ADD_SUCCESS) {	
 		item->finalize();
 		std::shared_ptr<GameLogicProcess> container = item->map()->container();
-		container->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(item->guid());
+		container->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(item->uuid());
 		get_session()->clif()->notify_item_removal_from_floor(item->guid());
 		get_session()->clif()->notify_action(item->guid(), PLAYER_ACT_ITEM_PICKUP);
 	}

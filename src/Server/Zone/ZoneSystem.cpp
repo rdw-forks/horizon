@@ -109,7 +109,8 @@ bool Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer::execute()
 
 	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, login_info.current_map, nullptr);
 	auto resource_manager = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager();
-	resource_manager.add<RESOURCE_PRIORITY_SECONDARY>(pl->guid(), pl);
+	resource_manager.add<RESOURCE_PRIORITY_SECONDARY>(pl->uuid(), pl);
+	resource_manager.add<RESOURCE_PRIORITY_TERTIARY>(pl->uuid(), pl->shared_from_this());
 	
 	get_message_agent().set_status_message("Player (char_id: " + std::to_string(login_info.id) + ") created successfully.");
 	return true;

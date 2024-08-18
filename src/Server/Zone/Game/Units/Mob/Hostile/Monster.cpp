@@ -220,7 +220,7 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 		break;
 	}
 
-	map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(guid());
+	map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(uuid());
 
 	return;
 }

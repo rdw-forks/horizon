@@ -104,6 +104,15 @@ bool AuthServer::read_config()
 	int char_server_count = get_auth_config().get_char_servers().size();
 	HLog(info) << char_server_count << " character servers were configured.";
 	
+	// Max network threads
+	if (tbl.get<sol::object>("max_network_threads") != sol::lua_nil) {
+		get_auth_config().set_max_network_threads(tbl.get<int>("max_network_threads"));
+	} else {
+		horizon_config_error("max_network_threads", 1);
+	}
+
+	HLog(info) << "Max Network Threads set to '" << get_auth_config().max_network_threads() << "'.";
+
 	/**
 	 * Process Configuration that is common between servers.
 	 */
@@ -299,7 +308,7 @@ void AuthServer::initialize()
 	sClientSocketMgr->start(get_io_context(), 
 		general_conf().get_listen_ip(), 
 		general_conf().get_listen_port(), 
-		MAX_NETWORK_THREADS,
+		get_auth_config().max_network_threads(),
 		general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
 	
 	// Initialize core.
@@ -333,7 +342,6 @@ void AuthServer::initialize()
 
 void AuthServer::finalize()
 {
-
 	HLog(info) << "Shutdown process initiated...";
 
 	if (!get_io_context().stopped())

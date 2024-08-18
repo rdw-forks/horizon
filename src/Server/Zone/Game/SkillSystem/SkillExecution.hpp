@@ -7,6 +7,7 @@
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Script/ScriptManager.hpp"
+
 namespace Horizon
 {
 namespace Zone
@@ -28,14 +29,7 @@ public:
 private:
 	void start_execution(enum skill_target_type target_type);
 	std::shared_ptr<Map> map() { return _map.expired() ? nullptr : _map.lock(); }
-	void set_map(std::shared_ptr<Map> map)
-	{
-		_map = map;
-		_map_container_thread = map->container();
-		// @TODO Skills
-		//_lua_mgr = map->container()->get_lua_manager();
-		//_lua_state = lua_manager()->lua_state();
-	}
+	void set_map(std::shared_ptr<Map> map);
 	std::shared_ptr<GameLogicProcess> map_container() { return _map_container_thread.lock(); }
 	std::shared_ptr<ScriptManager> lua_manager() { return _lua_mgr.lock(); }
 	std::shared_ptr<sol::state> lua_state() { return _lua_state.lock(); }

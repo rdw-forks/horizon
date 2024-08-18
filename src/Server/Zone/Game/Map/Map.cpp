@@ -120,7 +120,7 @@ void Map::add_item_drop(int item_id, MapCoords map_coords, int amount, int ident
 	entry.drop_effect_mode = item->config()->drop_effect_mode;
 	item->notify_nearby_players_of_item_drop(entry);
 
-	this->container()->get_resource_manager().add<RESOURCE_PRIORITY_TERTIARY>(item->guid(), item);
+	this->container()->get_resource_manager().add<RESOURCE_PRIORITY_TERTIARY>(item->uuid(), item);
 }
 
 void Map::add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, MapCoords map_coords)
@@ -149,5 +149,5 @@ void Map::add_item_drop(std::shared_ptr<item_entry_data> entry, int32_t amount, 
 
 	floor_item->notify_nearby_players_of_item_drop(notif_config);
 
-	this->container()->get_resource_manager().add<RESOURCE_PRIORITY_TERTIARY>(floor_item->guid(), floor_item);
+	this->container()->get_resource_manager().add<RESOURCE_PRIORITY_TERTIARY>(floor_item->uuid(), floor_item);
 }

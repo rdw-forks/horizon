@@ -158,6 +158,14 @@ bool CharServer::read_config()
 		HLog(error) << "Error for setting session_max_timeout:" << err.what();
 	}
 
+	// Max Network Threads
+	try {
+		int32_t max_network_threads = tbl.get_or("max_network_threads", 1);
+		config().set_max_network_threads(max_network_threads);
+		HLog(info) << "Max Network Threads set to '" << config().max_network_threads() << "'.";
+	} catch (sol::error &err) {
+		HLog(error) << "Error for setting max_network_threads:" << err.what();
+	}
 
 	/**
 	 * Process Configuration that is common between servers.
@@ -259,7 +267,7 @@ void CharServer::initialize()
 	sClientSocketMgr->start(get_io_context(),
 						  general_conf().get_listen_ip(),
 						  general_conf().get_listen_port(),
-						  MAX_NETWORK_THREADS,
+						  config().max_network_threads(),
 						  general_conf().is_test_run() && general_conf().is_test_run_with_network() == false);
 
 	Server::initialize();

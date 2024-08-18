@@ -53,7 +53,11 @@ struct auth_config_type {
     void add_char_server(char_server c) { _char_servers.push_back(c); }
     std::vector<char_server> &get_char_servers() { return _char_servers; }
 
+	int max_network_threads() { return _max_network_threads; }
+	void set_max_network_threads(int threads) { _max_network_threads = threads; }
+
     std::vector<char_server> _char_servers;
+	int _max_network_threads{1};
 };
 
 const int SALT_LEN = 16;
