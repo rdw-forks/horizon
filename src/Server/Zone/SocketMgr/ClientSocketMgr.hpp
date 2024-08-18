@@ -36,6 +36,7 @@
 #include "Server/Common/System.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
+#include "Server/Zone/Zone.hpp"
 
 namespace Horizon
 {
@@ -120,11 +121,8 @@ public:
 
 	bool stop()
 	{
-		int segment_number = 1;
-		for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++) {
+		for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++)
 			sZone->deregister_component(Horizon::System::RUNTIME_NETWORKING, (std::static_pointer_cast<ZoneNetworkThread>(i->second))->get_segment_number());
-			segment_number++;
-		}
 
 		if (!BaseSocketMgr::stop_network())
 			return false;
