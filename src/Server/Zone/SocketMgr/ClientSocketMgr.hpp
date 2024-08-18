@@ -36,7 +36,6 @@
 #include "Server/Common/System.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Socket/ZoneSocket.hpp"
-#include "Server/Zone/Zone.hpp"
 
 namespace Horizon
 {
@@ -119,16 +118,7 @@ class ClientSocketMgr : public Horizon::Networking::AcceptSocketMgr<ZoneSocket, 
 public:
 	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false);
 
-	bool stop()
-	{
-		for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++)
-			sZone->deregister_component(Horizon::System::RUNTIME_NETWORKING, (std::static_pointer_cast<ZoneNetworkThread>(i->second))->get_segment_number());
-
-		if (!BaseSocketMgr::stop_network())
-			return false;
-
-		return true;
-	}
+	bool stop();
 
 	void update_sessions(uint64_t time)
 	{

@@ -284,8 +284,8 @@ void ZoneServer::finalize()
 		get_io_context().stop();
 
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->finalize();
-	deregister_component<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME);
-	
+	deregister_component(Horizon::System::RUNTIME_RUNTIME);
+
 	ZoneMainframe::finalize();
 	
 	Server::post_finalize();
