@@ -93,7 +93,6 @@ void ScriptManager::finalize()
 	}
 
 	_lua_state->collect_garbage();
-	_lua_state->release();
 	
 	_script_files.clear();
 
