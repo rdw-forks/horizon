@@ -346,10 +346,13 @@ void Server::initialize()
 
 void Server::finalize()
 {
-	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
+	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal()) {
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->finalize();
+		deregister_component(Horizon::System::RUNTIME_COMMANDLINE);
+	}
 	
 	get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->finalize();
+	deregister_component(Horizon::System::RUNTIME_DATABASE);
 }
 
 void Server::post_initialize()

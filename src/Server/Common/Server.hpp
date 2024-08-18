@@ -425,6 +425,16 @@ public:
 		_components.insert(std::pair(component->get_uuid_string(), holder)); 
 	}
 
+	void deregister_component(Horizon::System::runtime_module_type type, int segment_number = 1)
+	{
+		for (auto c : _components) {
+			if (c.second.type == type && c.second.segment_number == segment_number) {
+				_components.erase(c.first);
+				break;
+			}
+		}
+	}
+
 	int get_registered_component_count_of_type(Horizon::System::runtime_module_type type)
 	{
 		int count = 0;

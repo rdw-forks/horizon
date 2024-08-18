@@ -76,12 +76,18 @@ void ZoneMainframe::finalize()
 {
 	HLog(info) << "Server shutdown initiated ...";
 
-	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++)
+	for (int i = 0; i < MAX_GAME_LOGIC_THREADS; i++) {
 		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->finalize();
-	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++)
+		deregister_component(Horizon::System::RUNTIME_GAMELOGIC, i + 1);
+	}
+	for (int i = 0; i < MAX_PERSISTENCE_THREADS; i++) {
 		get_component_of_type<PersistenceManager>(Horizon::System::RUNTIME_PERSISTENCE, i + 1)->finalize();
-	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++)
+		deregister_component(Horizon::System::RUNTIME_PERSISTENCE, i + 1);
+	}
+	for (int i = 0; i < MAX_SCRIPT_VM_THREADS; i++) {
 		get_component_of_type<ScriptManager>(Horizon::System::RUNTIME_SCRIPTVM, i + 1)->finalize();
+		deregister_component(Horizon::System::RUNTIME_SCRIPTVM, i + 1);
+	}
 
 	_task_scheduler.CancelAll();
 	
@@ -278,7 +284,8 @@ void ZoneServer::finalize()
 		get_io_context().stop();
 
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->finalize();
-
+	deregister_component<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME);
+	
 	ZoneMainframe::finalize();
 	
 	Server::post_finalize();

@@ -127,6 +127,9 @@ public:
 
 	bool stop()
 	{
+		for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++)
+			sAuth->deregister_component(Horizon::System::RUNTIME_NETWORKING, (std::static_pointer_cast<AuthNetworkThread>(i->second))->get_segment_number());
+
 		if (!BaseSocketMgr::stop_network())
 			return false;
 		return true;
