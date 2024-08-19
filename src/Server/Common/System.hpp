@@ -409,7 +409,7 @@ public:
 			return true;
         }
 
-		std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return _runtime_context; }
+		std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return !_runtime_context.expired() ? _runtime_context.lock() : nullptr; }
 		void set_runtime_context(std::shared_ptr<RuntimeRoutineContext> runtime_context) { _runtime_context = runtime_context; }
 
 	protected:
@@ -420,24 +420,26 @@ public:
 			: _runtime_context(runtime_context), _work(work) { }
 			~MessageAgent() { }
 
+			std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return !_runtime_context.expired() ? _runtime_context.lock() : nullptr; }
+			
 			void set_status_message(std::string message) { 
 				_status_message = message;				
 				if (_status_message.size() > 0)
-					_runtime_context->status_message("{w:" + _work->get_uuid_string() + "}: " + _status_message);
+					get_runtime_context()->status_message("{w:" + _work->get_uuid_string() + "}: " + _status_message);
 			}
 			std::string get_status_message() {return _status_message; }
 
 			void set_warning_message(std::string message) { 
 				_warning_message = message; 
 				if (_warning_message.size() > 0)
-					_runtime_context->warning_message("{w:" + _work->get_uuid_string() + "}: " + _warning_message);
+					get_runtime_context()->warning_message("{w:" + _work->get_uuid_string() + "}: " + _warning_message);
 			}
 			std::string get_warning_message() { return _warning_message; }
 
 			void set_error_message(std::string message) {
 				_error_message = message;
 				if (_error_message.size() > 0)
-					_runtime_context->error_message("{w:" + _work->get_uuid_string() + "}: " + _error_message);
+					get_runtime_context()->error_message("{w:" + _work->get_uuid_string() + "}: " + _error_message);
 			}
 			std::string get_error_message() { return _error_message; }
 
@@ -445,14 +447,14 @@ public:
 			std::string _status_message{""};
 			std::string _warning_message{""};
 			std::string _error_message{""};
-			std::shared_ptr<RuntimeRoutineContext> _runtime_context;
+			std::weak_ptr<RuntimeRoutineContext> _runtime_context;
 			Work *_work;
 		};
 
 	public:
 		MessageAgent &get_message_agent() { return _message_agent; }
 	protected:
-		std::shared_ptr<RuntimeRoutineContext> _runtime_context;
+		std::weak_ptr<RuntimeRoutineContext> _runtime_context;
 		MessageAgent _message_agent;
     };
 
