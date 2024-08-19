@@ -194,7 +194,5 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state)
 			scenario->get_runtime_synchronization_mutex().unlock();
 			scenario->push(std::move(work));
 			container->system_routine_queue_push(std::move(scenario));
-			scenario.reset();
-			work.reset();
 		});
 }

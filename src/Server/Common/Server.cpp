@@ -371,17 +371,6 @@ void Server::post_finalize()
 	for (auto i = _components.begin(); i != _components.end(); i++) {
 		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { uuid: " << i->first << " }";
 	}
-
-	std::thread t = std::thread([&]() {
-		int next = 1;
-		while (next < 5) {
-			HLog(info) << "Shutting down in " << 5 - next << " seconds...";
-			std::this_thread::sleep_for(std::chrono::seconds(1));
-			next++;
-		};
-	});
-
-	t.join();
 }
 
 bool Server::test_database_connection()
