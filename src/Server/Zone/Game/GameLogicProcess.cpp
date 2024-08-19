@@ -149,8 +149,12 @@ void GameLogicProcess::start_internal()
 	int container_min = (get_segment_number() - 1) * max_maps_per_thread;
 
 	auto map_i = _maps.begin();
+	std::advance(map_i, container_min);
 	for (int i = container_min; i < container_max; i++)
 	{
+		if (map_i == _maps.end())
+			break;
+			
 		std::shared_ptr<Map> map = std::make_shared<Map>(std::static_pointer_cast<GameLogicProcess>(shared_from_this()), map_i->second.name(), map_i->second.width(), map_i->second.height(), map_i->second.getCells());
 		
 		this->get_resource_manager().add<RESOURCE_PRIORITY_PRIMARY>(map_i->second.name(), map);

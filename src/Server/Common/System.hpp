@@ -235,9 +235,9 @@ public:
             if (_queue.empty())
                 return nullptr;
 
-            std::weak_ptr<WorkContext> ret;
+            std::shared_ptr<WorkContext> ret;
             _queue.pop(ret);
-            return ret.expired() ? nullptr : ret.lock();
+            return ret;
         }
 
         bool process()
@@ -268,6 +268,8 @@ public:
 				}
 
             }
+			
+			_queue.reset();
 
 			if (failed == true) {
 				_control_agent.failed();
@@ -281,7 +283,7 @@ public:
 
 		bool is_paused() { return _paused; }
         WorkControlAgent &_control_agent;
-        boost::lockfree::spsc_queue<std::weak_ptr<WorkContext>, boost::lockfree::capacity<100>> _queue;
+        boost::lockfree::spsc_queue<std::shared_ptr<WorkContext>, boost::lockfree::capacity<100>> _queue;
 		std::atomic<bool> _paused{false};
     };
 	
@@ -407,7 +409,7 @@ public:
 			return true;
         }
 
-		std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return _runtime_context.expired() ? nullptr : _runtime_context.lock(); }
+		std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return _runtime_context; }
 		void set_runtime_context(std::shared_ptr<RuntimeRoutineContext> runtime_context) { _runtime_context = runtime_context; }
 
 	protected:
@@ -418,26 +420,24 @@ public:
 			: _runtime_context(runtime_context), _work(work) { }
 			~MessageAgent() { }
 
-			std::shared_ptr<RuntimeRoutineContext> get_runtime_context() { return _runtime_context.expired() ? nullptr : _runtime_context.lock(); }
-
 			void set_status_message(std::string message) { 
 				_status_message = message;				
 				if (_status_message.size() > 0)
-					get_runtime_context()->status_message("{w:" + _work->get_uuid_string() + "}: " + _status_message);
+					_runtime_context->status_message("{w:" + _work->get_uuid_string() + "}: " + _status_message);
 			}
 			std::string get_status_message() {return _status_message; }
 
 			void set_warning_message(std::string message) { 
 				_warning_message = message; 
 				if (_warning_message.size() > 0)
-					get_runtime_context()->warning_message("{w:" + _work->get_uuid_string() + "}: " + _warning_message);
+					_runtime_context->warning_message("{w:" + _work->get_uuid_string() + "}: " + _warning_message);
 			}
 			std::string get_warning_message() { return _warning_message; }
 
 			void set_error_message(std::string message) {
 				_error_message = message;
 				if (_error_message.size() > 0)
-					get_runtime_context()->error_message("{w:" + _work->get_uuid_string() + "}: " + _error_message);
+					_runtime_context->error_message("{w:" + _work->get_uuid_string() + "}: " + _error_message);
 			}
 			std::string get_error_message() { return _error_message; }
 
@@ -445,14 +445,14 @@ public:
 			std::string _status_message{""};
 			std::string _warning_message{""};
 			std::string _error_message{""};
-			std::weak_ptr<RuntimeRoutineContext> _runtime_context;
+			std::shared_ptr<RuntimeRoutineContext> _runtime_context;
 			Work *_work;
 		};
 
 	public:
 		MessageAgent &get_message_agent() { return _message_agent; }
 	protected:
-		std::weak_ptr<RuntimeRoutineContext> _runtime_context;
+		std::shared_ptr<RuntimeRoutineContext> _runtime_context;
 		MessageAgent _message_agent;
     };
 
@@ -559,9 +559,9 @@ public:
             if (_queue.empty())
                 return nullptr;
 
-            std::weak_ptr<RuntimeContext> ret;
+            std::shared_ptr<RuntimeContext> ret;
             _queue.pop(ret);
-            return ret.expired() ? nullptr : ret.lock();
+            return ret;
         }
 
         virtual bool process();
@@ -570,7 +570,7 @@ public:
 		
         ContextControlAgent &_control_agent;
 		RuntimeContextChain *_chain;
-        boost::lockfree::spsc_queue<std::weak_ptr<RuntimeContext>, boost::lockfree::capacity<100>> _queue;
+        boost::lockfree::spsc_queue<std::shared_ptr<RuntimeContext>, boost::lockfree::capacity<100>> _queue;
 		std::atomic<bool> _paused{false};
     };
 	
@@ -653,9 +653,9 @@ public:
 		if (_system_queue.empty())
 			return nullptr;
 
-        std::weak_ptr<RuntimeContext> ret;
+        std::shared_ptr<RuntimeContext> ret;
         _system_queue.pop(ret);
-        return ret.expired() ? nullptr : ret.lock();
+        return ret;
     }
 	
     std::shared_ptr<RuntimeContextChain> pop_chain() 
@@ -663,9 +663,9 @@ public:
         if (_system_queue_chain.empty())
             return nullptr;
 
-        std::weak_ptr<RuntimeContextChain> ret;
+        std::shared_ptr<RuntimeContextChain> ret;
         _system_queue_chain.pop(ret);
-        return ret.expired() ? nullptr : ret.lock();
+        return ret;
     }
 	
 	// Processes routine queue on every component and executes routine when available.
@@ -684,10 +684,12 @@ public:
 			if (routine_chain != nullptr)
 	            routine_chain->get_queue_manager().process();
         }
+		_system_queue.reset();
+		_system_queue_chain.reset();
     }
 
-	boost::lockfree::spsc_queue<std::weak_ptr<RuntimeContext>, boost::lockfree::capacity<100>> _system_queue;
-	boost::lockfree::spsc_queue<std::weak_ptr<RuntimeContextChain>, boost::lockfree::capacity<100>> _system_queue_chain;
+	boost::lockfree::spsc_queue<std::shared_ptr<RuntimeContext>, boost::lockfree::capacity<100>> _system_queue;
+	boost::lockfree::spsc_queue<std::shared_ptr<RuntimeContextChain>, boost::lockfree::capacity<100>> _system_queue_chain;
 
 private:
 	runtime_map _runtime_map;

@@ -169,8 +169,6 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state)
 
 			std::shared_ptr<Horizon::Zone::GameLogicProcess> container = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number);
 
-			HLog(info) << "Monster spawn set (" << name << ") in " << map_name << " at (" << x << "," << y << ")[" << x_area << "," << y_area << "]" " for a total of " << amount << " monsters is initializing...";
-
 			monster_spawn_data spwd;
 
 			spwd.spawn_dataset_id = container->get_monster_spawn_agent()._last_monster_spawn_id++;

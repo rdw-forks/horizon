@@ -251,9 +251,14 @@ void ScriptManager::initialize_monster_state(std::shared_ptr<sol::state> state)
 	(*state)["monster_component"] = true;
 }
 
+static std::atomic<bool> _script_loader{false};
 void ScriptManager::load_scripts()
 {
 	std::string script_root_path = sZone->config().get_script_root_path().string();
+
+	// Script loader acquired, the other threads do not need to load the scripts as one has already done it.
+	if (_script_loader.exchange(true) == true)
+		return;
 
 	try {
 		_lua_state->script_file(script_root_path + "include.lua");
@@ -277,9 +282,15 @@ void ScriptManager::load_scripts()
 		HLog(warning) << "Failed to load included script files from '" << script_root_path << "', reason: " << e.what();
 	}
 }
+
+static std::atomic<bool> _constants_loader{false};
 void ScriptManager::load_constants()
 {
 	std::string file_path = sZone->config().get_static_db_path().string();
+
+	// Constants loader acquired, the other threads do not need to load the constants as one has already done it.
+	if (_constants_loader.exchange(true) == true)
+		return;
 
 	try {
 		_lua_state->script_file(file_path + "definitions/constants.lua");

@@ -101,7 +101,7 @@ void Status::StatusRegistry::StatusOperation::execute()
 	}
 	
 	// notify through walk packet of hp change.
-    if (_attribute->get_type() == STATUS_CURRENTHP && _attribute->unit()->type() == UNIT_MONSTER && !_attribute->unit()->is_dead()) {
+    if (_attribute != nullptr && _attribute->get_type() == STATUS_CURRENTHP && _attribute->unit()->type() == UNIT_MONSTER && !_attribute->unit()->is_dead()) {
         _attribute->unit()->notify_nearby_players_of_movement(true);
     }
 }
@@ -637,7 +637,7 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 
 #define notify_status(t, amount, result) \
 		unit()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_status_attribute_update(t, amount, result)
-	do {
+	while (limit > get_status_base(type)) {
 		value = get_status_base(type);
 		required_points = get_required_statpoints(value + 1, value + 2);
 
@@ -678,11 +678,8 @@ bool Status::increase_status_point(status_point_type type, uint16_t limit)
 
 		notify_status(type, get_status_base(type), true);
 		status_point()->set_base(available_points);
-
-	} while (get_status_base(type) < limit);
+	}
 #undef notify_status
-#undef notify_compound_attribute
-#undef notify_required_attribute
 	return true;
 }
 

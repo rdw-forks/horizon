@@ -102,6 +102,8 @@ bool Horizon::System::RuntimeContextChain::ContextQueueManager::process()
 		}
     }
 
+	_queue.reset();
+
 	if (failed == true) {
 		_control_agent.failed();
 		return false;

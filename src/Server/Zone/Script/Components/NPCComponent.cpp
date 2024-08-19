@@ -77,6 +77,9 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state)
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
+			
+			if (get_npc_from_db(npc->guid()) != nullptr)
+				return;
 
 			npc_db_data nd;
 			nd.npc_name = name;
@@ -109,6 +112,9 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state)
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
+			
+			if (get_npc_from_db(npc->guid()) != nullptr)
+				return;
 
 			npc_db_data nd;
 			nd.npc_name = name;
@@ -143,6 +149,9 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state)
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, job_id, dir);
 			npc->initialize();
+			
+			if (get_npc_from_db(npc->guid()) != nullptr)
+				return;
 
 			npc_db_data nd;
 			nd.npc_name = name;
@@ -172,6 +181,7 @@ void NPCComponent::sync_functions(std::shared_ptr<sol::state> state)
 				return;
 
 			std::shared_ptr<NPC> npc = std::make_shared<NPC>(name, map, x, y, script);
+
 			npc->initialize();
 
 			npc_db_data nd;

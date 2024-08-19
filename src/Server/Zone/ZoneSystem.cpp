@@ -108,6 +108,12 @@ bool Horizon::Zone::SCENARIO_CREATE_PLAYER::CreatePlayer::execute()
 	std::dynamic_pointer_cast<ActiveRuntimeScenario>(get_runtime_context())->get_session()->set_player(pl);
 
 	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, login_info.current_map, nullptr);
+	
+	if (segment_number == 0)
+	{
+		get_message_agent().set_error_message("Error creating player, map " + login_info.current_map + " does not exist.");
+		return false;
+	}
 	auto resource_manager = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager();
 	resource_manager.add<RESOURCE_PRIORITY_SECONDARY>(pl->uuid(), pl);
 	resource_manager.add<RESOURCE_PRIORITY_TERTIARY>(pl->uuid(), pl->shared_from_this());
@@ -150,7 +156,7 @@ bool Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN::RegisterMonsterSpawn::execu
 
 	game_logic->get_monster_spawn_agent().register_monster_spawn_info(_request.data.spawn_dataset_id, std::make_shared<monster_spawn_data>(_request.data));
 
-	get_message_agent().set_status_message("Monster spawn registered in map " + _request.data.map_name + ".");
+	//get_message_agent().set_status_message("Monster spawn registered in map " + _request.data.map_name + ".");
 	return true;
 }
 
