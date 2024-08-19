@@ -250,7 +250,14 @@ bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t di
 	});
 	s_task->get_runtime_synchronization_mutex().unlock();
 	s_task->push(w_task);
-	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager().push(s_task);
+	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_TERTIARY, uint64_t, std::shared_ptr<Horizon::Zone::Unit>>(Horizon::System::RUNTIME_GAMELOGIC, get_session()->player()->uuid(), nullptr);
+	
+	if (segment_number == 0) {
+		HLog(warning) << "ZoneClientInterface::walk_to_coordinates:Player " << get_session()->player()->guid() << " is not in a map.";
+		return false;
+	}
+
+	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_system_routine_manager().push(s_task);
 
 	return true;
 }
