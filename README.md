@@ -85,10 +85,7 @@ To get a local copy up and running, follow these steps:
   - g++ or clang (version 4.5 or newer, recommended 5.0 or newer)
   - [CMake 3.7+](https://cmake.org/)
   - [Boost v1.60+](https://www.boost.org/)
-  - [Readline](https://tiswww.case.edu/php/chet/readline/rltop.html)
   - [Sol2](https://github.com/ThePhD/sol2)
-  - Mysql
-  - Mysql Connector C++
 
 ### Hardware
 #### Minimum
