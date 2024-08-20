@@ -144,7 +144,7 @@ jobs:
     - name: Checkout
       uses: actions/upload-artifact@v3
       with: 
-        name: artifacts bin
+        name: (GCC) Linux Artifacts (${{matrix.build_type}})
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
   Debian-Clang-Tests-Tools:
     strategy:
@@ -274,7 +274,7 @@ jobs:
     - name: Checkout
       uses: actions/upload-artifact@v3
       with: 
-        name: Linux Artifacts (${{matrix.build_type}})
+        name: (Clang) Linux Artifacts (${{matrix.build_type}})
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
 
   Windows-Tests:
