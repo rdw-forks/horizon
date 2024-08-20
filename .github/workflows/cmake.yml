@@ -274,7 +274,7 @@ jobs:
     - name: Checkout
       uses: actions/upload-artifact@v3
       with: 
-        name: artifacts bin
+        name: Linux Artifacts (${{matrix.build_type}})
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
 
   Windows-Tests:
@@ -349,5 +349,5 @@ jobs:
     - name: Checkout
       uses: actions/upload-artifact@v3
       with: 
-        name: artifacts bin
+        name: Horizon Windows Artifacts (${{matrix.build_type}})
         path: ${{github.workspace}}\build\bin\${{env.matrix.build_type}}\**\*
