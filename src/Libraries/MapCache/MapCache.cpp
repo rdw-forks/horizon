@@ -176,7 +176,6 @@ mcache_config_error_type Horizon::Libraries::MapCache::ReadMapListConfig()
 
 	// Read the file. If there is an error, report it and exit.
 	try {
-		std::cout << "Reading MapList config file: " << getMapListPath().string() << ".." << std::endl;
 		sol::load_result fx = lua.load_file(getMapListPath().string());
         // Check if the load result is valid
         if (!fx.valid()) {

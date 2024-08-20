@@ -192,5 +192,7 @@ void MonsterComponent::sync_functions(std::shared_ptr<sol::state> state)
 			scenario->get_runtime_synchronization_mutex().unlock();
 			scenario->push(std::move(work));
 			container->system_routine_queue_push(std::move(scenario));
+			HLog(debug) << "Monster spawn set (" << name << ") in " << map_name << " at (" << x << "," << y << ")[" << x_area << "," << y_area << "]" " for a total of " << amount << " monsters is initializing...";
+
 		});
 }

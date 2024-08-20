@@ -156,7 +156,7 @@ bool Horizon::Zone::SCENARIO_REGISTER_MONSTER_SPAWN::RegisterMonsterSpawn::execu
 
 	game_logic->get_monster_spawn_agent().register_monster_spawn_info(_request.data.spawn_dataset_id, std::make_shared<monster_spawn_data>(_request.data));
 
-	//get_message_agent().set_status_message("Monster spawn registered in map " + _request.data.map_name + ".");
+	HLog(debug) << "Monster spawn registered in map " << _request.data.map_name << " with spawn dataset ID " << _request.data.spawn_dataset_id << ".";
 	return true;
 }
 

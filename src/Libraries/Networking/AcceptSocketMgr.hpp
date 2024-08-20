@@ -96,7 +96,6 @@ public:
 			_acceptor->close();
 		}
 
-		_socket_map.clear();
 		_acceptor.reset();
 		return true;
 	}
@@ -153,7 +152,7 @@ public:
 		}
 	}
 
-	const SocketMap &get_sockets() const { return _socket_map; }
+	SocketMap &get_sockets() { return _socket_map; }
 
 private:
 	std::unique_ptr<AsyncAcceptor> _acceptor;       ///< unique pointer to an AsyncAcceptor object.

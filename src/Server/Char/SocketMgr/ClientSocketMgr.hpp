@@ -126,6 +126,8 @@ public:
 
 	bool stop()
 	{
+		get_sockets().clear();
+	
 		for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++)
 			sChar->deregister_component(Horizon::System::RUNTIME_NETWORKING, (std::static_pointer_cast<CharNetworkThread>(i->second))->get_segment_number());
 

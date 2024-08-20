@@ -79,13 +79,15 @@ bool Map::has_obstruction_at(int16_t x, int16_t y)
 void Map::add_user_count() {
 	_user_count++; 
 	if (get_user_count() == 1)
-		container()->get_monster_spawn_agent().spawn_monsters(get_name()); 
+		container()->get_monster_spawn_agent().spawn_monsters(get_name());
+	HLog(debug) << "Map::add_user_count: " << get_user_count();
 }
 
 void Map::sub_user_count() { 
 	_user_count--; 
 	if (get_user_count() == 0)
 		container()->get_monster_spawn_agent().despawn_monsters(get_name());
+	HLog(debug) << "Map::sub_user_count: " << get_user_count();
 }
 
 

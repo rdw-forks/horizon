@@ -15,6 +15,8 @@ bool Horizon::Zone::ClientSocketMgr::start(boost::asio::io_context &io_context, 
 
 bool Horizon::Zone::ClientSocketMgr::stop()
 {
+	get_sockets().clear();
+	
 	for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++)
 		sZone->deregister_component(Horizon::System::RUNTIME_NETWORKING, (std::static_pointer_cast<ZoneNetworkThread>(i->second))->get_segment_number());
 
