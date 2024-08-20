@@ -34,35 +34,122 @@
 #include "Libraries/Networking/AcceptSocketMgr.hpp"
 
 #include "Server/Auth/Auth.hpp"
+#include "Server/Auth/Session/AuthSession.hpp"
 #include "Server/Auth/Socket/AuthSocket.hpp"
+#include "Server/Common/System.hpp"
+#include "Server/Common/Server.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
 namespace Horizon
 {
 namespace Auth
 {
+class AuthNetworkThread : public MainframeComponent, public Networking::NetworkThread<AuthSocket>
+{
+protected:
+	void on_socket_removed(std::shared_ptr<AuthSocket> socket) override
+	{
+		get_resource_manager().add<RESOURCE_PRIORITY_PRIMARY>(socket->get_socket_id(), socket);
+	}
+
+	void on_socket_added(std::shared_ptr<AuthSocket> socket) override
+	{
+		get_resource_manager().remove<RESOURCE_PRIORITY_PRIMARY>(socket->get_socket_id());
+	}
+public:
+	AuthNetworkThread() 
+	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
+	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<AuthSocket>>>()))
+	{
+	}
+
+	bool start(int segment_number = 1)
+	{
+		if (!Networking::NetworkThread<AuthSocket>::start(segment_number))
+			return false;
+
+		initialize(segment_number);
+		return true;
+	}
+
+	void run() override
+	{
+		Networking::NetworkThread<AuthSocket>::run();
+	}
+
+	void update() override
+	{
+		Networking::NetworkThread<AuthSocket>::update();
+
+		get_system_routine_manager().process_queue();
+	}
+
+	virtual void initialize(int segment_number = 1) override 
+	{ 
+		set_segment_number(segment_number);
+		_is_initialized.exchange(true);
+	}
+
+	virtual void finalize() override 
+	{
+		Networking::NetworkThread<AuthSocket>::finalize();
+
+		_is_finalized.exchange(true);
+	}
+
+	virtual bool is_initialized() override { return _is_initialized.load(); }
+	virtual bool is_finalized() override { return _is_finalized.load(); }
+
+protected:
+	std::atomic<bool> _is_initialized{false};
+	std::atomic<bool> _is_finalized{false};
+	
+	using PrimaryResource = SharedPriorityResourceMedium<s_segment_storage<uint64_t, std::shared_ptr<AuthSocket>>>;
+	using ResourceManager = SharedPriorityResourceManager<PrimaryResource>;
+	ResourceManager _resource_manager;
+public:
+	ResourceManager &get_resource_manager() { return _resource_manager; }
+};
 /**
  * Manager of client sockets and initialization of the packet db * @brief Singleton class
  */
-class ClientSocketMgr : public Networking::AcceptSocketMgr<AuthSocket>
+class ClientSocketMgr : public Networking::AcceptSocketMgr<AuthSocket, AuthNetworkThread>
 {
-	typedef Networking::AcceptSocketMgr<AuthSocket> BaseSocketMgr;
+	typedef Networking::AcceptSocketMgr<AuthSocket, AuthNetworkThread> BaseSocketMgr;
 public:
-	static ClientSocketMgr *getInstance()
+	static ClientSocketMgr *Instance()
 	{
 		static ClientSocketMgr instance;
 		return &instance;
 	}
+	
+	bool start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads = 1, bool minimal = false) override;
 
-	bool start(boost::asio::io_service &io_service, std::string const &listen_ip, uint16_t port, uint32_t threads = MAX_NETWORK_THREADS)
+	bool stop()
 	{
-		if (!BaseSocketMgr::start(io_service, listen_ip, port, threads))
-			return false;
+		get_sockets().clear();
+		
+		for (auto i = get_thread_map().begin(); i != get_thread_map().end(); i++)
+			sAuth->deregister_component(Horizon::System::RUNTIME_NETWORKING, (std::static_pointer_cast<AuthNetworkThread>(i->second))->get_segment_number());
 
+		if (!BaseSocketMgr::stop_network())
+			return false;
 		return true;
+	}
+
+	void update_sessions(uint64_t time)
+	{
+		auto socket_map = get_sockets();
+
+		for (auto s : socket_map) {
+			if (s.second->get_session() != nullptr)
+				s.second->get_session()->update(time);
+		}
 	}
 };
 }
 }
-#define ClientSocktMgr Horizon::Auth::ClientSocketMgr::getInstance()
+
+#define sClientSocketMgr Horizon::Auth::ClientSocketMgr::Instance()
+
 #endif /* HORIZON_CLIENTSOCKETMGR_HPP */
