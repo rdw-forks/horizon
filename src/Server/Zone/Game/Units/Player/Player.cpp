@@ -446,8 +446,11 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 		// If the map is not managed by the destination container, 
 		// remove the session from the current container and add it to the destination container
 		if (dest_map->container()->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(map()->get_name(), nullptr) == nullptr) {
-			//map()->container()->manage_session(SESSION_ACTION_REMOVE, get_session());
-			//dest_map->container()->manage_session(SESSION_ACTION_ADD, get_session());
+			map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(myself->uuid());
+			dest_map->container()->get_resource_manager().add<RESOURCE_PRIORITY_TERTIARY>(myself->uuid(), myself);
+
+			map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_SECONDARY>(myself->uuid());
+			dest_map->container()->get_resource_manager().add<RESOURCE_PRIORITY_SECONDARY>(myself->uuid(), myself);
 		}
 
 		map()->sub_user_count();
