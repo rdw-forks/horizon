@@ -146,7 +146,8 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 	target_link_libraries(${TEST_NAME}
 		PUBLIC
 		${Boost_LIBRARIES}
-		${ADD_LIBS})
+		${ADD_LIBS}
+		${QUADMATH_LIBRARY})
 
 	# Link additional include search directories for the executable.
 	target_include_directories(${TEST_NAME}
