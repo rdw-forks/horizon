@@ -27,8 +27,9 @@
 
 find_library(QUADMATH_LIBRARY
 	NAMES quadmath
+	PATH_SUFFIXES 10 11 12 13 14 15 16
 	PATHS
-		/usr/lib/gcc/x86_64-linux-gnu/10/
+		/usr/lib/gcc/x86_64-linux-gnu/
 	)
 
 if (QUADMATH_LIBRARY)
