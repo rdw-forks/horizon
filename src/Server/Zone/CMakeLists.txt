@@ -78,11 +78,12 @@ target_precompile_headers(zone
 
 target_link_libraries(zone
 	PUBLIC
-        ${Boost_LIBRARIES}
+    	${Boost_LIBRARIES}
 		networking
 		mcache
 		${LUA_LIBRARIES}
 		OpenSSL::SSL
+		${QUADMATH_LIBRARY}
 )
 
 set(INCLUDE_DIRS

@@ -50,9 +50,10 @@ set(AUTH_TARGET_SOURCES ${AUTH_TARGET_SOURCES} PARENT_SCOPE)
 target_link_libraries(auth
 	PUBLIC
 		${Boost_LIBRARIES}
-        networking
+    	networking
 		${LUA_LIBRARIES}
 		OpenSSL::SSL
+		${QUADMATH_LIBRARY}
 )
 
 target_precompile_headers(auth

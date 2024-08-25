@@ -53,10 +53,11 @@ target_precompile_headers(char
 
 target_link_libraries(char
 	PUBLIC
-        ${Boost_LIBRARIES}
-        networking
+    	${Boost_LIBRARIES}
+    	networking
 		${LUA_LIBRARIES}
 		OpenSSL::SSL
+		${QUADMATH_LIBRARY}
 )
 
 set(INCLUDE_DIRS

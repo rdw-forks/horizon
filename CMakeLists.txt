@@ -142,6 +142,13 @@ if (WIN32)
 endif()
 
 #################
+# (Linux) Lib QuadMath for Boost.Charconv Requried by Boost.Mysql
+#################
+if (UNIX)
+	include(FindQuadMath)
+endif()
+
+#################
 # OpenSSL Library
 #################
 set(OPENSSL_USE_STATIC_LIBS TRUE)

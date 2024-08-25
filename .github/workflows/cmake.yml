@@ -40,6 +40,11 @@ jobs:
           t=$(basename ${f::-4});
           gdb -ex run -ex quit --args "${{github.workspace}}/build/bin/${t}";
         done
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: (GCC) Linux Tests (${{matrix.build_type}})
+        path: ${{github.workspace}}/build/bin/**/*
   Debian-GCC-ALL-ASAN:
     strategy:
       matrix:
@@ -134,18 +139,11 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-GCC-Upload-Artifact:
-    strategy:
-      matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Debian-GCC-Servers
-    runs-on: Debian
-    steps:
-    - name: Checkout
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with: 
-        name: artifacts bin
-        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
+        name: (GCC) Linux Servers (${{matrix.build_type}})
+        path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
   Debian-Clang-Tests-Tools:
     strategy:
       matrix:
@@ -170,6 +168,11 @@ jobs:
           t=$(basename ${f::-4});
           gdb -ex run -ex quit --args "${{github.workspace}}/build/bin/${t}";
         done
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: (Clang) Horizon Linux Tests (${{matrix.build_type}})
+        path: ${{github.workspace}}/build/bin/**/*
   Debian-Clang-ALL-ASAN:
     strategy:
       matrix:
@@ -264,18 +267,11 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-Clang-Upload-Artifact:
-    strategy:
-      matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Debian-Clang-Servers
-    runs-on: Debian
-    steps:
-    - name: Checkout
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with: 
-        name: Linux Artifacts (${{matrix.build_type}})
-        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
+        name: (Clang) Horizon Linux Servers (${{matrix.build_type}})
+        path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
 
   Windows-Tests:
     strategy:
@@ -298,7 +294,12 @@ jobs:
         foreach ($file in $files) {
           $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
           & "${{github.workspace}}\build\bin\${{matrix.build_type}}\$t"
-        }
+        }   
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: Horizon Windows Tests (${{matrix.build_type}})
+        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
       
   Windows-Tools:
     strategy:
@@ -338,16 +339,8 @@ jobs:
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\auth.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\auth-server.lua.dist" --test-run 
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\char.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\char-server.lua.dist" --test-run
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\zone.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\zone-server.lua.dist" --test-run 
-
-  Windows-Upload-Artifact:
-    strategy:
-      matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: Windows-Servers
-    runs-on: Windows
-    steps:
-    - name: Checkout
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with: 
-        name: Horizon Windows Artifacts (${{matrix.build_type}})
-        path: ${{github.workspace}}\build\bin\${{env.matrix.build_type}}\**\*
+        name: Horizon Windows Servers (${{matrix.build_type}})
+        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
