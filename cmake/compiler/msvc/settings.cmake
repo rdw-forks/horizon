@@ -113,9 +113,6 @@ DisableIncrementalLinking(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO)
 if (WITH_ASAN)
     # Add compiler flags for AddressSanitizer
     add_compile_options(/fsanitize=address)
-    
-    # Add linker flags for AddressSanitizer
-    add_link_options(/fsanitize=address)
 	message(STATUS "MSVC: Sanitization enabled (/fsanitize=address).")
 endif()
 
