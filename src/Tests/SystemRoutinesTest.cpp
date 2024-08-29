@@ -61,8 +61,11 @@ public:
 			std::cout << "Calculating..." << std::endl;
 			p.set_value(ResultType(get_request().i * 20)); 
 		});
+
 		std::future<ResultType> f = p.get_future();
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
 		set_result(ResultType(f.get())); 
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
 		t.join();
 
 		return true;
@@ -97,8 +100,11 @@ public:
 			std::cout << "Calculating..." << std::endl;
 			p.set_value(ResultType(get_request().i * 20 + get_previous_result().get_one())); 
 		});
+		
 		std::future<ResultType> f = p.get_future();
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
 		set_result(ResultType(f.get())); 
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
 		t.join();
 
 		return true;
