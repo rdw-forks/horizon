@@ -198,6 +198,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
+    needs: Debian-Clang-Tests-Tools-SAN
     runs-on: Debian
     steps:
     - name: Checkout
