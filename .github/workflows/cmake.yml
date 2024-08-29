@@ -27,8 +27,8 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
-        cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config Debug
+        cmake --build ${{github.workspace}}/build --target install --config Debug
     - name: Run
       run: |
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
@@ -181,8 +181,8 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
-        cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config Debug
+        cmake --build ${{github.workspace}}/build --target install --config Debug
     - name: Run
       run: |
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
@@ -333,7 +333,7 @@ jobs:
       uses: actions/checkout@v3
     - name: Build
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+        cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DWITH_ASAN=true
         cmake --build build --config ${{matrix.build_type}}
     - name: Run
       run: |
