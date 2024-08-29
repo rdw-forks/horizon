@@ -20,13 +20,14 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
+        sanitizer: [ "-DWITH_ASAN=true", "-DWITH_TSAN=true", "-DWITH_LSAN=true" ]
     runs-on: Debian
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
@@ -45,7 +46,7 @@ jobs:
       with: 
         name: (GCC) Linux Tests (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/**/*
-  Debian-GCC-ALL-ASAN:
+  Debian-GCC-Servers-ASAN:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
@@ -70,7 +71,7 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-GCC-ALL-TSAN:
+  Debian-GCC-Servers-TSAN:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
@@ -93,7 +94,7 @@ jobs:
         gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
         gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
         gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-GCC-ALL-LSAN:
+  Debian-GCC-Servers-LSAN:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
@@ -120,7 +121,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: [ Debian-GCC-ALL-TSAN, Debian-GCC-ALL-ASAN, Debian-GCC-ALL-LSAN ]
+    needs: [ Debian-GCC-Servers-TSAN, Debian-GCC-Servers-ASAN, Debian-GCC-Servers-LSAN ]
     runs-on: Debian
     steps:
     - name: Checkout
@@ -148,13 +149,14 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
+        sanitizer: [ "-DWITH_ASAN=true", "-DWITH_TSAN=true", "-DWITH_LSAN=true" ]
     runs-on: Debian
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Configure & Build
       run: |
-        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
@@ -173,7 +175,7 @@ jobs:
       with: 
         name: (Clang) Horizon Linux Tests (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/**/*
-  Debian-Clang-ALL-ASAN:
+  Debian-Clang-Servers-ASAN:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
@@ -198,7 +200,7 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-Clang-ALL-TSAN:
+  Debian-Clang-Servers-TSAN:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
@@ -221,7 +223,7 @@ jobs:
         gdb -ex run -ex quit --args auth --with-config="config/auth-server.lua.dist" --test-run
         gdb -ex run -ex quit --args char --with-config="config/char-server.lua.dist" --test-run
         gdb -ex run -ex quit --args zone --with-config="config/zone-server.lua.dist" --test-run
-  Debian-Clang-ALL-LSAN:
+  Debian-Clang-Servers-LSAN:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
@@ -248,7 +250,7 @@ jobs:
     strategy:
       matrix:
         build_type: [ "Debug", "RelWithDebInfo", "Release" ]
-    needs: [ Debian-Clang-ALL-ASAN, Debian-Clang-ALL-TSAN, Debian-Clang-ALL-LSAN ]
+    needs: [ Debian-Clang-Servers-ASAN, Debian-Clang-Servers-TSAN, Debian-Clang-Servers-LSAN ]
     runs-on: Debian
     steps:
     - name: Checkout
