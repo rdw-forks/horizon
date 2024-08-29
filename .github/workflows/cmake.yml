@@ -16,10 +16,9 @@ env:
   LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "2"
 jobs:
-  Debian-GCC-Tests-Tools:
+  Debian-GCC-Tests-Tools-SAN:
     strategy:
       matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
         sanitizer: [ "-DWITH_ASAN=true", "-DWITH_TSAN=true", "-DWITH_LSAN=true" ]
     runs-on: Debian
     steps:
@@ -28,6 +27,32 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
+    - name: Run
+      run: |
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/scripts -r
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          gdb -ex run -ex quit --args "${{github.workspace}}/build/bin/${t}";
+        done
+  
+  Debian-GCC-Tests-Tools:
+    strategy:
+      matrix:
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
+    needs: Debian-GCC-Tests-Tools-SAN
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
@@ -145,10 +170,9 @@ jobs:
       with: 
         name: (GCC) Linux Servers (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
-  Debian-Clang-Tests-Tools:
+  Debian-Clang-Tests-Tools-SAN:
     strategy:
       matrix:
-        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
         sanitizer: [ "-DWITH_ASAN=true", "-DWITH_TSAN=true", "-DWITH_LSAN=true" ]
     runs-on: Debian
     steps:
@@ -157,6 +181,30 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
+    - name: Run
+      run: |
+        cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
+        cp ${{github.workspace}}/db ${{github.workspace}}/build/bin/db -r
+        cp ${{github.workspace}}/scripts ${{github.workspace}}/build/bin/scripts -r
+        files=$(find ${{github.workspace}}/src/Tests -type f -iname "*Test.cpp");
+        for f in ${files[@]};
+        do
+          t=$(basename ${f::-4});
+          gdb -ex run -ex quit --args "${{github.workspace}}/build/bin/${t}";
+        done
+  Debian-Clang-Tests-Tools:
+    strategy:
+      matrix:
+        build_type: [ "Debug", "RelWithDebInfo", "Release" ]
+    runs-on: Debian
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Configure & Build
+      run: |
+        cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
         cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
