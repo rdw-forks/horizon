@@ -506,9 +506,8 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 	BOOST_CHECK_EQUAL(work_gl_1->get_result().get_one(), 1000);
 	routine_2->get_runtime_synchronization_mutex().unlock();
 
-	routine_4->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work_s_1->has_result(), false);
-	routine_4->get_runtime_synchronization_mutex().unlock();
+
 	routine_5->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work_n_1->get_result().get_one(), 800);
 	routine_5->get_runtime_synchronization_mutex().unlock();
