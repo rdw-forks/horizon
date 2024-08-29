@@ -77,7 +77,12 @@ public:
 	void set_request(work_request _req) { _request = _req; }
 	work_request get_request() { return _request; }
 
-	bool has_result() { return _result.get_one() > 0; }
+	bool has_result() {
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
+		bool result = _result.get_one() > 0;
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
+		return result; 
+	}
 	
 	work_request _request;
 	ResultType _result;
@@ -119,7 +124,12 @@ public:
 	void set_result(ResultType res) { _result = res; }
 	ResultType get_result() { return _result; }
 
-	bool has_result() { return _result.get_one() > 0; }
+	bool has_result() {
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
+		bool result = _result.get_one() > 0;
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
+		return result;	
+	}
 
 	Horizon::System::Result<int> _prev_result;
 	work_request _request;
