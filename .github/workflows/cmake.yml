@@ -38,7 +38,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          .${{github.workspace}}/build/bin/${t};
+          ${{github.workspace}}/build/bin/${t};
         done
   
   Debian-GCC-Tests-Tools:
@@ -64,7 +64,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          .${{github.workspace}}/build/bin/${t};
+          ${{github.workspace}}/build/bin/${t};
         done
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
@@ -192,7 +192,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          .${{github.workspace}}/build/bin/${t}
+          ${{github.workspace}}/build/bin/${t}
         done
   Debian-Clang-Tests-Tools:
     strategy:
@@ -217,7 +217,7 @@ jobs:
         for f in ${files[@]};
         do
           t=$(basename ${f::-4});
-          .${{github.workspace}}/build/bin/${t}
+          ${{github.workspace}}/build/bin/${t}
         done
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
