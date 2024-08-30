@@ -40,11 +40,11 @@ namespace Zone
 	{
 		class Player;
 	}
-class PersistenceManager : public MainframeComponent
+class PersistenceManager : public KernelComponent
 {
 public:
 	PersistenceManager() 
-	: MainframeComponent(Horizon::System::RUNTIME_PERSISTENCE),
+	: KernelComponent(Horizon::System::RUNTIME_PERSISTENCE),
 	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()))
 	{
 	}

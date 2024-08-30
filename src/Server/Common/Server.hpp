@@ -72,7 +72,7 @@ extern inline void set_shutdown_signal(int signal) { _shutdown_signal.exchange(s
 extern inline shutdown_stages get_shutdown_stage() { return _shutdown_stage.load(); };
 extern inline void set_shutdown_stage(shutdown_stages new_stage) { _shutdown_stage.exchange(new_stage); };
 
-enum mainframe_resource_priority_type
+enum kernel_resource_priority_type
 {
 	RESOURCE_PRIORITY_PRIMARY = 0,
 	RESOURCE_PRIORITY_SECONDARY = 1,
@@ -84,7 +84,7 @@ enum mainframe_resource_priority_type
 	RESOURCE_PRIORITY_OCTONARY = 7,
 	RESOURCE_PRIORITY_NONARY = 8,
 	RESOURCE_PRIORITY_DENARY = 9,
-	MAX_MAINFRAME_SEGMENT_PRIORITIES = 10
+	MAX_KERNEL_SEGMENT_PRIORITIES = 10
 };
 
 template <typename Key, typename Value>
@@ -185,10 +185,10 @@ private:
     std::tuple<SharedPriorityResourceMediums...> _resources;
 };
 
-class MainframeComponent : public std::enable_shared_from_this<MainframeComponent>
+class KernelComponent : public std::enable_shared_from_this<KernelComponent>
 {
 public:
-	MainframeComponent(Horizon::System::runtime_module_type module_type) 
+	KernelComponent(Horizon::System::runtime_module_type module_type) 
 	: _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) 
 	{ }
 	virtual void initialize(int segment_number = 1) 
@@ -276,10 +276,10 @@ public:
 	FinishFunc m_finish_func;         ///< Completion handler function.
 };
 
-class CommandLineProcess : public MainframeComponent
+class CommandLineProcess : public KernelComponent
 {
 public:
-	CommandLineProcess() : MainframeComponent(Horizon::System::RUNTIME_COMMANDLINE) { }
+	CommandLineProcess() : KernelComponent(Horizon::System::RUNTIME_COMMANDLINE) { }
 	void process();
 	void queue(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
 	void add_function(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
@@ -319,11 +319,11 @@ private:
 	std::atomic<bool> _is_running_command{false};
 };
 
-class DatabaseProcess : public MainframeComponent
+class DatabaseProcess : public KernelComponent
 {
 public:
-	// MainframeComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
-	DatabaseProcess() : MainframeComponent(Horizon::System::RUNTIME_DATABASE) { }
+	// KernelComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
+	DatabaseProcess() : KernelComponent(Horizon::System::RUNTIME_DATABASE) { }
 	~DatabaseProcess() 
 	{ 
 		_connection.reset();
@@ -361,24 +361,24 @@ protected:
 	std::atomic<bool> _is_finalized{false};
 };
 
-struct mainframe_component_state_holder
+struct kernel_component_state_holder
 {
-	~mainframe_component_state_holder() { ptr.reset(); }
+	~kernel_component_state_holder() { ptr.reset(); }
 	Horizon::System::runtime_module_type type;
-	std::shared_ptr<MainframeComponent> ptr;
+	std::shared_ptr<KernelComponent> ptr;
 	int segment_number;
 };
 
-typedef std::map<std::string, mainframe_component_state_holder> MainframeComponents;
+typedef std::map<std::string, kernel_component_state_holder> KernelComponents;
 
-class Mainframe
+class Kernel
 {
 public:
-	Mainframe(general_server_configuration &config);
-	~Mainframe();
+	Kernel(general_server_configuration &config);
+	~Kernel();
 
-	virtual void initialize() = 0; //< Mainframe initialization routine
-	virtual void finalize() = 0;   //< Mainframe finalization routine
+	virtual void initialize() = 0; //< Kernel initialization routine
+	virtual void finalize() = 0;   //< Kernel finalization routine
 	virtual void post_initialize() = 0; //< Post initialization routine
 	virtual void post_finalize() = 0; //< Post finalization routine
 
@@ -408,7 +408,7 @@ public:
 
 	template <typename T>
 	void register_component(Horizon::System::runtime_module_type type, T &&component) { 
-		mainframe_component_state_holder holder;
+		kernel_component_state_holder holder;
 		holder.segment_number = get_registered_component_count_of_type(type) + 1;
 		holder.type = type;
 		holder.ptr = std::make_shared<T>(std::move(component));
@@ -418,10 +418,10 @@ public:
 	template <typename T>
 	void register_component(Horizon::System::runtime_module_type type, std::shared_ptr<T> component) 
 	{
-		mainframe_component_state_holder holder;
+		kernel_component_state_holder holder;
 		holder.segment_number = get_registered_component_count_of_type(type) + 1;
 		holder.type = type;
-		holder.ptr = std::static_pointer_cast<MainframeComponent>(component);
+		holder.ptr = std::static_pointer_cast<KernelComponent>(component);
 		_components.insert(std::pair(component->get_uuid_string(), holder)); 
 	}
 
@@ -460,7 +460,7 @@ public:
 
 	int get_component_count() { return _components.size(); }
 
-	MainframeComponents get_component_of_types() { return _components; }
+	KernelComponents get_component_of_types() { return _components; }
 
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
@@ -474,13 +474,13 @@ public:
 	
 protected:
 	boost::asio::io_context _io_context_global;
-	MainframeComponents _components;
+	KernelComponents _components;
 	general_server_configuration _config;
 private:
 	Horizon::System::SystemRoutineManager _hsr_manager;
 };
 
-class Server : public Mainframe
+class Server : public Kernel
 {
 public:
 	Server();

@@ -44,7 +44,7 @@ namespace Horizon
 {
 namespace Auth
 {
-class AuthNetworkThread : public MainframeComponent, public Networking::NetworkThread<AuthSocket>
+class AuthNetworkThread : public KernelComponent, public Networking::NetworkThread<AuthSocket>
 {
 protected:
 	void on_socket_removed(std::shared_ptr<AuthSocket> socket) override
@@ -58,7 +58,7 @@ protected:
 	}
 public:
 	AuthNetworkThread() 
-	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
+	: KernelComponent(Horizon::System::RUNTIME_NETWORKING),
 	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<AuthSocket>>>()))
 	{
 	}

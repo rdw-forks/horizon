@@ -42,7 +42,7 @@ namespace Horizon
 namespace Zone
 {
 	
-class ZoneNetworkThread : public MainframeComponent, public Networking::NetworkThread<ZoneSocket>
+class ZoneNetworkThread : public KernelComponent, public Networking::NetworkThread<ZoneSocket>
 {
 protected:
 	void on_socket_removed(std::shared_ptr<ZoneSocket> socket) override
@@ -56,7 +56,7 @@ protected:
 	}
 public:
 	ZoneNetworkThread() 
-	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
+	: KernelComponent(Horizon::System::RUNTIME_NETWORKING),
 	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSocket>>>())) 
 	{
 	}

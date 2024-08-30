@@ -119,15 +119,15 @@ public:
 class PassiveRuntimeScenario : public Horizon::System::RuntimeRoutineContext
 {
 public:
-	PassiveRuntimeScenario(std::shared_ptr<MainframeComponent> component, Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t) 
+	PassiveRuntimeScenario(std::shared_ptr<KernelComponent> component, Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t) 
 	: Horizon::System::RuntimeRoutineContext(component->get_system_routine_manager(), sync_t), _component(component), _module_type(module_t) { }
 
-	std::shared_ptr<MainframeComponent> get_component() { return _component.expired() == false ? _component.lock() : nullptr; }
+	std::shared_ptr<KernelComponent> get_component() { return _component.expired() == false ? _component.lock() : nullptr; }
 	
 	Horizon::System::runtime_module_type get_module_type() { return _module_type; }
 
 protected:
-	std::weak_ptr<MainframeComponent> _component;
+	std::weak_ptr<KernelComponent> _component;
 	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_RUNTIME};
 };
 
@@ -264,7 +264,7 @@ public:
 class SCENARIO_REGISTER_MONSTER_SPAWN : public PassiveRuntimeScenario
 {
 public:
-	SCENARIO_REGISTER_MONSTER_SPAWN(std::shared_ptr<MainframeComponent> component)
+	SCENARIO_REGISTER_MONSTER_SPAWN(std::shared_ptr<KernelComponent> component)
 	: PassiveRuntimeScenario(component, Horizon::System::RUNTIME_GAMELOGIC, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
 
 	struct s_register_monster_spawn_request
@@ -290,7 +290,7 @@ public:
 class SCENARIO_SPAWN_MONSTERS_IN_MAP : public PassiveRuntimeScenario
 {
 public:
-	SCENARIO_SPAWN_MONSTERS_IN_MAP(std::shared_ptr<MainframeComponent> component) 
+	SCENARIO_SPAWN_MONSTERS_IN_MAP(std::shared_ptr<KernelComponent> component) 
 	: PassiveRuntimeScenario(component, Horizon::System::RUNTIME_GAMELOGIC, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
 
 	struct s_spawn_monster_request
@@ -316,7 +316,7 @@ public:
 class SCENARIO_REMOVE_MONSTERS_IN_MAP : public PassiveRuntimeScenario
 {
 public:
-	SCENARIO_REMOVE_MONSTERS_IN_MAP(std::shared_ptr<MainframeComponent> component) 
+	SCENARIO_REMOVE_MONSTERS_IN_MAP(std::shared_ptr<KernelComponent> component) 
 	: PassiveRuntimeScenario(component, Horizon::System::RUNTIME_GAMELOGIC, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE) { }
 
 	struct s_remove_monster_request

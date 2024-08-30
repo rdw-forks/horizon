@@ -43,7 +43,7 @@ namespace Horizon
 namespace Char
 {
 	
-class CharNetworkThread : public MainframeComponent, public Networking::NetworkThread<CharSocket>
+class CharNetworkThread : public KernelComponent, public Networking::NetworkThread<CharSocket>
 {
 protected:
 	void on_socket_removed(std::shared_ptr<CharSocket> socket) override
@@ -57,7 +57,7 @@ protected:
 	}
 public:
 	CharNetworkThread() 
-	: MainframeComponent(Horizon::System::RUNTIME_NETWORKING),
+	: KernelComponent(Horizon::System::RUNTIME_NETWORKING),
 	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<CharSocket>>>())) 
 	{
 	}

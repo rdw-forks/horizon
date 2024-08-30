@@ -54,7 +54,7 @@ public:
 
 	bool execute() { 
 		std::promise<ResultType> p;
-		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
+		// Assuming this is the thread that will work on getting the result for either of the Kernel Components...
 		// We can use a promise / future combination of techniques to derive the final result.
 		std::thread t = std::thread([&]()
 		{ 
@@ -98,7 +98,7 @@ public:
 	bool execute() { 
 		using ResultType = Horizon::System::Result<int>;
 		std::promise<ResultType> p;
-		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
+		// Assuming this is the thread that will work on getting the result for either of the Kernel Components...
 		// We can use a promise / future combination of techniques to derive the final result.
 		std::thread t = std::thread([&]()
 		{ 
