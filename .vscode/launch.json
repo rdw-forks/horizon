@@ -4,6 +4,12 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+		{
+			"type": "cppvsdbg",
+			"request": "attach",
+			"name": "Attach to zone.exe",
+			"processId": "${command:pickProcess}"
+		},
         {
             "name": "MapCache",
             "type": "cppvsdbg",

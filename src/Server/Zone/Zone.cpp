@@ -35,19 +35,19 @@
 using namespace std;
 using namespace Horizon::Zone;
 
-ZoneMainframe::ZoneMainframe(s_zone_server_configuration &config) 
+ZoneKernel::ZoneKernel(s_zone_server_configuration &config) 
 : Server(), _config(config)
 {
 
 }
 
-ZoneMainframe::~ZoneMainframe()
+ZoneKernel::~ZoneKernel()
 {
 	if (!get_io_context().stopped())
 		get_io_context().stop();
 }
 
-void ZoneMainframe::initialize()
+void ZoneKernel::initialize()
 {
 	_task_scheduler.Schedule(Seconds(60), [this] (TaskContext context) {
 		verify_connected_sessions();
@@ -57,14 +57,14 @@ void ZoneMainframe::initialize()
 	Server::initialize();
 }
 
-void ZoneMainframe::finalize()
+void ZoneKernel::finalize()
 {
 	_task_scheduler.CancelAll();
 	
 	Server::finalize();
 }
 
-void ZoneMainframe::verify_connected_sessions()
+void ZoneKernel::verify_connected_sessions()
 {	
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 	
@@ -91,7 +91,7 @@ void ZoneMainframe::verify_connected_sessions()
  * Zone Main server constructor.
  */
 ZoneServer::ZoneServer()
-: ZoneMainframe(_zone_server_config), _update_timer(get_io_context())
+: ZoneKernel(_zone_server_config), _update_timer(get_io_context())
 {
 }
 
@@ -209,6 +209,9 @@ void ZoneServer::update(int64_t diff)
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
 	} else {	
+		for (auto i = _components.begin(); i != _components.end(); i++) {
+			HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { uuid: " << i->first << " }";
+		}
 		// Stop the client socket manager here because the io_context will be stopped later.
 		// If this is stopped before the io_context, it will cause a dangling pointer.
 		get_client_socket_mgr().stop();
@@ -227,8 +230,8 @@ void ZoneServer::initialize()
 	signal(SIGTERM, SignalHandler);
 	
 	// We declare this here since the responsibility of starting the network is of 
-	// the Runtime level. It must remain lower than the mainframe, because
-	// we're using the mainframe's io_context and it will be destroyed after the destruction of
+	// the Runtime level. It must remain lower than the kernel, because
+	// we're using the kernel's io_context and it will be destroyed after the destruction of
 	// the ClientSocketMgr class. This fixes the issue of dangling pointers and memory access violations.
 	sZone->get_client_socket_mgr().start(get_io_context(),
 						  sZone->general_conf().get_listen_ip(),
@@ -258,7 +261,7 @@ void ZoneServer::initialize()
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
 						  
-	ZoneMainframe::initialize();
+	ZoneKernel::initialize();
 
 	Server::post_initialize();
 
@@ -297,7 +300,7 @@ void ZoneServer::finalize()
 		deregister_component(Horizon::System::RUNTIME_SCRIPTVM, i + 1);
 	}
 
-	ZoneMainframe::finalize();
+	ZoneKernel::finalize();
 	
 	Server::post_finalize();
 }

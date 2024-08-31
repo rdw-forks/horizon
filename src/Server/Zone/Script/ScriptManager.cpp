@@ -40,7 +40,7 @@ using namespace Horizon::Zone;
 using namespace Horizon::Zone::Units;
 
 ScriptManager::ScriptManager()
-: MainframeComponent(Horizon::System::RUNTIME_SCRIPTVM),
+: KernelComponent(Horizon::System::RUNTIME_SCRIPTVM),
 _lua_state(std::make_shared<sol::state>()),
 _player_component(std::make_shared<PlayerComponent>()),
 _npc_component(std::make_shared<NPCComponent>()),

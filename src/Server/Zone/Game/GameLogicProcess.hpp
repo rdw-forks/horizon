@@ -44,7 +44,7 @@ namespace Zone
 		class Monster;
 	}
 	class Map;
-class GameLogicProcess : public MainframeComponent
+class GameLogicProcess : public KernelComponent
 {
 	
 class MonsterSpawnAgent
@@ -80,7 +80,7 @@ private:
 
 public:
 	GameLogicProcess() 
-	: MainframeComponent(Horizon::System::RUNTIME_GAMELOGIC),
+	: KernelComponent(Horizon::System::RUNTIME_GAMELOGIC),
 	_resource_manager(
 		PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<std::string, std::shared_ptr<Map>>>()),
 		SecondaryResource(RESOURCE_PRIORITY_SECONDARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()),

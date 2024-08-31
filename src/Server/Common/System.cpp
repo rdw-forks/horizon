@@ -35,7 +35,7 @@ Horizon::System::RuntimeRoutineContext::RuntimeRoutineContext(Server *s, runtime
 { 
 } 
 
-Horizon::System::RuntimeRoutineContext::RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t) 
+Horizon::System::RuntimeRoutineContext::RuntimeRoutineContext(std::shared_ptr<KernelComponent> component, runtime_synchronization_method sync_t) 
 : Horizon::System::RuntimeContext(component->get_system_routine_manager(), sync_t)
 { 
 } 

@@ -43,8 +43,8 @@
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
-Mainframe::Mainframe(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
-Mainframe::~Mainframe() 
+Kernel::Kernel(general_server_configuration &conf) : _config(conf), _hsr_manager(Horizon::System::RUNTIME_MAIN) { }
+Kernel::~Kernel() 
 {
 	for (auto it = _components.begin(); it != _components.end();) {
 		it->second.ptr.reset();
@@ -52,33 +52,33 @@ Mainframe::~Mainframe()
 	}
 }
 
-void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
-void Mainframe::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
-void Mainframe::system_routine_process_queue() { _hsr_manager.process_queue(); }
-void Mainframe::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
+void Kernel::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
+void Kernel::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
+void Kernel::system_routine_process_queue() { _hsr_manager.process_queue(); }
+void Kernel::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
 {
 	_hsr_manager.register_(module_t, sync_t, context);
 }
 
-boost::asio::io_context &Mainframe::get_io_context()
+boost::asio::io_context &Kernel::get_io_context()
 {
 	return _io_context_global;
 }
 
-void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
-void MainframeComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
-void MainframeComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
-void MainframeComponent::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
+void KernelComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
+void KernelComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
+void KernelComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
+void KernelComponent::system_routine_register(Horizon::System::runtime_module_type module_t, Horizon::System::runtime_synchronization_method sync_t, std::shared_ptr<Horizon::System::RuntimeContext> context)
 {
 	_hsr_manager.register_(module_t, sync_t, context);
 }
 
-void Mainframe::post_initialize()
+void Kernel::post_initialize()
 {
 
 }
 
-void Mainframe::post_finalize()
+void Kernel::post_finalize()
 {
 
 }
@@ -205,7 +205,7 @@ void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segmen
 }
 
 /* Public */
-Server::Server() : Mainframe(general_conf())
+Server::Server() : Kernel(general_conf())
 {   
 	auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
@@ -357,20 +357,16 @@ void Server::finalize()
 
 void Server::post_initialize()
 {
-	Mainframe::post_initialize();
+	Kernel::post_initialize();
 	
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { uuid: " << i->first << " }";
+		HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { uuid: " << i->first << " }";
 	}
 }
 
 void Server::post_finalize()
 {
-	Mainframe::post_finalize();
-	
-	for (auto i = _components.begin(); i != _components.end(); i++) {
-		HLog(info) << "Mainframe component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { uuid: " << i->first << " }";
-	}
+	Kernel::post_finalize();
 }
 
 bool Server::test_database_connection()

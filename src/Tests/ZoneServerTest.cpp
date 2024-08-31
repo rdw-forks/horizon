@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(ZoneServerTest)
 	 * Fixed :
 	 * Exception thrown at 0x00007FFA63663FAA (ntdll.dll) in ZoneSystemTest.exe: 0xC0000005: Access violation writing location 0x0000000000000024.
 	 * The program '[27192] ZoneSystemTest.exe' has exited with code 0 (0x0).
-	 * @note The reason for this error was that the io_context belonged to Server class and not Mainframe. 
+	 * @note The reason for this error was that the io_context belonged to Server class and not Kernel. 
 	 * Which resulted in the destruction of io_context before the DatabaseProcess was destroyed. Lingering _connection object caused issues without an io_context available.
 	 */
 	try {

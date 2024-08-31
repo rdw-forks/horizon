@@ -56,7 +56,7 @@ namespace Units
 	class Player;
 	class Monster;
 }
-class ScriptManager : public MainframeComponent
+class ScriptManager : public KernelComponent
 {
 public:
 	ScriptManager();

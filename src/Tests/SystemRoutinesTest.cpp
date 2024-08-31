@@ -54,15 +54,18 @@ public:
 
 	bool execute() { 
 		std::promise<ResultType> p;
-		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
+		// Assuming this is the thread that will work on getting the result for either of the Kernel Components...
 		// We can use a promise / future combination of techniques to derive the final result.
 		std::thread t = std::thread([&]()
 		{ 
 			std::cout << "Calculating..." << std::endl;
 			p.set_value(ResultType(get_request().i * 20)); 
 		});
+
 		std::future<ResultType> f = p.get_future();
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
 		set_result(ResultType(f.get())); 
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
 		t.join();
 
 		return true;
@@ -74,7 +77,12 @@ public:
 	void set_request(work_request _req) { _request = _req; }
 	work_request get_request() { return _request; }
 
-	bool has_result() { return _result.get_one() > 0; }
+	bool has_result() {
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
+		bool result = _result.get_one() > 0;
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
+		return result; 
+	}
 	
 	work_request _request;
 	ResultType _result;
@@ -90,15 +98,18 @@ public:
 	bool execute() { 
 		using ResultType = Horizon::System::Result<int>;
 		std::promise<ResultType> p;
-		// Assuming this is the thread that will work on getting the result for either of the Mainframe Components...
+		// Assuming this is the thread that will work on getting the result for either of the Kernel Components...
 		// We can use a promise / future combination of techniques to derive the final result.
 		std::thread t = std::thread([&]()
 		{ 
 			std::cout << "Calculating..." << std::endl;
 			p.set_value(ResultType(get_request().i * 20 + get_previous_result().get_one())); 
 		});
+		
 		std::future<ResultType> f = p.get_future();
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
 		set_result(ResultType(f.get())); 
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
 		t.join();
 
 		return true;
@@ -113,7 +124,12 @@ public:
 	void set_result(ResultType res) { _result = res; }
 	ResultType get_result() { return _result; }
 
-	bool has_result() { return _result.get_one() > 0; }
+	bool has_result() {
+		get_runtime_context()->get_runtime_synchronization_mutex().lock();
+		bool result = _result.get_one() > 0;
+		get_runtime_context()->get_runtime_synchronization_mutex().unlock();
+		return result;	
+	}
 
 	Horizon::System::Result<int> _prev_result;
 	work_request _request;
@@ -129,20 +145,31 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
     work_request req;
     
 	auto work = std::make_shared<TestWork>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work->set_request(work_request{20});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 	work->execute();
 	while(!work->has_result()) {
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	};
     auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1);
+	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work2->set_request(work_request{30});
 	work2->set_previous_result(work->get_result());
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
     auto work3 = std::make_shared<TestWork>(routine_1);
+	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work3->set_request(work_request{40});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
     auto work4 = std::make_shared<TestWork>(routine_1);
+
+	routine_1->get_runtime_synchronization_mutex().lock();
     work4->set_request(work_request{50});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
 	routine_1->push(work2);
 	routine_1->push(work3);
@@ -151,10 +178,12 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesTest)
 	srm.push(routine_1);
     srm.process_queue();
 
+	routine_1->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 1000);
 	BOOST_CHECK_EQUAL(work3->get_result().get_one(), 800);
 	BOOST_CHECK_EQUAL(work4->get_result().get_one(), 1000);
+	routine_1->get_runtime_synchronization_mutex().unlock();
 }
 
 BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
@@ -169,16 +198,28 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
     work_request req;
     
 	auto work = std::make_shared<TestWork>(routine_1);
+	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work->set_request(work_request{20});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
     auto work2 = std::make_shared<TestWork>(routine_1);
+	
+	routine_1->get_runtime_synchronization_mutex().lock();
     work2->set_request(work_request{30});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
 	auto work3 = std::make_shared<TestWork>(routine_2);
+	
+	routine_2->get_runtime_synchronization_mutex().lock();
     work3->set_request(work_request{40});
+	routine_2->get_runtime_synchronization_mutex().unlock();
 
 	auto work4 = std::make_shared<TestWork>(routine_2);
+	
+	routine_2->get_runtime_synchronization_mutex().lock();
     work4->set_request(work_request{50});
+	routine_2->get_runtime_synchronization_mutex().unlock();
 
 	routine_1->push(work);
 	routine_1->push(work2);
@@ -203,10 +244,15 @@ BOOST_AUTO_TEST_CASE(RuntimeRoutineContextChainTest)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 600);
+	routine_1->get_runtime_synchronization_mutex().unlock();
+	
+	routine_2->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work3->get_result().get_one(), 800);
 	BOOST_CHECK_EQUAL(work4->get_result().get_one(), 1000);
+	routine_2->get_runtime_synchronization_mutex().unlock();
 
 	t.join();
 }
@@ -223,33 +269,47 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
     work_request req;
     
 	auto work = std::make_shared<TestWork>(routine_1);
+	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work->set_request(work_request{20});
+	routine_1->get_runtime_synchronization_mutex().unlock();
+
 	work->execute();
 	while(!work->has_result());
 
     auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work2->set_request(work_request{30});
 	work2->set_previous_result(work->get_result());
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
     auto work3 = std::make_shared<TestWork>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work3->set_request(work_request{40});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 
 	auto work4 = std::make_shared<TestWork>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
     work4->set_request(work_request{50});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 	
 	routine_1->push(work2);
 	routine_1->push(work3);
 	routine_1->push(work4);
     
 	auto work_gl_1 = std::make_shared<TestWorkWithUseResult>(routine_2);
+	routine_2->get_runtime_synchronization_mutex().lock();
 	work_gl_1->set_request(work_request{30});
 	work_gl_1->set_previous_result(work->get_result());
+	routine_2->get_runtime_synchronization_mutex().unlock();
 
 	routine_2->push(work_gl_1);
     
 	auto work_p_1 = std::make_shared<TestWorkWithUseResult>(routine_3);
+	routine_3->get_runtime_synchronization_mutex().lock();
 	work_p_1->set_request(work_request{30});
 	work_p_1->set_previous_result(work->get_result());
+	routine_3->get_runtime_synchronization_mutex().unlock();
 
 	routine_3->push(work_p_1);
 
@@ -278,12 +338,19 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesDispatchTest)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	};
 
+	routine_1->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 1000);
 	BOOST_CHECK_EQUAL(work3->get_result().get_one(), 800);
 	BOOST_CHECK_EQUAL(work4->get_result().get_one(), 1000);
+	routine_1->get_runtime_synchronization_mutex().unlock();
+
+	routine_2->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work_gl_1->get_result().get_one(), 1000);
+	routine_2->get_runtime_synchronization_mutex().unlock();
+	routine_3->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work_p_1->get_result().get_one(), 1000);
+	routine_3->get_runtime_synchronization_mutex().unlock();
 
 	thread_1.join();
 	thread_2.join();
@@ -306,44 +373,61 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
     work_request req;
     
 	auto work = std::make_shared<TestWork>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work->set_request(work_request{20});
+	routine_1->get_runtime_synchronization_mutex().unlock();
 	work->execute();
 	while(!work->has_result()) 
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	};
     auto work2 = std::make_shared<TestWorkWithUseResult>(routine_1);
+	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work2->set_request(work_request{30});
+	routine_1->get_runtime_synchronization_mutex().unlock();
     auto work3 = std::make_shared<TestWork>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work3->set_request(work_request{40});
+	routine_1->get_runtime_synchronization_mutex().unlock();
     auto work4 = std::make_shared<TestWork>(routine_1);
+	routine_1->get_runtime_synchronization_mutex().lock();
 	work4->set_request(work_request{50});
+	routine_1->get_runtime_synchronization_mutex().unlock();
     
 	routine_1->push(work2);
 	routine_1->push(work3);
 	routine_1->push(work4);
     
 	auto work_gl_1 = std::make_shared<TestWorkWithUseResult>(routine_2);
+	routine_2->get_runtime_synchronization_mutex().lock();
 	work_gl_1->set_request(work_request{30});
 	work_gl_1->set_previous_result(work->get_result());
+	routine_2->get_runtime_synchronization_mutex().unlock();
 
 	routine_2->push(work_gl_1);
     
 	auto work_p_1 = std::make_shared<TestWorkWithUseResult>(routine_3);
+	routine_3->get_runtime_synchronization_mutex().lock();
 	work_p_1->set_request(work_request{30});
 	work_p_1->set_previous_result(work->get_result());
+	routine_3->get_runtime_synchronization_mutex().unlock();
 
 	routine_3->push(work_p_1);
     
 	auto work_s_1 = std::make_shared<TestWorkWithUseResult>(routine_4);
+	routine_4->get_runtime_synchronization_mutex().lock();
 	work_s_1->set_request(work_request{10});
 	work_s_1->set_previous_result(work->get_result());
+	routine_4->get_runtime_synchronization_mutex().unlock();
 
 	routine_4->push(work_s_1);
     
 	auto work_n_1 = std::make_shared<TestWorkWithUseResult>(routine_5);
+	routine_5->get_runtime_synchronization_mutex().lock();
 	work_n_1->set_request(work_request{20});
 	work_n_1->set_previous_result(work->get_result());
+	routine_5->get_runtime_synchronization_mutex().unlock();
 
 	routine_5->push(work_n_1);
 
@@ -411,13 +495,22 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	};
 	
+	routine_1->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work->get_result().get_one(), 400);
 	BOOST_CHECK_EQUAL(work2->get_result().get_one(), 600);
 	BOOST_CHECK_EQUAL(work3->get_result().get_one(), 800);
 	BOOST_CHECK_EQUAL(work4->get_result().get_one(), 1000);
+	routine_1->get_runtime_synchronization_mutex().unlock();
+
+	routine_2->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work_gl_1->get_result().get_one(), 1000);
+	routine_2->get_runtime_synchronization_mutex().unlock();
+
 	BOOST_CHECK_EQUAL(work_s_1->has_result(), false);
+
+	routine_5->get_runtime_synchronization_mutex().lock();
 	BOOST_CHECK_EQUAL(work_n_1->get_result().get_one(), 800);
+	routine_5->get_runtime_synchronization_mutex().unlock();
 
 	thread_1.join();
 	thread_2.join();

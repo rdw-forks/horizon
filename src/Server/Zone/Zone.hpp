@@ -94,11 +94,11 @@ struct s_zone_server_configuration
 	int _max_script_vm_threads{1};
 };
 
-class ZoneMainframe : public Server
+class ZoneKernel : public Server
 {
 public:
-	ZoneMainframe(s_zone_server_configuration &config);
-	~ZoneMainframe();
+	ZoneKernel(s_zone_server_configuration &config);
+	~ZoneKernel();
 
 	void initialize();
 	void finalize();
@@ -114,11 +114,11 @@ protected:
 	s_zone_server_configuration _config;
 };
 
-class ZoneRuntime : public MainframeComponent
+class ZoneRuntime : public KernelComponent
 {
 public:
 	ZoneRuntime() 
-	: MainframeComponent(Horizon::System::RUNTIME_RUNTIME),
+	: KernelComponent(Horizon::System::RUNTIME_RUNTIME),
 	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>()))
 	{
 	}
@@ -159,7 +159,7 @@ private:
 
 };
 
-class ZoneServer : public ZoneMainframe
+class ZoneServer : public ZoneKernel
 {
 public:
 	ZoneServer();

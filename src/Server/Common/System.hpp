@@ -43,7 +43,7 @@
 #include <iostream>
 
 class Server;
-class MainframeComponent;
+class KernelComponent;
 namespace Horizon
 {
 namespace System
@@ -389,7 +389,7 @@ class RuntimeRoutineContext : public RuntimeContext
 {
 public:
 	RuntimeRoutineContext(Server *s,  runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
-	RuntimeRoutineContext(std::shared_ptr<MainframeComponent> component, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
+	RuntimeRoutineContext(std::shared_ptr<KernelComponent> component, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 	RuntimeRoutineContext(SystemRoutineManager &hsr_manager, runtime_synchronization_method sync_t = RUNTIME_SYNC_NONE);
 
 	void status_message(std::string message) { HLog(info) << "{s:" << get_uuid_string() << "}" << message; }
