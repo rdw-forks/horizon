@@ -375,6 +375,7 @@ private:
 class DatabaseProcess : public KernelComponent
 {
 public:
+	DatabaseProcess() : KernelComponent(nullptr, Horizon::System::RUNTIME_DATABASE) { }
 	// KernelComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
 	DatabaseProcess(Kernel *kernel) : KernelComponent(kernel, Horizon::System::RUNTIME_DATABASE) { }
 	~DatabaseProcess() 
