@@ -32,6 +32,8 @@
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
 #include <boost/bind/bind.hpp>
 
+#include <signal.h>
+
 using namespace std;
 using namespace Horizon::Zone;
 
@@ -178,15 +180,19 @@ void ZoneServer::from_uuid(uint64_t unit_uuid, uint8_t& type, uint32_t& uid, uin
  * Signal Handler for the Zone-Server main thread.
  * @param error
  */
-void SignalHandler(int signal)
+void SignalHandler(int signal_num)
 {
-	if (signal == SIGINT || signal == SIGTERM
+	if (sZone->get_signal_interrupt_command_line_loop() == true) {
+		sZone->set_signal_interrupt_command_line_loop(false);
+		// Install a signal handler
+		signal(signal_num, SignalHandler);
+	} else if (signal_num == SIGINT || signal_num == SIGTERM
 #ifndef WIN32
 		|| signal == SIGQUIT
 #endif
 		) {
 		set_shutdown_stage(SHUTDOWN_INITIATED);
-		set_shutdown_signal(signal);
+		set_shutdown_signal(signal_num);
 	}
 }
 
@@ -210,7 +216,7 @@ void ZoneServer::update(int64_t diff)
 		_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
 	} else {	
 		for (auto i = _components.begin(); i != _components.end(); i++) {
-			HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { uuid: " << i->first << " }";
+			HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { CPU: " << i->second.ptr->get_thread_cpu_id() << " , uuid: " << i->first << " }";
 		}
 		// Stop the client socket manager here because the io_context will be stopped later.
 		// If this is stopped before the io_context, it will cause a dangling pointer.
@@ -305,6 +311,12 @@ void ZoneServer::finalize()
 	Server::post_finalize();
 }
 
+ZoneRuntime::ZoneRuntime()
+: KernelComponent(sZone, Horizon::System::RUNTIME_RUNTIME),
+_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>()))
+{
+}
+
 void ZoneRuntime::start()
 {
 	while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
@@ -316,4 +328,6 @@ void ZoneRuntime::start()
 void ZoneRuntime::update(int64_t diff)
 {
 	get_system_routine_manager().process_queue();
+
+	calculate_and_set_cpu_load();
 }

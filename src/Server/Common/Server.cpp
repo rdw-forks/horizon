@@ -40,6 +40,13 @@
 #include <iomanip>
 #include <signal.h>
 
+#if WIN32
+#include <windows.h>
+#elif __linux__
+#include <ctime>
+#include <thread>
+#endif
+
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
@@ -63,6 +70,28 @@ void Kernel::system_routine_register(Horizon::System::runtime_module_type module
 boost::asio::io_context &Kernel::get_io_context()
 {
 	return _io_context_global;
+}
+
+double KernelComponent::get_thread_cpu_time()
+{
+#if WIN32
+	FILETIME creationTime, exitTime, kernelTime, userTime;
+    if (GetThreadTimes(GetCurrentThread(), &creationTime, &exitTime, &kernelTime, &userTime)) {
+        ULARGE_INTEGER uKernelTime, uUserTime;
+        uKernelTime.LowPart = kernelTime.dwLowDateTime;
+        uKernelTime.HighPart = kernelTime.dwHighDateTime;
+        uUserTime.LowPart = userTime.dwLowDateTime;
+        uUserTime.HighPart = userTime.dwHighDateTime;
+
+        return (uKernelTime.QuadPart + uUserTime.QuadPart) / 1e7; // Convert to seconds
+    }
+#elif __linux__
+    struct timespec ts;
+    if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts) == 0) {
+        return ts.tv_sec + ts.tv_nsec / 1e9;
+    }
+#endif
+	return 0.0;
 }
 
 void KernelComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
@@ -90,13 +119,36 @@ bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 	return true;
 }
 
+bool CommandLineProcess::clicmd_kernel_info(std::string /*cmd*/)
+{
+    std::string red = "\033[31m";
+    std::string green = "\033[32m";
+    std::string reset = "\033[0m";
+
+	get_kernel()->set_signal_interrupt_command_line_loop(true);
+	HLog(info) << "Horizon Kernel (C) 2024 Initialized with " << get_kernel()->get_components().size() << " components.";
+	while (get_kernel()->get_signal_interrupt_command_line_loop() == true) {
+		for (auto i = get_kernel()->get_components().begin(); i != get_kernel()->get_components().end(); i++) {
+			std::string online = std::string(red + "Offline" + reset);
+			if (i->second.ptr->is_initialized() == true)
+				online = std::string(green + "Online" + reset);
+			std::cout << "\r\033[K" << std::flush;
+			std::cout << "[" << online << "] Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")':	CPU #: " << i->second.ptr->get_thread_cpu_id() << ", Load: " << i->second.ptr->get_thread_cpu_load() <<  "%" << ",	Update Rate: " << i->second.ptr->get_thread_update_rate() << "/s." << std::flush << std::endl;
+		}
+        std::cout << "\033[" << get_kernel()->get_components().size() << "A";
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	std::cout << "\033[ " << get_kernel()->get_components().size() << "B";
+	return true;
+}
+
 void CommandLineProcess::initialize(int segment_number)
 {
 
 	_cli_thread = std::thread(std::bind(&CommandLineProcess::cli_thread_start, this));
 
 	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
-	
+	add_function("kernel-info", std::bind(&CommandLineProcess::clicmd_kernel_info, this, std::placeholders::_1));
 	set_segment_number(segment_number);
 
 	_is_initialized.exchange(true);
@@ -148,6 +200,18 @@ void CommandLineProcess::cli_thread_start()
 	while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
 	{
 		std::string command;
+
+#if WIN32
+		DWORD cpu = GetCurrentProcessorNumber();
+		if (get_thread_cpu_id() != (int) cpu) 
+			set_thread_cpu_id(cpu);
+#elif __linux__
+		int cpu = sched_getcpu();
+		if (get_thread_cpu_id() != cpu)
+			set_thread_cpu_id(cpu);
+#endif
+		calculate_and_set_cpu_load();
+
 		try {
 			while(_is_running_command.load() == true)
 			{
@@ -199,6 +263,16 @@ void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segmen
 		boost::mysql::handshake_params params(user, pass, database);
 		_connection->connect(*endpoints.begin(), params);
 		_is_initialized.exchange(true);
+#if WIN32
+		DWORD cpu = GetCurrentProcessorNumber();
+		if (get_thread_cpu_id() != (int) cpu) 
+			set_thread_cpu_id(cpu);
+#elif __linux__
+		int cpu = sched_getcpu();
+		if (get_thread_cpu_id() != cpu)
+			set_thread_cpu_id(cpu);
+#endif
+		calculate_and_set_cpu_load();
 	} catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();
 	}
@@ -298,7 +372,7 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
 		
-		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
+		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>(this));
 		
 		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
 			get_io_context(),
@@ -339,7 +413,7 @@ void Server::initialize()
 		HLog(info) << "Command line not supported during test-runs... skipping.";
 	} else {
 		HLog(info) << "Horizon Command-Line initializing...";
-		register_component(Horizon::System::RUNTIME_COMMANDLINE, std::make_shared<CommandLineProcess>());
+		register_component(Horizon::System::RUNTIME_COMMANDLINE, std::make_shared<CommandLineProcess>(this));
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->initialize();
 	}
 }
@@ -360,7 +434,7 @@ void Server::post_initialize()
 	Kernel::post_initialize();
 	
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { uuid: " << i->first << " }";
+		HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { CPU: " << i->second.ptr->get_thread_cpu_id() << ", uuid: " << i->first << " }";
 	}
 }
 

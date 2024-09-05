@@ -117,11 +117,7 @@ protected:
 class ZoneRuntime : public KernelComponent
 {
 public:
-	ZoneRuntime() 
-	: KernelComponent(Horizon::System::RUNTIME_RUNTIME),
-	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSession>>>()))
-	{
-	}
+	ZoneRuntime();
 
 	virtual void initialize(int segment_number = 1) override
 	{

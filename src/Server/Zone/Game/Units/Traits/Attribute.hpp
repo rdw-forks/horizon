@@ -45,9 +45,6 @@ namespace Traits
 	class AttributeVariance
 	{
 	public:
-		AttributeVariance() { }
-		~AttributeVariance() { }
-
 		virtual void add_min(int32_t val) { set_min(_min + val); }
 		virtual void sub_min(int32_t val) { set_min(_min - std::min(_min, val)); }
 		virtual int32_t get_min() const { return _min; }
@@ -69,6 +66,7 @@ namespace Traits
 	protected:
 		int32_t _min{ 0 }, _max{ 0 };
 	};
+
 
 	class Attribute
 	{

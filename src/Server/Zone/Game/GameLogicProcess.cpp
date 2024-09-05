@@ -45,9 +45,25 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
+#if WIN32
+	#include <windows.h>
+#elif __linux__
+	#include <sched.h>
+#endif
+
 using namespace Horizon::Zone;
 
 static std::atomic<bool> static_db_loaded = false;
+
+GameLogicProcess::GameLogicProcess()
+: KernelComponent(sZone, Horizon::System::RUNTIME_GAMELOGIC),
+_resource_manager(
+	PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<std::string, std::shared_ptr<Map>>>()),
+	SecondaryResource(RESOURCE_PRIORITY_SECONDARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()),
+	TertiaryResource(RESOURCE_PRIORITY_TERTIARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Unit>>>())
+)
+{
+}
 
 void GameLogicProcess::initialize(int segment_number)
 {
@@ -184,6 +200,17 @@ void GameLogicProcess::update(uint64_t diff)
 	getScheduler().Update();
 
 	get_system_routine_manager().process_queue();
+	
+#if WIN32
+	DWORD cpu = GetCurrentProcessorNumber();
+	if (get_thread_cpu_id() != (int) cpu) 
+		set_thread_cpu_id(cpu);
+#elif __linux__
+	int cpu = sched_getcpu();
+	if (get_thread_cpu_id() != cpu)
+		set_thread_cpu_id(cpu);
+#endif
+	calculate_and_set_cpu_load();
 }
 
 GameLogicProcess::MonsterSpawnAgent::~MonsterSpawnAgent()

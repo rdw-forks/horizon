@@ -50,6 +50,8 @@
 #include <boost/asio/ssl/context.hpp>
 #include <boost/system/system_error.hpp>
 
+#include <boost/chrono.hpp>
+
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
 #include <sol/sol.hpp>
@@ -185,11 +187,12 @@ private:
     std::tuple<SharedPriorityResourceMediums...> _resources;
 };
 
+class Kernel;
 class KernelComponent : public std::enable_shared_from_this<KernelComponent>
 {
 public:
-	KernelComponent(Horizon::System::runtime_module_type module_type) 
-	: _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) 
+	KernelComponent(Kernel *kernel, Horizon::System::runtime_module_type module_type) 
+	: _kernel(kernel), _module_type(module_type), _hsr_manager(module_type), _uuid(boost::uuids::random_generator()()) 
 	{ }
 	virtual void initialize(int segment_number = 1) 
 	{
@@ -231,11 +234,60 @@ public:
 	
 	Horizon::System::SystemRoutineManager &get_system_routine_manager() { return _hsr_manager; }
 
+	Kernel *get_kernel() { return _kernel; }
+
+	void set_thread_cpu_id(int cpu_id) { _thread_cpu_id.exchange(cpu_id); }
+	int get_thread_cpu_id() { return _thread_cpu_id.load(); }
+
+	void set_thread_cpu_load(double cpu_time) { _thread_cpu_load.exchange(cpu_time); }
+	double get_thread_cpu_load() { return _thread_cpu_load.load(); }
+	
+	void set_thread_last_cpu_time(double time) { _last_thread_cpu_time = time; }
+	double get_thread_last_cpu_time() { return _last_thread_cpu_time; }
+	
+	double get_thread_cpu_time();
+
+	void set_thread_update_rate(double rate) { _thread_update_rate.exchange(rate); }
+	double get_thread_update_rate() { return _thread_update_rate.load(); }
+	
+	void calculate_and_set_cpu_load()
+	{
+		double cpu_time = get_thread_cpu_time();
+		double last_cpu_time = get_thread_last_cpu_time();
+		double diffCpu = cpu_time - last_cpu_time;
+		auto currentWallClockTime = std::chrono::steady_clock::now();
+		auto diffWallTime = std::chrono::duration_cast<std::chrono::nanoseconds>(currentWallClockTime - _last_cpu_wall_time).count();
+		_last_cpu_wall_time = currentWallClockTime;
+		double load = diffCpu / (diffWallTime / 1e9);
+		set_thread_cpu_load(load);
+		set_thread_last_cpu_time(cpu_time);
+		_update_count++;
+
+        // Update thread update rate every second to determine the number of updates per second
+        auto current_time = std::chrono::steady_clock::now();
+        auto diff_time = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - _last_thread_update_rate_time).count();
+        if (diff_time >= 1e9) {
+            double update_rate = _update_count / (diff_time / 1e9);
+            set_thread_update_rate(update_rate);
+            _update_count = 0;
+            _last_thread_update_rate_time = current_time;
+		}
+	}
+
 private:
 	std::atomic<int64_t> _segment_number{0};
 	Horizon::System::runtime_module_type _module_type{Horizon::System::RUNTIME_MAIN};
 	Horizon::System::SystemRoutineManager _hsr_manager;
 	boost::uuids::uuid _uuid;
+
+	std::atomic<int> _thread_cpu_id{0};
+	double _last_thread_cpu_time{0.0};
+	std::atomic<double> _thread_cpu_load{0.0};
+	std::chrono::steady_clock::time_point _last_cpu_wall_time;
+	Kernel *_kernel{nullptr};
+	int _update_count{0};
+	std::chrono::steady_clock::time_point _last_thread_update_rate_time;
+	std::atomic<double> _thread_update_rate{0.0};
 };
 
 class CLICommand
@@ -279,7 +331,7 @@ public:
 class CommandLineProcess : public KernelComponent
 {
 public:
-	CommandLineProcess() : KernelComponent(Horizon::System::RUNTIME_COMMANDLINE) { }
+	CommandLineProcess(Kernel *kernel) : KernelComponent(kernel, Horizon::System::RUNTIME_COMMANDLINE) { }
 	void process();
 	void queue(CLICommand &&cmdMgr) { _cli_cmd_queue.push(std::move(cmdMgr)); }
 	void add_function(std::string cmd, std::function<bool(std::string)> func) { _cli_function_map.insert(std::make_pair(cmd, func)); };
@@ -305,6 +357,7 @@ public:
 	 * CLI Commands
 	 */
 	bool clicmd_shutdown(std::string /*cmd*/);
+	bool clicmd_kernel_info(std::string /*cmd*/);
 
 	bool is_initialized() override { return _is_initialized; }
 	bool is_finalized() override { return _is_finalized; }
@@ -323,7 +376,7 @@ class DatabaseProcess : public KernelComponent
 {
 public:
 	// KernelComponent dispatch module type is set to Main because DatabaseProcess doesn't run on its own thread.
-	DatabaseProcess() : KernelComponent(Horizon::System::RUNTIME_DATABASE) { }
+	DatabaseProcess(Kernel *kernel) : KernelComponent(kernel, Horizon::System::RUNTIME_DATABASE) { }
 	~DatabaseProcess() 
 	{ 
 		_connection.reset();
@@ -460,7 +513,7 @@ public:
 
 	int get_component_count() { return _components.size(); }
 
-	KernelComponents get_component_of_types() { return _components; }
+	KernelComponents &get_components() { return _components; }
 
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context);
 	void system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context);
@@ -472,12 +525,17 @@ public:
 	/* Core I/O Service*/
 	boost::asio::io_context &get_io_context();
 	
+	void set_signal_interrupt_command_line_loop(bool signal) { _signal_interrupt_command_line_loop.exchange(signal); }
+	bool get_signal_interrupt_command_line_loop() { return _signal_interrupt_command_line_loop.load(); }
+	
 protected:
 	boost::asio::io_context _io_context_global;
 	KernelComponents _components;
 	general_server_configuration _config;
 private:
 	Horizon::System::SystemRoutineManager _hsr_manager;
+
+	std::atomic<bool> _signal_interrupt_command_line_loop{false};
 };
 
 class Server : public Kernel

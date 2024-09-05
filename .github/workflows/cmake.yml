@@ -23,7 +23,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
@@ -49,7 +49,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -67,7 +67,7 @@ jobs:
           ${{github.workspace}}/build/bin/${t};
         done
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: (GCC) Linux Tests (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/**/*
@@ -79,7 +79,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -104,7 +104,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -127,7 +127,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_LSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -150,7 +150,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -166,7 +166,7 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: (GCC) Linux Servers (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
@@ -177,7 +177,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
@@ -202,7 +202,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -220,7 +220,7 @@ jobs:
           ${{github.workspace}}/build/bin/${t}
         done
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: (Clang) Horizon Linux Tests (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/**/*
@@ -232,7 +232,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=false -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -257,7 +257,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -280,7 +280,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_LSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -303,7 +303,7 @@ jobs:
     runs-on: Debian
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
@@ -319,7 +319,7 @@ jobs:
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: (Clang) Horizon Linux Servers (${{matrix.build_type}})
         path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
@@ -331,7 +331,7 @@ jobs:
     runs-on: Windows
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
@@ -347,7 +347,7 @@ jobs:
           & "${{github.workspace}}\build\bin\${{matrix.build_type}}\$t"
         }   
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: Horizon Windows Tests (${{matrix.build_type}})
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
@@ -360,7 +360,7 @@ jobs:
     runs-on: Windows
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Build
       run: |
@@ -375,7 +375,7 @@ jobs:
     runs-on: Windows
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
    
     - name: Configure Step & Build
       run: |
@@ -391,7 +391,7 @@ jobs:
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\char.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\char-server.lua.dist" --test-run
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\zone.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\zone-server.lua.dist" --test-run 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: Horizon Windows Servers (${{matrix.build_type}})
         path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
