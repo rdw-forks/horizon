@@ -186,11 +186,7 @@ void SignalHandler(int signal_num)
 		sZone->set_signal_interrupt_command_line_loop(false);
 		// Install a signal handler
 		signal(signal_num, SignalHandler);
-	} else if (signal_num == SIGINT || signal_num == SIGTERM
-#ifndef WIN32
-		|| signal == SIGQUIT
-#endif
-		) {
+	} else {
 		set_shutdown_stage(SHUTDOWN_INITIATED);
 		set_shutdown_signal(signal_num);
 	}
