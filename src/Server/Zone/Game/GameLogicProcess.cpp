@@ -193,6 +193,7 @@ void GameLogicProcess::start_internal()
 
 void GameLogicProcess::update(uint64_t diff)
 {
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	// Update the entities.
 	for (auto unit_it : this->get_resource_manager().get_medium<RESOURCE_PRIORITY_TERTIARY>().get_map())
 		unit_it.second->update(diff);
@@ -211,6 +212,9 @@ void GameLogicProcess::update(uint64_t diff)
 		set_thread_cpu_id(cpu);
 #endif
 	calculate_and_set_cpu_load();
+	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+	std::chrono::nanoseconds time_span = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+	set_total_execution_time(time_span.count());
 }
 
 GameLogicProcess::MonsterSpawnAgent::~MonsterSpawnAgent()

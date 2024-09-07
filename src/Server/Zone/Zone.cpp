@@ -194,10 +194,6 @@ void SignalHandler(int signal_num)
 
 void ZoneServer::update(int64_t diff)
 {
-	// Disable command line on test runs.
-	if (!general_conf().is_test_run())
-		sZone->get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
-
 	/**
 	 * Process Packets.
 	 */
@@ -323,7 +319,11 @@ void ZoneRuntime::start()
 
 void ZoneRuntime::update(int64_t diff)
 {
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	get_system_routine_manager().process_queue();
 
 	calculate_and_set_cpu_load();
+	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+	std::chrono::nanoseconds time_span = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+	set_total_execution_time(time_span.count());
 }

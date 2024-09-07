@@ -79,6 +79,7 @@ public:
 
 	void update() override
 	{
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		Networking::NetworkThread<ZoneSocket>::update();
 
 		get_system_routine_manager().process_queue();
@@ -93,6 +94,9 @@ public:
 			set_thread_cpu_id(cpu);
 #endif
 		calculate_and_set_cpu_load();
+		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+		std::chrono::nanoseconds time_span = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+		set_total_execution_time(time_span.count());
 	}
 
 	virtual void initialize(int segment_number = 1) override 

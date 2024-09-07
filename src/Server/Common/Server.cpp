@@ -72,28 +72,6 @@ boost::asio::io_context &Kernel::get_io_context()
 	return _io_context_global;
 }
 
-double KernelComponent::get_thread_cpu_time()
-{
-#if WIN32
-	FILETIME creationTime, exitTime, kernelTime, userTime;
-    if (GetThreadTimes(GetCurrentThread(), &creationTime, &exitTime, &kernelTime, &userTime)) {
-        ULARGE_INTEGER uKernelTime, uUserTime;
-        uKernelTime.LowPart = kernelTime.dwLowDateTime;
-        uKernelTime.HighPart = kernelTime.dwHighDateTime;
-        uUserTime.LowPart = userTime.dwLowDateTime;
-        uUserTime.HighPart = userTime.dwHighDateTime;
-
-        return (uKernelTime.QuadPart + uUserTime.QuadPart) / 1e7; // Convert to seconds
-    }
-#elif __linux__
-    struct timespec ts;
-    if (clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts) == 0) {
-        return ts.tv_sec + ts.tv_nsec / 1e9;
-    }
-#endif
-	return 0.0;
-}
-
 void KernelComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContext> context) { _hsr_manager.push(context); }
 void KernelComponent::system_routine_queue_push(std::shared_ptr<Horizon::System::RuntimeContextChain> context) { _hsr_manager.push(context); }
 void KernelComponent::system_routine_process_queue() { _hsr_manager.process_queue(); }
@@ -127,18 +105,39 @@ bool CommandLineProcess::clicmd_kernel_info(std::string /*cmd*/)
 
 	get_kernel()->set_signal_interrupt_command_line_loop(true);
 	HLog(info) << "Horizon Kernel (C) 2024 Initialized with " << get_kernel()->get_components().size() << " components.";
+
 	while (get_kernel()->get_signal_interrupt_command_line_loop() == true) {
+		int total_execution_time = 0.0;
+
+       	std::cout << "[Status]"
+			<< std::setw(15) << "Component (Segment #)"
+			<< std::setw(15) << "CPU #"
+			<< std::setw(15) << "Execution Time"
+			<< std::setw(15) << "Update Rate"
+			<< std::flush << std::endl;
 		for (auto i = get_kernel()->get_components().begin(); i != get_kernel()->get_components().end(); i++) {
 			std::string online = std::string(red + "Offline" + reset);
 			if (i->second.ptr->is_initialized() == true)
 				online = std::string(green + "Online" + reset);
 			std::cout << "\r\033[K" << std::flush;
-			std::cout << "[" << online << "] Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")':	CPU #: " << i->second.ptr->get_thread_cpu_id() << ", Load: " << i->second.ptr->get_thread_cpu_load() <<  "%" << ",	Update Rate: " << i->second.ptr->get_thread_update_rate() << "/s." << std::flush << std::endl;
+			
+			double limited_update_rate = std::round(i->second.ptr->get_thread_update_rate() * 100.0) / 100.0;
+
+			total_execution_time += i->second.ptr->get_total_execution_time();
+       		std::cout << "[" << online << "]"
+				<< std::setw(15) << i->second.ptr->get_type_string() << " (" << i->second.segment_number << ")"
+				<< std::setw(15) << i->second.ptr->get_thread_cpu_id()
+				<< std::setw(15) << i->second.ptr->get_total_execution_time() << "ns"
+				<< std::setw(15) << limited_update_rate << "/s." 
+				<< std::flush << std::endl;
 		}
-        std::cout << "\033[" << get_kernel()->get_components().size() << "A";
+
+		std::cout << "Total Execution Time: " << total_execution_time << "ns" << std::endl;
+		
+        std::cout << "\033[" << get_kernel()->get_components().size() + 2 << "A";
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
-	std::cout << "\033[ " << get_kernel()->get_components().size() << "B";
+	std::cout << "\033[ " << get_kernel()->get_components().size() + 2 << "B";
 	return true;
 }
 
@@ -201,6 +200,7 @@ void CommandLineProcess::cli_thread_start()
 	{
 		std::string command;
 
+		process();
 #if WIN32
 		DWORD cpu = GetCurrentProcessorNumber();
 		if (get_thread_cpu_id() != (int) cpu) 
@@ -242,7 +242,7 @@ void CommandLineProcess::cli_thread_start()
 		}
 
 		if (command.size()) {
-			queue(CLICommand((char *)command.c_str(), std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));
+			queue(CLICommand((char *)command.c_str(), std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));	
 			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL * 1)); // Sleep until core has updated.
 		} else if (feof(stdin)) {
 			set_shutdown_stage(SHUTDOWN_INITIATED);

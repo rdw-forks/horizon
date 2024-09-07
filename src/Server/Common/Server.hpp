@@ -239,28 +239,23 @@ public:
 	void set_thread_cpu_id(int cpu_id) { _thread_cpu_id.exchange(cpu_id); }
 	int get_thread_cpu_id() { return _thread_cpu_id.load(); }
 
-	void set_thread_cpu_load(double cpu_time) { _thread_cpu_load.exchange(cpu_time); }
-	double get_thread_cpu_load() { return _thread_cpu_load.load(); }
-	
-	void set_thread_last_cpu_time(double time) { _last_thread_cpu_time = time; }
-	double get_thread_last_cpu_time() { return _last_thread_cpu_time; }
-	
-	double get_thread_cpu_time();
-
 	void set_thread_update_rate(double rate) { _thread_update_rate.exchange(rate); }
 	double get_thread_update_rate() { return _thread_update_rate.load(); }
 	
+	void set_total_execution_time(int time) 
+	{
+		_total_execution_time_aggregate += time;
+
+		if (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - _last_total_execution_time_update).count() >= 1) {
+			_last_total_execution_time_update = std::chrono::steady_clock::now();
+			_total_execution_time_average.exchange(_total_execution_time_aggregate / get_thread_update_rate());
+			_total_execution_time_aggregate = 0;
+		}
+	}
+	int get_total_execution_time() { return _total_execution_time_average.load(); }
+
 	void calculate_and_set_cpu_load()
 	{
-		double cpu_time = get_thread_cpu_time();
-		double last_cpu_time = get_thread_last_cpu_time();
-		double diffCpu = cpu_time - last_cpu_time;
-		auto currentWallClockTime = std::chrono::steady_clock::now();
-		auto diffWallTime = std::chrono::duration_cast<std::chrono::nanoseconds>(currentWallClockTime - _last_cpu_wall_time).count();
-		_last_cpu_wall_time = currentWallClockTime;
-		double load = diffCpu / (diffWallTime / 1e9);
-		set_thread_cpu_load(load);
-		set_thread_last_cpu_time(cpu_time);
 		_update_count++;
 
         // Update thread update rate every second to determine the number of updates per second
@@ -281,13 +276,13 @@ private:
 	boost::uuids::uuid _uuid;
 
 	std::atomic<int> _thread_cpu_id{0};
-	double _last_thread_cpu_time{0.0};
-	std::atomic<double> _thread_cpu_load{0.0};
-	std::chrono::steady_clock::time_point _last_cpu_wall_time;
 	Kernel *_kernel{nullptr};
 	int _update_count{0};
 	std::chrono::steady_clock::time_point _last_thread_update_rate_time;
+	std::chrono::steady_clock::time_point _last_total_execution_time_update;
 	std::atomic<double> _thread_update_rate{0.0};
+	int _total_execution_time_aggregate{0};
+	std::atomic<int> _total_execution_time_average{0};
 };
 
 class CLICommand

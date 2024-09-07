@@ -235,9 +235,6 @@ void CharServer::verify_connected_sessions()
 
 void CharServer::update(uint64_t time)
 {
-	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
-		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
-	
 	getScheduler().Update();
 
 	sClientSocketMgr->manage_sockets(time);
