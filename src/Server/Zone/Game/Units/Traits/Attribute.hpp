@@ -102,7 +102,7 @@ namespace Traits
 
 		void remove_change(std::string source);
 
-		void apply();
+		void apply(bool notify = true);
 
 		private:
 			std::vector<s_permanent_change> _changes;
@@ -126,7 +126,7 @@ namespace Traits
 
 		void remove_change(std::string source);
 
-		void apply();
+		void apply(bool notify = true);
 
 		void update(uint64_t delta);
 
@@ -166,41 +166,44 @@ namespace Traits
 	public:
 
 		Attribute(std::weak_ptr<Unit> unit, status_point_type st_type, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: _base_val(base), _status_point_type(st_type), _equip_val(equip), _status_val(status), _unit(unit)
+		: _status_point_type(st_type), _unit(unit)
 		{
+			add_permanent_change({base, equip, status}, "initial");
 		}
 
 		std::shared_ptr<Unit> unit() { return _unit.lock(); }
 		void unit(std::shared_ptr<Unit> e) { _unit = e; }
 
-		virtual void set_base(int32_t val)
+		virtual void set_base(int32_t val, bool notify = true)
 		{
 			_base_val = val;
-			notify();
+			if (notify) this->notify();
 		}
-		virtual void add_base(int32_t val);
-		virtual void sub_base(int32_t val);
+		virtual void add_base(int32_t val, bool notify = true);
+		virtual void sub_base(int32_t val, bool notify = true);
 		virtual int32_t get_base() const { return _base_val; }
 
-		virtual void set_equip(int32_t val)
+		virtual void set_equip(int32_t val, bool notify = true)
 		{
 			_equip_val = val;
-			notify();
+			if (notify) this->notify();
 		}
-		virtual void add_equip(int32_t val);
-		virtual void sub_equip(int32_t val);
+		virtual void add_equip(int32_t val, bool notify = true);
+		virtual void sub_equip(int32_t val, bool notify = true);
 		virtual int32_t get_equip() const { return _equip_val; }
 
-		virtual void set_status(int32_t val)
+		virtual void set_status(int32_t val, bool notify = true)
 		{
 			_status_val = val;
-			notify();
+			if (notify) this->notify();
 		}
-		virtual void add_status(int32_t val);
-		virtual void sub_status(int32_t val);
+		virtual void add_status(int32_t val, bool notify = true);
+		virtual void sub_status(int32_t val, bool notify = true);
 		virtual int32_t get_status() const { return _status_val; }
 
 		virtual int32_t total() const { return _base_val + _equip_val + _status_val; }
+
+		virtual int32_t compute() { return total(); }
 
 		template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
 		TT operator + (TT right) { return total() + right; }
@@ -279,15 +282,17 @@ namespace Traits
 		void update(uint64_t delta)
 		{
 			_temporary_changes.update(delta);
-			if (_apply_periodic_changes == true)
+			if (_apply_periodic_changes == true) {
 				_periodic_changes.update(delta);
+			}
 		}
 
-		void apply()
+		void apply(bool notify = true)
 		{
-			_permanent_changes.apply();
-			_temporary_changes.apply();
+			_permanent_changes.apply(notify);
+			_temporary_changes.apply(notify);
 			_apply_periodic_changes = true;
+			compute();
 		}
 
 		void reset()

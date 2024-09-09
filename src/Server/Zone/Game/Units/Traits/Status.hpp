@@ -715,7 +715,8 @@ public:
 		return nullptr;
 	}
 
-	bool recalculate();
+	void calculate(bool notify = true);
+	bool recalculate(bool notify = true);
 	bool update(uint64_t delta);
 	
 protected:

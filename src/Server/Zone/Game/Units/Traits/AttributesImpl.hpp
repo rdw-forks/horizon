@@ -90,21 +90,57 @@ namespace Traits
 		void on_observable_changed(BaseExperience *wbexp);
 		void notify();
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -122,21 +158,57 @@ namespace Traits
 
 		void on_observable_changed(JobExperience *wjexp);
 		
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -206,7 +278,7 @@ namespace Traits
 		{ }
 		~SkillPoint() { };
 
-		virtual void set_base(int32_t val) override;
+		virtual void set_base(int32_t val, bool notify_client = true) override;
 		
 		void on_observable_changed(JobLevel *wjlvl);
 	};
@@ -222,9 +294,57 @@ namespace Traits
 		{ }
 		~Strength() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -240,9 +360,57 @@ namespace Traits
 		{ }
 		~Agility() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -258,9 +426,57 @@ namespace Traits
 		{ }
 		~Vitality() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -276,9 +492,57 @@ namespace Traits
 		{ }
 		~Intelligence() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -294,9 +558,57 @@ namespace Traits
 		{ }
 		~Dexterity() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -312,9 +624,57 @@ namespace Traits
 		{ }
 		~Luck() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -402,21 +762,57 @@ namespace Traits
 		{ }
 		~BaseExperience() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -432,21 +828,57 @@ namespace Traits
 		{ }
 		~JobExperience() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true)
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true)
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -460,9 +892,9 @@ namespace Traits
 		{ }
 		~Zeny() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -475,9 +907,9 @@ namespace Traits
 		{ }
 		~Honor() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -490,9 +922,9 @@ namespace Traits
 		{ }
 		~Manner() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -505,9 +937,9 @@ namespace Traits
 		{ }
 		~Virtue() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -563,7 +995,7 @@ namespace Traits
 		{ }
 		~MovementSpeed() { }
 
-		virtual void set_base(int32_t val) override;
+		virtual void set_base(int32_t val, bool notify_client = true) override;
 
 		int32_t get_with_cost(int cost) { return (total() * cost) / 10; };
 	};

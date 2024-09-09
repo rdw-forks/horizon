@@ -411,6 +411,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	base_attack()->register_observable(base_attack().get());
 	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
 
+	calculate(false);
+
 	player->get_session()->clif()->notify_initial_status();
 
 	set_initialized(true);
@@ -431,11 +433,21 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::NPC> npc)
 	set_robe_sprite(std::make_shared<RobeSprite>(_unit, 0));
 	set_base_appearance(std::make_shared<BaseAppearance>(_unit, npc->job_id()));
 
+	calculate(false);
+	
 	set_initialized(true);
 	return true;
 }
 
-bool Status::recalculate()
+void Status::calculate(bool notify)
+{
+	// calculate before initialize is set.
+	for (auto i : _attributes) {
+		i->apply();
+	}
+}
+
+bool Status::recalculate(bool notify)
 {
 	if (!is_initialized()) {
 		HLog(error) << "Status::recalculate: Status is not initialized.";
@@ -445,8 +457,10 @@ bool Status::recalculate()
 	// Recalculate all attributes.
 	for (auto i : _attributes) {
 		i->reset();
-		i->apply();
+		i->apply(notify);
 	}
+	
+	return true;
 }
 
 bool Status::update(uint64_t delta)
@@ -466,6 +480,8 @@ bool Status::update(uint64_t delta)
 
 	if (recalculate)
 		this->recalculate();
+
+	return true;
 }
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std::shared_ptr<const monster_config_data> md)
@@ -566,6 +582,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	set_creature_element(std::make_shared<MobElement>(_unit, (int) md->element));
 	set_creature_element_level(std::make_shared<MobElementLevel>(_unit, (int) md->element_level));
 	set_creature_mode(std::make_shared<MobMode>(_unit, (int) md->mode));
+
+	calculate(false);
 
 	set_initialized(true);
 	return true;

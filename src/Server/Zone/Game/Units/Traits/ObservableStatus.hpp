@@ -50,8 +50,9 @@ public:
 	template<std::size_t I = 0, typename... Tp>
 	inline typename std::enable_if<I < sizeof...(Tp), void>::type
 	notify(std::tuple<Tp...>& t)
-	{
-		std::get<I>(_observers)->on_observable_changed(_observable);
+	{	
+		if (std::get<I>(_observers) != nullptr)
+			std::get<I>(_observers)->on_observable_changed(_observable);
 		notify<I + 1, Tp...>(t);
 	}
 

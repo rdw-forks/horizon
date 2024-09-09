@@ -52,24 +52,24 @@ void PermanentChanges::remove_change(std::string source)
 	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_permanent_change const &change) { return change.source == source; }), _changes.end());
 }
 
-void PermanentChanges::apply()
+void PermanentChanges::apply(bool notify)
 {
 	for (auto &change : _changes)
 	{
 		if (change.change.get_base() > 0)
-			_attr->add_base(change.change.get_base());
+			_attr->add_base(change.change.get_base(), notify);
 		else
-			_attr->sub_base(change.change.get_base());
+			_attr->sub_base(change.change.get_base(), notify);
 		
 		if (change.change.get_equip() > 0)
-			_attr->add_equip(change.change.get_equip());
+			_attr->add_equip(change.change.get_equip(), notify);
 		else
-			_attr->sub_equip(change.change.get_equip());
+			_attr->sub_equip(change.change.get_equip(), notify);
 		
 		if (change.change.get_status() > 0)
-			_attr->add_status(change.change.get_status());
+			_attr->add_status(change.change.get_status(), notify);
 		else
-			_attr->sub_status(change.change.get_status());
+			_attr->sub_status(change.change.get_status(), notify);
 	}
 }
 
@@ -83,24 +83,24 @@ void TemporaryChanges::remove_change(std::string source)
 	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_temporary_change const &change) { return change.source == source; }), _changes.end());
 }
 
-void TemporaryChanges::apply()
+void TemporaryChanges::apply(bool notify)
 {
 	for (auto &change : _changes)
 	{
 		if (change.change.get_base() > 0)
-			_attr->add_base(change.change.get_base());
+			_attr->add_base(change.change.get_base(), notify);
 		else
-			_attr->sub_base(change.change.get_base());
+			_attr->sub_base(change.change.get_base(), notify);
 		
 		if (change.change.get_equip() > 0)
-			_attr->add_equip(change.change.get_equip());
+			_attr->add_equip(change.change.get_equip(), notify);
 		else
-			_attr->sub_equip(change.change.get_equip());
+			_attr->sub_equip(change.change.get_equip(), notify);
 		
 		if (change.change.get_status() > 0)
-			_attr->add_status(change.change.get_status());
+			_attr->add_status(change.change.get_status(), notify);
 		else
-			_attr->sub_status(change.change.get_status());
+			_attr->sub_status(change.change.get_status(), notify);
 	}
 }
 
@@ -140,48 +140,50 @@ void PeriodicChanges::update(uint64_t delta)
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.last_update.time_since_epoch() + std::chrono::milliseconds(change.interval)).count() < delta)
 		{
 			if (change.change.get_base() > 0)
-				_attr->add_base(change.change.get_base());
+				_attr->add_base(change.change.get_base(), false);
 			else
-				_attr->sub_base(change.change.get_base());
+				_attr->sub_base(change.change.get_base(), false);
 			
 			if (change.change.get_equip() > 0)
-				_attr->add_equip(change.change.get_equip());
+				_attr->add_equip(change.change.get_equip(), false);
 			else
-				_attr->sub_equip(change.change.get_equip());
+				_attr->sub_equip(change.change.get_equip(), false);
 			
 			if (change.change.get_status() > 0)
-				_attr->add_status(change.change.get_status());
+				_attr->add_status(change.change.get_status(), false);
 			else
-				_attr->sub_status(change.change.get_status());
+				_attr->sub_status(change.change.get_status(), false);
 				
+			_attr->compute();
+
 			change.last_update = std::chrono::high_resolution_clock::now();
 		}
 	}
 }
 
-void Attribute::add_base(int32_t val) { 
+void Attribute::add_base(int32_t val, bool notify) { 
 	_base_val += val;
-	notify();
+	if (notify) this->notify();
 }
-void Attribute::sub_base(int32_t val) { 
+void Attribute::sub_base(int32_t val, bool notify) { 
 	_base_val -= std::min(_base_val, val);
-	notify();
+	if (notify) this->notify();
 }
-void Attribute::add_equip(int32_t val) { 
+void Attribute::add_equip(int32_t val, bool notify) { 
 	_equip_val += val;
-	notify();
+	if (notify) this->notify();
 }
-void Attribute::sub_equip(int32_t val) { 
+void Attribute::sub_equip(int32_t val, bool notify) { 
 	_equip_val -= std::min(_equip_val, val);
-	notify();
+	if (notify) this->notify();
 }
-void Attribute::add_status(int32_t val) { 
+void Attribute::add_status(int32_t val, bool notify) { 
 	_status_val += val;
-	notify();
+	if (notify) this->notify();
 }
-void Attribute::sub_status(int32_t val) { 
+void Attribute::sub_status(int32_t val, bool notify) { 
 	_status_val -= std::min(_status_val, val);
-	notify();
+	if (notify) this->notify();
 }
 
 void Attribute::notify()
@@ -395,7 +397,7 @@ void SkillPoint::on_observable_changed(JobLevel *jlvl)
 	add_base(1);
 }
 
-void SkillPoint::set_base(int32_t val)
+void SkillPoint::set_base(int32_t val, bool notify_client)
 {
 	Attribute::set_base(val);
 }
@@ -412,7 +414,7 @@ int32_t MaxWeight::compute()
 	return total();
 }
 
-void MovementSpeed::set_base(int32_t val)
+void MovementSpeed::set_base(int32_t val, bool notify_client)
 {
 	Attribute::set_base(val);
 }
