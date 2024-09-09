@@ -190,11 +190,15 @@ void CharServer::initialize_cli_commands()
  * @param[in|out] error   boost system error code.
  * @param[in]     signal  interrupt signal code
  */
-void SignalHandler(const boost::system::error_code &error, int /*signal*/)
+void SignalHandler(int signal_num)
 {
-	if (!error) {
+	if (sChar->get_signal_interrupt_command_line_loop() == true) {
+		sChar->set_signal_interrupt_command_line_loop(false);
+		// re-set the signal handler
+		signal(signal_num, SignalHandler);
+	} else {
 		set_shutdown_stage(SHUTDOWN_INITIATED);
-		set_shutdown_signal(SIGINT);
+		set_shutdown_signal(signal_num);
 	}
 }
 
@@ -231,9 +235,6 @@ void CharServer::verify_connected_sessions()
 
 void CharServer::update(uint64_t time)
 {
-	if (!general_conf().is_test_run() && !general_conf().is_test_run_minimal())
-		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->process();
-	
 	getScheduler().Update();
 
 	sClientSocketMgr->manage_sockets(time);
@@ -243,6 +244,9 @@ void CharServer::update(uint64_t time)
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&CharServer::update, this, std::time(nullptr)));
 	} else {
+		for (auto i = _components.begin(); i != _components.end(); i++) {
+			HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { CPU: " << i->second.ptr->get_thread_cpu_id() << ", uuid: " << i->first << " }";
+		}
 		/**
 		 * Cancel all pending tasks.
 		 */
@@ -260,8 +264,11 @@ void CharServer::update(uint64_t time)
 void CharServer::initialize()
 {
 	/* Core Signal Handler  */
-	boost::asio::signal_set signals(get_io_context(), SIGINT, SIGTERM);
-	signals.async_wait(SignalHandler);
+	signal(SIGINT, SignalHandler);
+	signal(SIGTERM, SignalHandler);
+#ifndef WIN32
+	signal(SIGQUIT, SignalHandler);
+#endif
 
 	/* Start Character Network */
 	sClientSocketMgr->start(get_io_context(),
@@ -286,9 +293,6 @@ void CharServer::initialize()
 	// After stopping, execution will continue through the next line onwards.
 	// We actually finalize on this thread and not in any of io_context's internal threads.
 	get_io_context().run();
-
-	/* Cancel signal handling. */
-	signals.cancel();
 
 	/* Core Cleanup */
 	HLog(info) << "Server shutting down...";

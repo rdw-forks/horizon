@@ -1,6 +1,12 @@
 #include "ClientSocketMgr.hpp"
 #include "Server/Zone/Zone.hpp"
 
+Horizon::Zone::ZoneNetworkThread::ZoneNetworkThread()
+: KernelComponent(sZone, Horizon::System::RUNTIME_NETWORKING),
+_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<ZoneSocket>>>())) 
+{
+}
+
 bool Horizon::Zone::ClientSocketMgr::start(boost::asio::io_context &io_context, std::string const &listen_ip, uint16_t port, uint32_t threads, bool minimal)
 {
 	if (!BaseSocketMgr::start(io_context, listen_ip, port, threads, minimal))

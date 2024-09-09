@@ -43,11 +43,7 @@ namespace Zone
 class PersistenceManager : public KernelComponent
 {
 public:
-	PersistenceManager() 
-	: KernelComponent(Horizon::System::RUNTIME_PERSISTENCE),
-	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()))
-	{
-	}
+	PersistenceManager();
     void initialize(int segment_number = 1) override;
     void finalize() override;
     void start();

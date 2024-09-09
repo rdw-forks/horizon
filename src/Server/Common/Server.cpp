@@ -40,6 +40,13 @@
 #include <iomanip>
 #include <signal.h>
 
+#if WIN32
+#include <windows.h>
+#elif __linux__
+#include <ctime>
+#include <thread>
+#endif
+
 std::atomic<shutdown_stages> _shutdown_stage = SHUTDOWN_NOT_STARTED;
 std::atomic<int> _shutdown_signal = 0;
 
@@ -90,13 +97,57 @@ bool CommandLineProcess::clicmd_shutdown(std::string /*cmd*/)
 	return true;
 }
 
+bool CommandLineProcess::clicmd_kernel_info(std::string /*cmd*/)
+{
+    std::string red = "\033[31m";
+    std::string green = "\033[32m";
+    std::string reset = "\033[0m";
+
+	get_kernel()->set_signal_interrupt_command_line_loop(true);
+	HLog(info) << "Horizon Kernel (C) 2024 Initialized with " << get_kernel()->get_components().size() << " components.";
+
+	while (get_kernel()->get_signal_interrupt_command_line_loop() == true) {
+		int total_execution_time = 0.0;
+
+       	std::cout << "[Status]"
+			<< std::setw(15) << "Component (Segment #)"
+			<< std::setw(15) << "CPU #"
+			<< std::setw(15) << "Execution Time"
+			<< std::setw(15) << "Update Rate"
+			<< std::flush << std::endl;
+		for (auto i = get_kernel()->get_components().begin(); i != get_kernel()->get_components().end(); i++) {
+			std::string online = std::string(red + "Offline" + reset);
+			if (i->second.ptr->is_initialized() == true)
+				online = std::string(green + "Online" + reset);
+			std::cout << "\r\033[K" << std::flush;
+			
+			double limited_update_rate = std::round(i->second.ptr->get_thread_update_rate() * 100.0) / 100.0;
+
+			total_execution_time += i->second.ptr->get_total_execution_time();
+       		std::cout << "[" << online << "]"
+				<< std::setw(15) << i->second.ptr->get_type_string() << " (" << i->second.segment_number << ")"
+				<< std::setw(15) << i->second.ptr->get_thread_cpu_id()
+				<< std::setw(15) << i->second.ptr->get_total_execution_time() << "ns"
+				<< std::setw(15) << limited_update_rate << "/s." 
+				<< std::flush << std::endl;
+		}
+
+		std::cout << "Total Execution Time: " << total_execution_time << "ns" << std::endl;
+		
+        std::cout << "\033[" << get_kernel()->get_components().size() + 2 << "A";
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+	std::cout << "\033[ " << get_kernel()->get_components().size() + 2 << "B";
+	return true;
+}
+
 void CommandLineProcess::initialize(int segment_number)
 {
 
 	_cli_thread = std::thread(std::bind(&CommandLineProcess::cli_thread_start, this));
 
 	add_function("shutdown", std::bind(&CommandLineProcess::clicmd_shutdown, this, std::placeholders::_1));
-	
+	add_function("kernel-info", std::bind(&CommandLineProcess::clicmd_kernel_info, this, std::placeholders::_1));
 	set_segment_number(segment_number);
 
 	_is_initialized.exchange(true);
@@ -148,6 +199,19 @@ void CommandLineProcess::cli_thread_start()
 	while (get_shutdown_stage() == SHUTDOWN_NOT_STARTED)
 	{
 		std::string command;
+
+		process();
+#if WIN32
+		DWORD cpu = GetCurrentProcessorNumber();
+		if (get_thread_cpu_id() != (int) cpu) 
+			set_thread_cpu_id(cpu);
+#elif __linux__
+		int cpu = sched_getcpu();
+		if (get_thread_cpu_id() != cpu)
+			set_thread_cpu_id(cpu);
+#endif
+		calculate_and_set_cpu_load();
+
 		try {
 			while(_is_running_command.load() == true)
 			{
@@ -178,7 +242,7 @@ void CommandLineProcess::cli_thread_start()
 		}
 
 		if (command.size()) {
-			queue(CLICommand((char *)command.c_str(), std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));
+			queue(CLICommand((char *)command.c_str(), std::bind(&CommandLineProcess::command_complete, this, std::placeholders::_1, std::placeholders::_2)));	
 			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL * 1)); // Sleep until core has updated.
 		} else if (feof(stdin)) {
 			set_shutdown_stage(SHUTDOWN_INITIATED);
@@ -199,6 +263,16 @@ void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segmen
 		boost::mysql::handshake_params params(user, pass, database);
 		_connection->connect(*endpoints.begin(), params);
 		_is_initialized.exchange(true);
+#if WIN32
+		DWORD cpu = GetCurrentProcessorNumber();
+		if (get_thread_cpu_id() != (int) cpu) 
+			set_thread_cpu_id(cpu);
+#elif __linux__
+		int cpu = sched_getcpu();
+		if (get_thread_cpu_id() != cpu)
+			set_thread_cpu_id(cpu);
+#endif
+		calculate_and_set_cpu_load();
 	} catch (boost::mysql::error_with_diagnostics &error) {
 		HLog(error) << error.what();
 	}
@@ -298,7 +372,7 @@ bool Server::parse_common_configs(sol::table &tbl)
 		general_conf().set_db_pass(db_tbl.get_or<std::string>("pass", "horizon"));
 		general_conf().set_db_port(db_tbl.get_or<uint16_t>("port", 33060));
 		
-		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>());
+		register_component(Horizon::System::RUNTIME_DATABASE, std::make_shared<DatabaseProcess>(this));
 		
 		get_component_of_type<DatabaseProcess>(Horizon::System::RUNTIME_DATABASE)->initialize(
 			get_io_context(),
@@ -339,7 +413,7 @@ void Server::initialize()
 		HLog(info) << "Command line not supported during test-runs... skipping.";
 	} else {
 		HLog(info) << "Horizon Command-Line initializing...";
-		register_component(Horizon::System::RUNTIME_COMMANDLINE, std::make_shared<CommandLineProcess>());
+		register_component(Horizon::System::RUNTIME_COMMANDLINE, std::make_shared<CommandLineProcess>(this));
 		get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->initialize();
 	}
 }
@@ -360,7 +434,7 @@ void Server::post_initialize()
 	Kernel::post_initialize();
 	
 	for (auto i = _components.begin(); i != _components.end(); i++) {
-		HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { uuid: " << i->first << " }";
+		HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_initialized() == true ? "Online" : "Offline (Starting)") << " { CPU: " << i->second.ptr->get_thread_cpu_id() << ", uuid: " << i->first << " }";
 	}
 }
 

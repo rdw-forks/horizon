@@ -138,6 +138,8 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	config_3["pos_y"] = &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::pos_y;
 	config_3["contents"] = &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::contents;
 	config_3["skd"] = &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::skd;
+	config_3["attack_motion"] = &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::attack_motion;
+	config_3["delay_motion"] = &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::delay_motion;
 	config_3["action_type"] = &CombatRegistry::SkillResultOperation::SkillResultOperand::s_skill_result_operation_config::action_type;
 
 	state->new_usertype<CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config>("s_melee_execution_operation_config",

@@ -38,6 +38,12 @@
 #include "Server/Char/Socket/CharSocket.hpp"
 #include "Server/Common/Configuration/ServerConfiguration.hpp"
 
+#if WIN32
+	#include <windows.h>
+#elif __linux__
+	#include <sched.h>
+#endif
+
 namespace Horizon
 {
 namespace Char
@@ -57,7 +63,7 @@ protected:
 	}
 public:
 	CharNetworkThread() 
-	: KernelComponent(Horizon::System::RUNTIME_NETWORKING),
+	: KernelComponent(sChar, Horizon::System::RUNTIME_NETWORKING),
 	_resource_manager(PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<CharSocket>>>())) 
 	{
 	}
@@ -78,9 +84,24 @@ public:
 
 	void update() override
 	{
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		Networking::NetworkThread<CharSocket>::update();
 
 		get_system_routine_manager().process_queue();
+#if WIN32
+		DWORD cpu = GetCurrentProcessorNumber();
+		if (get_thread_cpu_id() != (int) cpu) 
+			set_thread_cpu_id(cpu);
+#elif __linux__
+		int cpu = sched_getcpu();
+		if (get_thread_cpu_id() != cpu)
+			set_thread_cpu_id(cpu);
+#endif
+
+		calculate_and_set_cpu_load();
+		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+		std::chrono::nanoseconds time_span = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+		set_total_execution_time(time_span.count());
 	}
 
 	virtual void initialize(int segment_number = 1) override 

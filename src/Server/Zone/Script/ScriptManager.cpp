@@ -36,11 +36,16 @@
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"
 
+#if WIN32
+	#include <windows.h>
+#elif __linux__
+	#include <sched.h>
+#endif
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Units;
 
 ScriptManager::ScriptManager()
-: KernelComponent(Horizon::System::RUNTIME_SCRIPTVM),
+: KernelComponent(sZone, Horizon::System::RUNTIME_SCRIPTVM),
 _lua_state(std::make_shared<sol::state>()),
 _player_component(std::make_shared<PlayerComponent>()),
 _npc_component(std::make_shared<NPCComponent>()),
@@ -110,9 +115,24 @@ void ScriptManager::start()
 
 void ScriptManager::update(uint64_t diff)
 {
+	std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	getScheduler().Update();
 
 	get_system_routine_manager().process_queue();
+	
+#if WIN32
+	DWORD cpu = GetCurrentProcessorNumber();
+	if (get_thread_cpu_id() != (int) cpu) 
+		set_thread_cpu_id(cpu);
+#elif __linux__
+	int cpu = sched_getcpu();
+	if (get_thread_cpu_id() != cpu)
+		set_thread_cpu_id(cpu);
+#endif
+	calculate_and_set_cpu_load();
+	std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+	std::chrono::nanoseconds time_span = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+	set_total_execution_time(time_span.count());
 }
 
 void ScriptManager::initialize_basic_state(std::shared_ptr<sol::state> state)
