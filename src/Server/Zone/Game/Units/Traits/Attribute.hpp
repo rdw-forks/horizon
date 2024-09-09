@@ -67,15 +67,108 @@ namespace Traits
 		int32_t _min{ 0 }, _max{ 0 };
 	};
 
+	class Attribute;
+	
+	struct s_attribute_change_values
+	{
+		int32_t base{ 0 };
+		int32_t equip{ 0 };
+		int32_t status{ 0 };
+		s_attribute_change_values() = default;
+		s_attribute_change_values(int32_t base, int32_t equip, int32_t status) : base(base), equip(equip), status(status) {}
+
+		int32_t get_base() const { return base; }
+		void set_base(int32_t val) { base = val; }
+
+		int32_t get_equip() const { return equip; }
+		void set_equip(int32_t val) { equip = val; }
+
+		int32_t get_status() const { return status; }
+		void set_status(int32_t val) { status = val; }
+	};
+
+	class PermanentChanges
+	{
+	public:
+		PermanentChanges(Attribute *attr) : _attr(attr) {}
+
+		struct s_permanent_change
+		{
+			s_attribute_change_values change;
+			std::string source{ "" };
+		};
+
+		void add_change(s_attribute_change_values change, std::string source);
+
+		void remove_change(std::string source);
+
+		void apply();
+
+		private:
+			std::vector<s_permanent_change> _changes;
+			Attribute *_attr;
+	};
+
+	class TemporaryChanges
+	{
+	public:
+		TemporaryChanges(Attribute *attr) : _attr(attr) {}
+
+		struct s_temporary_change
+		{
+			s_attribute_change_values change;
+			uint64_t duration{ 0 };
+			std::string source{ "" };
+			std::chrono::high_resolution_clock::time_point start_time{std::chrono::high_resolution_clock::now()};
+		};
+
+		void add_change(s_attribute_change_values change, uint64_t duration, std::string source);
+
+		void remove_change(std::string source);
+
+		void apply();
+
+		void update(uint64_t delta);
+
+	private:
+		std::vector<s_temporary_change> _changes;
+		Attribute *_attr;
+	};
+
+	class PeriodicChanges
+	{
+	public:
+		PeriodicChanges(Attribute *attr) : _attr(attr) {}
+
+		struct s_periodic_change
+		{
+			s_attribute_change_values change;
+			uint64_t duration{ 0 };
+			uint64_t interval{ 0 };
+			std::string source{ "" };
+			std::chrono::high_resolution_clock::time_point last_update{std::chrono::high_resolution_clock::now()};
+			std::chrono::high_resolution_clock::time_point start_time{std::chrono::high_resolution_clock::now()};
+		};
+
+		void add_change(s_attribute_change_values change, uint64_t duration, uint64_t interval, std::string source);
+
+		void remove_change(std::string source);
+
+		void update(uint64_t delta);
+
+	private:
+		std::vector<s_periodic_change> _changes;
+		Attribute *_attr;
+	};
 
 	class Attribute
 	{
 	public:
+
 		Attribute(std::weak_ptr<Unit> unit, status_point_type st_type, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: _base_val(base), _status_point_type(st_type), _equip_val(equip), _status_val(status), _unit(unit)
 		{
 		}
-		virtual ~Attribute() { }
 
 		std::shared_ptr<Unit> unit() { return _unit.lock(); }
 		void unit(std::shared_ptr<Unit> e) { _unit = e; }
@@ -153,18 +246,79 @@ namespace Traits
 			return *this;
 		}
 		
+		void add_permanent_change(s_attribute_change_values change, std::string source)
+		{
+			_permanent_changes.add_change(change, source);
+		}
+
+		void remove_permanent_change(std::string source)
+		{
+			_permanent_changes.remove_change(source);
+		}
+
+		void add_temporary_change(s_attribute_change_values change, uint64_t duration, std::string source)
+		{
+			_temporary_changes.add_change(change, duration, source);
+		}
+
+		void remove_temporary_change(std::string source)
+		{
+			_temporary_changes.remove_change(source);
+		}
+
+		void add_periodic_change(s_attribute_change_values change, uint64_t duration, uint64_t interval, std::string source)
+		{
+			_periodic_changes.add_change(change, duration, interval, source);
+		}
+
+		void remove_periodic_change(std::string source)
+		{
+			_periodic_changes.remove_change(source);
+		}
+
+		void update(uint64_t delta)
+		{
+			_temporary_changes.update(delta);
+			if (_apply_periodic_changes == true)
+				_periodic_changes.update(delta);
+		}
+
+		void apply()
+		{
+			_permanent_changes.apply();
+			_temporary_changes.apply();
+			_apply_periodic_changes = true;
+		}
+
+		void reset()
+		{
+			_apply_periodic_changes = false;
+			_base_val = 0;
+			_equip_val = 0;
+			_status_val = 0;
+		}
+
 		void notify();
 
 		status_point_type get_type() const { return _status_point_type; }
 
+		bool needs_recalculation() const { return _recalculate_flag; }
+		void recalculate(bool flag) { _recalculate_flag = flag; }
+		
 	protected:
 		status_point_type _status_point_type{status_point_type::STATUS_POINT_INVALID};
 		int32_t _base_val{0};
 		int32_t _equip_val{0};
 		int32_t _status_val{0};
+		bool _apply_periodic_changes{false};
+		bool _recalculate_flag{false};
 	private:
 		std::weak_ptr<Unit> _unit;
+		PermanentChanges _permanent_changes{this};
+		TemporaryChanges _temporary_changes{this};
+		PeriodicChanges _periodic_changes{this};
 	};
+	
 }
 }
 }

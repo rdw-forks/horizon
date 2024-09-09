@@ -582,6 +582,8 @@ void Unit::update(uint64_t tick)
 {
 	if (_combat_registry != nullptr)
 		combat_registry()->process_queue();
-	if (status() != nullptr && status()->is_initialized() != false)
+	if (status() != nullptr && status()->is_initialized() != false) {
 		status()->status_registry()->process_queue();
+		status()->update(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+	}
 }

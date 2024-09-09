@@ -46,57 +46,172 @@
 using namespace Horizon::Zone::Traits;
 
 
-void Status::StatusRegistry::add_to_base(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::add_to_base(Attribute *attribute, uint16_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint16_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint16_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint16_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_status(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::add_to_status(Attribute *attribute, uint16_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint16_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS, value, source);
 	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::add_to_base_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_base_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_equip_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_equip_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_status_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_status_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_base_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_INTERVAL, value, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_base_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL, value, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_equip_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL, value, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_equip_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL, value, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_status_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_INTERVAL, value, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_status_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL, value, duration, interval, source);
+	_status_operation_queue.push(operation);
 }
 
 void Status::StatusRegistry::StatusOperation::execute()
 {
+	s_attribute_change_values attr;
+
 	switch (get_type()) {
 	case STATUS_OPERATION_ADD_TO_BASE:
-		_attribute->set_base(_attribute->get_base() + _value);
+		attr.set_base(_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_BASE:
-		_attribute->set_base(_attribute->get_base() - _value);
+		attr.set_base(-_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_ADD_TO_EQUIP:
-		_attribute->set_equip(_attribute->get_equip() + _value);
+		attr.set_equip(_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP:
-		_attribute->set_equip(_attribute->get_equip() - _value);
+		attr.set_equip(-_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_ADD_TO_STATUS:
-		_attribute->set_status(_attribute->get_status() + _value);
+		attr.set_status(_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_STATUS:
-		_attribute->set_status(_attribute->get_status() - _value);
+		attr.set_status(-_value);
+		_attribute->add_permanent_change(attr, get_source());
+	case STATUS_OPERATION_ADD_TO_BASE_TEMPORARY:
+		attr.set_base(_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_BASE_TEMPORARY:
+		attr.set_base(-_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_EQUIP_TEMPORARY:
+		attr.set_equip(_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP_TEMPORARY:
+		attr.set_equip(-_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_STATUS_TEMPORARY:
+		attr.set_status(_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_STATUS_TEMPORARY:
+		attr.set_status(-_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_BASE_INTERVAL:
+		attr.set_base(_value);
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL:
+		attr.set_base(-_value);
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL:
+		attr.set_equip(_value);
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL:
+		attr.set_equip(-_value);
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_STATUS_INTERVAL:
+		attr.set_status(_value);
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL:
+		attr.set_status(-_value);
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	}
 	
@@ -318,6 +433,39 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::NPC> npc)
 
 	set_initialized(true);
 	return true;
+}
+
+bool Status::recalculate()
+{
+	if (!is_initialized()) {
+		HLog(error) << "Status::recalculate: Status is not initialized.";
+		return false;
+	}
+
+	// Recalculate all attributes.
+	for (auto i : _attributes) {
+		i->reset();
+		i->apply();
+	}
+}
+
+bool Status::update(uint64_t delta)
+{
+	if (!is_initialized()) {
+		return false;
+	}
+
+	bool recalculate = false;
+	// Update all attributes in the list.
+	// When a change is made in the list of temporary, permanent and interval changes, the attribute requires a recalculation?
+	for (auto i : _attributes) {
+		i->update(delta);
+		if (i->needs_recalculation())
+			recalculate = true;
+	}
+
+	if (recalculate)
+		this->recalculate();
 }
 
 bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std::shared_ptr<const monster_config_data> md)

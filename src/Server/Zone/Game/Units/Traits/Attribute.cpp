@@ -42,24 +42,146 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Traits;
 
+void PermanentChanges::add_change(s_attribute_change_values change, std::string source)
+{
+	_changes.push_back({ change, source });
+}
+
+void PermanentChanges::remove_change(std::string source)
+{
+	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_permanent_change const &change) { return change.source == source; }), _changes.end());
+}
+
+void PermanentChanges::apply()
+{
+	for (auto &change : _changes)
+	{
+		if (change.change.get_base() > 0)
+			_attr->add_base(change.change.get_base());
+		else
+			_attr->sub_base(change.change.get_base());
+		
+		if (change.change.get_equip() > 0)
+			_attr->add_equip(change.change.get_equip());
+		else
+			_attr->sub_equip(change.change.get_equip());
+		
+		if (change.change.get_status() > 0)
+			_attr->add_status(change.change.get_status());
+		else
+			_attr->sub_status(change.change.get_status());
+	}
+}
+
+void TemporaryChanges::add_change(s_attribute_change_values change, uint64_t duration, std::string source)
+{
+	_changes.push_back({ change, duration, source });
+}
+
+void TemporaryChanges::remove_change(std::string source)
+{
+	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_temporary_change const &change) { return change.source == source; }), _changes.end());
+}
+
+void TemporaryChanges::apply()
+{
+	for (auto &change : _changes)
+	{
+		if (change.change.get_base() > 0)
+			_attr->add_base(change.change.get_base());
+		else
+			_attr->sub_base(change.change.get_base());
+		
+		if (change.change.get_equip() > 0)
+			_attr->add_equip(change.change.get_equip());
+		else
+			_attr->sub_equip(change.change.get_equip());
+		
+		if (change.change.get_status() > 0)
+			_attr->add_status(change.change.get_status());
+		else
+			_attr->sub_status(change.change.get_status());
+	}
+}
+
+void TemporaryChanges::update(uint64_t delta)
+{
+	for (auto &change : _changes)
+	{
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.start_time.time_since_epoch() + std::chrono::milliseconds(change.duration)).count() < delta)
+		{
+			remove_change(change.source);
+			_attr->recalculate(true);
+			continue;
+		}
+	}
+}
+
+void PeriodicChanges::add_change(s_attribute_change_values change, uint64_t duration, uint64_t interval, std::string source)
+{
+	_changes.push_back({ change, duration, interval, source });
+}
+
+void PeriodicChanges::remove_change(std::string source)
+{
+	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_periodic_change const &change) { return change.source == source; }), _changes.end());
+}
+
+void PeriodicChanges::update(uint64_t delta)
+{
+	for (auto &change : _changes)
+	{
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.start_time.time_since_epoch() + std::chrono::milliseconds(change.duration)).count() < delta)
+		{
+			remove_change(change.source);
+			continue;
+		}
+
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.last_update.time_since_epoch() + std::chrono::milliseconds(change.interval)).count() < delta)
+		{
+			if (change.change.get_base() > 0)
+				_attr->add_base(change.change.get_base());
+			else
+				_attr->sub_base(change.change.get_base());
+			
+			if (change.change.get_equip() > 0)
+				_attr->add_equip(change.change.get_equip());
+			else
+				_attr->sub_equip(change.change.get_equip());
+			
+			if (change.change.get_status() > 0)
+				_attr->add_status(change.change.get_status());
+			else
+				_attr->sub_status(change.change.get_status());
+				
+			change.last_update = std::chrono::high_resolution_clock::now();
+		}
+	}
+}
 
 void Attribute::add_base(int32_t val) { 
-	unit()->status()->status_registry()->add_to_base(this, val);
+	_base_val += val;
+	notify();
 }
 void Attribute::sub_base(int32_t val) { 
-	unit()->status()->status_registry()->subtract_from_base(this, std::min(_base_val, val));
+	_base_val -= std::min(_base_val, val);
+	notify();
 }
 void Attribute::add_equip(int32_t val) { 
-	unit()->status()->status_registry()->add_to_equip(this, val);
+	_equip_val += val;
+	notify();
 }
 void Attribute::sub_equip(int32_t val) { 
-	unit()->status()->status_registry()->subtract_from_equip(this, std::min(_equip_val, val));
+	_equip_val -= std::min(_equip_val, val);
+	notify();
 }
 void Attribute::add_status(int32_t val) { 
-	unit()->status()->status_registry()->add_to_status(this, val);
+	_status_val += val;
+	notify();
 }
 void Attribute::sub_status(int32_t val) { 
-	unit()->status()->status_registry()->subtract_from_status(this, std::min(_status_val, val));
+	_status_val -= std::min(_status_val, val);
+	notify();
 }
 
 void Attribute::notify()

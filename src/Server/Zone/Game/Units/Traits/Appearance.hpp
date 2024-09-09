@@ -56,6 +56,8 @@ namespace Traits
 
 		virtual void notify_update();
 
+		unit_appearance_type get_type() { return _type; }
+
 	protected:
 		std::shared_ptr<Unit> get_unit() { return _unit.lock(); }
 
@@ -69,7 +71,7 @@ namespace Traits
 	{
 	public:
 		BaseAppearance(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_BASE, id)
+		: Appearance(unit, UAT_BASE, id)
 		{ }
 		~BaseAppearance() { }
 	};
@@ -78,7 +80,7 @@ namespace Traits
 	{
 	public:
 		HairColor(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HAIR_COLOR, id)
+		: Appearance(unit, UAT_HAIR_COLOR, id)
 		{ }
 		~HairColor() { }
 	};
@@ -87,7 +89,7 @@ namespace Traits
 	{
 	public:
 		ClothColor(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_CLOTH_COLOR, id)
+		: Appearance(unit, UAT_CLOTH_COLOR, id)
 		{ }
 		~ClothColor() { }
 	};
@@ -96,7 +98,7 @@ namespace Traits
 	{
 	public:
 		WeaponSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_WEAPON_SPRITE, id)
+		: Appearance(unit, UAT_WEAPON_SPRITE, id)
 		{ }
 		~WeaponSprite() { }
 	};
@@ -105,7 +107,7 @@ namespace Traits
 	{
 	public:
 		ShieldSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_SHIELD_SPRITE, id)
+		: Appearance(unit, UAT_SHIELD_SPRITE, id)
 		{ }
 		~ShieldSprite() { }
 	};
@@ -114,7 +116,7 @@ namespace Traits
 	{
 	public:
 		RobeSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_ROBE_SPRITE, id)
+		: Appearance(unit, UAT_ROBE_SPRITE, id)
 		{ }
 		~RobeSprite() { }
 	};
@@ -123,7 +125,7 @@ namespace Traits
 	{
 	public:
 		HeadTopSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HEAD_TOP_SPRITE, id)
+		: Appearance(unit, UAT_HEAD_TOP_SPRITE, id)
 		{ }
 		~HeadTopSprite() { }
 	};
@@ -132,7 +134,7 @@ namespace Traits
 	{
 	public:
 		HeadMidSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HEAD_MID_SPRITE, id)
+		: Appearance(unit, UAT_HEAD_MID_SPRITE, id)
 		{ }
 		~HeadMidSprite() { }
 	};
@@ -141,7 +143,7 @@ namespace Traits
 	{
 	public:
 		HeadBottomSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HEAD_BOTTOM_SPRITE, id)
+		: Appearance(unit, UAT_HEAD_BOTTOM_SPRITE, id)
 		{ }
 		~HeadBottomSprite() { }
 	};
@@ -150,7 +152,7 @@ namespace Traits
 	{
 	public:
 		HairStyle(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HAIR_STYLE, id)
+		: Appearance(unit, UAT_HAIR_STYLE, id)
 		{ }
 		~HairStyle() { }
 	};
@@ -159,7 +161,7 @@ namespace Traits
 	{
 	public:
 		BodyStyle(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_BODY_STYLE, id)
+		: Appearance(unit, UAT_BODY_STYLE, id)
 		{ }
 		~BodyStyle() { }
 	};

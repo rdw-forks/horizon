@@ -182,21 +182,21 @@ enum status_point_type
 
 enum unit_appearance_type
 {
-	EAT_BASE                      =  0,
-	EAT_HAIR_STYLE                =  1,
-	EAT_WEAPON_SPRITE             =  2,
-	EAT_HEAD_BOTTOM_SPRITE        =  3,
-	EAT_HEAD_TOP_SPRITE           =  4,
-	EAT_HEAD_MID_SPRITE           =  5,
-	EAT_HAIR_COLOR                =  6,
-	EAT_CLOTH_COLOR               =  7,
-	EAT_SHIELD_SPRITE             =  8,
-	EAT_SHOES                     =  9,
-	EAT_BODY                      = 10,
-	EAT_FLOOR                     = 11,
-	EAT_ROBE_SPRITE               = 12,
-	EAT_BODY_STYLE                = 13,
-	EAT_MAX
+	UAT_BASE                      =  0,
+	UAT_HAIR_STYLE                =  1,
+	UAT_WEAPON_SPRITE             =  2,
+	UAT_HEAD_BOTTOM_SPRITE        =  3,
+	UAT_HEAD_TOP_SPRITE           =  4,
+	UAT_HEAD_MID_SPRITE           =  5,
+	UAT_HAIR_COLOR                =  6,
+	UAT_CLOTH_COLOR               =  7,
+	UAT_SHIELD_SPRITE             =  8,
+	UAT_SHOES                     =  9,
+	UAT_BODY                      = 10,
+	UAT_FLOOR                     = 11,
+	UAT_ROBE_SPRITE               = 12,
+	UAT_BODY_STYLE                = 13,
+	UAT_MAX
 };
 
 enum unit_posture_type : char
