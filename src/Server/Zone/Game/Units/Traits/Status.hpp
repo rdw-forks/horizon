@@ -37,6 +37,9 @@
 
 #include <ctime>
 #include <queue>
+#include <algorithm>
+#include <memory>
+#include <vector>
 
  // Linux
 

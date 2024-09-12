@@ -96,13 +96,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -114,13 +114,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -132,13 +132,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -164,13 +164,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -182,13 +182,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -200,13 +200,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -300,13 +300,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -318,13 +318,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -336,13 +336,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -366,13 +366,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -384,13 +384,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -402,13 +402,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -432,13 +432,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -450,13 +450,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -468,13 +468,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -498,13 +498,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -516,13 +516,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -534,13 +534,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -564,13 +564,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -582,13 +582,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -600,13 +600,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -630,13 +630,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -648,13 +648,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -666,13 +666,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -768,13 +768,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -786,13 +786,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -804,13 +804,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
@@ -834,13 +834,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_base(int32_t val, bool notify_client = true)
+		void add_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_base(int32_t val, bool notify_client = true)
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_base(val, notify_client);
 			this->notify_observers();
@@ -852,13 +852,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_equip(int32_t val, bool notify_client = true)
+		void add_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_equip(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_equip(int32_t val, bool notify_client = true)
+		void sub_equip(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_equip(val, notify_client);
 			this->notify_observers();
@@ -870,13 +870,13 @@ namespace Traits
 			this->notify_observers();
 		}
 
-		void add_status(int32_t val, bool notify_client = true)
+		void add_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::add_status(val, notify_client);
 			this->notify_observers();
 		}
 
-		void sub_status(int32_t val, bool notify_client = true)
+		void sub_status(int32_t val, bool notify_client = true) override
 		{
 			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
