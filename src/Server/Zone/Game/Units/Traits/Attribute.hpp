@@ -34,6 +34,8 @@
 #include "Server/Zone/Game/Units/Traits/ObservableStatus.hpp"
 #include <memory>
 #include <string>
+#include <vector>
+#include <chrono>
 
 namespace Horizon
 {
