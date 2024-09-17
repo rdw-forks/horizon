@@ -315,9 +315,12 @@ void BaseLevel::on_observable_changed(BaseExperience *bexp)
 	if (unit() == nullptr || bexp == nullptr)
 		return;
 
-	if (get_base() >= MAX_LEVEL)
-		return;
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
+	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
+	if (get_base() >= bexpg->max_level)
+		return;
+		
 	if (bexp->get_base() >= unit()->status()->next_base_experience()->get_base()) {
 		int carried_over = bexp->get_base() - unit()->status()->next_base_experience()->get_base();
 		add_base(1);
@@ -333,7 +336,7 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
-	if (unit()->status()->job_level()->get_base() >= jexpg->max_level)
+	if (get_base() >= jexpg->max_level)
 		return;
 
 	if (jexp->get_base() >= unit()->status()->next_job_experience()->get_base()) {
@@ -367,6 +370,9 @@ void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
+	if (blvl->get_base() >= bexpg->max_level)
+		return;
+
 	set_base(bexpg->exp[blvl->get_base() - 1]);
 }
 
@@ -377,6 +383,9 @@ void NextJobExperience::on_observable_changed(JobLevel *jlvl)
 
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
+
+	if (jlvl->get_base() >= jexpg->max_level)
+		return;
 
 	set_base(jexpg->exp[jlvl->get_base() - 1]);
 }
@@ -438,9 +447,8 @@ int32_t StatusATK::compute()
 	// Ranged: floor[(BaseLevel ÷ 4) + (Str ÷ 5) + Dex + (Luk ÷ 3)]
 	if (((1ULL << _weapon_type) & IT_WTM_RANGED) & ~(1ULL<<IT_WT_FIST))
 		set_base(dex + (blvl / 4) + (str / 5) + (luk / 3));
-
-	// Melee: floor[(BaseLevel ÷ 4) + Str + (Dex ÷ 5) + (Luk ÷ 3)]
-	set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
+	else // Melee: floor[(BaseLevel ÷ 4) + Str + (Dex ÷ 5) + (Luk ÷ 3)]
+		set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
 	
 	return total();
 }
@@ -474,9 +482,37 @@ int32_t SoftDEF::compute()
 	if (_vit != nullptr)
 		vit = _vit->total();
 
-	// (VIT ÷ 2) + Max[(VIT × 0.3), (VIT ^ 2 ÷ 150) − 1]
-	set_base((vit / 2) + std::max((vit * 0.3), (std::pow(vit, 2) / 150) - 1));
+	int32_t base_level = 1;
+
+	if (_blvl != nullptr)
+		base_level = _blvl->get_base();
+
+	int32_t agi = 1;
+
+	if (_agi != nullptr)
+		agi = _agi->total();
+
+	// /base level + (every 2 vit = +1 def) + (every 5 agi = +1 def)
+	set_base(((float)base_level + vit) / 2 + (unit()->type() == UNIT_PLAYER ? ((float)agi / 5) : 0));
 	
+	return total();
+}
+
+int32_t HardDEF::compute()
+{
+	if (unit()->type() == UNIT_PLAYER) {
+		std::shared_ptr<Horizon::Zone::Units::Player> player = unit()->downcast<Horizon::Zone::Units::Player>();
+		EquipmentListType const &equipments = player->inventory()->equipments();
+		set_base(0, false);
+		for (auto &equipment : equipments) {
+			std::shared_ptr<const item_entry_data> armor = equipment.second.lock();
+			if (armor != nullptr) {
+				// ArmorDef + ShieldDef + CardDef + RefineDef + OverUpgradeDef
+				add_base(armor->config->defense);
+			}
+		}
+	}
+
 	return total();
 }
 
@@ -736,6 +772,37 @@ int32_t DamageMotion::compute()
 	return total();
 }
 
+int32_t WeaponAttackLeft::compute()
+{
+	EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+	
+	if (equipments[IT_EQPI_HAND_L].second.expired() == true)
+		return 0;
+	
+	set_base(equipments[IT_EQPI_HAND_L].second.lock()->config->attack, false);
+
+	return total();
+}
+
+int32_t WeaponAttackCombined::compute()
+{
+	set_base(_watk_left->total() + _watk_right->total());
+
+	return total();
+}
+
+int32_t WeaponAttackRight::compute()
+{
+	EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+	
+	if (equipments[IT_EQPI_HAND_R].second.expired() == true)
+		return 0;
+	
+	set_base(equipments[IT_EQPI_HAND_R].second.lock()->config->attack, false);
+
+	return total();
+}
+
 int32_t BaseAttack::compute()
 {
 	if (unit()->type() == UNIT_PLAYER) {
@@ -761,6 +828,7 @@ int32_t BaseAttack::compute()
 				break;
 			}
 		}
+		
 		set_base((melee ? _str->total() : _dex->total()) + (float) ((melee ? _dex->get_base() : _str->total()) / 5) + (float) (_luk->get_base() / 3) + (_blvl->get_base() / 4));
 	}
 	else if (unit()->type() == UNIT_MONSTER)

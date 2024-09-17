@@ -95,7 +95,8 @@ void Monster::behavior_passive()
 {
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (next_walk_time() - std::time(nullptr) < 0)
-		&& !is_walking()) {
+		&& !is_walking()
+		&& !is_attacking()) {
 	    try {
 			MapCoords move_c = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
 			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -192,8 +193,6 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 
 	if (md == nullptr)
 		return;
-
-	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 
 	switch (killer->type())
 	{

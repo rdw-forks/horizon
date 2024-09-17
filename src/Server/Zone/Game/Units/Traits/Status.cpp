@@ -283,7 +283,12 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 
 	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
+	soft_def()->set_base_level(base_level().get());
+	soft_def()->set_agility(agility().get());
 	soft_def()->compute();
+
+	set_hard_def(std::make_shared<HardDEF>(_unit));
+	hard_def()->compute();
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
@@ -326,17 +331,21 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	base_level()->register_observable(base_level().get());
 	job_level()->register_observable(job_level().get());
 
+	set_base_attack(std::make_shared<BaseAttack>(_unit));
+
 	// Register Status Observers
 	strength()->register_observers(
 		strength_cost().get(),
 		max_weight().get(),
 		status_atk().get(),
-		equip_atk().get());
+		equip_atk().get(),
+		base_attack().get());
 
 	agility()->register_observers(
 		agility_cost().get(),
 		flee().get(),
-		attack_speed().get());
+		attack_speed().get(),
+		soft_def().get());
 
 	vitality()->register_observers(
 		vitality_cost().get(),
@@ -355,7 +364,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		status_matk().get(),
 		soft_mdef().get(),
 		hit().get(),
-		attack_speed().get());
+		attack_speed().get(),
+		base_attack().get());
 
 	luck()->register_observers(
 		luck_cost().get(),
@@ -363,17 +373,20 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		status_matk().get(),
 		hit().get(),
 		crit().get(),
-		flee().get());
+		flee().get(),
+		base_attack().get());
 
 	base_level()->register_observers(
 		status_point().get(),
 		next_base_experience().get(),
 		status_atk().get(),
 		status_matk().get(),
+		soft_def().get(),
 		soft_mdef().get(),
 		hit().get(),
 		flee().get(),
-		attack_speed().get());
+		attack_speed().get(),
+		base_attack().get());
 
 	job_level()->register_observers(
 		skill_point().get(),
@@ -387,30 +400,34 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	set_attack_motion(std::make_shared<AttackMotion>(_unit));
 	attack_motion()->set_attack_speed(attack_speed().get());
 	attack_motion()->set_agility(agility().get());
-	attack_motion()->register_observable(attack_motion().get());
-	attack_motion()->register_observers(attack_speed().get(), agility().get());
 	attack_motion()->compute();
 
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->set_attack_motion(attack_motion().get());
-	attack_delay()->register_observable(attack_delay().get());
-	attack_delay()->register_observers(attack_motion().get());
 	attack_delay()->compute();
 
 	set_damage_motion(std::make_shared<DamageMotion>(_unit));
 	damage_motion()->set_agility(agility().get());
-	damage_motion()->register_observable(damage_motion().get());
-	damage_motion()->register_observers(agility().get());
 	damage_motion()->compute();
 
-	set_base_attack(std::make_shared<BaseAttack>(_unit));
 	base_attack()->set_strength(strength().get());
 	base_attack()->set_dexterity(dexterity().get());
 	base_attack()->set_luck(luck().get());
 	base_attack()->set_base_level(base_level().get());
-	base_attack()->register_observable(base_attack().get());
-	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
 
+	set_weapon_attack_left(std::make_shared<WeaponAttackLeft>(_unit));
+	weapon_attack_left()->register_observable(weapon_attack_left().get());
+	
+	set_weapon_attack_right(std::make_shared<WeaponAttackRight>(_unit));
+	weapon_attack_right()->register_observable(weapon_attack_right().get());
+
+	set_weapon_attack_combined(std::make_shared<WeaponAttackCombined>(_unit));
+	weapon_attack_combined()->set_weapon_attack_left(weapon_attack_left().get());
+	weapon_attack_combined()->set_weapon_attack_right(weapon_attack_right().get());
+
+	weapon_attack_left()->register_observers(weapon_attack_combined().get());
+	weapon_attack_right()->register_observers(weapon_attack_combined().get());
+	
 	calculate(false);
 
 	player->get_session()->clif()->notify_initial_status();
@@ -516,7 +533,11 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 
 	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
+	soft_def()->set_base_level(base_level().get());
+	// Agility not used for monsters.
 	soft_def()->compute();
+
+	set_hard_def(std::make_shared<HardDEF>(_unit, md->defense));
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
@@ -564,16 +585,12 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	creature_attack_damage()->set_base_level(base_level().get());
 	creature_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
 	creature_attack_damage()->compute();
-	creature_attack_damage()->register_observable(creature_attack_damage().get());
-	creature_attack_damage()->register_observers(strength().get(), base_level().get(), creature_weapon_attack().get());
 
 	set_creature_magic_attack_damage(std::make_shared<MobMagicAttackDamage>(_unit));
 	creature_magic_attack_damage()->set_intelligence(intelligence().get());
 	creature_magic_attack_damage()->set_base_level(base_level().get());
 	creature_magic_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
 	creature_magic_attack_damage()->compute();
-	creature_magic_attack_damage()->register_observable(creature_magic_attack_damage().get());
-	creature_magic_attack_damage()->register_observers(intelligence().get(), base_level().get(), creature_weapon_attack().get());
 
 	set_creature_view_range(std::make_shared<MobViewRange>(_unit, (int) md->view_range));
 	set_creature_chase_range(std::make_shared<MobChaseRange>(_unit, (int) md->chase_range));
@@ -742,6 +759,9 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 	if (item->type == IT_TYPE_WEAPON) {
 		status_atk()->set_weapon_type(equipped ? item->config->sub_type.weapon_t : IT_WT_FIST);
 		equip_atk()->on_weapon_changed();
+
+		weapon_attack_left()->on_equipment_changed();
+		weapon_attack_right()->on_equipment_changed();
 	}
 
 	attack_speed()->on_equipment_changed();

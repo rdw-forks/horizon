@@ -155,7 +155,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	config_4["dmotion"] = &combat_damage::dmotion;
 	config_4["blewcount"] = &combat_damage::blewcount;
 	config_4["damage_type"] = &combat_damage::damage_type;
-	config_4["ret_type"] = &combat_damage::ret_type;
+	config_4["result"] = &combat_damage::result;
 	config_4["ele_type"] = &combat_damage::ele_type;
 	config_4["element_level"] = &combat_damage::element_level;
 	config_4["skill_id"] = &combat_damage::skill_id;

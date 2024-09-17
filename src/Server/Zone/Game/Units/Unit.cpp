@@ -447,6 +447,7 @@ void Unit::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
 
 void Unit::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
+	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 }
 
 bool Unit::stop_attacking()
@@ -483,7 +484,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 				return;
 			}
 
-			if (path_to(target)->size() == 0)
+			if (path_to(target)->size() == 0 || path_to(target)->size() > MAX_VIEW_RANGE)
 			{
 				on_attack_end();
 				return;
@@ -516,7 +517,9 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 			if (!is_attacking())
 				set_attacking(true);
 
-			combat()->weapon_attack();
+			// Let the target start attacking back.
+			if (combat()->weapon_attack() == CBT_RET_DEF && target->is_attacking() == false)
+				target->attack(shared_from_this(), true);
 
 			if (continuous)
 				context.Repeat(Milliseconds(_attackable_time));

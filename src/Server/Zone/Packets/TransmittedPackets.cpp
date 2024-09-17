@@ -2400,7 +2400,7 @@ ByteBuffer &ZC_OTHER_GUILD_LIST::serialize()
 /**
  * ZC_PAR_CHANGE
  */
-void ZC_PAR_CHANGE::deliver(status_point_type type, int16_t value)
+void ZC_PAR_CHANGE::deliver(status_point_type type, int32_t value)
 {
 	_type = type;
 	_value = value;

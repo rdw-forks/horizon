@@ -37658,7 +37658,7 @@ public:
 	{}
 	virtual ~ZC_PAR_CHANGE() {}
 
-	void deliver(status_point_type type, int16_t value);
+	void deliver(status_point_type type, int32_t value);
 	ByteBuffer &serialize();
 
 /* Structure */

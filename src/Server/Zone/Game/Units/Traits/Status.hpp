@@ -441,6 +441,14 @@ public:
 		_soft_def = sdef;
 	}
 
+	std::shared_ptr<HardDEF> hard_def() { return _hard_def; }
+	void set_hard_def(std::shared_ptr<HardDEF> hdef) {
+		if (_hard_def != nullptr)
+			remove_attribute(_hard_def);
+		add_attribute(hdef);
+		_hard_def = hdef;
+	}
+
 	std::shared_ptr<SoftMDEF> soft_mdef() { return _soft_mdef; }
 	void set_soft_mdef(std::shared_ptr<SoftMDEF> smdef) {
 		if (_soft_mdef != nullptr)
@@ -582,6 +590,30 @@ public:
 			remove_attribute(_base_attack);
 		add_attribute(b);
 		_base_attack = b;
+	}
+
+	std::shared_ptr<WeaponAttackLeft> weapon_attack_left() { return _weapon_attack_left; }
+	void set_weapon_attack_left(std::shared_ptr<WeaponAttackLeft> w) {
+		if (_weapon_attack_left != nullptr)
+			remove_attribute(_weapon_attack_left);
+		add_attribute(w);
+		_weapon_attack_left = w;
+	}
+
+	std::shared_ptr<WeaponAttackRight> weapon_attack_right() { return _weapon_attack_right; }
+	void set_weapon_attack_right(std::shared_ptr<WeaponAttackRight> w) {
+		if (_weapon_attack_right != nullptr)
+			remove_attribute(_weapon_attack_right);
+		add_attribute(w);
+		_weapon_attack_right = w;
+	}
+
+	std::shared_ptr<WeaponAttackCombined> weapon_attack_combined() { return _weapon_attack_combined; }
+	void set_weapon_attack_combined(std::shared_ptr<WeaponAttackCombined> w) {
+		if (_weapon_attack_combined != nullptr)
+			remove_attribute(_weapon_attack_combined);
+		add_attribute(w);
+		_weapon_attack_combined = w;
 	}
 
 	std::shared_ptr<UnitSize> size() { return _size; }
@@ -764,6 +796,7 @@ private:
 	std::shared_ptr<EquipATK> _equip_atk;
 	std::shared_ptr<StatusMATK> _status_matk;
 	std::shared_ptr<SoftDEF> _soft_def;
+	std::shared_ptr<HardDEF> _hard_def;
 	std::shared_ptr<SoftMDEF> _soft_mdef;
 	std::shared_ptr<HIT> _hit;
 	std::shared_ptr<CRIT> _crit;
@@ -791,6 +824,9 @@ private:
 	std::shared_ptr<AttackDelay> _attack_delay;
 	std::shared_ptr<DamageMotion> _damage_motion;
 	std::shared_ptr<BaseAttack> _base_attack;
+	std::shared_ptr<WeaponAttackLeft> _weapon_attack_left;
+	std::shared_ptr<WeaponAttackRight> _weapon_attack_right;
+	std::shared_ptr<WeaponAttackCombined> _weapon_attack_combined;
 	std::shared_ptr<UnitSize> _size;
 	/* Mobs */
 	std::shared_ptr<MobWeaponAttack> _creature_weapon_attack;

@@ -260,7 +260,6 @@ bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t di
 
 	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_system_routine_manager().push(s_task);
 
-
 	return true;
 }
 bool ZoneClientInterface::notify_time()

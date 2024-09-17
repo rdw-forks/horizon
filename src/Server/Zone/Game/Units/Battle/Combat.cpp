@@ -68,43 +68,127 @@ combat_retaliate_type Combat::weapon_attack()
     
     if (unit()->type() == UNIT_PLAYER) {
         EquipmentListType const& equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
-        std::shared_ptr<const item_entry_data> weapon = nullptr;
 
         // Calculate element damage ratio and damage.
         int64_t batk = unit()->status()->base_attack()->total();
 
-        if (equipments[IT_EQPI_HAND_R].second.expired() == false) {
-            batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_R);
-            batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_R);
-            dmg.right_damage = (batk << 1);
-        }
+		if (unit()->type() == UNIT_PLAYER) {
+        	std::shared_ptr<const item_entry_data> weapon_right = nullptr, weapon_left = nullptr;
 
-        if (equipments[IT_EQPI_HAND_L].second.expired() == false) {
-            batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_L);
-            batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_L);
-            dmg.left_damage = batk;
-        }
+			std::function<bool(item_weapon_type)> is_ranged_weapon = [](item_weapon_type weapon_type) -> bool {
+				switch (weapon_type) {
+					case IT_WT_BOW:
+					case IT_WT_MUSICAL:
+					case IT_WT_WHIP:
+					case IT_WT_REVOLVER:
+					case IT_WT_RIFLE:
+					case IT_WT_GATLING:
+					case IT_WT_SHOTGUN:
+					case IT_WT_GRENADE:
+						return true;
+					default:
+						break;
+				}
+
+				return false;
+			};
+
+			if (equipments[IT_EQPI_HAND_R].second.expired() == false) {
+				int64_t status_atk_min = 0, status_atk_max = 0;
+				float bonus = 0.00f, variance = 0.00f;
+				batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_R);
+				batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_R);
+				dmg.right_damage = (batk << 1);
+				weapon_right = equipments[IT_EQPI_HAND_R].second.lock();
+				if (is_ranged_weapon(weapon_right->config->sub_type.weapon_t)) {
+					bonus = unit()->status()->weapon_attack_right()->total() * unit()->status()->dexterity()->total() / 100.00f;
+				} else {
+					bonus = unit()->status()->weapon_attack_right()->total() * unit()->status()->strength()->total() / 100.00f;
+				}
+				variance = 5.0f * unit()->status()->weapon_attack_right()->total() * weapon_right->config->level.weapon / 100.00f;
+				status_atk_min = unit()->status()->weapon_attack_right()->total() - variance + bonus;
+				status_atk_max = unit()->status()->weapon_attack_right()->total() + variance + bonus;
+				dmg.right_damage += (status_atk_max > status_atk_min) ? status_atk_min + std::rand() % (status_atk_max - status_atk_min + 1) : status_atk_min;
+			}
+
+			if (equipments[IT_EQPI_HAND_L].second.expired() == false) {
+				int64_t status_atk_min = 0, status_atk_max = 0;
+				float bonus = 0.00f, variance = 0.00f;
+				batk = deduce_weapon_element_attack(batk, ELE_NEUTRAL, IT_EQPI_HAND_L);
+				batk = deduce_damage_size_modifier(batk, IT_EQPI_HAND_L);
+				dmg.left_damage = batk;
+				weapon_left = equipments[IT_EQPI_HAND_L].second.lock();
+				if (is_ranged_weapon(weapon_left->config->sub_type.weapon_t)) {
+					bonus = unit()->status()->weapon_attack_left()->total() * unit()->status()->dexterity()->total() / 100.00f;
+				} else {
+					bonus = unit()->status()->weapon_attack_left()->total() * unit()->status()->strength()->total() / 100.00f;
+				}
+				variance = 5.0f * unit()->status()->weapon_attack_left()->total() * weapon_left->config->level.weapon / 100.00f;
+				status_atk_min = unit()->status()->weapon_attack_left()->total() - variance + bonus;
+				status_atk_max = unit()->status()->weapon_attack_left()->total() + variance + bonus;
+				dmg.left_damage += (status_atk_max > status_atk_min) ? status_atk_min + std::rand() % (status_atk_max - status_atk_min + 1) : status_atk_min;
+			}
+		}
     } else {
         dmg.right_damage = (std::rand() % unit()->status()->creature_attack_damage()->get_min()) + (unit()->status()->creature_attack_damage()->get_max() - unit()->status()->creature_attack_damage()->get_min());
+		int64_t status_atk_min = 0, status_atk_max = 0;
+		status_atk_min = dmg.right_damage * 80 / 100;
+		status_atk_max = dmg.right_damage * 120 / 100;
+		dmg.right_damage += (status_atk_max > status_atk_min) ? status_atk_min + std::rand() % (status_atk_max - status_atk_min + 1) : status_atk_min;
     }
-    
-    dmg.number_of_hits = 1;
 
-    CombatRegistry::MeleeResultOperation::MeleeResultOperand *melee_operand = new CombatRegistry::MeleeResultOperation::MeleeResultOperand(unit(), target());
-    CombatRegistry::CombatValueDamage *melee_value = new CombatRegistry::CombatValueDamage(dmg);
-    CombatRegistry::MeleeResultOperation *melee_operation = new CombatRegistry::MeleeResultOperation(melee_operand, CombatRegistry::MeleeResultOperation::melee_result_operation_type::MELEE_RESULT_OPERATION_DAMAGE, melee_value);
+	int target_flee = target()->status()->flee()->total();
+	bool hit = (std::rand() % 100) < (unit()->status()->hit()->total() - target_flee);
 
-    CombatRegistry::AttributeOperation::AttributeOperand *attr_operand = new CombatRegistry::AttributeOperation::AttributeOperand(unit(), target(), target()->status()->current_hp());
-    CombatRegistry::CombatValueInteger *attr_value = new CombatRegistry::CombatValueInteger(dmg.left_damage + dmg.right_damage);
-    CombatRegistry::AttributeOperation *attr_operation = new CombatRegistry::AttributeOperation(attr_operand, CombatRegistry::AttributeOperation::attribute_operation_type::ATTRIBUTE_OPERATION_SUBTRACT_FROM_BASE, attr_value);
-    
-    int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	if (dmg.left_damage)
+		dmg.left_damage = (int)((100.0f - target()->status()->soft_def()->total() / (target()->status()->soft_def()->total() + 400.0f) * 90.0f) / 100.0f * dmg.left_damage - target()->status()->hard_def()->total());
+	
+	dmg.right_damage = (int)((100.0f - target()->status()->soft_def()->total() / (target()->status()->soft_def()->total() + 400.0f) * 90.0f) / 100.0f * dmg.right_damage - target()->status()->hard_def()->total());
+	
+	int damage_total = dmg.left_damage + dmg.right_damage;
+
+	if (dmg.left_damage < 0)
+		dmg.left_damage = 0;
+	if (dmg.right_damage < 0)
+		dmg.right_damage = 0;
+		
+	if (damage_total < 0) {
+		damage_total = 0;
+	}
+
+	if (hit) {
+		dmg.result = combat_retaliate_type::CBT_RET_DEF;
+	} else {
+		dmg.result = combat_retaliate_type::CBT_RET_FLEE;
+		dmg.left_damage = 0;
+		dmg.right_damage = 0;
+		damage_total = 0;
+	}
+
+	if (!hit) {
+	    dmg.number_of_hits *= -1;
+	} else {
+		if (dmg.left_damage > 0)
+			dmg.number_of_hits = 2;
+		else
+			dmg.number_of_hits = 1;
+	}
+		
+	CombatRegistry::MeleeResultOperation::MeleeResultOperand *melee_operand = new CombatRegistry::MeleeResultOperation::MeleeResultOperand(unit(), target());
+	CombatRegistry::CombatValueDamage *melee_value = new CombatRegistry::CombatValueDamage(dmg);
+	CombatRegistry::MeleeResultOperation *melee_operation = new CombatRegistry::MeleeResultOperation(melee_operand, CombatRegistry::MeleeResultOperation::melee_result_operation_type::MELEE_RESULT_OPERATION_DAMAGE, melee_value);
+
+	CombatRegistry::AttributeOperation::AttributeOperand *attr_operand = new CombatRegistry::AttributeOperation::AttributeOperand(unit(), target(), target()->status()->current_hp());
+	CombatRegistry::CombatValueInteger *attr_value = new CombatRegistry::CombatValueInteger(damage_total);
+	CombatRegistry::AttributeOperation *attr_operation = new CombatRegistry::AttributeOperation(attr_operand, CombatRegistry::AttributeOperation::attribute_operation_type::ATTRIBUTE_OPERATION_SUBTRACT_FROM_BASE, attr_value);
+	
+	int time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	CombatRegistry::CombatStage *stage = new CombatRegistry::CombatStage(time);
-    stage->add_operation(melee_operation);
-    stage->add_operation(attr_operation);
-    unit()->combat_registry()->queue_combat_stage(stage);
+	stage->add_operation(melee_operation);
+	stage->add_operation(attr_operation);
+	unit()->combat_registry()->queue_combat_stage(stage);
 
-    return CBT_RET_NONE;
+    return dmg.result;
 }
 
 int64_t Combat::calculate_weapon_attack(int64_t damage)
@@ -294,6 +378,14 @@ void CombatRegistry::AttributeOperation::execute() const
             operand->get_attribute()->sub_status(value);
         }
             break;
+    }
+
+	// notify through walk packet of hp change.
+    if (operand->get_attribute() != nullptr 
+		&& operand->get_attribute()->get_type() == STATUS_CURRENTHP 
+		&& operand->get_attribute()->unit()->type() == UNIT_MONSTER 
+		&& !operand->get_attribute()->unit()->is_dead()) {
+        operand->get_attribute()->unit()->notify_nearby_players_of_movement(true);
     }
 }
 

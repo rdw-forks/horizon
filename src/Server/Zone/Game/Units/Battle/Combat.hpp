@@ -40,6 +40,134 @@ namespace Horizon
 {
 namespace Zone
 {
+
+class DamageProperty
+{
+
+};
+
+class Damage;
+
+class DamageHitType : public DamageProperty
+{
+public:
+	DamageHitType(Damage *damage, combat_damage_hit_type hit_type) : _damage(damage), _hit_type{hit_type} { }
+	~DamageHitType() = default;
+
+	void set_hit_type(combat_damage_hit_type hit_type) { _hit_type = hit_type; }
+	combat_damage_hit_type get_hit_type() { return _hit_type; }
+
+private:
+	Damage *_damage{nullptr};
+	combat_damage_hit_type _hit_type{ CBT_DMG_HIT_NORMAL };
+};
+
+class DamageMultiAttackCount : public DamageProperty
+{
+public:
+	DamageMultiAttackCount(Damage *damage, int16_t multi_attack_count) : _damage(damage), _multi_attack_count{multi_attack_count} { }
+	~DamageMultiAttackCount() = default;
+
+	void set_multi_attack_count(int16_t multi_attack_count) { _multi_attack_count = multi_attack_count; }
+	int16_t get_multi_attack_count() { return _multi_attack_count; }
+private:
+	Damage *_damage{nullptr};
+	int16_t _multi_attack_count{0};
+};
+
+class DamageKnockBackCellCount : public DamageProperty
+{
+public:
+	DamageKnockBackCellCount(Damage *damage, int16_t knockback_cell_count) : _damage(damage), _knockback_cell_count{knockback_cell_count} { }
+	~DamageKnockBackCellCount() = default;
+
+	void set_knockback_cell_count(int16_t knockback_cell_count) { _knockback_cell_count = knockback_cell_count; }
+	int16_t get_knockback_cell_count() { return _knockback_cell_count; }
+private:
+	Damage *_damage{nullptr};
+	int16_t _knockback_cell_count{0};
+};
+
+class DamageCritical : public DamageProperty
+{
+public:
+	DamageCritical(Damage *damage, bool is_critical) : _damage(damage), _is_critical{is_critical} { }
+	~DamageCritical() = default;
+
+	void set_critical(bool is_critical) { _is_critical = is_critical; }
+	bool is_critical() { return _is_critical; }
+private:
+	Damage *_damage{nullptr};
+	bool _is_critical{false};
+};
+class Damage
+{
+public:
+	Damage(combat_damage_type_mask damage_type, std::shared_ptr<Unit> source, std::shared_ptr<Unit> target, int32_t skill_id = 0, int32_t skill_lv = 0)
+	{ }
+	~Damage() = default;
+
+	void add_right_damage(int64_t damage) { _right_damage += damage; }
+	void sub_right_damage(int64_t damage) { _right_damage -= damage; }
+	int64_t get_right_damage() { return _right_damage; }
+	void set_right_damage(int64_t right_damage) { _right_damage = right_damage; }
+
+	void add_left_damage(int64_t damage) { _left_damage += damage; }
+	void sub_left_damage(int64_t damage) { _left_damage -= damage; }
+	int64_t get_left_damage() { return _left_damage; }
+	void set_left_damage(int64_t left_damage) { _left_damage = left_damage; }
+
+	void add_defense(int64_t defense) { _defense += defense; }
+	void sub_defense(int64_t defense) { _defense -= defense; }
+	int64_t get_defense() { return _defense; }
+	void set_defense(int64_t defense) { _defense = defense; }
+
+	void set_hit_type(combat_damage_hit_type hit_type) { _hit_type = hit_type; }
+	combat_damage_hit_type get_hit_type() { return _hit_type; }
+
+	int64_t total() const { return calculate(); }
+
+	int64_t calculate() const { return _right_damage + _left_damage - _defense; }
+	
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	TT operator + (TT right) { return total() + right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	TT operator / (TT right) { return total() / right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	TT operator * (TT right) { return total() * right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	TT operator - (TT right) { return total() - right; }
+
+	int operator + (Damage const &right) const { return right.total() + total(); }
+	double operator / (Damage const &right) { return right.total() / total(); }
+	double operator * (Damage const &right) { return right.total() * total(); }
+	int operator - (Damage const &right) { return right.total() - total(); }
+	
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	bool operator == (TT right) { return total() == right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	bool operator != (TT right) { return total() != right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	bool operator > (TT right) { return total() > right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	bool operator >= (TT right) { return total() >= right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	bool operator < (TT right) { return total() < right; }
+	template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
+	bool operator <= (TT right) { return total() <= right; }
+
+private:
+	combat_damage_type_mask _damage_type{ CBT_DMGMASK_NONE };
+	combat_damage_hit_type _hit_type{ CBT_DMG_HIT_NORMAL };
+	std::weak_ptr<Unit> _source;
+	std::weak_ptr<Unit> _target;
+	int32_t _skill_id{0};
+	int32_t _skill_lv{0};
+	int64_t _right_damage{0};
+	int64_t _left_damage{0};
+	int64_t _defense{0};
+};
+
 class CombatRegistry
 {
 public:

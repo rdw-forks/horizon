@@ -110,7 +110,7 @@ struct combat_damage : public combat_structures {
     int amotion{0}, dmotion{0};
     int blewcount{0};
     combat_damage_type_mask damage_type{CBT_DMGMASK_NONE};
-    combat_retaliate_type ret_type{CBT_RET_NONE};
+    combat_retaliate_type result{CBT_RET_NONE};
     element_type ele_type{ELE_NEUTRAL};
     int8_t element_level{1};
 };
