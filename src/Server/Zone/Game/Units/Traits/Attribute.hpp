@@ -36,6 +36,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <functional>
 
 namespace Horizon
 {
@@ -74,13 +75,27 @@ namespace Traits
 
 	struct s_attribute_change_values
 	{
+		struct s_attribute_min_max : s_min_max
+		{
+			s_attribute_min_max(int32_t min, int32_t max) : s_min_max(min, max) {}
+			s_attribute_min_max(int32_t min, Attribute *attr);
+			// create constructor for min attribute value if required.
+			s_attribute_min_max() = default;
+
+			void update_with_live_attribute();
+
+			bool is_valid() { return _attr != nullptr; }
+
+		private:
+			Attribute *_attr;
+		};
 		class ApplyLiveAttribute
 		{
 		public:
 			ApplyLiveAttribute(Attribute *attr)
 			: _attr(attr) {}
 
-			void operator()(s_attribute_change_values &change);
+			void update_with_live_attribute(s_attribute_change_values *change);
 
 			bool is_valid() { return _attr != nullptr; }
 
@@ -93,16 +108,16 @@ namespace Traits
 		int32_t base{ 0 };
 		int32_t equip{ 0 };
 		int32_t status{ 0 };
-		s_min_max minmax{ 0, 0 };
+		s_attribute_min_max minmax{ 0, 0 };
 		ApplyLiveAttribute apply_live_attribute{ nullptr };
 		std::function<void(s_attribute_change_values &)> client_notify_function;
 
 		s_attribute_change_values() = default;
-		s_attribute_change_values(int32_t base, int32_t equip = 0, int32_t status = 0, s_min_max minmax = s_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
+		s_attribute_change_values(int32_t base, int32_t equip = 0, int32_t status = 0, s_attribute_min_max minmax = s_attribute_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
 		: base(base), equip(equip), status(status), minmax(minmax), client_notify_function(client_notify_function) {}
-		s_attribute_change_values(ApplyLiveAttribute apply_live_attribute, s_min_max minmax = s_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
+		s_attribute_change_values(ApplyLiveAttribute apply_live_attribute, s_attribute_min_max minmax = s_attribute_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
 		: apply_live_attribute(apply_live_attribute), minmax(minmax), client_notify_function(client_notify_function) {}
-		s_attribute_change_values(Attribute *attr, s_min_max minmax = s_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
+		s_attribute_change_values(Attribute *attr, s_attribute_min_max minmax = s_attribute_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
 		: apply_live_attribute(ApplyLiveAttribute(attr)), minmax(minmax), client_notify_function(client_notify_function) {}
 				
 		int32_t get_base() const { return base; }
@@ -119,6 +134,16 @@ namespace Traits
 
 		int32_t get_min() { return minmax.get_min(); }
 		void set_min(int32_t val) { minmax.set_min(val); }
+		
+		void update_with_live_attribute()
+		{
+			if (get_live_attribute().is_valid()) {
+				get_live_attribute().update_with_live_attribute(this);
+			}
+			if (minmax.is_valid()) {
+				minmax.update_with_live_attribute();
+			}
+		}
 
 		ApplyLiveAttribute get_live_attribute() { return apply_live_attribute; }
 		void set_live_attribute(Attribute *attr)
@@ -332,9 +357,13 @@ namespace Traits
 
 		void apply(bool notify = true)
 		{
+			// do not calculate until ready. Changes to stats (via permanent changes and temporary changes) 
+			// will not be calculated until ready.
+			_calculate_ready = false; 
 			_permanent_changes.apply(notify);
 			_temporary_changes.apply(notify);
 			_apply_periodic_changes = true;
+			_calculate_ready = true;
 			compute();
 		}
 
@@ -352,6 +381,8 @@ namespace Traits
 
 		bool needs_recalculation() const { return _recalculate_flag; }
 		void recalculate(bool flag) { _recalculate_flag = flag; }
+
+		bool is_compute_ready() const { return _calculate_ready; }
 		
 	protected:
 		status_point_type _status_point_type{status_point_type::STATUS_POINT_INVALID};
@@ -360,6 +391,7 @@ namespace Traits
 		int32_t _status_val{0};
 		bool _apply_periodic_changes{false};
 		bool _recalculate_flag{false};
+		bool _calculate_ready{false};
 	private:
 		std::weak_ptr<Unit> _unit;
 		PermanentChanges _permanent_changes{this};

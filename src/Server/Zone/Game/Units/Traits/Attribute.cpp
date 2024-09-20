@@ -42,18 +42,29 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Traits;
 
-void s_attribute_change_values::ApplyLiveAttribute::operator()(s_attribute_change_values &change)
+void s_attribute_change_values::ApplyLiveAttribute::update_with_live_attribute(s_attribute_change_values *change)
 {
-	if (change.get_base() != _attr->get_base())
-		change.set_base(_attr->get_base());
-	if (change.get_equip() != _attr->get_equip())
-		change.set_equip(_attr->get_equip());
-	if (change.get_status() != _attr->get_status())
-		change.set_status(_attr->get_status());
+	if (change->get_base() != _attr->get_base())
+		change->set_base(_attr->get_base());
+	if (change->get_equip() != _attr->get_equip())
+		change->set_equip(_attr->get_equip());
+	if (change->get_status() != _attr->get_status())
+		change->set_status(_attr->get_status());
 
-	assert(change.get_base() == _attr->get_base());
-	assert(change.get_equip() == _attr->get_equip());
-	assert(change.get_status() == _attr->get_status());
+	assert(change->get_base() == _attr->get_base());
+	assert(change->get_equip() == _attr->get_equip());
+	assert(change->get_status() == _attr->get_status());
+}
+s_attribute_change_values::s_attribute_min_max::s_attribute_min_max(int32_t min, Attribute *attr) : s_min_max(0, attr->total()), _attr(attr) {}
+
+void s_attribute_change_values::s_attribute_min_max::update_with_live_attribute()
+{
+	if (get_max() != _attr->total())
+	{
+		set_max(_attr->total());
+	}
+
+	assert(get_max() == _attr->total());
 }
 
 void PermanentChanges::add_change(s_attribute_change_values change, std::string source)
@@ -159,9 +170,7 @@ void PeriodicChanges::update(uint64_t delta)
 			if (_attr->unit() && _attr->unit()->is_dead() == true)
 				return;
 
-			if (change.change.get_live_attribute().is_valid() == true) {
-				change.change.get_live_attribute()(change.change);
-			}
+			change.change.update_with_live_attribute();
 
 			bool changed = false;
 			if (change.change.get_base() > 0) {
@@ -414,6 +423,63 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 		add_base(1);
 		jexp->set_base(carried_over);
 	}
+}
+
+int32_t MaxHP::compute()
+{
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
+	int val = 0;
+
+	if (job == nullptr)
+		return 0;
+
+	job_class_mask job_mask = JobDB->job_id_to_mask((job_class_type) job->id);
+	
+	int base_level = _blvl->total();
+	val += job->hp_table[base_level - 1];
+	
+	if ((job_mask & JMASK_EXPANDED) == JOB_SUPER_NOVICE && base_level >= 99)
+		val += 2000; //Supernovice lvl99 hp bonus.
+		
+	if ((job_mask & JMASK_EXPANDED_2_1) == JOB_SUPER_NOVICE_E && base_level >= 150)
+		val += 2000; //Extented Supernovice lvl150 hp bonus.
+
+	if ((job_mask & JMASK_TRANS) != 0)
+		val += val * 25 / 100; //Trans classes get a 25% hp bonus
+	else if ((job_mask & JMASK_BABY) != 0)
+		val = val * 70 / 100; //Baby classes get a 30% hp penalty
+
+	val += val * unit()->status()->vitality()->total() / 100; // +1% per each point of VIT
+
+	set_base(val);
+
+	return total();
+}
+
+int32_t MaxSP::compute()
+{
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
+	int val = 0;
+
+	if (job == nullptr)
+		return 0;
+
+	job_class_mask job_mask = JobDB->job_id_to_mask((job_class_type) job->id);
+	
+	int base_level = _blvl->total();
+
+	val += job->sp_table[base_level - 1];
+
+	if ((job_mask & JMASK_TRANS) != 0)
+		val += val * 25 / 100;
+	else if ((job_mask & JMASK_BABY) != 0)
+		val = val * 70 / 100;
+
+	val += val * _int->total() / 100;
+
+	set_base(val);
+
+	return total();
 }
 
 void CurrentHP::damage(int damage)

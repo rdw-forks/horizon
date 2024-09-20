@@ -380,6 +380,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 
 	intelligence()->register_observers(
 		intelligence_cost().get(),
+		max_sp().get(),
 		status_matk().get(),
 		soft_mdef().get(),
 		sp_regeneration().get());
@@ -405,6 +406,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 
 	base_level()->register_observers(
 		status_point().get(),
+		max_hp().get(),
+		max_sp().get(),
 		next_base_experience().get(),
 		status_atk().get(),
 		status_matk().get(),
@@ -468,17 +471,21 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	set_initialized(true);
 
 	current_hp()->add_periodic_change(
-		s_attribute_change_values(hp_regeneration().get(), s_min_max(0, max_hp()->total()), [player, this](s_attribute_change_values &this_) {
+		s_attribute_change_values(hp_regeneration().get(), s_attribute_change_values::s_attribute_min_max(0, max_hp().get()), 
+			[player, this](s_attribute_change_values &this_) {
 				player->get_session()->clif()->notify_recovery(ZC_NOTIFY_RECOVERY_HP, this_.get_live_attribute().get_attribute()->total());
-		}), 
+			}
+		), 
 		0,
 		player->map()->container()->game_config().get_natural_heal_hp_interval(), 
 		"natural_hp_regen");
 		
 	current_sp()->add_periodic_change(
-		s_attribute_change_values(sp_regeneration().get(), s_min_max(0, max_sp()->total()), [player, this](s_attribute_change_values &this_) {
+		s_attribute_change_values(sp_regeneration().get(), s_attribute_change_values::s_attribute_min_max(0, max_sp().get()), 
+			[player, this](s_attribute_change_values &this_) {
 				player->get_session()->clif()->notify_recovery(ZC_NOTIFY_RECOVERY_SP, this_.get_live_attribute().get_attribute()->total());
-		}), 
+			}
+		), 
 		0,
 		player->map()->container()->game_config().get_natural_heal_sp_interval(), 
 		"natural_sp_regen");
@@ -715,18 +722,23 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Units::Player> pl)
 
 		set_current_hp(std::make_shared<CurrentHP>(_unit, uint32_t(r[9].as_uint64())));
 		set_current_sp(std::make_shared<CurrentSP>(_unit, uint32_t(r[10].as_uint64())));
-		set_max_hp(std::make_shared<MaxHP>(_unit, uint32_t(r[11].as_uint64())));
-		set_max_sp(std::make_shared<MaxSP>(_unit, uint32_t(r[12].as_uint64())));
 
-		uint32_t base_level = uint32_t(r[13].as_uint64());
+		uint32_t base_level_ = uint32_t(r[13].as_uint64());
 		uint32_t job_level = uint32_t(r[14].as_uint64());
 
-		set_base_level(std::make_shared<BaseLevel>(_unit, base_level));
+		set_base_level(std::make_shared<BaseLevel>(_unit, base_level_));
 		set_job_level(std::make_shared<JobLevel>(_unit, job_level));
+
+		// Max HP/SP calculated after base_level is set.
+		set_max_hp(std::make_shared<MaxHP>(_unit, uint32_t(r[11].as_uint64())));
+		max_hp()->set_base_level(base_level().get());
+		set_max_sp(std::make_shared<MaxSP>(_unit, uint32_t(r[12].as_uint64())));
+		max_sp()->set_intelligence(intelligence().get());
+		max_sp()->set_base_level(base_level().get());
 
 		set_base_experience(std::make_shared<BaseExperience>(_unit, uint64_t(r[15].as_uint64())));
 		set_job_experience(std::make_shared<JobExperience>(_unit, uint64_t(r[16].as_uint64())));
-		set_next_base_experience(std::make_shared<NextBaseExperience>(_unit, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
+		set_next_base_experience(std::make_shared<NextBaseExperience>(_unit, base_level_ == bexpg->max_level ? 0 : bexpg->exp[base_level_ - 1]));
 		set_next_job_experience(std::make_shared<NextJobExperience>(_unit, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
 		set_movement_speed(std::make_shared<MovementSpeed>(_unit, DEFAULT_MOVEMENT_SPEED));
 

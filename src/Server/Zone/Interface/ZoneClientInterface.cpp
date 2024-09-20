@@ -134,7 +134,18 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
 	}
 
-	get_session()->player()->initialize();
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager());
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> w_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask>(s_task);
+	s_task->get_runtime_synchronization_mutex().lock();
+	s_task->set_session(get_session());
+	w_task->set_task([](std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> task) {
+		std::shared_ptr<ZoneSession> session = std::dynamic_pointer_cast<Horizon::Zone::ActiveRuntimeScenario>(task->get_runtime_context())->get_session();
+		session->player()->initialize();
+	});
+	s_task->get_runtime_synchronization_mutex().unlock();
+	s_task->push(w_task);
+	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager().push(s_task);
+
 	return true;
 }
 

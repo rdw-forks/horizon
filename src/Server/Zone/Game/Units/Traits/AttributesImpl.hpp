@@ -45,6 +45,7 @@ class Unit;
 class Player;
 namespace Traits
 {
+	class Intelligence;
 	class StatusATK;
 	class EquipATK;
 	class StatusMATK;
@@ -80,15 +81,17 @@ namespace Traits
 	class BaseAttack;
 	class HPRegeneration;
 	class SPRegeneration;
+	class MaxHP;
+	class MaxSP;
 
 	class BaseLevel
 	: public Attribute,
-	  public ObservableStatus<BaseLevel *, StatusPoint *, NextBaseExperience *, StatusATK *, StatusMATK *, SoftDEF *, SoftMDEF *, HIT *, FLEE *, AttackSpeed *, BaseAttack *>
+	  public ObservableStatus<BaseLevel *, StatusPoint *, MaxHP *, MaxSP*, NextBaseExperience *, StatusATK *, StatusMATK *, SoftDEF *, SoftMDEF *, HIT *, FLEE *, AttackSpeed *, BaseAttack *>
 	{
 	public:
 		BaseLevel(std::weak_ptr<Unit> unit, int32_t base = 0)
 		: Attribute(unit, STATUS_BASELEVEL, base, 0, 0),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~BaseLevel() { };
 
@@ -228,6 +231,14 @@ namespace Traits
 		  ObservableStatus(nullptr)
 		{ }
 		~MaxHP() { };
+
+		void on_observable_changed(BaseLevel *blvl) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+	private:
+		BaseLevel *_blvl;
 	};
 
 	class MaxSP
@@ -240,6 +251,18 @@ namespace Traits
 		  ObservableStatus(nullptr)
 		{ }
 		~MaxSP() { };
+
+		void on_observable_changed(BaseLevel *blvl) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Intelligence *int_) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_intelligence(Intelligence *int_) { _int = int_; }
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+	
+	private:
+		Intelligence *_int;
+		BaseLevel *_blvl;
 	};
 
 	class CurrentHP
@@ -492,12 +515,12 @@ namespace Traits
 
 	class Intelligence
 	: public Attribute,
-	  public ObservableStatus<Intelligence *, IntelligencePointCost *, StatusMATK *, SoftMDEF *, SPRegeneration *>
+	  public ObservableStatus<Intelligence *, IntelligencePointCost *, MaxSP *, StatusMATK *, SoftMDEF *, SPRegeneration *>
 	{
 	public:
 		Intelligence(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_INTELLIGENCE, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Intelligence() { };
 
@@ -984,7 +1007,7 @@ namespace Traits
 		: Attribute(unit, STATUS_MAX_WEIGHT, base, equip, status)
 		{ }
 
-		void on_observable_changed(Strength *wstr) { compute(); }
+		void on_observable_changed(Strength *wstr) { if (!is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1027,10 +1050,10 @@ namespace Traits
 		{ }
 		~StatusATK() { }
 
-		void on_observable_changed(Strength *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Strength *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1038,7 +1061,7 @@ namespace Traits
 		void set_strength(Strength *str) { _str = str; }
 		void set_dexterity(Dexterity *dex) { _dex = dex; }
 		void set_luck(Luck *luk) { _luk = luk; }
-		void set_weapon_type(item_weapon_type type) { _weapon_type = type; compute(); }
+		void set_weapon_type(item_weapon_type type) { _weapon_type = type; if (is_compute_ready()) compute(); }
 
 	private:
 		BaseLevel *_blvl{nullptr};
@@ -1057,9 +1080,9 @@ namespace Traits
 		{ }
 		~EquipATK() { }
 
-		void on_observable_changed(Strength *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_weapon_changed() { compute(); }
+		void on_observable_changed(Strength *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_weapon_changed() { if (is_compute_ready()) compute(); }
 
 		void set_strength(Strength *str) { _str = str; }
 		void set_dexterity(Dexterity *dex) { _dex = dex; }
@@ -1090,10 +1113,10 @@ namespace Traits
 		{ }
 		~StatusMATK() { }
 
-		void on_observable_changed(Intelligence *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Intelligence *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1118,9 +1141,9 @@ namespace Traits
 		: Attribute(unit, STATUS_SOFT_DEF)
 		{ }
 
-		void on_observable_changed(Vitality *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
-		void on_observable_changed(Agility *) { compute(); }
+		void on_observable_changed(Vitality *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1142,7 +1165,7 @@ namespace Traits
 		: Attribute(unit, STATUS_HARD_DEF, base, equip, status)
 		{ }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 	};
@@ -1157,10 +1180,10 @@ namespace Traits
 		{ }
 		~SoftMDEF() { }
 
-		void on_observable_changed(Intelligence *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Vitality *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Intelligence *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Vitality *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1185,9 +1208,9 @@ namespace Traits
 		{ }
 		~HIT() { }
 
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1210,7 +1233,7 @@ namespace Traits
 		{ }
 		~CRIT() { }
 
-		void on_observable_changed(Luck *) { compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1229,9 +1252,9 @@ namespace Traits
 		{ }
 		~FLEE() { }
 
-		void on_observable_changed(Agility *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1254,8 +1277,8 @@ namespace Traits
 		{ }
 		~HPRegeneration() { }
 
-		void on_observable_changed(Vitality *) { compute(); }
-		void on_observable_changed(MaxHP *) { compute(); }
+		void on_observable_changed(Vitality *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MaxHP *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1276,8 +1299,8 @@ namespace Traits
 		{ }
 		~SPRegeneration() { }
 
-		void on_observable_changed(Intelligence *) { compute(); }
-		void on_observable_changed(MaxSP *) { compute(); }
+		void on_observable_changed(Intelligence *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MaxSP *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1298,10 +1321,10 @@ namespace Traits
 		{ }
 		~AttackSpeed() { }
 
-		void on_observable_changed(Agility *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
-		void on_equipment_changed() { compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1324,7 +1347,7 @@ namespace Traits
 		{ }
 		~AttackRange() { }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 	};
@@ -1338,12 +1361,12 @@ namespace Traits
 		{ }
 		~AttackMotion() { }
 
-		void on_observable_changed(AttackSpeed *) { compute(); }
-		void on_observable_changed(Agility *) { compute(); }
+		void on_observable_changed(AttackSpeed *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		void set_attack_speed(AttackSpeed *aspd) { _attack_speed = aspd; }
 		void set_agility(Agility *agi) { _agi = agi; }
@@ -1362,8 +1385,8 @@ namespace Traits
 		{ }
 		~AttackDelay() { }
 
-		void on_observable_changed(AttackMotion *) { compute(); }
-		void on_equipment_changed() { compute(); }
+		void on_observable_changed(AttackMotion *) { if (is_compute_ready()) compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 		
 		int32_t compute();
 
@@ -1382,8 +1405,8 @@ namespace Traits
 		{ }
 		~DamageMotion() { }
 
-		void on_observable_changed(Agility *) { compute(); }
-		void on_equipment_changed() { compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1402,12 +1425,12 @@ namespace Traits
 		{ }
 		~BaseAttack() { }
 
-		void on_observable_changed(Strength *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Strength *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1435,7 +1458,7 @@ namespace Traits
 		ObservableStatus(nullptr)
 		{ }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 	};
@@ -1450,7 +1473,7 @@ namespace Traits
 		ObservableStatus(nullptr)
 		{ }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 	};
@@ -1464,8 +1487,8 @@ namespace Traits
 		{ }
 		~WeaponAttackCombined() { }
 
-		void on_observable_changed(WeaponAttackLeft *) { compute(); }
-		void on_observable_changed(WeaponAttackRight *) { compute(); }
+		void on_observable_changed(WeaponAttackLeft *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(WeaponAttackRight *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -1508,9 +1531,9 @@ namespace Traits
 		{ }
 		~MobAttackDamage() { }
 
-		void on_observable_changed(Strength*) { compute(); }
-		void on_observable_changed(BaseLevel*) { compute(); }
-		void on_observable_changed(MobWeaponAttack*) { compute(); }
+		void on_observable_changed(Strength*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MobWeaponAttack*) { if (is_compute_ready()) compute(); }
 
 		void set_strength(Strength* str) { _str = str; }
 		void set_base_level(BaseLevel* blvl) { _blvl = blvl; }
@@ -1535,9 +1558,9 @@ namespace Traits
 		{ }
 		~MobMagicAttackDamage() { }
 
-		void on_observable_changed(Intelligence*) { compute(); }
-		void on_observable_changed(BaseLevel*) { compute(); }
-		void on_observable_changed(MobWeaponAttack*) { compute(); }
+		void on_observable_changed(Intelligence*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MobWeaponAttack*) { if (is_compute_ready()) compute(); }
 
 		void set_intelligence(Intelligence* _intelligence) { _int = _intelligence; }
 		void set_base_level(BaseLevel* blvl) { _blvl = blvl; }
