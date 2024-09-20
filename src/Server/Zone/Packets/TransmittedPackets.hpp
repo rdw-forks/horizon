@@ -39574,10 +39574,12 @@ public:
 	{}
 	virtual ~ZC_RECOVERY() {}
 
-	void deliver();
+	void deliver(int16_t type, int16_t amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _type{0};
+	int16_t _amount{0};
 };
 
 enum {
@@ -39614,10 +39616,12 @@ public:
 	{}
 	virtual ~ZC_RECOVERY2() {}
 
-	void deliver();
+	void deliver(int16_t type, int32_t amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _type{0};
+	int32_t _amount{0};
 };
 
 enum {
@@ -41365,10 +41369,12 @@ public:
 	{}
 	virtual ~ZC_RESURRECTION() {}
 
-	void deliver();
+	void deliver(int32_t guid, int16_t type);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _guid{0};
+	int16_t _type{0};
 };
 
 enum {

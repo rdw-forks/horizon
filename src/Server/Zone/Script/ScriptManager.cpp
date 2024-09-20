@@ -32,6 +32,7 @@
 #include "Server/Zone/Game/Units/NPC/NPC.hpp"
 #include "Server/Common/System.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Interface/ZoneClientInterface.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
 #include "Server/Zone/Zone.hpp"

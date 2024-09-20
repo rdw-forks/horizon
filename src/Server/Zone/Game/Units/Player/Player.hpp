@@ -203,6 +203,10 @@ public:
     bool attack(std::shared_ptr<Unit> e, bool continuous = false) override;
     bool stop_attack();
 
+	virtual void on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp) override;
+
+	void respawn(int hp_rate, int sp_rate);
+	
 	std::shared_ptr<Assets::Storage> get_storage(int32_t storage_id);
 
 	int32_t get_current_storage_id() { return _current_storage_id; }

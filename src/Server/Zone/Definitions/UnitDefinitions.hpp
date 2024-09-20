@@ -415,7 +415,9 @@ enum status_point_type
 	STATUS_MOB_MODE                   = 50015,
 	STATUS_WATK_LEFT                  = 50016,
 	STATUS_WATK_RIGHT	              = 50017,
-	STATUS_WATK_COMBINED              = 50018
+	STATUS_WATK_COMBINED              = 50018,
+	STATUS_HP_REGEN                   = 50019,
+	STATUS_SP_REGEN                   = 50020
 };
 
 enum unit_appearance_type

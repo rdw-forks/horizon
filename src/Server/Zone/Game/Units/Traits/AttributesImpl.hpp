@@ -78,6 +78,8 @@ namespace Traits
 	class SoftDEF;
 	class HardDEF;
 	class BaseAttack;
+	class HPRegeneration;
+	class SPRegeneration;
 
 	class BaseLevel
 	: public Attribute,
@@ -217,21 +219,25 @@ namespace Traits
 	};
 
 	class MaxHP
-	: public Attribute
+	: public Attribute,
+	  public ObservableStatus<MaxHP *, HPRegeneration *>
 	{
 	public:
 		MaxHP(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(unit, STATUS_MAXHP, base, equip, status)
+		: Attribute(unit, STATUS_MAXHP, base, equip, status),
+		  ObservableStatus(nullptr)
 		{ }
 		~MaxHP() { };
 	};
 
 	class MaxSP
-	: public Attribute
+	: public Attribute,
+	  public ObservableStatus<MaxSP *, SPRegeneration *>
 	{
 	public:
 		MaxSP(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(unit, STATUS_MAXSP, base, equip, status)
+		: Attribute(unit, STATUS_MAXSP, base, equip, status),
+		  ObservableStatus(nullptr)
 		{ }
 		~MaxSP() { };
 	};
@@ -420,12 +426,12 @@ namespace Traits
 
 	class Vitality
 	: public Attribute,
-	  public ObservableStatus<Vitality *, VitalityPointCost *, SoftDEF *, SoftMDEF *>
+	  public ObservableStatus<Vitality *, VitalityPointCost *, SoftDEF *, SoftMDEF *, HPRegeneration *>
 	{
 	public:
 		Vitality(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_VITALITY, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Vitality() { };
 
@@ -486,12 +492,12 @@ namespace Traits
 
 	class Intelligence
 	: public Attribute,
-	  public ObservableStatus<Intelligence *, IntelligencePointCost *, StatusMATK *, SoftMDEF *>
+	  public ObservableStatus<Intelligence *, IntelligencePointCost *, StatusMATK *, SoftMDEF *, SPRegeneration *>
 	{
 	public:
 		Intelligence(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_INTELLIGENCE, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Intelligence() { };
 
@@ -1237,6 +1243,50 @@ namespace Traits
 		Agility *_agi{nullptr};
 		BaseLevel *_blvl{nullptr};
 		Luck *_luk{nullptr};
+	};
+	
+	class HPRegeneration
+	: public Attribute
+	{
+	public:
+		HPRegeneration(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_HP_REGEN)
+		{ }
+		~HPRegeneration() { }
+
+		void on_observable_changed(Vitality *) { compute(); }
+		void on_observable_changed(MaxHP *) { compute(); }
+
+		int32_t compute();
+
+		void set_vitality(Vitality *vit) { _vit = vit; }
+		void set_max_hp(MaxHP *mhp) { _max_hp = mhp; }
+
+	private:
+		Vitality *_vit{nullptr};
+		MaxHP *_max_hp{nullptr};
+	};
+
+	class SPRegeneration
+	: public Attribute
+	{
+	public:
+		SPRegeneration(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_SP_REGEN)
+		{ }
+		~SPRegeneration() { }
+
+		void on_observable_changed(Intelligence *) { compute(); }
+		void on_observable_changed(MaxSP *) { compute(); }
+
+		int32_t compute();
+
+		void set_intelligence(Intelligence *int_) { _int = int_; }
+		void set_max_sp(MaxSP *msp) { _max_sp = msp; }
+
+	private:
+		Intelligence *_int{nullptr};
+		MaxSP *_max_sp{nullptr};
 	};
 
 	class AttackSpeed

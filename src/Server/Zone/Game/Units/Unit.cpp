@@ -28,6 +28,7 @@
  **************************************************/
 
 #include "Unit.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/NPC/NPC.hpp"
 #include "Server/Zone/Game/Units/Battle/Combat.hpp"
@@ -484,13 +485,20 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 				return;
 			}
 
-			if (path_to(target)->size() == 0 || path_to(target)->size() > MAX_VIEW_RANGE)
+			std::shared_ptr<AStar::CoordinateList> wp = path_to(target);
+			if (wp && (wp->size() == 0 || wp->size() > MAX_VIEW_RANGE))
 			{
 				on_attack_end();
 				return;
 			}
 
 			int range = this->status()->attack_range()->get_base();
+
+			// If target is not in range of the attacker when source is already attacking, stop attacking.
+			if (is_attacking() && !is_in_range_of(target, range)) {
+				on_attack_end();
+				return;
+			}
 
 			_attackable_time = status()->attack_delay()->total();
 

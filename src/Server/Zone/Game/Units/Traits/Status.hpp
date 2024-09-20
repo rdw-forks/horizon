@@ -91,12 +91,12 @@ public:
 		class StatusOperation
 		{
 		public:
-			StatusOperation(Attribute *attribute, status_operation_type type, uint16_t value, std::string source)
+			StatusOperation(Attribute *attribute, status_operation_type type, uint32_t value, std::string source)
 			: _priority(std::time(nullptr)), _attribute(attribute), _type(type), _value(value), _source(source) { }
-			StatusOperation(Attribute *attribute, status_operation_type type, uint16_t value, uint64_t duration, std::string source)
+			StatusOperation(Attribute *attribute, status_operation_type type, uint32_t value, uint64_t duration, std::string source)
 			: _priority(std::time(nullptr)), _attribute(attribute), _type(type), _value(value), _duration(duration), _source(source) { }
-			StatusOperation(Attribute *attribute, status_operation_type type, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
-			: _priority(std::time(nullptr)), _attribute(attribute), _type(type), _value(value), _duration(duration), _interval(interval), _source(source) { }
+			StatusOperation(Attribute *attribute, status_operation_type type, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+			: _priority(std::time(nullptr)), _attribute(attribute), _type(type), _value(value), _minmax(minmax), _duration(duration), _interval(interval), _source(source) { }
 
 			virtual ~StatusOperation() {}
 
@@ -120,7 +120,8 @@ public:
 		protected:
 			Attribute *_attribute{nullptr};
 			status_operation_type _type{STATUS_OPERATION_ADD_TO_BASE};
-			uint16_t _value{0};
+			uint32_t _value{0};
+			s_min_max _minmax{0, 0};
 			uint16_t _priority{0};
 			uint64_t _duration{0};
 			uint64_t _interval{0};
@@ -134,26 +135,26 @@ public:
     	    }
     	};
 
-		void add_to_base(Attribute *attribute, uint16_t value, std::string source);
-		void subtract_from_base(Attribute *attribute, uint16_t value, std::string source);
-		void add_to_equip(Attribute *attribute, uint16_t value, std::string source);
-		void subtract_from_equip(Attribute *attribute, uint16_t value, std::string source);
-		void add_to_status(Attribute *attribute, uint16_t value, std::string source);
-		void subtract_from_status(Attribute *attribute, uint16_t value, std::string source);
+		void add_to_base(Attribute *attribute, uint32_t value, std::string source);
+		void subtract_from_base(Attribute *attribute, uint32_t value, std::string source);
+		void add_to_equip(Attribute *attribute, uint32_t value, std::string source);
+		void subtract_from_equip(Attribute *attribute, uint32_t value, std::string source);
+		void add_to_status(Attribute *attribute, uint32_t value, std::string source);
+		void subtract_from_status(Attribute *attribute, uint32_t value, std::string source);
 
-		void add_to_base_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source);
-		void sub_from_base_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source);
-		void add_to_equip_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source);
-		void sub_from_equip_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source);
-		void add_to_status_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source);
-		void sub_from_status_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source);
+		void add_to_base_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source);
+		void sub_from_base_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source);
+		void add_to_equip_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source);
+		void sub_from_equip_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source);
+		void add_to_status_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source);
+		void sub_from_status_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source);
 
-		void add_to_base_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source);
-		void sub_from_base_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source);
-		void add_to_equip_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source);
-		void sub_from_equip_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source);
-		void add_to_status_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source);
-		void sub_from_status_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source);
+		void add_to_base_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source);
+		void sub_from_base_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source);
+		void add_to_equip_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source);
+		void sub_from_equip_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source);
+		void add_to_status_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source);
+		void sub_from_status_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source);
 
 		bool has_next_operation() { return !_status_operation_queue.empty(); }
 		StatusOperation *get_next_operation() { return _status_operation_queue.top(); }
@@ -489,6 +490,22 @@ public:
 		_aspd = aspd;
 	}
 
+	std::shared_ptr<HPRegeneration> hp_regeneration() { return _hp_regeneration; }
+	void set_hp_regeneration(std::shared_ptr<HPRegeneration> hpr) {
+		if (_hp_regeneration != nullptr)
+			remove_attribute(_hp_regeneration);
+		add_attribute(hpr);
+		_hp_regeneration = hpr;
+	}
+
+	std::shared_ptr<SPRegeneration> sp_regeneration() { return _sp_regeneration; }
+	void set_sp_regeneration(std::shared_ptr<SPRegeneration> spr) {
+		if (_sp_regeneration != nullptr)
+			remove_attribute(_sp_regeneration);
+		add_attribute(spr);
+		_sp_regeneration = spr;
+	}
+
 	/**
 	 * Appearance
 	 */
@@ -802,6 +819,8 @@ private:
 	std::shared_ptr<CRIT> _crit;
 	std::shared_ptr<FLEE> _flee;
 	std::shared_ptr<AttackSpeed> _aspd;
+	std::shared_ptr<HPRegeneration> _hp_regeneration;
+	std::shared_ptr<SPRegeneration> _sp_regeneration;
 	/* Appearance */
 	std::shared_ptr<BaseAppearance> _base_appearance;
 	std::shared_ptr<HairColor> _hair_color;

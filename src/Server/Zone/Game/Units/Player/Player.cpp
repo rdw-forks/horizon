@@ -30,7 +30,7 @@
 #include "Player.hpp"
 
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
-
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Storage.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
@@ -577,6 +577,44 @@ void Player::on_map_enter()
 
 	// Notify learnt skill list.
 	get_session()->clif()->notify_learnt_skill_list();
+
+	if (is_dead()) {
+		get_session()->clif()->notify_viewport_remove_unit(shared_from_this(), EVP_NOTIFY_DEAD);
+	}
+}
+
+void Player::respawn(int hp_rate, int sp_rate)
+{
+	if (is_dead() == false)
+		return;
+	
+	
+	if (status()->current_hp()->total() <= 0)
+		status()->current_hp()->set_base(1);
+		
+	if (status()->current_sp()->total() <= 0)
+		status()->current_sp()->set_base(1);
+
+	if (hp_rate && hp_rate > 100) {
+		hp_rate = 100;
+		status()->current_hp()->set_base(status()->max_hp()->total() * hp_rate / 100);
+	}
+	if (sp_rate && sp_rate > 100) {
+		sp_rate = 100;
+		status()->current_sp()->set_base(status()->max_sp()->total() * sp_rate / 100);
+	}
+
+	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, character()._saved_map, nullptr);
+	if (segment_number > 0) {
+		std::shared_ptr<Map> map = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(character()._saved_map, nullptr);
+		if (map == nullptr) {
+			get_session()->clif()->notify_resurrection(guid(), 0);
+			return;
+		}
+		move_to_map(map, MapCoords(character()._saved_x, character()._saved_y));
+	} else {
+		get_session()->clif()->notify_resurrection(guid(), 0);
+	}
 }
 
 void Player::on_status_effect_start(std::shared_ptr<status_change_entry> sce)
@@ -697,4 +735,11 @@ bool Player::stop_attack()
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_ATTACK));
 
 	return true;
+}
+
+void Player::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
+{
+	Unit::on_killed(killer, with_drops, with_exp);
+
+	get_session()->clif()->notify_viewport_remove_unit(shared_from_this(), EVP_NOTIFY_DEAD);
 }

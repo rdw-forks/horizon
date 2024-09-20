@@ -33,9 +33,6 @@
 #include "Server/pch.hpp"
 
 #include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
-#include "Server/Zone/Game/GameLogicProcess.hpp"
-#include "Server/Zone/Persistence/PersistenceManager.hpp"
-#include "Server/Zone/Script/ScriptManager.hpp"
 #include "Core/Logging/Logger.hpp"
 #include "Server/Common/Server.hpp"
 
@@ -57,6 +54,19 @@ namespace Horizon
 {
 namespace Zone
 {
+class ZoneSession;
+
+struct s_game_process_configuration
+{
+	void set_natural_heal_hp_interval(int interval) { natural_heal_hp_interval = interval; }
+	void set_natural_heal_sp_interval(int interval) { natural_heal_sp_interval = interval; }
+	
+	int get_natural_heal_hp_interval() { return natural_heal_hp_interval; }
+	int get_natural_heal_sp_interval() { return natural_heal_sp_interval; }
+
+	int natural_heal_hp_interval{ 6000 };
+	int natural_heal_sp_interval{ 8000 };
+};
 
 struct s_zone_server_configuration
 {
@@ -174,6 +184,7 @@ public:
 	void update(int64_t diff);
 
 	s_zone_server_configuration &config() { return _zone_server_config; }
+	s_game_process_configuration &game_config() { return _game_process_config; }
 
 	uint64_t to_uuid(uint8_t type, uint32_t uid, uint16_t uid2, uint8_t uid3);
 	void from_uuid(uint64_t unit_uuid, uint8_t& type, uint32_t& uid, uint16_t& uid2, uint8_t& uid3);
@@ -182,6 +193,7 @@ public:
 	
 private:
 	s_zone_server_configuration _zone_server_config;
+	s_game_process_configuration _game_process_config;
 	ClientSocketMgr _client_socket_mgr;
 	boost::asio::deadline_timer _update_timer;
 };

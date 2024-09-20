@@ -596,7 +596,7 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 
 		id.delay = tbl.get_or("Delay", 0);
 
-		id.sprite_id = tbl.get_or("Sprite", 0);
+		id.sprite_id = tbl.get_or("SpriteId", 0);
 
 		id.default_script = tbl.get_or("Script", std::string(""));
 		id.equip_script = tbl.get_or("OnEquipScript", std::string(""));

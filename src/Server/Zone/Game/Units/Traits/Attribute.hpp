@@ -71,15 +71,40 @@ namespace Traits
 	};
 
 	class Attribute;
-	
+
 	struct s_attribute_change_values
 	{
+		class ApplyLiveAttribute
+		{
+		public:
+			ApplyLiveAttribute(Attribute *attr)
+			: _attr(attr) {}
+
+			void operator()(s_attribute_change_values &change);
+
+			bool is_valid() { return _attr != nullptr; }
+
+			Attribute *get_attribute() { return _attr; }
+
+		private:
+			Attribute *_attr;
+		};
+
 		int32_t base{ 0 };
 		int32_t equip{ 0 };
 		int32_t status{ 0 };
-		s_attribute_change_values() = default;
-		s_attribute_change_values(int32_t base, int32_t equip, int32_t status) : base(base), equip(equip), status(status) {}
+		s_min_max minmax{ 0, 0 };
+		ApplyLiveAttribute apply_live_attribute{ nullptr };
+		std::function<void(s_attribute_change_values &)> client_notify_function;
 
+		s_attribute_change_values() = default;
+		s_attribute_change_values(int32_t base, int32_t equip = 0, int32_t status = 0, s_min_max minmax = s_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
+		: base(base), equip(equip), status(status), minmax(minmax), client_notify_function(client_notify_function) {}
+		s_attribute_change_values(ApplyLiveAttribute apply_live_attribute, s_min_max minmax = s_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
+		: apply_live_attribute(apply_live_attribute), minmax(minmax), client_notify_function(client_notify_function) {}
+		s_attribute_change_values(Attribute *attr, s_min_max minmax = s_min_max(0, 0), std::function<void(s_attribute_change_values &)> client_notify_function = nullptr)
+		: apply_live_attribute(ApplyLiveAttribute(attr)), minmax(minmax), client_notify_function(client_notify_function) {}
+				
 		int32_t get_base() const { return base; }
 		void set_base(int32_t val) { base = val; }
 
@@ -88,6 +113,21 @@ namespace Traits
 
 		int32_t get_status() const { return status; }
 		void set_status(int32_t val) { status = val; }
+
+		int32_t get_max() { return minmax.get_max(); }
+		void set_max(int32_t val) { minmax.set_max(val); }
+
+		int32_t get_min() { return minmax.get_min(); }
+		void set_min(int32_t val) { minmax.set_min(val); }
+
+		ApplyLiveAttribute get_live_attribute() { return apply_live_attribute; }
+		void set_live_attribute(Attribute *attr)
+		{
+			apply_live_attribute = ApplyLiveAttribute(attr);
+		}
+
+		std::function<void(s_attribute_change_values &)> get_client_notify_function() { return client_notify_function; }
+		void set_client_notify_function(std::function<void(s_attribute_change_values &)> func) { client_notify_function = func; }
 	};
 
 	class PermanentChanges
@@ -206,7 +246,7 @@ namespace Traits
 
 		virtual int32_t total() const { return _base_val + _equip_val + _status_val; }
 
-		virtual int32_t compute() { return total(); }
+		virtual int32_t compute() { this->notify(); return total(); }
 
 		template <typename TT, typename std::enable_if<std::is_integral<TT>::value>::type* = nullptr>
 		TT operator + (TT right) { return total() + right; }

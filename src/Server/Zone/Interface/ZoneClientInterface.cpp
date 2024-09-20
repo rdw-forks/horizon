@@ -30,6 +30,7 @@
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Units/Battle/Combat.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Storage.hpp"
@@ -152,6 +153,7 @@ bool ZoneClientInterface::restart(uint8_t type)
 		switch (type) {
 			case 0:
 				task->get_message_agent().set_status_message("Character (GUID:" + std::to_string(session->player()->guid()) + ") is being respawned.");
+				session->player()->respawn(0, 0);
 				break;
 			default:
 				task->get_message_agent().set_status_message("Character (GUID:" + std::to_string(session->player()->guid()) + ") has moved to the character server.");
@@ -166,6 +168,12 @@ bool ZoneClientInterface::restart(uint8_t type)
 	return true;
 }
 
+bool ZoneClientInterface::notify_resurrection(int32_t guid, int type)
+{
+	ZC_RESURRECTION pkt(get_session());
+	pkt.deliver(guid, type);
+	return true;
+}
 /**
  * Character
  */
@@ -268,7 +276,6 @@ bool ZoneClientInterface::notify_time()
 	pkt.deliver();
 	return true;
 }
-
 
 bool ZoneClientInterface::notify_unit_name(uint32_t guid)
 {
@@ -1583,4 +1590,15 @@ void ZoneClientInterface::cash_point_purchase(int kafra_points, std::vector<cz_p
 void ZoneClientInterface::private_airship_request(std::string map_name, int item_id)
 {
 
+}
+
+bool ZoneClientInterface::notify_recovery(zc_notify_recovery_type type, int amount)
+{
+#if PACKET_VERSION < 20150513
+	ZC_RECOVERY pkt(get_session());
+#else 
+	ZC_RECOVERY2 pkt(get_session());
+#endif
+	pkt.deliver(type, amount);
+	return true;
 }

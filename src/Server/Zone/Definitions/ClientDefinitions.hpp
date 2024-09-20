@@ -909,4 +909,10 @@ enum inventory_type
 	INVTYPE_GUILD_STORAGE = 3,
 };
 
+enum zc_notify_recovery_type
+{
+	ZC_NOTIFY_RECOVERY_HP = 5,
+	ZC_NOTIFY_RECOVERY_SP = 7
+};
+
 #endif /* HORIZON_ZONE_CLIENT_DEFINITIONS_HPP */

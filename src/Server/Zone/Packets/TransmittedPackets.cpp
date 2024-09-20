@@ -2552,9 +2552,19 @@ ByteBuffer &ZC_PROPERTY_PET::serialize()
 /**
  * ZC_RECOVERY
  */
-void ZC_RECOVERY::deliver() {}
+void ZC_RECOVERY::deliver(int16_t type, int16_t amount)
+{
+	_type = type;
+	_amount = amount;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_RECOVERY::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
+	buf() << _amount;
 	return buf();
 }
 /**
@@ -2783,9 +2793,20 @@ ByteBuffer &ZC_RESULT_MAKE_GUILD::serialize()
 /**
  * ZC_RESURRECTION
  */
-void ZC_RESURRECTION::deliver() {}
+void ZC_RESURRECTION::deliver(int32_t guid, int16_t type) 
+{
+	_guid = guid;
+	_type = type;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_RESURRECTION::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _type;
+
 	return buf();
 }
 /**
@@ -5994,9 +6015,19 @@ ByteBuffer &ZC_ACK_OPENSTORE2::serialize()
 /**
  * ZC_RECOVERY2
  */
-void ZC_RECOVERY2::deliver() {}
+void ZC_RECOVERY2::deliver(int16_t type, int32_t amount) 
+{
+	_type = type;
+	_amount = amount;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_RECOVERY2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
+	buf() << _amount;
 	return buf();
 }
 /**

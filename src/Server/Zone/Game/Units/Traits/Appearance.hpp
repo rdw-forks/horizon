@@ -46,13 +46,16 @@ namespace Traits
 	class Appearance
 	{
 	public:
-		Appearance(std::weak_ptr<Unit> unit, unit_appearance_type type, uint32_t id = 0)
-		: _unit(unit), _type(type), _id(id)
+		Appearance(std::weak_ptr<Unit> unit, unit_appearance_type type, uint32_t id = 0, uint32_t id_left = 0)
+		: _unit(unit), _type(type), _id(id), _id_left(id_left)
 		{ }
 		~Appearance() { }
 
 		void set(uint32_t id) { _id = id; notify_update(); }
 		uint32_t get() { return _id; }
+
+		void set_left(uint32_t id) { _id_left = id; notify_update(); }
+		uint32_t get_left() { return _id_left; }
 
 		virtual void notify_update();
 
@@ -65,6 +68,7 @@ namespace Traits
 		std::weak_ptr<Unit> _unit;
 		unit_appearance_type _type;
 		uint32_t _id{0};
+		uint32_t _id_left{0};
 	};
 
 	class BaseAppearance : public Appearance
@@ -97,8 +101,8 @@ namespace Traits
 	class WeaponSprite : public Appearance
 	{
 	public:
-		WeaponSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, UAT_WEAPON_SPRITE, id)
+		WeaponSprite(std::weak_ptr<Unit> unit, uint32_t id = 0, uint32_t id_left = 0)
+		: Appearance(unit, UAT_WEAPON_SPRITE, id, id_left)
 		{ }
 		~WeaponSprite() { }
 	};

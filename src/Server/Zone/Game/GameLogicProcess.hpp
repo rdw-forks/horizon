@@ -79,7 +79,7 @@ private:
 };
 
 public:
-	GameLogicProcess();
+	GameLogicProcess(struct s_game_process_configuration config);
 	
     void initialize(int segment_number = 1) override;
     void finalize() override;
@@ -98,6 +98,8 @@ public:
 	
 	MonsterSpawnAgent &get_monster_spawn_agent() { return _monster_spawn_agent; }
 
+	struct s_game_process_configuration &game_config() { return _config; }
+
 protected:
     std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
@@ -115,6 +117,7 @@ private:
 	TaskScheduler _scheduler;
 	std::thread _thread;
 	std::map<std::string, map_data> _maps; // Temporary map cache asset holder until maps are loaded.
+	struct s_game_process_configuration _config;
 };
 }
 }

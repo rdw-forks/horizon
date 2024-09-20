@@ -38,5 +38,5 @@ using namespace Horizon::Zone::Traits;
 void Appearance::notify_update()
 {
 	if (get_unit() != nullptr && get_unit()->type() == UNIT_PLAYER)
-		get_unit()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_appearance_update(_type, get(), 0);
+		get_unit()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_appearance_update(_type, get(), get_left());
 }

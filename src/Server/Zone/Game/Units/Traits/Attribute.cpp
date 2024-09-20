@@ -42,6 +42,20 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Traits;
 
+void s_attribute_change_values::ApplyLiveAttribute::operator()(s_attribute_change_values &change)
+{
+	if (change.get_base() != _attr->get_base())
+		change.set_base(_attr->get_base());
+	if (change.get_equip() != _attr->get_equip())
+		change.set_equip(_attr->get_equip());
+	if (change.get_status() != _attr->get_status())
+		change.set_status(_attr->get_status());
+
+	assert(change.get_base() == _attr->get_base());
+	assert(change.get_equip() == _attr->get_equip());
+	assert(change.get_status() == _attr->get_status());
+}
+
 void PermanentChanges::add_change(s_attribute_change_values change, std::string source)
 {
 	_changes.push_back({ change, source });
@@ -131,7 +145,7 @@ void PeriodicChanges::update(uint64_t delta)
 {
 	for (auto &change : _changes)
 	{
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.start_time.time_since_epoch() + std::chrono::milliseconds(change.duration)).count() < delta)
+		if (change.duration && std::chrono::duration_cast<std::chrono::milliseconds>(change.start_time.time_since_epoch() + std::chrono::milliseconds(change.duration)).count() < delta)
 		{
 			remove_change(change.source);
 			continue;
@@ -139,22 +153,78 @@ void PeriodicChanges::update(uint64_t delta)
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.last_update.time_since_epoch() + std::chrono::milliseconds(change.interval)).count() < delta)
 		{
-			if (change.change.get_base() > 0)
-				_attr->add_base(change.change.get_base(), false);
-			else
-				_attr->sub_base(change.change.get_base(), false);
-			
-			if (change.change.get_equip() > 0)
-				_attr->add_equip(change.change.get_equip(), false);
-			else
-				_attr->sub_equip(change.change.get_equip(), false);
-			
-			if (change.change.get_status() > 0)
-				_attr->add_status(change.change.get_status(), false);
-			else
-				_attr->sub_status(change.change.get_status(), false);
-				
+			std::function<bool(int, int, int)> over_min = [](int attr, int change, int min) { return (attr - change) < min; };
+			std::function<bool(int, int, int)> over_max = [](int attr, int change, int max) { return (attr + change) > max; };
+
+			if (_attr->unit() && _attr->unit()->is_dead() == true)
+				return;
+
+			if (change.change.get_live_attribute().is_valid() == true) {
+				change.change.get_live_attribute()(change.change);
+			}
+
+			bool changed = false;
+			if (change.change.get_base() > 0) {
+				if (!over_max(_attr->get_base(), change.change.get_base(), change.change.get_max())) {
+					_attr->add_base(change.change.get_base(), false);
+					changed = true;
+				} else {
+					_attr->add_base(change.change.get_max() - _attr->get_base(), false);
+					changed = (change.change.get_max() - _attr->get_base() > 0);
+				}
+			}
+			else if (change.change.get_base() < 0) {
+				if (!over_min(_attr->get_base(), change.change.get_base(), change.change.get_min())) {
+					_attr->sub_base(change.change.get_base(), false);
+					changed = true;
+				} else {
+					_attr->sub_base(_attr->get_base() - change.change.get_min(), false);
+					changed = (_attr->get_base() - change.change.get_min() > 0);
+				}
+			}
+
+			if (change.change.get_equip() > 0) {
+				if (!over_max(_attr->get_equip(), change.change.get_equip(), change.change.get_max())) {
+					_attr->add_equip(change.change.get_equip(), false);
+					changed = true;
+				} else {
+					_attr->add_equip(change.change.get_max() - _attr->get_equip(), false);
+					changed = (change.change.get_max() - _attr->get_equip()) > 0;
+				}
+			}
+			else if (change.change.get_equip() < 0) {
+				if (!over_min(_attr->get_equip(), change.change.get_equip(), change.change.get_min())) {
+					_attr->sub_equip(change.change.get_equip(), false);
+					changed = true;
+				} else {
+					_attr->sub_equip(_attr->get_equip() - change.change.get_min(), false);
+					changed = (_attr->get_equip() - change.change.get_min()) > 0;
+				}
+			}
+
+			if (change.change.get_status() > 0) {
+				if (!over_max(_attr->get_status(), change.change.get_status(), change.change.get_max())) {
+					_attr->add_status(change.change.get_status(), false);
+					changed = true;
+				} else {
+					_attr->add_status(change.change.get_max() - _attr->get_status(), false);
+					changed = (change.change.get_max() - _attr->get_status()) > 0;
+				}
+			}
+			else if (change.change.get_status() < 0) {
+				if (!over_min(_attr->get_status(), change.change.get_status(), change.change.get_min())) {
+					_attr->sub_status(change.change.get_status(), false);
+					changed = true;
+				} else {
+					_attr->sub_status(_attr->get_status() - change.change.get_min(), false);
+					changed = (_attr->get_status() - change.change.get_min()) > 0;
+				}
+			}
+
 			_attr->compute();
+
+			if (changed)
+				change.change.client_notify_function(change.change);
 
 			change.last_update = std::chrono::high_resolution_clock::now();
 		}
@@ -408,7 +478,7 @@ void SkillPoint::on_observable_changed(JobLevel *jlvl)
 
 void SkillPoint::set_base(int32_t val, bool notify_client)
 {
-	Attribute::set_base(val);
+	Attribute::set_base(val, notify_client);
 }
 
 int32_t MaxWeight::compute()
@@ -425,7 +495,7 @@ int32_t MaxWeight::compute()
 
 void MovementSpeed::set_base(int32_t val, bool notify_client)
 {
-	Attribute::set_base(val);
+	Attribute::set_base(val, notify_client);
 }
 
 int32_t StatusATK::compute()
@@ -700,6 +770,30 @@ int32_t AttackSpeed::compute()
 	}
 
  	set_base(amotion);
+
+	return total();
+}
+
+int32_t HPRegeneration::compute()
+{
+	if (unit()->type() == UNIT_PLAYER) {
+		int vit = _vit->total();
+		int max_hp = _max_hp->total();
+		set_base(1 + (vit/5) + (max_hp/200));
+	}
+
+	return total();
+}
+
+int32_t SPRegeneration::compute()
+{
+	if (unit()->type() == UNIT_PLAYER) {
+		int int_ = _int->total();
+		int max_sp = _max_sp->total();
+		set_base(1 + (int_/6) + (max_sp/100));
+		if (int_ >= 120)
+			add_base(((int_ - 120) >> 1) + 4);
+	}
 
 	return total();
 }

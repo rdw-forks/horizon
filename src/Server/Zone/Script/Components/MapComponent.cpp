@@ -29,6 +29,7 @@
 #include "MapComponent.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Map/Coordinates.hpp"
 #include "Server/Zone/Zone.hpp"

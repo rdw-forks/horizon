@@ -29,6 +29,7 @@
 
 #include "Monster.hpp"
 
+#include "Server/Zone/Game/GameLogicProcess.hpp" // map()->container()
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
@@ -84,9 +85,6 @@ bool Monster::finalize()
 	if (has_valid_grid_reference())
 		remove_grid_reference();
 		
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(UNIT_SCHEDULE_AI_THINK)))
-		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_AI_THINK));
-
 	return true;
 }
 

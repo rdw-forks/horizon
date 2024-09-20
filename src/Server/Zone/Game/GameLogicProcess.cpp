@@ -43,7 +43,6 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
-#include "Server/Zone/Zone.hpp"
 
 #if WIN32
 	#include <windows.h>
@@ -55,13 +54,14 @@ using namespace Horizon::Zone;
 
 static std::atomic<bool> static_db_loaded = false;
 
-GameLogicProcess::GameLogicProcess()
+GameLogicProcess::GameLogicProcess(s_game_process_configuration config)
 : KernelComponent(sZone, Horizon::System::RUNTIME_GAMELOGIC),
 _resource_manager(
 	PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<std::string, std::shared_ptr<Map>>>()),
 	SecondaryResource(RESOURCE_PRIORITY_SECONDARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()),
 	TertiaryResource(RESOURCE_PRIORITY_TERTIARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Unit>>>())
-)
+),
+_config(config)
 {
 }
 
@@ -186,7 +186,6 @@ void GameLogicProcess::start_internal()
 	_thread = std::thread([this]() {
 		while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
 			this->update(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
-			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		};
 	});
 }

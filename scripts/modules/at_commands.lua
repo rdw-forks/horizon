@@ -38,7 +38,7 @@ local function speed(player, args)
 	end
 
 	player:message("Movement speed has been set to " .. args[2])
-	player:unit():status():movement_speed():set(tonumber(args[2]))
+	player:unit():status():movement_speed():set(tonumber(args[2]), true)
 
 	return true
 end

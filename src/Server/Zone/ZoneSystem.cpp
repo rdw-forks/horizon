@@ -30,6 +30,7 @@
 #include "ZoneSystem.hpp"
 #include "Server/Common/System.hpp"
 #include "Server/Common/Server.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Packets/TransmittedPackets.hpp"
 #include "Server/Zone/Zone.hpp"
 

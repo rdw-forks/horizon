@@ -75,4 +75,18 @@ static_assert(MAX_CORE_UPDATE_INTERVAL >= 1,
 
 #include "Client.hpp"
 
+struct s_min_max
+{
+	s_min_max(int min, int max) : min(min), max(max) {}
+
+	void set_min(int min) { this->min = min; }
+	void set_max(int max) { this->max = max; }
+	
+	int get_min() { return min; }
+	int get_max() { return max; }
+
+	int min;
+	int max;
+};
+
 #endif //HORIZON_HORIZON_HPP

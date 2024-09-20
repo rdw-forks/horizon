@@ -30,6 +30,7 @@
 #include "Map.hpp"
 #include "Utility/Utility.hpp"
 #include "Core/Multithreading/WorkerThreadPool.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainer.hpp"
 #include "Server/Zone/Game/Map/Grid/Container/GridReferenceContainerVisitor.hpp"

@@ -29,6 +29,7 @@
 #include "MonsterComponent.hpp"
 
 #include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Units/Mob/Hostile/Monster.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/StaticDB/MonsterDB.hpp"

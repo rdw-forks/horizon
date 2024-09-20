@@ -90,7 +90,7 @@ item_db = {
 	Refine = Refineable            (boolean, defaults to true),
 	EnableOptions = true,/false     (boolean, defaults to true !!for equipments only!!) [Smokexyz]
 	Subtype = Item Subtype         (int, defaults to 0),
-	ViewSprite = Sprite view ID    (int, defaults to 0),
+	SpriteId = Sprite view ID    (int, defaults to 0),
 	BindOnEquip = true
 	ForceSerial = true/false       (boolean, defaults to false)
 	Delay = Delay to use item      (int, defaults to 0),
@@ -23264,7 +23264,7 @@ item_db = {
 	Weight = 300,
 	Def = 20,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Guard_" ] = {
 	Id = 2102,
@@ -23275,7 +23275,7 @@ item_db = {
 	Def = 20,
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Buckler" ] = {
 	Id = 2103,
@@ -23300,7 +23300,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 2,
+	SpriteId = 2,
 },
 [ "Buckler_" ] = {
 	Id = 2104,
@@ -23326,7 +23326,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 2,
+	SpriteId = 2,
 },
 [ "Shield" ] = {
 	Id = 2105,
@@ -23341,7 +23341,7 @@ item_db = {
 		[ Job.Crusader ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Shield_" ] = {
 	Id = 2106,
@@ -23357,7 +23357,7 @@ item_db = {
 		[ Job.Crusader ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Mirror_Shield" ] = {
 	Id = 2107,
@@ -23373,7 +23373,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Mirror_Shield_" ] = {
@@ -23391,7 +23391,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Memorize_Book" ] = {
@@ -23408,7 +23408,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,2;
@@ -23427,7 +23427,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 68,
 	Refine = false,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bVit,2;
 		bonus bMdef,2;
@@ -23445,7 +23445,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 83,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bVit,3;
 		bonus bInt,2;
@@ -23471,7 +23471,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -23501,7 +23501,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 40,
-	ViewSprite = 3,
+	SpriteId = 3,
 	Script = [[
 		bonus2 bSubEle,Ele_Water,20;
 		bonus2 bSubEle,Ele_Earth,20;
@@ -23528,7 +23528,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[ bonus2 bSubSize,Size_Large,5; ]]
 },
 [ "Valkyrjas_Shield" ] = {
@@ -23545,7 +23545,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus2 bSubEle,Ele_Water,20;
 		bonus2 bSubEle,Ele_Fire,20;
@@ -23573,7 +23573,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Demon,5; ]]
 },
 [ "Arm_Guard" ] = {
@@ -23589,7 +23589,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Arm_Guard_" ] = {
 	Id = 2118,
@@ -23605,7 +23605,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Improved_Arm_Guard" ] = {
 	Id = 2119,
@@ -23620,7 +23620,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 50,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Improved_Arm_Guard_" ] = {
@@ -23637,7 +23637,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 50,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Memorize_Book_" ] = {
@@ -23655,7 +23655,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,2;
@@ -23726,7 +23726,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 68,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bSubSize,Size_Medium,15;
@@ -23801,7 +23801,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 55,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bMdef,2;
 		bonus bMagicDamageReturn,5;
@@ -23873,7 +23873,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 55,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[ bonus bMdef,2; ]]
 },
 [ "Strong_Shield" ] = {
@@ -23918,7 +23918,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 75,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bNoKnockback,0;
 		bonus2 bSubEle,Ele_Neutral,-20;
@@ -23943,7 +23943,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,2;
 		bonus bMagicDamageReturn,2;
@@ -23958,7 +23958,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.Shield,
 	Refine = false,
-	ViewSprite = 4,
+	SpriteId = 4,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -23983,7 +23983,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 83,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bVit,3;
 		bonus bInt,2;
@@ -24004,7 +24004,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 50,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bHPrecovRate,3;
 		bonus bSPrecovRate,3;
@@ -24024,7 +24024,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 80,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bSkillAtk,PA_SHIELDCHAIN,30;
@@ -24048,7 +24048,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 70,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bMdef,3;
 		bonus bInt,2;
@@ -24063,7 +24063,7 @@ item_db = {
 	Def = 140,
 	Loc = EquipLocationMask.Shield,
 	Refine = false,
-	ViewSprite = 2,
+	SpriteId = 2,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -24109,7 +24109,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 50,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus2 bAddRace, RC_All, 1;
 		if (Class == Job_Lord_Knight)
@@ -24175,7 +24175,7 @@ item_db = {
 		[ Job.BabyMinstrel ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,3;
 		autobonus2 "{ bonus bShortWeaponDamageReturn,(getrefine()*3); }",10,5000,BF_WEAPON,"{ specialeffect(EF_GUARD, AREA, playerattached()); }";
@@ -24197,7 +24197,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 70,
-	ViewSprite = 2,
+	SpriteId = 2,
 },
 [ "Cracked_Buckler" ] = {
 	Id = 2136,
@@ -24206,7 +24206,7 @@ item_db = {
 	Def = 55,
 	Loc = EquipLocationMask.Shield,
 	Refine = false,
-	ViewSprite = 2,
+	SpriteId = 2,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -24288,7 +24288,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 95,
 	Refine = false,
-	ViewSprite = 4,
+	SpriteId = 4,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -24367,7 +24367,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 	Script = [[
 		bonus2 bSkillAtk,CR_SHIELDBOOMERANG,60;
 		bonus bAgi,-1;
@@ -24389,7 +24389,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 99,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Energy_Rune_Guard" ] = {
 	Id = 2140,
@@ -24405,7 +24405,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 99,
-	ViewSprite = 4,
+	SpriteId = 4,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -24427,7 +24427,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bSubSize,Size_Medium,25; ]]
 },
 [ "Freyja_SShield30" ] = {
@@ -24439,7 +24439,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bSubSize,Size_Medium,25; ]]
 },
 [ "Freyja_SShield60" ] = {
@@ -24451,7 +24451,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bSubSize,Size_Medium,25; ]]
 },
 [ "Freyja_SShield90" ] = {
@@ -24463,7 +24463,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bSubSize,Size_Medium,25; ]]
 },
 [ "Time_Keepr_Shield" ] = {
@@ -24472,7 +24472,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 20,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 3,
+	SpriteId = 3,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -24497,7 +24497,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 22,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Round_Buckler" ] = {
 	Id = 2147,
@@ -24565,7 +24565,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 22,
-	ViewSprite = 2,
+	SpriteId = 2,
 },
 [ "Rotha_Shield" ] = {
 	Id = 2148,
@@ -24585,7 +24585,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Upg_Guard" ] = {
 	Id = 2149,
@@ -24596,7 +24596,7 @@ item_db = {
 	Def = 25,
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus bMaxHPrate,3; ]]
 },
 [ "Upg_Buckler" ] = {
@@ -24623,7 +24623,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[ bonus bMaxHPrate,3; ]]
 },
 [ "Upg_Shield" ] = {
@@ -24640,7 +24640,7 @@ item_db = {
 		[ Job.Crusader ] = true,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 3,
+	SpriteId = 3,
 	Script = [[ bonus bMaxHPrate,3; ]]
 },
 [ "Anti_Demon_Shield_C" ] = {
@@ -24650,7 +24650,7 @@ item_db = {
 	Def = 120,
 	Loc = EquipLocationMask.Shield,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -24682,7 +24682,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 102,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bMdef,5;
 		if(getrefine()>=6) {
@@ -24702,7 +24702,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 10,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Academy_Shield" ] = {
 	Id = 2155,
@@ -24716,7 +24716,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 4,
+	SpriteId = 4,
 },
 [ "Bible_Of_Promise1" ] = {
 	Id = 2156,
@@ -24733,7 +24733,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 110,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bMdef,2;
 		skill ALL_ODINS_POWER,1;
@@ -24760,7 +24760,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 	Script = [[
 		bonus2 bAddRaceTolerance, RC_Undead, 5;
 		bonus2 bAddRaceTolerance, RC_DemiPlayer, -5;
@@ -24776,7 +24776,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Giant_Shield" ] = {
 	Id = 2160,
@@ -24796,7 +24796,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus2 bSubSize,Size_Large,5;
 		if(getrefine()>=9) {
@@ -24819,7 +24819,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bMdef,2;
 		bonus bInt,1;
@@ -24844,7 +24844,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 140,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		bonus bMdef,5;
 		bonus bHealPower,5;
@@ -24861,7 +24861,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Sombre_Shield" ] = {
 	Id = 2164,
@@ -24873,7 +24873,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Sol_Shield" ] = {
 	Id = 2165,
@@ -24885,7 +24885,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Exorcism_Bible_" ] = {
 	Id = 2166,
@@ -24901,7 +24901,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 50,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Poison_Shield" ] = {
@@ -24914,7 +24914,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Immuned_Shield" ] = {
 	Id = 2168,
@@ -24925,7 +24925,7 @@ item_db = {
 	Def = 55,
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ if (getrefine()>5) bonus2 bSubEle,Ele_Neutral,min(getrefine(),12)-5; ]]
 },
 [ "Kalasak" ] = {
@@ -24936,7 +24936,7 @@ item_db = {
 	Weight = 400,
 	Def = 40,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bSubRace,RC_Boss,getrefine()/3; ]]
 },
 [ "Bayani_Kalasak" ] = {
@@ -24948,7 +24948,7 @@ item_db = {
 	Def = 40,
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus2 bSubRace,RC_Boss,getrefine()/3; ]]
 },
 [ "Fox_Armguard" ] = {
@@ -24965,7 +24965,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus bFlee,5; ]]
 },
 [ "Wolf_Armguard" ] = {
@@ -24982,7 +24982,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ autobonus "{ bonus bBaseAtk,100; bonus bFlee,-50; }",10,5000,BF_WEAPON,"{ specialeffect(EF_ENHANCE, AREA, playerattached()); }"; ]]
 },
 [ "Crescent_Armguard" ] = {
@@ -24999,7 +24999,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus bDelayrate,-(getrefine()*2); ]]
 },
 [ "Lumiere_Shield" ] = {
@@ -25012,7 +25012,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Esprit_Shield" ] = {
 	Id = 2175,
@@ -25024,7 +25024,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Dark_Book" ] = {
 	Id = 2176,
@@ -25036,7 +25036,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Shield_Of_Death" ] = {
@@ -25049,7 +25049,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 90,
-	ViewSprite = 3,
+	SpriteId = 3,
 	Script = [[
 		bonus2 bAddRace,RC_Boss,2;
 		bonus2 bSubRace,RC_NonBoss,-10;
@@ -25063,7 +25063,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -25093,7 +25093,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -25127,7 +25127,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -25153,7 +25153,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 90,
 	Refine = false,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bSubRace,RC_All,30;
@@ -25175,7 +25175,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bVit,20;
 		bonus bMdef,10;
@@ -25203,7 +25203,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 99,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,5;
 		bonus2 bSubEle,Ele_Water,5;
@@ -25228,7 +25228,7 @@ item_db = {
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 99,
 	Refine = false,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,10;
 		bonus bMagicDamageReturn,3+((getrefine()>=9)?3:0);
@@ -25249,7 +25249,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 99,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMatk,5;
 		bonus bInt,3;
@@ -25274,7 +25274,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 120,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,10+(getrefine()/3);
 		bonus2 bSubEle,Ele_Holy,30+getrefine();
@@ -25290,7 +25290,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 65,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bSubEle,Ele_Water,10+(getrefine()/3);
@@ -25306,7 +25306,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 30,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[
 		bonus bMdef,6;
 		bonus bDex,1;
@@ -25383,7 +25383,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 130,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus2 bSubEle,Ele_Neutral,10;
 		bonus2 bSubEle,Ele_Fire,10;
@@ -25408,7 +25408,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		bonus bMdef,10;
 		if(getrefine()>=7) { bonus bMatk,20; }
@@ -25454,7 +25454,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 12,
+	SpriteId = 12,
 	Script = [[ bonus2 bResEff,Eff_Blind,500; ]]
 },
 [ "Sunglasses_" ] = {
@@ -25466,7 +25466,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 12,
+	SpriteId = 12,
 	Script = [[ bonus2 bResEff,Eff_Blind,500; ]]
 },
 [ "Glasses" ] = {
@@ -25477,7 +25477,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Glasses_" ] = {
 	Id = 2204,
@@ -25488,7 +25488,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "Divers_Goggles" ] = {
 	Id = 2205,
@@ -25498,7 +25498,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 10,
+	SpriteId = 10,
 },
 [ "Wedding_Veil" ] = {
 	Id = 2206,
@@ -25508,7 +25508,7 @@ item_db = {
 	Weight = 100,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 44,
+	SpriteId = 44,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Fancy_Flower" ] = {
@@ -25519,7 +25519,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Plant,10; ]]
 },
 [ "Ribbon" ] = {
@@ -25531,7 +25531,7 @@ item_db = {
 	Def = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 17,
+	SpriteId = 17,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_" ] = {
@@ -25544,7 +25544,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 17,
+	SpriteId = 17,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Hair_Band" ] = {
@@ -25556,7 +25556,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 9,
+	SpriteId = 9,
 },
 [ "Bandana" ] = {
 	Id = 2211,
@@ -25566,7 +25566,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 6,
+	SpriteId = 6,
 },
 [ "Eye_Bandage" ] = {
 	Id = 2212,
@@ -25576,7 +25576,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 13,
+	SpriteId = 13,
 },
 [ "Cat_Hairband" ] = {
 	Id = 2213,
@@ -25586,7 +25586,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 2,
+	SpriteId = 2,
 },
 [ "Bunny_Band" ] = {
 	Id = 2214,
@@ -25596,7 +25596,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "Flower_Hairband" ] = {
@@ -25607,7 +25607,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 5,
+	SpriteId = 5,
 },
 [ "Biretta" ] = {
 	Id = 2216,
@@ -25622,7 +25622,7 @@ item_db = {
 		[ Job.Monk ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 11,
+	SpriteId = 11,
 },
 [ "Biretta_" ] = {
 	Id = 2217,
@@ -25638,7 +25638,7 @@ item_db = {
 		[ Job.Monk ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 11,
+	SpriteId = 11,
 },
 [ "Flu_Mask" ] = {
 	Id = 2218,
@@ -25648,7 +25648,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 8,
+	SpriteId = 8,
 	Script = [[ bonus2 bResEff,Eff_Silence,1000; ]]
 },
 [ "Flu_Mask_" ] = {
@@ -25659,7 +25659,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 8,
+	SpriteId = 8,
 },
 [ "Hat" ] = {
 	Id = 2220,
@@ -25669,7 +25669,7 @@ item_db = {
 	Weight = 200,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 16,
+	SpriteId = 16,
 },
 [ "Hat_" ] = {
 	Id = 2221,
@@ -25680,7 +25680,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 16,
+	SpriteId = 16,
 },
 [ "Turban" ] = {
 	Id = 2222,
@@ -25694,7 +25694,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 7,
+	SpriteId = 7,
 },
 [ "Turban_" ] = {
 	Id = 2223,
@@ -25709,7 +25709,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 7,
+	SpriteId = 7,
 },
 [ "Goggle" ] = {
 	Id = 2224,
@@ -25733,7 +25733,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Goggle_" ] = {
 	Id = 2225,
@@ -25758,7 +25758,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Cap" ] = {
 	Id = 2226,
@@ -25782,7 +25782,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 14,
+	SpriteId = 14,
 },
 [ "Cap_" ] = {
 	Id = 2227,
@@ -25807,7 +25807,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 14,
+	SpriteId = 14,
 },
 [ "Helm" ] = {
 	Id = 2228,
@@ -25822,7 +25822,7 @@ item_db = {
 		[ Job.Crusader ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 40,
+	SpriteId = 40,
 },
 [ "Helm_" ] = {
 	Id = 2229,
@@ -25838,7 +25838,7 @@ item_db = {
 		[ Job.Crusader ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 40,
+	SpriteId = 40,
 },
 [ "Gemmed_Sallet" ] = {
 	Id = 2230,
@@ -25900,7 +25900,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 18,
+	SpriteId = 18,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Circlet_" ] = {
@@ -25921,7 +25921,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 18,
+	SpriteId = 18,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Tiara" ] = {
@@ -25938,7 +25938,7 @@ item_db = {
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 19,
+	SpriteId = 19,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Crown" ] = {
@@ -25955,7 +25955,7 @@ item_db = {
 	Gender = ItemGenderType.Male,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 45,
+	SpriteId = 45,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Santas_Hat" ] = {
@@ -25966,7 +25966,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 20,
+	SpriteId = 20,
 	Script = [[
 		bonus bMdef,1;
 		bonus bLuk,1;
@@ -25980,7 +25980,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 21,
+	SpriteId = 21,
 },
 [ "Weird_Moustache" ] = {
 	Id = 2238,
@@ -25990,7 +25990,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 22,
+	SpriteId = 22,
 },
 [ "One_Eyed_Glass" ] = {
 	Id = 2239,
@@ -26000,7 +26000,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 23,
+	SpriteId = 23,
 },
 [ "Beard" ] = {
 	Id = 2240,
@@ -26010,7 +26010,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 24,
+	SpriteId = 24,
 	Sprite = 2241,
 },
 [ "Granpa_Beard" ] = {
@@ -26021,7 +26021,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 25,
+	SpriteId = 25,
 },
 [ "Luxury_Sunglasses" ] = {
 	Id = 2242,
@@ -26032,7 +26032,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 26,
+	SpriteId = 26,
 	Script = [[ bonus2 bResEff,Eff_Blind,1000; ]]
 },
 [ "Spinning_Eyes" ] = {
@@ -26044,7 +26044,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 27,
+	SpriteId = 27,
 	Script = [[ bonus2 bResEff,Eff_Blind,1500; ]]
 },
 [ "Big_Sis_Ribbon" ] = {
@@ -26059,7 +26059,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 28,
+	SpriteId = 28,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Sweet_Gents" ] = {
@@ -26074,7 +26074,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 29,
+	SpriteId = 29,
 },
 [ "Golden_Gear" ] = {
 	Id = 2246,
@@ -26089,7 +26089,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 30,
+	SpriteId = 30,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Oldmans_Romance" ] = {
@@ -26104,7 +26104,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 31,
+	SpriteId = 31,
 },
 [ "Western_Grace" ] = {
 	Id = 2248,
@@ -26118,7 +26118,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 32,
+	SpriteId = 32,
 },
 [ "Coronet" ] = {
 	Id = 2249,
@@ -26132,7 +26132,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 33,
+	SpriteId = 33,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Fillet" ] = {
@@ -26148,7 +26148,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 34,
+	SpriteId = 34,
 	Script = [[ bonus bMaxSP,20; ]]
 },
 [ "Holy_Bonnet" ] = {
@@ -26164,7 +26164,7 @@ item_db = {
 		[ Job.Monk ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 35,
+	SpriteId = 35,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Star_Sparkling" ] = {
@@ -26181,7 +26181,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 36,
+	SpriteId = 36,
 	Script = [[ bonus bMaxSP,100; ]]
 },
 [ "Sunflower" ] = {
@@ -26193,7 +26193,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 37,
+	SpriteId = 37,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Insect,10; ]]
 },
 [ "Angelic_Chain" ] = {
@@ -26208,7 +26208,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 38,
+	SpriteId = 38,
 	Script = [[
 		bonus bMdef,3;
 		bonus bAgi,1;
@@ -26228,7 +26228,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 39,
+	SpriteId = 39,
 	Script = [[
 		bonus bMdef,2;
 		bonus bStr,1;
@@ -26253,7 +26253,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Snowy_Horn" ] = {
@@ -26264,7 +26264,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 42,
+	SpriteId = 42,
 },
 [ "Sharp_Gear" ] = {
 	Id = 2258,
@@ -26291,7 +26291,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 43,
+	SpriteId = 43,
 },
 [ "Mini_Propeller" ] = {
 	Id = 2259,
@@ -26301,7 +26301,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 46,
+	SpriteId = 46,
 },
 [ "Mini_Glasses" ] = {
 	Id = 2260,
@@ -26316,7 +26316,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 47,
+	SpriteId = 47,
 },
 [ "Prontera_Army_Cap" ] = {
 	Id = 2261,
@@ -26337,7 +26337,7 @@ item_db = {
 		[ Job.Alchemist ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 48,
+	SpriteId = 48,
 },
 [ "Pierrot_Nose" ] = {
 	Id = 2262,
@@ -26347,7 +26347,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 49,
+	SpriteId = 49,
 },
 [ "Gangster_Patch" ] = {
 	Id = 2263,
@@ -26361,7 +26361,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 50,
+	SpriteId = 50,
 },
 [ "Munak_Turban" ] = {
 	Id = 2264,
@@ -26372,7 +26372,7 @@ item_db = {
 	Def = 5,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 51,
+	SpriteId = 51,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Undead,10; ]]
 },
 [ "Ganster_Mask" ] = {
@@ -26383,7 +26383,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 52,
+	SpriteId = 52,
 	Script = [[ bonus2 bResEff,Eff_Silence,1500; ]]
 },
 [ "Iron_Cane" ] = {
@@ -26401,7 +26401,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 53,
+	SpriteId = 53,
 },
 [ "Cigar" ] = {
 	Id = 2267,
@@ -26415,7 +26415,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 54,
+	SpriteId = 54,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Insect,3; ]]
 },
 [ "Smoking_Pipe" ] = {
@@ -26430,7 +26430,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 55,
+	SpriteId = 55,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Insect,3; ]]
 },
 [ "Centimental_Flower" ] = {
@@ -26445,7 +26445,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 56,
+	SpriteId = 56,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Plant,3; ]]
 },
 [ "Centimental_Leaf" ] = {
@@ -26460,7 +26460,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 57,
+	SpriteId = 57,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Plant,3; ]]
 },
 [ "Jack_A_Dandy" ] = {
@@ -26476,7 +26476,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 58,
+	SpriteId = 58,
 },
 [ "Stop_Post" ] = {
 	Id = 2272,
@@ -26486,7 +26486,7 @@ item_db = {
 	Weight = 400,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 59,
+	SpriteId = 59,
 },
 [ "Doctor_Cap" ] = {
 	Id = 2273,
@@ -26500,7 +26500,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 60,
+	SpriteId = 60,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Ghost_Bandana" ] = {
@@ -26514,7 +26514,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 61,
+	SpriteId = 61,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "Red_Bandana" ] = {
@@ -26525,7 +26525,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 62,
+	SpriteId = 62,
 },
 [ "Eagle_Eyes" ] = {
 	Id = 2276,
@@ -26536,7 +26536,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 63,
+	SpriteId = 63,
 },
 [ "Nurse_Cap" ] = {
 	Id = 2277,
@@ -26551,7 +26551,7 @@ item_db = {
 		[ Job.Monk ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 64,
+	SpriteId = 64,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Mr_Smile" ] = {
@@ -26563,7 +26563,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 65,
+	SpriteId = 65,
 },
 [ "Bomb_Wick" ] = {
 	Id = 2279,
@@ -26574,7 +26574,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 66,
+	SpriteId = 66,
 },
 [ "Sahkkat" ] = {
 	Id = 2280,
@@ -26584,7 +26584,7 @@ item_db = {
 	Weight = 300,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 67,
+	SpriteId = 67,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Phantom_Of_Opera" ] = {
@@ -26600,7 +26600,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 68,
+	SpriteId = 68,
 },
 [ "Spirit_Chain" ] = {
 	Id = 2282,
@@ -26610,7 +26610,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 69,
+	SpriteId = 69,
 	Script = [[ bonus2 bSubEle,Ele_Holy,15; ]]
 },
 [ "Ear_Mufs" ] = {
@@ -26621,7 +26621,7 @@ item_db = {
 	Weight = 200,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 70,
+	SpriteId = 70,
 	Script = [[ bonus2 bResEff,Eff_Curse,1000; ]]
 },
 [ "Antler" ] = {
@@ -26636,7 +26636,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 71,
+	SpriteId = 71,
 },
 [ "Apple_Of_Archer" ] = {
 	Id = 2285,
@@ -26651,7 +26651,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 72,
+	SpriteId = 72,
 	Script = [[ bonus bDex,3; ]]
 },
 [ "Elven_Ears" ] = {
@@ -26667,7 +26667,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 },
 [ "Pirate_Bandana" ] = {
 	Id = 2287,
@@ -26681,7 +26681,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 74,
+	SpriteId = 74,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Mr_Scream" ] = {
@@ -26697,7 +26697,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 75,
+	SpriteId = 75,
 },
 [ "Poo_Poo_Hat" ] = {
 	Id = 2289,
@@ -26707,7 +26707,7 @@ item_db = {
 	Weight = 700,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 76,
+	SpriteId = 76,
 	Script = [[ bonus2 bAddRaceTolerance,RC_DemiPlayer,10; ]]
 },
 [ "Funeral_Costume" ] = {
@@ -26719,7 +26719,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 77,
+	SpriteId = 77,
 },
 [ "Masquerade" ] = {
 	Id = 2291,
@@ -26733,7 +26733,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 78,
+	SpriteId = 78,
 	Script = [[ bonus2 bAddRace,RC_DemiPlayer,3; ]]
 },
 [ "Welding_Mask" ] = {
@@ -26751,7 +26751,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 79,
+	SpriteId = 79,
 	Script = [[ bonus2 bSubEle,Ele_Fire,10; ]]
 },
 [ "Pretend_Murdered" ] = {
@@ -26763,7 +26763,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 80,
+	SpriteId = 80,
 },
 [ "Star_Dust" ] = {
 	Id = 2294,
@@ -26773,7 +26773,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 81,
+	SpriteId = 81,
 },
 [ "Blinker" ] = {
 	Id = 2295,
@@ -26787,7 +26787,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 82,
+	SpriteId = 82,
 	Script = [[ bonus2 bResEff,Eff_Blind,10000; ]]
 },
 [ "Binoculars" ] = {
@@ -26805,7 +26805,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 83,
+	SpriteId = 83,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "Goblini_Mask" ] = {
@@ -26821,7 +26821,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 84,
+	SpriteId = 84,
 },
 [ "Green_Feeler" ] = {
 	Id = 2298,
@@ -26832,7 +26832,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 85,
+	SpriteId = 85,
 },
 [ "Viking_Helm" ] = {
 	Id = 2299,
@@ -26853,7 +26853,7 @@ item_db = {
 		[ Job.Alchemist ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 86,
+	SpriteId = 86,
 },
 
 ---- Armors ------------------------------------------------
@@ -33846,7 +33846,7 @@ item_db = {
 	Def = 18,
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Ur_Manteau" ] = {
 	Id = 2574,
@@ -33895,7 +33895,7 @@ item_db = {
 	Def = 20,
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 2,
+	SpriteId = 2,
 	Script = [[
 		skill BS_GREED,1;
 		if(getrefine()>6) {
@@ -34151,7 +34151,7 @@ item_db = {
 	Def = 18,
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 3,
+	SpriteId = 3,
 	Script = [[
 		bonus bAllStats,1;
 		bonus bAtk,readparam(bStr)/20;
@@ -35927,7 +35927,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -35951,7 +35951,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 56,
+	SpriteId = 56,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -52475,7 +52475,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 87,
+	SpriteId = 87,
 	Script = [[ bonus2 bResEff,Eff_Curse,1000; ]]
 },
 [ "Gemmed_Crown" ] = {
@@ -52498,7 +52498,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 88,
+	SpriteId = 88,
 	Script = [[
 		bonus bInt,2;
 		bonus bLuk,1;
@@ -52517,7 +52517,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 89,
+	SpriteId = 89,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,5;
@@ -52535,7 +52535,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 90,
+	SpriteId = 90,
 	Script = [[ bonus2 bResEff,Eff_Poison,2000; ]]
 },
 [ "Gas_Mask" ] = {
@@ -52551,7 +52551,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 91,
+	SpriteId = 91,
 	Script = [[ bonus2 bResEff,Eff_Poison,3000; ]]
 },
 [ "Machoman_Glasses" ] = {
@@ -52567,7 +52567,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 92,
+	SpriteId = 92,
 },
 [ "Loard_Circlet" ] = {
 	Id = 5007,
@@ -52582,7 +52582,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 55,
-	ViewSprite = 93,
+	SpriteId = 93,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -52603,7 +52603,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 94,
+	SpriteId = 94,
 },
 [ "Safety_Helmet" ] = {
 	Id = 5009,
@@ -52617,7 +52617,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 95,
+	SpriteId = 95,
 	Script = [[
 		bonus bMdef,3;
 		bonus bUnbreakableHelm,0;
@@ -52631,7 +52631,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 96,
+	SpriteId = 96,
 },
 [ "Antenna" ] = {
 	Id = 5011,
@@ -52641,7 +52641,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 97,
+	SpriteId = 97,
 },
 [ "Ph_D_Hat" ] = {
 	Id = 5012,
@@ -52655,7 +52655,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 98,
+	SpriteId = 98,
 },
 [ "Horn_Of_Lord_Kaho" ] = {
 	Id = 5013,
@@ -52665,7 +52665,7 @@ item_db = {
 	Weight = 100,
 	Def = 30,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 99,
+	SpriteId = 99,
 	Script = [[
 		bonus bMdef,10;
 		bonus bStr,5;
@@ -52690,7 +52690,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 65,
 	Refine = false,
-	ViewSprite = 100,
+	SpriteId = 100,
 },
 [ "Egg_Shell" ] = {
 	Id = 5015,
@@ -52701,7 +52701,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 101,
+	SpriteId = 101,
 },
 [ "Boys_Cap" ] = {
 	Id = 5016,
@@ -52715,7 +52715,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 102,
+	SpriteId = 102,
 },
 [ "Bone_Helm" ] = {
 	Id = 5017,
@@ -52734,7 +52734,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 103,
+	SpriteId = 103,
 	Script = [[ bonus2 bSubEle,Ele_Dark,-15; ]]
 },
 [ "Feather_Bonnet" ] = {
@@ -52750,7 +52750,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 104,
+	SpriteId = 104,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Corsair" ] = {
@@ -52765,7 +52765,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 105,
+	SpriteId = 105,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "Kafra_Band" ] = {
@@ -52776,7 +52776,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 106,
+	SpriteId = 106,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Bankruptcy_Of_Heart" ] = {
@@ -52793,7 +52793,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 38,
-	ViewSprite = 107,
+	SpriteId = 107,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -52821,7 +52821,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 138,
+	SpriteId = 138,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,2;
@@ -52839,7 +52839,7 @@ item_db = {
 		[ Job.Alchemist ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 108,
+	SpriteId = 108,
 },
 [ "Hat_Of_Cake" ] = {
 	Id = 5024,
@@ -52849,7 +52849,7 @@ item_db = {
 	Weight = 1000,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 109,
+	SpriteId = 109,
 },
 [ "Helm_Of_Angel" ] = {
 	Id = 5025,
@@ -52874,7 +52874,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 74,
-	ViewSprite = 110,
+	SpriteId = 110,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -52894,7 +52894,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 111,
+	SpriteId = 111,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "Wizardry_Hat" ] = {
@@ -52911,7 +52911,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 112,
+	SpriteId = 112,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -52924,7 +52924,7 @@ item_db = {
 	Buy = 20,
 	Weight = 150,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 113,
+	SpriteId = 113,
 },
 [ "Spore_Hat" ] = {
 	Id = 5029,
@@ -52939,7 +52939,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 114,
+	SpriteId = 114,
 },
 [ "Panda_Cap" ] = {
 	Id = 5030,
@@ -52954,7 +52954,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 115,
+	SpriteId = 115,
 },
 [ "Mine_Helm" ] = {
 	Id = 5031,
@@ -52979,7 +52979,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 55,
-	ViewSprite = 116,
+	SpriteId = 116,
 	Script = [[ bonus bDex,2; ]]
 },
 [ "Picnic_Hat" ] = {
@@ -52994,7 +52994,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 117,
+	SpriteId = 117,
 },
 [ "Smokie_Hat" ] = {
 	Id = 5033,
@@ -53009,7 +53009,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 118,
+	SpriteId = 118,
 },
 [ "Light_Bulb_Band" ] = {
 	Id = 5034,
@@ -53022,7 +53022,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 119,
+	SpriteId = 119,
 },
 [ "Poring_Hat" ] = {
 	Id = 5035,
@@ -53037,7 +53037,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 38,
-	ViewSprite = 120,
+	SpriteId = 120,
 },
 [ "Cross_Band" ] = {
 	Id = 5036,
@@ -53052,7 +53052,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 121,
+	SpriteId = 121,
 },
 [ "Fruit_Shell" ] = {
 	Id = 5037,
@@ -53064,7 +53064,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 5,
 	Refine = false,
-	ViewSprite = 122,
+	SpriteId = 122,
 },
 [ "Deviruchi_Cap" ] = {
 	Id = 5038,
@@ -53079,7 +53079,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 123,
+	SpriteId = 123,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -53095,7 +53095,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 19,
 	Refine = false,
-	ViewSprite = 124,
+	SpriteId = 124,
 },
 [ "Blush" ] = {
 	Id = 5040,
@@ -53105,7 +53105,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 125,
+	SpriteId = 125,
 },
 [ "Heart_Hair_Pin" ] = {
 	Id = 5041,
@@ -53114,7 +53114,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 126,
+	SpriteId = 126,
 },
 [ "Hair_Protector" ] = {
 	Id = 5042,
@@ -53128,7 +53128,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 14,
-	ViewSprite = 127,
+	SpriteId = 127,
 },
 [ "Opera_Ghost_Mask" ] = {
 	Id = 5043,
@@ -53144,7 +53144,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 128,
+	SpriteId = 128,
 },
 [ "Devils_Wing" ] = {
 	Id = 5044,
@@ -53155,7 +53155,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 129,
+	SpriteId = 129,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "Magician_Hat" ] = {
@@ -53176,7 +53176,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 130,
+	SpriteId = 130,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -53192,7 +53192,7 @@ item_db = {
 	Def = 5,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 139,
+	SpriteId = 139,
 },
 [ "Fashion_Sunglass" ] = {
 	Id = 5047,
@@ -53205,7 +53205,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 131,
+	SpriteId = 131,
 },
 [ "First_Moon_Hair_Pin" ] = {
 	Id = 5048,
@@ -53214,7 +53214,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 132,
+	SpriteId = 132,
 },
 [ "Stripe_Band" ] = {
 	Id = 5049,
@@ -53225,7 +53225,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 133,
+	SpriteId = 133,
 },
 [ "Mystery_Fruit_Shell" ] = {
 	Id = 5050,
@@ -53237,7 +53237,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 134,
+	SpriteId = 134,
 },
 [ "Kitty_Bell" ] = {
 	Id = 5051,
@@ -53247,7 +53247,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 135,
+	SpriteId = 135,
 },
 [ "Blue_Hair_Band" ] = {
 	Id = 5052,
@@ -53257,7 +53257,7 @@ item_db = {
 	Weight = 150,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 136,
+	SpriteId = 136,
 },
 [ "Spinx_Helm" ] = {
 	Id = 5053,
@@ -53274,7 +53274,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead },
 	EquipLv = 65,
 	Refine = false,
-	ViewSprite = 137,
+	SpriteId = 137,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Assasin_Mask" ] = {
@@ -53290,7 +53290,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 180,
+	SpriteId = 180,
 },
 [ "Novice_Egg_Cap" ] = {
 	Id = 5055,
@@ -53310,7 +53310,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 101,
+	SpriteId = 101,
 },
 [ "Love_Berry" ] = {
 	Id = 5056,
@@ -53320,7 +53320,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 140,
+	SpriteId = 140,
 },
 [ "Ear_Of_Black_Cat" ] = {
 	Id = 5057,
@@ -53331,7 +53331,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 141,
+	SpriteId = 141,
 },
 [ "Drooping_Kitty" ] = {
 	Id = 5058,
@@ -53345,7 +53345,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 142,
+	SpriteId = 142,
 	Script = [[
 		bonus bMdef,15;
 		bonus2 bResEff,Eff_Curse,3000;
@@ -53360,7 +53360,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 143,
+	SpriteId = 143,
 },
 [ "Party_Hat" ] = {
 	Id = 5060,
@@ -53370,7 +53370,7 @@ item_db = {
 	Weight = 300,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 144,
+	SpriteId = 144,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Flower_Hairpin" ] = {
@@ -53381,7 +53381,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 145,
+	SpriteId = 145,
 },
 [ "Straw_Hat" ] = {
 	Id = 5062,
@@ -53392,7 +53392,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 146,
+	SpriteId = 146,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Plaster" ] = {
@@ -53407,7 +53407,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 147,
+	SpriteId = 147,
 },
 [ "Leaf_Headgear" ] = {
 	Id = 5064,
@@ -53417,7 +53417,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 148,
+	SpriteId = 148,
 },
 [ "Fish_On_Head" ] = {
 	Id = 5065,
@@ -53428,7 +53428,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 149,
+	SpriteId = 149,
 	Script = [[ bonus2 bAddRace,RC_Fish,10; ]]
 },
 [ "Horn_Of_Succubus" ] = {
@@ -53444,7 +53444,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 150,
+	SpriteId = 150,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,10;
@@ -53462,7 +53462,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 151,
+	SpriteId = 151,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Ear_Of_Devils_Wing" ] = {
@@ -53475,7 +53475,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 152,
+	SpriteId = 152,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Mask_Of_Fox" ] = {
@@ -53490,7 +53490,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 153,
+	SpriteId = 153,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -53508,7 +53508,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 154,
+	SpriteId = 154,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Indian_Headband" ] = {
@@ -53523,7 +53523,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 155,
+	SpriteId = 155,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "Inccubus_Horn" ] = {
@@ -53539,7 +53539,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 156,
+	SpriteId = 156,
 	Script = [[
 		bonus bAgi,1;
 		bonus bMdef,10;
@@ -53557,7 +53557,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 157,
+	SpriteId = 157,
 	Script = [[ bonus bDex, 2; ]]
 },
 [ "Ear_Of_Angels_Wing" ] = {
@@ -53570,7 +53570,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 158,
+	SpriteId = 158,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Cowboy_Hat" ] = {
@@ -53581,7 +53581,7 @@ item_db = {
 	Weight = 500,
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 159,
+	SpriteId = 159,
 },
 [ "Fur_Hat" ] = {
 	Id = 5076,
@@ -53591,7 +53591,7 @@ item_db = {
 	Weight = 350,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 160,
+	SpriteId = 160,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Tulip_Hairpin" ] = {
@@ -53602,7 +53602,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 161,
+	SpriteId = 161,
 },
 [ "Sea_Otter_Cap" ] = {
 	Id = 5078,
@@ -53613,7 +53613,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 162,
+	SpriteId = 162,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "Crossed_Hair_Band" ] = {
@@ -53624,7 +53624,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 163,
+	SpriteId = 163,
 },
 [ "Headgear_Of_Queen" ] = {
 	Id = 5080,
@@ -53635,7 +53635,7 @@ item_db = {
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 164,
+	SpriteId = 164,
 },
 [ "Mistress_Crown" ] = {
 	Id = 5081,
@@ -53650,7 +53650,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 75,
-	ViewSprite = 165,
+	SpriteId = 165,
 	Script = [[
 		bonus bMaxSP,100;
 		bonus bInt,2;
@@ -53665,7 +53665,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 166,
+	SpriteId = 166,
 },
 [ "Red_Tailed_Ribbon" ] = {
 	Id = 5083,
@@ -53676,7 +53676,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 167,
+	SpriteId = 167,
 	Script = [[ bonus bMdef,10; ]]
 },
 [ "Lazy_Raccoon" ] = {
@@ -53691,7 +53691,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 168,
+	SpriteId = 168,
 	Script = [[ bonus2 bResEff,Eff_Sleep,2000; ]]
 },
 [ "Pair_Of_Red_Ribbon" ] = {
@@ -53704,7 +53704,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 169,
+	SpriteId = 169,
 },
 [ "Alarm_Mask" ] = {
 	Id = 5086,
@@ -53719,7 +53719,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 170,
+	SpriteId = 170,
 	Script = [[ bonus2 bResEff,Eff_Blind,5000; ]]
 },
 [ "Goblin_Mask_01" ] = {
@@ -53731,7 +53731,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 171,
+	SpriteId = 171,
 },
 [ "Goblin_Mask_02" ] = {
 	Id = 5088,
@@ -53742,7 +53742,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 172,
+	SpriteId = 172,
 },
 [ "Goblin_Mask_03" ] = {
 	Id = 5089,
@@ -53753,7 +53753,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 173,
+	SpriteId = 173,
 },
 [ "Goblin_Mask_04" ] = {
 	Id = 5090,
@@ -53764,7 +53764,7 @@ item_db = {
 	Def = 2,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 174,
+	SpriteId = 174,
 },
 [ "Big_Golden_Bell" ] = {
 	Id = 5091,
@@ -53779,7 +53779,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 35,
-	ViewSprite = 175,
+	SpriteId = 175,
 },
 [ "Blue_Coif" ] = {
 	Id = 5092,
@@ -53794,7 +53794,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 65,
-	ViewSprite = 176,
+	SpriteId = 176,
 },
 [ "Blue_Coif_" ] = {
 	Id = 5093,
@@ -53810,7 +53810,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 65,
-	ViewSprite = 177,
+	SpriteId = 177,
 	Script = [[ bonus bMaxSP,100; ]]
 },
 [ "Orc_Hero_Helm" ] = {
@@ -53826,7 +53826,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 55,
-	ViewSprite = 178,
+	SpriteId = 178,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,1;
@@ -53846,7 +53846,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 55,
-	ViewSprite = 179,
+	SpriteId = 179,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,1;
@@ -53866,7 +53866,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 180,
+	SpriteId = 180,
 },
 [ "Cone_Hat_" ] = {
 	Id = 5097,
@@ -53874,7 +53874,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 400,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 144,
+	SpriteId = 144,
 },
 [ "Tiger_Mask" ] = {
 	Id = 5098,
@@ -53886,7 +53886,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 181,
+	SpriteId = 181,
 	Script = [[
 		bonus bStr,3;
 		bonus bMaxHP,100;
@@ -53900,7 +53900,7 @@ item_db = {
 	Weight = 300,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 182,
+	SpriteId = 182,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,10;
@@ -53915,7 +53915,7 @@ item_db = {
 	Weight = 800,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 75,
-	ViewSprite = 183,
+	SpriteId = 183,
 	Script = [[
 		bonus bStr,1;
 		bonus bAgi,1;
@@ -53930,7 +53930,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 184,
+	SpriteId = 184,
 	Script = [[
 		bonus bInt,2;
 		bonus bDef,1;
@@ -53944,7 +53944,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 185,
+	SpriteId = 185,
 },
 [ "Sunflower_Hairpin" ] = {
 	Id = 5103,
@@ -53960,7 +53960,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 186,
+	SpriteId = 186,
 	Script = [[
 		bonus bAgi,2;
 		bonus bCriticalRate,5;
@@ -53978,7 +53978,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 187,
+	SpriteId = 187,
 	Script = [[
 		bonus2 bResEff,Eff_Blind,10000;
 		bonus2 bResEff,Eff_Stun,200;
@@ -53993,7 +53993,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 24,
-	ViewSprite = 109,
+	SpriteId = 109,
 	Script = [[
 		bonus bMaxSP,60;
 		bonus3 bAddMonsterDropItem,7864,7,50;
@@ -54008,7 +54008,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 144,
+	SpriteId = 144,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54033,7 +54033,7 @@ item_db = {
 	Weight = 50,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 188,
+	SpriteId = 188,
 },
 [ "Detective_Hat" ] = {
 	Id = 5108,
@@ -54044,7 +54044,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 189,
+	SpriteId = 189,
 },
 [ "Red_Bonnet" ] = {
 	Id = 5109,
@@ -54054,7 +54054,7 @@ item_db = {
 	Weight = 400,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 190,
+	SpriteId = 190,
 },
 [ "Baby_Pacifier" ] = {
 	Id = 5110,
@@ -54064,7 +54064,7 @@ item_db = {
 	Weight = 50,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 191,
+	SpriteId = 191,
 },
 [ "Galapago_Cap" ] = {
 	Id = 5111,
@@ -54075,7 +54075,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 55,
-	ViewSprite = 192,
+	SpriteId = 192,
 	Script = [[ bonus2 bAddMonsterDropItem,605,100; ]]
 },
 [ "Super_Novice_Hat" ] = {
@@ -54096,7 +54096,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 193,
+	SpriteId = 193,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Angry_Mouth" ] = {
@@ -54107,7 +54107,7 @@ item_db = {
 	Weight = 50,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 194,
+	SpriteId = 194,
 },
 [ "Fedora" ] = {
 	Id = 5114,
@@ -54117,7 +54117,7 @@ item_db = {
 	Weight = 300,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 195,
+	SpriteId = 195,
 },
 [ "Winter_Hat" ] = {
 	Id = 5115,
@@ -54127,7 +54127,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 196,
+	SpriteId = 196,
 	Script = [[ bonus2 bResEff,Eff_Freeze,1000; ]]
 },
 [ "Banana_Hat" ] = {
@@ -54138,7 +54138,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 197,
+	SpriteId = 197,
 	Script = [[ bonus3 bAutoSpell,SM_PROVOKE,3,30; ]]
 },
 [ "Mistic_Rose" ] = {
@@ -54148,7 +54148,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 198,
+	SpriteId = 198,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Plant,2; ]]
 },
 [ "Ear_Of_Puppy" ] = {
@@ -54159,7 +54159,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 199,
+	SpriteId = 199,
 },
 [ "Super_Novice_Hat_" ] = {
 	Id = 5119,
@@ -54180,7 +54180,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 193,
+	SpriteId = 193,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Fedora_" ] = {
@@ -54192,7 +54192,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 195,
+	SpriteId = 195,
 },
 [ "Zherlthsh_Mask" ] = {
 	Id = 5121,
@@ -54207,7 +54207,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 70,
-	ViewSprite = 200,
+	SpriteId = 200,
 	Script = [[
 		bonus2 bAddRace,RC_DemiPlayer,5;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
@@ -54226,7 +54226,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 65,
-	ViewSprite = 250,
+	SpriteId = 250,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Ulle_Cap" ] = {
@@ -54243,7 +54243,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 65,
-	ViewSprite = 254,
+	SpriteId = 254,
 	Script = [[
 		bonus bDex,2;
 		bonus bAgi,1;
@@ -54262,7 +54262,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 65,
-	ViewSprite = 251,
+	SpriteId = 251,
 	Script = [[
 		bonus bMdef,10;
 		bonus bInt,2;
@@ -54288,7 +54288,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 255,
+	SpriteId = 255,
 	Script = [[ bonus bSPrecovRate,3; ]]
 },
 [ "Morpheuss_Hood" ] = {
@@ -54304,7 +54304,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 33,
-	ViewSprite = 256,
+	SpriteId = 256,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Morriganes_Helm" ] = {
@@ -54320,7 +54320,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 61,
-	ViewSprite = 257,
+	SpriteId = 257,
 	Script = [[
 		bonus bLuk,2;
 		bonus bBaseAtk,3;
@@ -54339,7 +54339,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 54,
-	ViewSprite = 258,
+	SpriteId = 258,
 	Script = [[
 		bonus bVit,3;
 		bonus bMdef,3;
@@ -54355,7 +54355,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 201,
+	SpriteId = 201,
 	Script = [[
 		bonus bAgi,2;
 		bonus2 bAddRaceTolerance,RC_Brute,10;
@@ -54383,7 +54383,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 75,
-	ViewSprite = 202,
+	SpriteId = 202,
 	Script = [[
 		bonus2 bAddEffWhenHit,Eff_Silence,500;
 		bonus bMdef,1;
@@ -54403,7 +54403,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 75,
-	ViewSprite = 203,
+	SpriteId = 203,
 	Script = [[
 		bonus bVit,3;
 		bonus bMaxHPrate,3;
@@ -54418,7 +54418,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 204,
+	SpriteId = 204,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54444,7 +54444,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 205,
+	SpriteId = 205,
 	Script = [[ bonus bShortWeaponDamageReturn,5; ]]
 },
 [ "Pumpkin_Hat" ] = {
@@ -54455,7 +54455,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 206,
+	SpriteId = 206,
 	Script = [[ bonus bAllStats,3; ]]
 },
 [ "Cyclops_Visor" ] = {
@@ -54470,7 +54470,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 75,
 	Refine = false,
-	ViewSprite = 207,
+	SpriteId = 207,
 	Script = [[ bonus bMaxSP,50; ]]
 },
 [ "Santas_Hat_" ] = {
@@ -54481,7 +54481,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 20,
+	SpriteId = 20,
 	Script = [[ bonus bMdef,2; ]]
 },
 [ "Alice_Doll" ] = {
@@ -54499,7 +54499,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 208,
+	SpriteId = 208,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bAddRace,RC_DemiPlayer,10;
@@ -54521,7 +54521,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 209,
+	SpriteId = 209,
 	Script = [[
 		bonus bMdef,5;
 		bonus bVariableCastrate,-10;
@@ -54537,7 +54537,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 210,
+	SpriteId = 210,
 	Script = [[
 		bonus bDex,1;
 		bonus bInt,1;
@@ -54554,7 +54554,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 211,
+	SpriteId = 211,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Undead,5;
 		bonus2 bAddRaceTolerance,RC_Demon,5;
@@ -54574,7 +54574,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 212,
+	SpriteId = 212,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Crescent_Helm" ] = {
@@ -54595,7 +54595,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 213,
+	SpriteId = 213,
 	Script = [[
 		bonus bVit,1;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
@@ -54615,7 +54615,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
-	ViewSprite = 214,
+	SpriteId = 214,
 	Script = [[ bonus2 bResEff,Eff_Silence,3000; ]]
 },
 [ "Gambler_Hat" ] = {
@@ -54626,7 +54626,7 @@ item_db = {
 	Weight = 200,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 16,
+	SpriteId = 16,
 	Script = [[ bonus bLuk,5; ]]
 },
 [ "Carnival_Joker_Jester" ] = {
@@ -54636,7 +54636,7 @@ item_db = {
 	Buy = 10,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 89,
+	SpriteId = 89,
 },
 [ "Elephant_Hat" ] = {
 	Id = 5146,
@@ -54644,7 +54644,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 500,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 215,
+	SpriteId = 215,
 	Script = [[
 		bonus bVit,1;
 		skill WZ_WATERBALL,1;
@@ -54659,7 +54659,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 216,
+	SpriteId = 216,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54677,7 +54677,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 500,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 217,
+	SpriteId = 217,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Silver_Tiara" ] = {
@@ -54686,7 +54686,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 218,
+	SpriteId = 218,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54707,7 +54707,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 219,
+	SpriteId = 219,
 	Script = [[ bonus bSpeedRate,25; ]]
 },
 [ "Headset_OST" ] = {
@@ -54719,7 +54719,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 220,
+	SpriteId = 220,
 	Script = [[
 		bonus bMdef,3;
 		bonus2 bResEff,Eff_Stun,1000;
@@ -54734,7 +54734,7 @@ item_db = {
 	Weight = 2000,
 	Def = 2,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 221,
+	SpriteId = 221,
 	Script = [[
 		bonus bMdef,2;
 		bonus2 bResEff,Eff_Stun,1000;
@@ -54749,7 +54749,7 @@ item_db = {
 	Weight = 700,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 222,
+	SpriteId = 222,
 	Script = [[ bonus bFlee,5; ]]
 },
 [ "Sunglasses_F" ] = {
@@ -54761,7 +54761,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 12,
+	SpriteId = 12,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54780,7 +54780,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 25,
+	SpriteId = 25,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54800,7 +54800,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 8,
+	SpriteId = 8,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -54832,7 +54832,7 @@ item_db = {
 		[ Job.Alchemist ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 86,
+	SpriteId = 86,
 },
 [ "Holy_Bonnet_" ] = {
 	Id = 5158,
@@ -54848,7 +54848,7 @@ item_db = {
 		[ Job.Monk ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 35,
+	SpriteId = 35,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Golden_Gear_" ] = {
@@ -54865,7 +54865,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 30,
+	SpriteId = 30,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Magestic_Goat_" ] = {
@@ -54887,7 +54887,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Sharp_Gear_" ] = {
@@ -54916,7 +54916,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 43,
+	SpriteId = 43,
 },
 [ "Bone_Helm_" ] = {
 	Id = 5162,
@@ -54936,7 +54936,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 103,
+	SpriteId = 103,
 	Script = [[ bonus2 bSubEle,Ele_Dark,-15; ]]
 },
 [ "Corsair_" ] = {
@@ -54952,7 +54952,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 105,
+	SpriteId = 105,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "Tiara_" ] = {
@@ -54970,7 +54970,7 @@ item_db = {
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 19,
+	SpriteId = 19,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Crown_" ] = {
@@ -54988,7 +54988,7 @@ item_db = {
 	Gender = ItemGenderType.Male,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 45,
+	SpriteId = 45,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Spinx_Helm_" ] = {
@@ -55007,7 +55007,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead },
 	EquipLv = 65,
 	Refine = false,
-	ViewSprite = 137,
+	SpriteId = 137,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Munak_Turban_" ] = {
@@ -55020,7 +55020,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 51,
+	SpriteId = 51,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Undead,10; ]]
 },
 [ "Bongun_Hat_" ] = {
@@ -55033,7 +55033,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 139,
+	SpriteId = 139,
 },
 [ "Bride_Mask" ] = {
 	Id = 5169,
@@ -55045,7 +55045,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 40,
-	ViewSprite = 223,
+	SpriteId = 223,
 	Script = [[
 		if(BaseClass==Job_Taekwon) {
 			bonus bLuk,2;
@@ -55065,7 +55065,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 224,
+	SpriteId = 224,
 	Script = [[
 		bonus bMdef,1;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,10;
@@ -55136,7 +55136,7 @@ item_db = {
 		[ Job.BabyMinstrel ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 225,
+	SpriteId = 225,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Beret" ] = {
@@ -55147,7 +55147,7 @@ item_db = {
 	Weight = 700,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 226,
+	SpriteId = 226,
 	Script = [[ bonus2 bAddRaceTolerance,RC_DemiPlayer,10; ]]
 },
 [ "Satto_Hat" ] = {
@@ -55160,7 +55160,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 227,
+	SpriteId = 227,
 	Script = [[
 		if(BaseClass==Job_Taekwon) {
 			bonus bAgi,1;
@@ -55178,7 +55178,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 228,
+	SpriteId = 228,
 	Script = [[
 		if(BaseClass==Job_Taekwon) {
 			bonus bInt,1;
@@ -55194,7 +55194,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 229,
+	SpriteId = 229,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,500;
 		bonus bMdef,1;
@@ -55211,7 +55211,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 230,
+	SpriteId = 230,
 	Script = [[
 		if(BaseClass==Job_Taekwon) {
 			bonus bLuk,1;
@@ -55229,7 +55229,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 40,
-	ViewSprite = 231,
+	SpriteId = 231,
 	Script = [[
 		if(BaseClass==Job_Taekwon) {
 			bonus bDex,2;
@@ -55245,7 +55245,7 @@ item_db = {
 	Buy = 20,
 	Weight = 150,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 113,
+	SpriteId = 113,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Gold_Tiara" ] = {
@@ -55254,7 +55254,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 232,
+	SpriteId = 232,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -55274,7 +55274,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 217,
+	SpriteId = 217,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "Helm_Of_Darkness" ] = {
@@ -55298,7 +55298,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 233,
+	SpriteId = 233,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Puppy_Hat" ] = {
@@ -55311,7 +55311,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 234,
+	SpriteId = 234,
 	Script = [[
 		bonus bAgi,1;
 		bonus3 bAutoSpell,PR_GLORIA,1,10+20*(readparam(bAgi)>=77);
@@ -55326,7 +55326,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 235,
+	SpriteId = 235,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -55346,7 +55346,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 236,
+	SpriteId = 236,
 	Script = [[ bonus2 bSubEle,Ele_Water,5; ]]
 },
 [ "Laurel_Wreath" ] = {
@@ -55359,7 +55359,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 237,
+	SpriteId = 237,
 	Script = [[
 		bonus bLuk,3;
 		bonus2 bResEff,Eff_Blind,500;
@@ -55376,7 +55376,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 238,
+	SpriteId = 238,
 	Script = [[
 		bonus bInt,1;
 		bonus3 bAutoSpellWhenHit,AL_HEAL,1,50;
@@ -55392,7 +55392,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 239,
+	SpriteId = 239,
 	Script = [[
 		bonus bMaxSP,30;
 		bonus bMdef,3;
@@ -55409,7 +55409,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 240,
+	SpriteId = 240,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -55422,7 +55422,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 241,
+	SpriteId = 241,
 	Script = [[
 		bonus bMaxHP,40;
 		bonus bMaxSP,40;
@@ -55437,7 +55437,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 216,
+	SpriteId = 216,
 },
 [ "Ribbon_Black" ] = {
 	Id = 5191,
@@ -55449,7 +55449,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 242,
+	SpriteId = 242,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_Yellow" ] = {
@@ -55462,7 +55462,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 243,
+	SpriteId = 243,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_Green" ] = {
@@ -55475,7 +55475,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 244,
+	SpriteId = 244,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_Pink" ] = {
@@ -55488,7 +55488,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 245,
+	SpriteId = 245,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_Red" ] = {
@@ -55501,7 +55501,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 246,
+	SpriteId = 246,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_Orange" ] = {
@@ -55514,7 +55514,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 247,
+	SpriteId = 247,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Ribbon_White" ] = {
@@ -55527,7 +55527,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 248,
+	SpriteId = 248,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Drooping_Bunny" ] = {
@@ -55539,7 +55539,7 @@ item_db = {
 	Def = 3,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 249,
+	SpriteId = 249,
 	Script = [[
 		bonus bDex,1;
 		bonus bFlee,2;
@@ -55552,7 +55552,7 @@ item_db = {
 	Weight = 200,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 216,
+	SpriteId = 216,
 },
 [ "Coppola" ] = {
 	Id = 5200,
@@ -55561,7 +55561,7 @@ item_db = {
 	Buy = 10,
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 252,
+	SpriteId = 252,
 },
 [ "Party_Hat_B" ] = {
 	Id = 5201,
@@ -55571,7 +55571,7 @@ item_db = {
 	Weight = 300,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 144,
+	SpriteId = 144,
 	Script = [[ bonus bAllStats,3; ]]
 },
 [ "Pumpkin_Hat_" ] = {
@@ -55582,7 +55582,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 206,
+	SpriteId = 206,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Demon,5; ]]
 },
 [ "Tongue_Mask" ] = {
@@ -55594,7 +55594,7 @@ item_db = {
 	Def = 2,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 253,
+	SpriteId = 253,
 	Script = [[ bonus bSpeedRate,25; ]]
 },
 [ "Event_Pierrot_Nose" ] = {
@@ -55605,7 +55605,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 49,
+	SpriteId = 49,
 	Script = [[
 		bonus2 bResEff,Eff_Blind,3000;
 		bonus2 bAddMonsterDropItem,12130,30;
@@ -55619,7 +55619,7 @@ item_db = {
 	Weight = 1000,
 	Def = 3,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 261,
+	SpriteId = 261,
 	Script = [[
 		bonus bAllStats,1;
 		bonus bMdef,3;
@@ -55637,7 +55637,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 259,
+	SpriteId = 259,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Plant,3; ]]
 },
 [ "Gold_Spirit_Chain" ] = {
@@ -55648,7 +55648,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 260,
+	SpriteId = 260,
 	Script = [[
 		bonus bLuk,1;
 		bonus2 bSubEle,Ele_Holy,5;
@@ -55668,7 +55668,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 262,
+	SpriteId = 262,
 	Script = [[
 		bonus2 bHPDrainRate,50,8;
 		bonus2 bSPDrainRate,10,4;
@@ -55682,7 +55682,7 @@ item_db = {
 	Buy = 20,
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 263,
+	SpriteId = 263,
 },
 [ "Flying_Angel" ] = {
 	Id = 5210,
@@ -55693,7 +55693,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 264,
+	SpriteId = 264,
 	Script = [[
 		bonus bVariableCastrate,-3;
 		bonus bAspdRate,3;
@@ -55710,7 +55710,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 265,
+	SpriteId = 265,
 	Script = [[
 		bonus bMdef,7;
 		bonus bStr,1;
@@ -55734,7 +55734,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 266,
+	SpriteId = 266,
 	Script = [[
 		bonus bMaxHP,50;
 		bonus bMaxSP,10;
@@ -55749,7 +55749,7 @@ item_db = {
 	Weight = 200,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 267,
+	SpriteId = 267,
 	Script = [[
 		bonus bAgi,2;
 		bonus bMdef,3;
@@ -55762,7 +55762,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 268,
+	SpriteId = 268,
 	Script = [[
 		bonus bDex,2;
 		bonus3 bAutoSpell,AL_INCAGI,1,50;
@@ -55780,7 +55780,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 38,
+	SpriteId = 38,
 	Script = [[
 		bonus bMdef,3;
 		bonus bDex,1;
@@ -55800,7 +55800,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 39,
+	SpriteId = 39,
 	Script = [[
 		bonus bStr,1;
 		bonus bAgi,1;
@@ -55826,7 +55826,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Bunny_Band_" ] = {
@@ -55837,7 +55837,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Drooping_Kitty_" ] = {
@@ -55852,7 +55852,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 142,
+	SpriteId = 142,
 	Script = [[
 		bonus bMdef,18;
 		bonus bFlee,3;
@@ -55870,7 +55870,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 55,
+	SpriteId = 55,
 	Script = [[
 		bonus bVit,1;
 		bonus2 bAddRaceTolerance,RC_Brute,5;
@@ -55886,7 +55886,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 169,
+	SpriteId = 169,
 	Script = [[ bonus bFlee,5; ]]
 },
 [ "Fish_On_Head_" ] = {
@@ -55898,7 +55898,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 149,
+	SpriteId = 149,
 	Script = [[
 		bonus bAgi,1;
 		bonus bDex,1;
@@ -55917,7 +55917,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 35,
-	ViewSprite = 175,
+	SpriteId = 175,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "Orc_Hero_Helm_TW" ] = {
@@ -55933,7 +55933,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 55,
-	ViewSprite = 178,
+	SpriteId = 178,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,1;
@@ -55950,7 +55950,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 269,
+	SpriteId = 269,
 	Script = [[
 		bonus bMdef,2;
 		bonus bStr,2;
@@ -55968,7 +55968,7 @@ item_db = {
 	Weight = 200,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 270,
+	SpriteId = 270,
 	Script = [[
 		bonus bAgi,2;
 		bonus bDex,1;
@@ -55989,7 +55989,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 271,
+	SpriteId = 271,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -56008,7 +56008,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 272,
+	SpriteId = 272,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -56027,7 +56027,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 273,
+	SpriteId = 273,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -56045,7 +56045,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 274,
+	SpriteId = 274,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,3000;
 		bonus bMdef,15;
@@ -56063,7 +56063,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 275,
+	SpriteId = 275,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,3000;
 		bonus bMdef,15;
@@ -56081,7 +56081,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 276,
+	SpriteId = 276,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,3000;
 		bonus bMdef,15;
@@ -56099,7 +56099,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 277,
+	SpriteId = 277,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,3000;
 		bonus bMdef,15;
@@ -56117,7 +56117,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 278,
+	SpriteId = 278,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,3000;
 		bonus bMdef,15;
@@ -56131,7 +56131,7 @@ item_db = {
 	Weight = 350,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 279,
+	SpriteId = 279,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Blue_Fur_Hat" ] = {
@@ -56142,7 +56142,7 @@ item_db = {
 	Weight = 350,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 280,
+	SpriteId = 280,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Pink_Fur_Hat" ] = {
@@ -56153,7 +56153,7 @@ item_db = {
 	Weight = 350,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 281,
+	SpriteId = 281,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Red_Wizardry_Hat" ] = {
@@ -56170,7 +56170,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 282,
+	SpriteId = 282,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -56190,7 +56190,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 283,
+	SpriteId = 283,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -56210,7 +56210,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 284,
+	SpriteId = 284,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -56230,7 +56230,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 285,
+	SpriteId = 285,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -56250,7 +56250,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 286,
+	SpriteId = 286,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -56265,7 +56265,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 287,
+	SpriteId = 287,
 	Script = [[ bonus2 bResEff,Eff_Freeze,1000; ]]
 },
 [ "Elven_Blindfold" ] = {
@@ -56277,7 +56277,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 288,
+	SpriteId = 288,
 	Script = [[ bonus2 bResEff,Eff_Blind,10000; ]]
 },
 [ "Elven_Sunglasses" ] = {
@@ -56289,7 +56289,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 289,
+	SpriteId = 289,
 	Script = [[ bonus2 bResEff,Eff_Blind,500; ]]
 },
 [ "Angelic_Helm" ] = {
@@ -56300,7 +56300,7 @@ item_db = {
 	Weight = 700,
 	Def = 7,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 290,
+	SpriteId = 290,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -56316,7 +56316,7 @@ item_db = {
 	Weight = 700,
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 291,
+	SpriteId = 291,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -56333,7 +56333,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 292,
+	SpriteId = 292,
 	Script = [[ bonus2 bResEff,Eff_Blind,10000; ]]
 },
 [ "Human_Blindfold" ] = {
@@ -56345,7 +56345,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 293,
+	SpriteId = 293,
 	Script = [[ bonus2 bResEff,Eff_Blind,10000; ]]
 },
 [ "Robotic_Ears" ] = {
@@ -56356,7 +56356,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 294,
+	SpriteId = 294,
 },
 [ "Round_Ears" ] = {
 	Id = 5251,
@@ -56366,7 +56366,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 295,
+	SpriteId = 295,
 },
 [ "Drooping_Nine_Tail" ] = {
 	Id = 5252,
@@ -56377,7 +56377,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 296,
+	SpriteId = 296,
 	Script = [[
 		bonus bAgi,1;
 		bonus bDex,1;
@@ -56394,7 +56394,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 297,
+	SpriteId = 297,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,getrefine();
@@ -56410,7 +56410,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 298,
+	SpriteId = 298,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56439,7 +56439,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 299,
+	SpriteId = 299,
 	Script = [[
 		bonus bLuk,3;
 		bonus3 bAutoSpell,BS_GREED,1,50;
@@ -56455,7 +56455,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 300,
+	SpriteId = 300,
 	Script = [[
 		bonus bInt,1;
 		bonus3 bAutoSpellWhenHit,AL_HEAL,1,10;
@@ -56474,7 +56474,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 301,
+	SpriteId = 301,
 	Script = [[
 		bonus bMdef,2;
 		bonus3 bAutoSpellWhenHit,HP_ASSUMPTIO,1,10;
@@ -56489,7 +56489,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 10,
-	ViewSprite = 302,
+	SpriteId = 302,
 	Script = [[
 		bonus3 bAutoSpellWhenHit,NV_FIRSTAID,1,300;
 		bonus2 bSubEle,Ele_Neutral,1;
@@ -56503,7 +56503,7 @@ item_db = {
 	Weight = 500,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 215,
+	SpriteId = 215,
 	Script = [[
 		bonus bVit,1;
 		bonus3 bAutoSpell,WZ_WATERBALL,3,10;
@@ -56518,7 +56518,7 @@ item_db = {
 	Weight = 500,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 217,
+	SpriteId = 217,
 	Script = [[
 		bonus bAgi,1;
 		bonus bFlee2,5;
@@ -56533,7 +56533,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 218,
+	SpriteId = 218,
 	Script = [[
 		bonus bInt,2;
 		if(BaseClass==Job_Mage) bonus bMatkRate,(JobLevel/20);
@@ -56549,7 +56549,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 232,
+	SpriteId = 232,
 	Script = [[
 		bonus bStr,2;
 		bonus bUnbreakableHelm,0;
@@ -56571,7 +56571,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 20,
-	ViewSprite = 303,
+	SpriteId = 303,
 	Script = [[
 		bonus2 bSubEle,Ele_Water,1;
 		bonus2 bSubEle,Ele_Earth,1;
@@ -56588,7 +56588,7 @@ item_db = {
 	Weight = 500,
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 304,
+	SpriteId = 304,
 	Script = [[ bonus bAllStats,2; ]]
 },
 [ "Apple_Of_Archer_C" ] = {
@@ -56603,7 +56603,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 72,
+	SpriteId = 72,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56624,7 +56624,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 15,
+	SpriteId = 15,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56648,7 +56648,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 67,
+	SpriteId = 67,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56673,7 +56673,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 93,
+	SpriteId = 93,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56700,7 +56700,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 264,
+	SpriteId = 264,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56727,7 +56727,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 241,
+	SpriteId = 241,
 	Script = [[ bonus bFlee2,5; ]]
 },
 [ "Chinese_Crown_" ] = {
@@ -56739,7 +56739,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 221,
+	SpriteId = 221,
 	Script = [[
 		bonus bMdef,3;
 		bonus2 bSubRace,RC_Boss,getrefine();
@@ -56754,7 +56754,7 @@ item_db = {
 	Def = 2,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 253,
+	SpriteId = 253,
 	Script = [[ bonus3 bAutoSpell,SM_PROVOKE,5,50; ]]
 },
 [ "Happy_Wig" ] = {
@@ -56765,7 +56765,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 305,
+	SpriteId = 305,
 	Script = [[
 		bonus bSpeedRate,25;
 		bonus bDef,4;
@@ -56781,7 +56781,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 306,
+	SpriteId = 306,
 	Script = [[
 		bonus bSpeedRate,25;
 		bonus bDef,4;
@@ -56797,7 +56797,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 307,
+	SpriteId = 307,
 	Script = [[
 		bonus bSpeedRate,25;
 		bonus bDef,4;
@@ -56813,7 +56813,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 308,
+	SpriteId = 308,
 	Script = [[
 		bonus bSpeedRate,25;
 		bonus bDef,4;
@@ -56834,7 +56834,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 309,
+	SpriteId = 309,
 	Script = [[
 		bonus bLuk,2;
 		bonus bVit,2;
@@ -56854,7 +56854,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 310,
+	SpriteId = 310,
 	Script = [[
 		bonus bLuk,2;
 		bonus bVit,2;
@@ -56873,7 +56873,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 142,
+	SpriteId = 142,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56901,7 +56901,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 41,
+	SpriteId = 41,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56926,7 +56926,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 123,
+	SpriteId = 123,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -56950,7 +56950,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 216,
+	SpriteId = 216,
 },
 [ "Chick_Hat" ] = {
 	Id = 5283,
@@ -56962,7 +56962,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 311,
+	SpriteId = 311,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMaxHP,50;
@@ -56983,7 +56983,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 312,
+	SpriteId = 312,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -57003,7 +57003,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 313,
+	SpriteId = 313,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "Pecopeco_Hairband" ] = {
@@ -57014,7 +57014,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 314,
+	SpriteId = 314,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57043,7 +57043,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 315,
+	SpriteId = 315,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "Red_Glasses" ] = {
@@ -57054,7 +57054,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 316,
+	SpriteId = 316,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57079,7 +57079,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 317,
+	SpriteId = 317,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus3 bAutoSpell,MG_FIREBOLT,1,10;
@@ -57096,7 +57096,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 249,
+	SpriteId = 249,
 	Script = [[
 		bonus bDex,1;
 		bonus bFlee,2;
@@ -57111,7 +57111,7 @@ item_db = {
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 318,
+	SpriteId = 318,
 	Script = [[
 		bonus4 bAutoSpell,SA_DELUGE,2,10,0;
 		bonus3 bAutoSpell,WZ_WATERBALL,3,10;
@@ -57126,7 +57126,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 319,
+	SpriteId = 319,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Dragon,5; ]]
 },
 [ "Ramen_Hat" ] = {
@@ -57137,7 +57137,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 320,
+	SpriteId = 320,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57161,7 +57161,7 @@ item_db = {
 	Buy = 20,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 321,
+	SpriteId = 321,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57187,7 +57187,7 @@ item_db = {
 	Def = 4,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 138,
+	SpriteId = 138,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57207,7 +57207,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 296,
+	SpriteId = 296,
 	Script = [[
 		bonus bAgi,1;
 		bonus bCritical,1;
@@ -57222,7 +57222,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 301,
+	SpriteId = 301,
 	Script = [[
 		bonus bAllStats,1;
 		bonus2 bSPRegenRate,2,10000;
@@ -57237,7 +57237,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 307,
+	SpriteId = 307,
 	Script = [[
 		bonus2 bSubEle,Ele_Neutral,5;
 		bonus2 bSubEle,Ele_Fire,-5;
@@ -57253,7 +57253,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 303,
+	SpriteId = 303,
 	Script = [[ bonus3 bAutoSpell,DC_SCREAM,1,50; ]]
 },
 [ "Bullock_Helm" ] = {
@@ -57269,7 +57269,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 322,
+	SpriteId = 322,
 	Script = [[ bonus bMaxHP,100; ]]
 },
 [ "Russian_Ribbon" ] = {
@@ -57278,7 +57278,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 323,
+	SpriteId = 323,
 },
 [ "Lotus_Flower_Hat" ] = {
 	Id = 5302,
@@ -57288,7 +57288,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 324,
+	SpriteId = 324,
 },
 [ "Flower_Coronet" ] = {
 	Id = 5303,
@@ -57298,7 +57298,7 @@ item_db = {
 	Weight = 300,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 325,
+	SpriteId = 325,
 	Script = [[
 		bonus bMdef,3;
 		bonus bMaxHP,50;
@@ -57314,7 +57314,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
-	ViewSprite = 326,
+	SpriteId = 326,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,700;
 		bonus2 bResEff,Eff_Blind,10000;
@@ -57328,7 +57328,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 327,
+	SpriteId = 327,
 	Script = [[ bonus bBaseAtk,5; ]]
 },
 [ "Freyja_Crown" ] = {
@@ -57343,7 +57343,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 328,
+	SpriteId = 328,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57365,7 +57365,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 329,
+	SpriteId = 329,
 	Script = [[
 		bonus bMdef,3;
 		bonus3 bAutoSpellWhenHit,DC_WINKCHARM,1,50;
@@ -57380,7 +57380,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 330,
+	SpriteId = 330,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57400,7 +57400,7 @@ item_db = {
 	Weight = 200,
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 331,
+	SpriteId = 331,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57421,7 +57421,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 332,
+	SpriteId = 332,
 	Script = [[
 		bonus2 bSubEle,Ele_Dark,10;
 		skill MG_SIGHT,1;
@@ -57437,7 +57437,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 333,
+	SpriteId = 333,
 	Script = [[ bonus bMdef,15; ]]
 },
 [ "Ayothaya_Hat" ] = {
@@ -57460,7 +57460,7 @@ item_db = {
 		[ Job.Alchemist ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 334,
+	SpriteId = 334,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bAddRace,RC_DemiPlayer,5;
@@ -57475,7 +57475,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 335,
+	SpriteId = 335,
 	Script = [[
 		bonus bInt,1;
 		bonus bMatkRate,3;
@@ -57491,7 +57491,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 336,
+	SpriteId = 336,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57513,7 +57513,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 35,
 	Refine = false,
-	ViewSprite = 337,
+	SpriteId = 337,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57538,7 +57538,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 338,
+	SpriteId = 338,
 	Script = [[ bonus2 bSubEle,Ele_Water,3; ]]
 },
 [ "Fisherman_Hat" ] = {
@@ -57550,7 +57550,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 339,
+	SpriteId = 339,
 	Script = [[ bonus3 bAutoSpell,WZ_WATERBALL,3,50; ]]
 },
 [ "Poring_Party_Hat" ] = {
@@ -57559,7 +57559,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 20,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 340,
+	SpriteId = 340,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57579,7 +57579,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 341,
+	SpriteId = 341,
 	Script = [[
 		bonus bLuk,3;
 		bonus2 bAddRaceTolerance,RC_Angel, 5;
@@ -57600,7 +57600,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 261,
+	SpriteId = 261,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57623,7 +57623,7 @@ item_db = {
 	Weight = 500,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 342,
+	SpriteId = 342,
 	Script = [[
 		bonus2 bAddMonsterDropItem,518,300;
 	]]
@@ -57637,7 +57637,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 24,
-	ViewSprite = 343,
+	SpriteId = 343,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57660,7 +57660,7 @@ item_db = {
 	Def = 14,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 165,
+	SpriteId = 165,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57681,7 +57681,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 344,
+	SpriteId = 344,
 	Script = [[
 		bonus bDex,3;
 		bonus4 bAutoSpellWhenHit,CR_GRANDCROSS,3,30,0;
@@ -57697,7 +57697,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 345,
+	SpriteId = 345,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRace, RC_All, 2;
@@ -57713,7 +57713,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 78,
+	SpriteId = 78,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57738,7 +57738,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 178,
+	SpriteId = 178,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57762,7 +57762,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 152,
+	SpriteId = 152,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57783,7 +57783,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 187,
+	SpriteId = 187,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57811,7 +57811,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 142,
+	SpriteId = 142,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57840,7 +57840,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 105,
+	SpriteId = 105,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57865,7 +57865,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 346,
+	SpriteId = 346,
 	Script = [[ bonus bFlee2,3; ]]
 },
 [ "Radio_Antenna" ] = {
@@ -57876,7 +57876,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 347,
+	SpriteId = 347,
 	Script = [[
 		bonus bMdef,5;
 		bonus bCritical,5;
@@ -57893,7 +57893,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 348,
+	SpriteId = 348,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,2;
@@ -57907,7 +57907,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 349,
+	SpriteId = 349,
 	Script = [[
 		bonus bLuk,1;
 		bonus bUnbreakableHelm,0;
@@ -57920,7 +57920,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 350,
+	SpriteId = 350,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57939,7 +57939,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 351,
+	SpriteId = 351,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57958,7 +57958,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 352,
+	SpriteId = 352,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57977,7 +57977,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 353,
+	SpriteId = 353,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -57999,7 +57999,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 354,
+	SpriteId = 354,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
 		bonus4 bAutoSpellWhenHit,AL_ANGELUS,10,20,0;
@@ -58015,7 +58015,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 355,
+	SpriteId = 355,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
 		bonus bMagicHPGainValue,50;
@@ -58031,7 +58031,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 356,
+	SpriteId = 356,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
 		autobonus "{ bonus bBaseAtk,50; }",20,10000,0,"{ specialeffect(EF_POTION_BERSERK, AREA, playerattached()); }";
@@ -58047,7 +58047,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 357,
+	SpriteId = 357,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
 		bonus2 bAddItemHealRate,504,10;
@@ -58064,7 +58064,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 358,
+	SpriteId = 358,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
 		autobonus "{ bonus bAspdRate,5; }",20,30000,0,"{ specialeffect(EF_HASTEUP, AREA, playerattached()); }";
@@ -58080,7 +58080,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 359,
+	SpriteId = 359,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
 		bonus2 bAddRace,RC_Undead,5;
@@ -58094,7 +58094,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 360,
+	SpriteId = 360,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -58119,7 +58119,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 98,
+	SpriteId = 98,
 },
 [ "Big_Sis_Ribbon_" ] = {
 	Id = 5348,
@@ -58134,7 +58134,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 28,
+	SpriteId = 28,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Boys_Cap_" ] = {
@@ -58150,7 +58150,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 102,
+	SpriteId = 102,
 },
 [ "Pirate_Bandana_" ] = {
 	Id = 5350,
@@ -58165,7 +58165,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 74,
+	SpriteId = 74,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Sunflower_" ] = {
@@ -58178,7 +58178,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 37,
+	SpriteId = 37,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Insect,10; ]]
 },
 [ "Poporing_Cap" ] = {
@@ -58194,7 +58194,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 38,
-	ViewSprite = 361,
+	SpriteId = 361,
 },
 [ "Helm_Of_Sun_" ] = {
 	Id = 5353,
@@ -58219,7 +58219,7 @@ item_db = {
 		[ Job.Bard ] = true,
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 138,
+	SpriteId = 138,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,2;
@@ -58234,7 +58234,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 362,
+	SpriteId = 362,
 	Script = [[ bonus bVariableCastrate,-5; ]]
 },
 [ "Muslim_Hat_F" ] = {
@@ -58245,7 +58245,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 363,
+	SpriteId = 363,
 	Script = [[ bonus bVariableCastrate,-5; ]]
 },
 [ "Pumpkin_Hat_H" ] = {
@@ -58256,7 +58256,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 206,
+	SpriteId = 206,
 	Script = [[
 		bonus2 bSubRace,RC_Demon,5;
 		bonus2 bAddRace,RC_Demon,5;
@@ -58271,7 +58271,7 @@ item_db = {
 	Def = 10,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 365,
+	SpriteId = 365,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -58296,7 +58296,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 366,
+	SpriteId = 366,
 	Script = [[
 		bonus bAgi,1;
 		bonus bMdef,2;
@@ -58313,7 +58313,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 367,
+	SpriteId = 367,
 	Script = [[
 		bonus bDex,1;
 		bonus bLongAtkRate,7;
@@ -58329,7 +58329,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 368,
+	SpriteId = 368,
 	Script = [[
 		bonus bFlee,10;
 		bonus bCritical,3;
@@ -58346,7 +58346,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bBaseAtk,5;
@@ -58361,7 +58361,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 370,
+	SpriteId = 370,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMatkRate,1;
@@ -58388,7 +58388,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 371,
+	SpriteId = 371,
 	Script = [[
 		bonus2 bSubRace,RC_DemiPlayer,-10;
 		bonus2 bSubRace,RC_Boss,10;
@@ -58404,7 +58404,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 150,
-	ViewSprite = 372,
+	SpriteId = 372,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -58422,7 +58422,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 373,
+	SpriteId = 373,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -58439,7 +58439,7 @@ item_db = {
 	Weight = 200,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 374,
+	SpriteId = 374,
 	Script = [[ bonus bAllStats,5; ]]
 },
 [ "Hyegun_Hat" ] = {
@@ -58453,7 +58453,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 375,
+	SpriteId = 375,
 	Script = [[
 		bonus bMdef,3;
 		bonus2 bAddRaceTolerance,RC_Demon,10;
@@ -58467,7 +58467,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 38,
+	SpriteId = 38,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -58487,7 +58487,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 39,
+	SpriteId = 39,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -58507,7 +58507,7 @@ item_db = {
 	Weight = 200,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 376,
+	SpriteId = 376,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Hat_Of_Judge" ] = {
@@ -58518,7 +58518,7 @@ item_db = {
 	Weight = 300,
 	Def = 2,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 377,
+	SpriteId = 377,
 	Script = [[
 		bonus bLuk,1;
 		bonus bMaxSP,30;
@@ -58532,7 +58532,7 @@ item_db = {
 	Weight = 500,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 378,
+	SpriteId = 378,
 	Script = [[
 		bonus bInt,1;
 		bonus bDelayrate,-3;
@@ -58550,7 +58550,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 379,
+	SpriteId = 379,
 	Script = [[
 		bonus bDex,3;
 		bonus bMdef,1;
@@ -58564,7 +58564,7 @@ item_db = {
 	Weight = 800,
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 380,
+	SpriteId = 380,
 	Script = [[
 		bonus2 bAddRace,RC_DemiPlayer,12;
 		bonus bBaseAtk,(JobLevel*2)/7;
@@ -58579,7 +58579,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 381,
+	SpriteId = 381,
 	Script = [[
 		bonus bStr,2;
 		bonus3 bAutoSpellWhenHit,BS_WEAPONPERFECT,3,10;
@@ -58594,7 +58594,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 382,
+	SpriteId = 382,
 	Script = [[
 		bonus bMaxSP,120;
 		bonus2 bAddEff2,Eff_Curse,10;
@@ -58608,7 +58608,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 383,
+	SpriteId = 383,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,2;
@@ -58621,7 +58621,7 @@ item_db = {
 	Buy = 20,
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 384,
+	SpriteId = 384,
 	Script = [[
 		bonus bAgi,3;
 		bonus3 bAutoSpellWhenHit,AL_INCAGI,5,10;
@@ -58636,7 +58636,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 385,
+	SpriteId = 385,
 	Script = [[ bonus bMatkRate,(getrefine()*1); ]]
 },
 [ "Fish_Head_Hat" ] = {
@@ -58647,7 +58647,7 @@ item_db = {
 	Weight = 400,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 386,
+	SpriteId = 386,
 	Script = [[ bonus3 bAutoSpell,SA_FROSTWEAPON,1,5; ]]
 },
 [ "Santa_Poring_Hat" ] = {
@@ -58660,7 +58660,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 387,
+	SpriteId = 387,
 	Script = [[
 		bonus bMdef,2;
 		bonus2 bAddEle,Ele_Dark,3;
@@ -58676,7 +58676,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 388,
+	SpriteId = 388,
 	Script = [[
 		bonus bVit,1;
 		skill AL_ANGELUS,1;
@@ -58697,7 +58697,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 389,
+	SpriteId = 389,
 	Script = [[
 		bonus bLuk,1;
 		bonus2 bAddRace,RC_Brute,10;
@@ -58714,7 +58714,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 390,
+	SpriteId = 390,
 	Script = [[
 		bonus bLuk,3;
 		skill WZ_ESTIMATION,1;
@@ -58730,7 +58730,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 391,
+	SpriteId = 391,
 	Script = [[ skill TF_HIDING,1;s]],
 	OnUnequipScript = [[ sc_end SC_HIDING; ]]
 },
@@ -58742,7 +58742,7 @@ item_db = {
 	Def = 7,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 228,
+	SpriteId = 228,
 	Script = [[
 		bonus bMdef,7;
 		bonus bFlee,7;
@@ -58759,7 +58759,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 392,
+	SpriteId = 392,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Snake_Head" ] = {
@@ -58772,7 +58772,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 393,
+	SpriteId = 393,
 	Script = [[
 		skill TF_DOUBLE,5;
 		bonus bDoubleRate,25;
@@ -58786,7 +58786,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 394,
+	SpriteId = 394,
 	Script = [[
 		bonus bStr,2;
 		bonus bHit,15;
@@ -58800,7 +58800,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 395,
+	SpriteId = 395,
 	Script = [[ bonus2 bResEff,Eff_Freeze,3000; ]]
 },
 [ "Toast_C" ] = {
@@ -58811,7 +58811,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 188,
+	SpriteId = 188,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -58837,7 +58837,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 396,
+	SpriteId = 396,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "Valentine_Hat" ] = {
@@ -58849,7 +58849,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 397,
+	SpriteId = 397,
 	Script = [[
 		bonus bMaxSPrate,7;
 		bonus bMaxHPrate,7;
@@ -58886,7 +58886,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 398,
+	SpriteId = 398,
 	Script = [[
 		bonus bMaxHP,100+(getrefine()*20);
 		bonus bLuk,3;
@@ -58901,7 +58901,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 399,
+	SpriteId = 399,
 	Script = [[
 		bonus bDex,1;
 		bonus bVit,1;
@@ -58915,7 +58915,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 400,
+	SpriteId = 400,
 	Script = [[
 		bonus2 bSubEle,Ele_Water,10;
 		bonus2 bExpAddRace,RC_Fish,10;
@@ -58958,7 +58958,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 85,
-	ViewSprite = 401,
+	SpriteId = 401,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bStr,2;
@@ -59028,7 +59028,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 85,
 	Refine = false,
-	ViewSprite = 402,
+	SpriteId = 402,
 	Script = [[
 		bonus bVit,3;
 		bonus3 bAutoSpellWhenHit,DC_SCREAM,5,30;
@@ -59042,7 +59042,7 @@ item_db = {
 	Weight = 200,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 403,
+	SpriteId = 403,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Black_Glasses" ] = {
@@ -59055,7 +59055,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 404,
+	SpriteId = 404,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,2;
@@ -59072,7 +59072,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 405,
+	SpriteId = 405,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bFlee2,3;
@@ -59087,7 +59087,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 406,
+	SpriteId = 406,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddMonsterDropItem,579,500;
@@ -59104,7 +59104,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 407,
+	SpriteId = 407,
 	Script = [[ bonus4 bAutoSpellWhenHit,AC_CONCENTRATION,2,7,0; ]]
 },
 [ "Filir_Hat" ] = {
@@ -59117,7 +59117,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 80,
 	Refine = false,
-	ViewSprite = 408,
+	SpriteId = 408,
 	Script = [[ bonus bShortWeaponDamageReturn,1; ]]
 },
 [ "Academy_Freshman_Hat" ] = {
@@ -59127,7 +59127,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 409,
+	SpriteId = 409,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59151,7 +59151,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 410,
+	SpriteId = 410,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59173,7 +59173,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 6,
+	SpriteId = 6,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59199,7 +59199,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 411,
+	SpriteId = 411,
 	Script = [[
 		bonus bInt,2;
 		bonus bVit,2;
@@ -59214,7 +59214,7 @@ item_db = {
 	Weight = 200,
 	Def = 6,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 412,
+	SpriteId = 412,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59238,7 +59238,7 @@ item_db = {
 	Weight = 500,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 413,
+	SpriteId = 413,
 	Script = [[ bonus bDex,2; ]]
 },
 [ "Sweet_Candy" ] = {
@@ -59250,7 +59250,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 414,
+	SpriteId = 414,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59270,7 +59270,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 415,
+	SpriteId = 415,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59290,7 +59290,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 416,
+	SpriteId = 416,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59313,7 +59313,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 417,
+	SpriteId = 417,
 	Script = [[
 		bonus bMdef,5;
 		bonus bCritical,5;
@@ -59337,7 +59337,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 18,
-	ViewSprite = 418,
+	SpriteId = 418,
 	Script = [[
 		bonus bFlee2,5;
 		skill SM_RECOVERY,3;
@@ -59354,7 +59354,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 419,
+	SpriteId = 419,
 	Script = [[
 		bonus bInt,1;
 		bonus2 bResEff,Eff_Silence,10000;
@@ -59370,7 +59370,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 420,
+	SpriteId = 420,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bAddRace, RC_All, 3;
@@ -59385,7 +59385,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 57,
+	SpriteId = 57,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bVit,1;
@@ -59407,7 +59407,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 421,
+	SpriteId = 421,
 	Script = [[
 		bonus bStr,2;
 		bonus bInt,2;
@@ -59433,7 +59433,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 422,
+	SpriteId = 422,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bInt,1;
@@ -59456,7 +59456,7 @@ item_db = {
 	Buy = 20,
 	Weight = 70,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 423,
+	SpriteId = 423,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,2;
@@ -59471,7 +59471,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 424,
+	SpriteId = 424,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.SellToNPC,
@@ -59490,7 +59490,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 425,
+	SpriteId = 425,
 },
 [ "Fanta_Grape_Can" ] = {
 	Id = 5425,
@@ -59501,7 +59501,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 426,
+	SpriteId = 426,
 },
 [ "Karada_Meguri_Tea_Hat" ] = {
 	Id = 5426,
@@ -59512,7 +59512,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 427,
+	SpriteId = 427,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "Royal_Milk_Tea_Hat" ] = {
@@ -59524,7 +59524,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 428,
+	SpriteId = 428,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Bread_Bag1" ] = {
@@ -59534,7 +59534,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 429,
+	SpriteId = 429,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59555,7 +59555,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 430,
+	SpriteId = 430,
 	Script = [[
 		bonus bHPrecovRate,5;
 		bonus bSPrecovRate,5;
@@ -59570,7 +59570,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 431,
+	SpriteId = 431,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -59588,7 +59588,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 432,
+	SpriteId = 432,
 	Script = [[
 		bonus3 bAutoSpell,MC_LOUD,1,30;
 		bonus bAspdRate,5;
@@ -59601,7 +59601,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 433,
+	SpriteId = 433,
 	Script = [[
 		if (gettime(GETTIME_MONTH) == SEPTEMBER && gettime(GETTIME_DAYOFMONTH) >= 10 && gettime(GETTIME_DAYOFMONTH) <= 24)
 			bonus bAllStats,4;
@@ -59614,7 +59614,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 434,
+	SpriteId = 434,
 },
 [ "Cola_Can" ] = {
 	Id = 5434,
@@ -59625,7 +59625,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 435,
+	SpriteId = 435,
 },
 [ "Coke_Hat" ] = {
 	Id = 5435,
@@ -59637,7 +59637,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 436,
+	SpriteId = 436,
 	Script = [[
 		bonus bInt,1;
 		bonus bMaxSP,80;
@@ -59656,7 +59656,7 @@ item_db = {
 	Weight = 200,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 437,
+	SpriteId = 437,
 	Script = [[
 		bonus bLuk,3;
 		bonus bMdef,2;
@@ -59671,7 +59671,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 438,
+	SpriteId = 438,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,1;
@@ -59691,7 +59691,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 439,
+	SpriteId = 439,
 	Script = [[ bonus bMaxSP,20; ]]
 },
 [ "Fillet_Red" ] = {
@@ -59707,7 +59707,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 440,
+	SpriteId = 440,
 	Script = [[ bonus bMaxSP,20; ]]
 },
 [ "Fillet_Blue" ] = {
@@ -59723,7 +59723,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 441,
+	SpriteId = 441,
 	Script = [[ bonus bMaxSP,20; ]]
 },
 [ "Fillet_White" ] = {
@@ -59739,7 +59739,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 442,
+	SpriteId = 442,
 	Script = [[ bonus bMaxSP,20; ]]
 },
 [ "Necktie" ] = {
@@ -59752,7 +59752,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 443,
+	SpriteId = 443,
 	Script = [[
 		bonus bVit,1;
 		bonus bHit,-5;
@@ -59769,7 +59769,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 444,
+	SpriteId = 444,
 	Script = [[
 		bonus bMdef,2;
 		bonus4 bAutoSpellWhenHit,PR_STRECOVERY,1,20,0;
@@ -59782,7 +59782,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 445,
+	SpriteId = 445,
 	Script = [[ bonus bCritical,6; ]]
 },
 [ "Candy_Cane_In_The_Mouth" ] = {
@@ -59793,7 +59793,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 446,
+	SpriteId = 446,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMaxSP,5;
@@ -59807,7 +59807,7 @@ item_db = {
 	Weight = 200,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 447,
+	SpriteId = 447,
 	Script = [[
 		bonus bFlee,5;
 		bonus bFlee2,3;
@@ -59822,7 +59822,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 448,
+	SpriteId = 448,
 	Script = [[
 		bonus bMdef,1;
 		bonus2 bAddRace,RC_Insect,12;
@@ -59837,7 +59837,7 @@ item_db = {
 	Weight = 300,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 449,
+	SpriteId = 449,
 	Script = [[ skill RG_GRAFFITI,1; ]]
 },
 [ "Solo_Play_Box2" ] = {
@@ -59848,7 +59848,7 @@ item_db = {
 	Weight = 300,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 450,
+	SpriteId = 450,
 	Script = [[ skill RG_GRAFFITI,1; ]]
 },
 [ "Sun_Cap" ] = {
@@ -59863,7 +59863,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 451,
+	SpriteId = 451,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59884,7 +59884,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 452,
+	SpriteId = 452,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59910,7 +59910,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 453,
+	SpriteId = 453,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59936,7 +59936,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 454,
+	SpriteId = 454,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -59961,7 +59961,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 234,
+	SpriteId = 234,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -59978,7 +59978,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 238,
+	SpriteId = 238,
 	Script = [[
 		bonus bInt,1;
 		bonus3 bAutoSpell,AL_HEAL,5,50;
@@ -59992,7 +59992,7 @@ item_db = {
 	Buy = 20,
 	Weight = 200,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 315,
+	SpriteId = 315,
 	Script = [[
 		bonus bVit,5;
 		bonus bHPrecovRate,20;
@@ -60008,7 +60008,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 455,
+	SpriteId = 455,
 	Script = [[
 		bonus bAgi,3;
 		bonus bBaseAtk,5;
@@ -60027,7 +60027,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 456,
+	SpriteId = 456,
 	Script = [[
 		bonus bMaxHPrate,5;
 		bonus bMaxSPrate,5;
@@ -60040,7 +60040,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 249,
+	SpriteId = 249,
 	Script = [[
 		bonus bDex,1;
 		bonus bFlee,2;
@@ -60055,7 +60055,7 @@ item_db = {
 	Def = 14,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 457,
+	SpriteId = 457,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60079,7 +60079,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 458,
+	SpriteId = 458,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60102,7 +60102,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 459,
+	SpriteId = 459,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60127,7 +60127,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 460,
+	SpriteId = 460,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60152,7 +60152,7 @@ item_db = {
 	Buy = 20,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 461,
+	SpriteId = 461,
 	Script = [[
 		bonus bInt,2;
 		skill PR_MAGNIFICAT,3;
@@ -60168,7 +60168,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 462,
+	SpriteId = 462,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,5;
@@ -60185,7 +60185,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 463,
+	SpriteId = 463,
 	Script = [[
 		bonus bAgi,2;
 		skill AL_TELEPORT,1;
@@ -60200,7 +60200,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 464,
+	SpriteId = 464,
 	Script = [[
 		bonus bDex,2;
 		bonus bInt,2;
@@ -60218,7 +60218,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 465,
+	SpriteId = 465,
 	Script = [[
 		bonus bDelayrate,-5;
 		bonus bMdef,2;
@@ -60235,7 +60235,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 466,
+	SpriteId = 466,
 	Script = [[
 		bonus bStr,2;
 		bonus3 bAutoSpellWhenHit,BS_ADRENALINE,1,7;
@@ -60251,7 +60251,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 467,
+	SpriteId = 467,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bDex,1;
@@ -60268,7 +60268,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 468,
+	SpriteId = 468,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bSubEle,Ele_Water,3;
@@ -60284,7 +60284,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 469,
+	SpriteId = 469,
 	Script = [[ bonus3 bAddMonsterDropItem,554,RC_DemiPlayer,200; ]]
 },
 [ "Forceps_Hairpin" ] = {
@@ -60296,7 +60296,7 @@ item_db = {
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 470,
+	SpriteId = 470,
 	Script = [[
 		bonus3 bAutoSpellWhenHit,MG_COLDBOLT,1,30;
 		bonus3 bAddMonsterDropItem,991,RC_Fish,100;
@@ -60312,7 +60312,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 471,
+	SpriteId = 471,
 },
 [ "Cube_Mask" ] = {
 	Id = 5475,
@@ -60322,7 +60322,7 @@ item_db = {
 	Weight = 100,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 472,
+	SpriteId = 472,
 },
 [ "Hairband_Of_Grandpeco" ] = {
 	Id = 5476,
@@ -60332,7 +60332,7 @@ item_db = {
 	Weight = 800,
 	Def = 5,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 473,
+	SpriteId = 473,
 	Script = [[
 		bonus bStr,2;
 		bonus bMaxHPrate,-10;
@@ -60349,7 +60349,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 474,
+	SpriteId = 474,
 },
 [ "Classic_Hat" ] = {
 	Id = 5478,
@@ -60359,7 +60359,7 @@ item_db = {
 	Weight = 500,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 475,
+	SpriteId = 475,
 	Script = [[
 		bonus bStr,2;
 		bonus bMaxHP,300;
@@ -60373,7 +60373,7 @@ item_db = {
 	Weight = 300,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 476,
+	SpriteId = 476,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -60391,7 +60391,7 @@ item_db = {
 	Weight = 1000,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 477,
+	SpriteId = 477,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -60409,7 +60409,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 478,
+	SpriteId = 478,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -60427,7 +60427,7 @@ item_db = {
 	Weight = 3000,
 	Def = 5,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 479,
+	SpriteId = 479,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -60442,7 +60442,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 480,
+	SpriteId = 480,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -60461,7 +60461,7 @@ item_db = {
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 482,
+	SpriteId = 482,
 	Script = [[
 		bonus bStr,5;
 		bonus bInt,5;
@@ -60480,7 +60480,7 @@ item_db = {
 	Def = 3,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 60,
-	ViewSprite = 483,
+	SpriteId = 483,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Brute,5;
 		bonus2 bAddRace,RC_Brute,5;
@@ -60495,7 +60495,7 @@ item_db = {
 	Weight = 300,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 395,
+	SpriteId = 395,
 	Script = [[ bonus bAllStats,2; ]]
 },
 [ "J_Poringcake_Hat" ] = {
@@ -60506,7 +60506,7 @@ item_db = {
 	Weight = 500,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 417,
+	SpriteId = 417,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "J_Twin_Santahat" ] = {
@@ -60517,7 +60517,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 390,
+	SpriteId = 390,
 	Script = [[
 		bonus bLuk,1;
 		bonus bMdef,1;
@@ -60530,7 +60530,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 484,
+	SpriteId = 484,
 	Script = [[ bonus bDex,2; ]]
 },
 [ "Anubis_Helm" ] = {
@@ -60542,7 +60542,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 65,
 	Refine = false,
-	ViewSprite = 485,
+	SpriteId = 485,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,5;
@@ -60560,7 +60560,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 486,
+	SpriteId = 486,
 	Script = [[
 		bonus bStr,2;
 		bonus2 bSubEle,Ele_Fire,10;
@@ -60577,7 +60577,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 102,
+	SpriteId = 102,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60604,7 +60604,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 254,
+	SpriteId = 254,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60632,7 +60632,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead },
 	Refine = false,
-	ViewSprite = 137,
+	SpriteId = 137,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -60654,7 +60654,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 493,
+	SpriteId = 493,
 	Script = [[
 		bonus bLuk,1;
 		bonus bAgi,1;
@@ -60676,7 +60676,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 494,
+	SpriteId = 494,
 	Script = [[ bonus bLuk,4; ]]
 },
 [ "King_Tiger_Doll_Hat" ] = {
@@ -60692,7 +60692,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 495,
+	SpriteId = 495,
 	Script = [[
 		bonus bDex,2;
 		bonus bStr,2;
@@ -60708,7 +60708,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 20,
-	ViewSprite = 490,
+	SpriteId = 490,
 	Script = [[
 		bonus bVit,5;
 		bonus bFlee,10;
@@ -60722,7 +60722,7 @@ item_db = {
 	Weight = 600,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 487,
+	SpriteId = 487,
 	Script = [[ skill SM_PROVOKE,1; ]]
 },
 [ "Icecream_Hat" ] = {
@@ -60734,7 +60734,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 488,
+	SpriteId = 488,
 	Script = [[
 		bonus bMdef,3;
 		skill MG_FROSTDIVER,3;
@@ -60750,7 +60750,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 496,
+	SpriteId = 496,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRace2,RC2_Ninja,5;
@@ -60764,7 +60764,7 @@ item_db = {
 	Weight = 500,
 	Def = 6,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 491,
+	SpriteId = 491,
 	Script = [[
 		bonus bMdef,3;
 		bonus bInt,3;
@@ -60778,7 +60778,7 @@ item_db = {
 	Weight = 800,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 497,
+	SpriteId = 497,
 	Script = [[
 		bonus bDex,2;
 		bonus bAgi,2;
@@ -60798,7 +60798,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 489,
+	SpriteId = 489,
 	Script = [[ bonus bMdef,10; ]]
 },
 [ "Asara_Fairy_Hat" ] = {
@@ -60809,7 +60809,7 @@ item_db = {
 	Def = 2,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 492,
+	SpriteId = 492,
 	Script = [[
 		skill DC_DONTFORGETME,1;
 		bonus bDex,2;
@@ -60824,7 +60824,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 501,
+	SpriteId = 501,
 	Script = [[
 		bonus bBaseAtk,5;
 		bonus bMatkRate,5;
@@ -60838,7 +60838,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 502,
+	SpriteId = 502,
 	Script = [[
 		bonus bBaseAtk,5;
 		bonus bMatkRate,5;
@@ -60852,7 +60852,7 @@ item_db = {
 	Weight = 500,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 503,
+	SpriteId = 503,
 	Script = [[
 		bonus bStr,1;
 		bonus bAgi,2;
@@ -60869,7 +60869,7 @@ item_db = {
 	Weight = 1000,
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 504,
+	SpriteId = 504,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,1;
@@ -60886,7 +60886,7 @@ item_db = {
 	Buy = 20,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 507,
+	SpriteId = 507,
 	Script = [[
 		bonus bMdef,3;
 		bonus bFlee,3;
@@ -60903,7 +60903,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 508,
+	SpriteId = 508,
 	Script = [[ bonus bSPrecovRate,8; ]]
 },
 [ "Aquarius_Diadem" ] = {
@@ -60915,7 +60915,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 509,
+	SpriteId = 509,
 	Script = [[
 		bonus bStr,2;
 		bonus bFlee,10;
@@ -60935,7 +60935,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 510,
+	SpriteId = 510,
 	Script = [[
 		bonus bStr,2;
 		bonus bFlee,10;
@@ -60955,7 +60955,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 511,
+	SpriteId = 511,
 	Script = [[
 		bonus bInt,2;
 		bonus bMdef,5;
@@ -60975,7 +60975,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 512,
+	SpriteId = 512,
 	Script = [[
 		bonus bInt,2;
 		bonus bMdef,5;
@@ -61001,7 +61001,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 23,
+	SpriteId = 23,
 	Script = [[
 		bonus bDex,1;
 		bonus bLongAtkRate,3;
@@ -61021,7 +61021,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 23,
+	SpriteId = 23,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "L_Magestic_Goat2" ] = {
@@ -61033,7 +61033,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 513,
+	SpriteId = 513,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,12;
 		bonus bBaseAtk,(JobLevel*2)/7;
@@ -61048,7 +61048,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 514,
+	SpriteId = 514,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Rabbit_Earplug" ] = {
@@ -61059,7 +61059,7 @@ item_db = {
 	Weight = 400,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 515,
+	SpriteId = 515,
 	Script = [[
 		bonus2 bAddRace, RC_All, 4;
 		bonus bMatkRate,4;
@@ -61071,7 +61071,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 194,
+	SpriteId = 194,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -61096,7 +61096,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 516,
+	SpriteId = 516,
 },
 [ "Sakura_Mist_Hat" ] = {
 	Id = 5523,
@@ -61107,7 +61107,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 517,
+	SpriteId = 517,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "Sakura_Milk_Tea_Hat" ] = {
@@ -61119,7 +61119,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 518,
+	SpriteId = 518,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "First_Leaf_Tea_Hat" ] = {
@@ -61131,7 +61131,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 519,
+	SpriteId = 519,
 	Script = [[
 		bonus bMaxHP,80;
 		bonus bMaxSP,20;
@@ -61147,7 +61147,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 520,
+	SpriteId = 520,
 	Script = [[
 		bonus bAgi,2;
 		bonus bFlee,3;
@@ -61163,7 +61163,7 @@ item_db = {
 	Weight = 300,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 521,
+	SpriteId = 521,
 	Script = [[
 		bonus bLuk,3;
 		bonus bMdef,2;
@@ -61186,7 +61186,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 522,
+	SpriteId = 522,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Evils_Bone_Hat" ] = {
@@ -61198,7 +61198,7 @@ item_db = {
 	Def = 12,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 523,
+	SpriteId = 523,
 	Script = [[
 		bonus bMdef,2;
 		bonus bInt,2;
@@ -61218,7 +61218,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 524,
+	SpriteId = 524,
 },
 [ "B_Dragon_Hat" ] = {
 	Id = 5531,
@@ -61229,7 +61229,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 525,
+	SpriteId = 525,
 },
 [ "Pirate_Dagger_J" ] = {
 	Id = 5532,
@@ -61240,7 +61240,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 327,
+	SpriteId = 327,
 	Script = [[ bonus bShortWeaponDamageReturn,1; ]]
 },
 [ "Emperor_Wreath_J" ] = {
@@ -61253,7 +61253,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 80,
-	ViewSprite = 261,
+	SpriteId = 261,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Fox_Hat_J" ] = {
@@ -61266,7 +61266,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 403,
+	SpriteId = 403,
 	Script = [[
 		bonus bAgi,1;
 		bonus bUnbreakableHelm,0;
@@ -61280,7 +61280,7 @@ item_db = {
 	Weight = 500,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 529,
+	SpriteId = 529,
 	Script = [[
 		bonus bVit,1;
 		bonus bDex,1;
@@ -61297,7 +61297,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 526,
+	SpriteId = 526,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -61328,7 +61328,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 527,
+	SpriteId = 527,
 	Script = [[
 		bonus bAgi,3;
 		bonus2 bAddRace,RC_Plant,10;
@@ -61344,7 +61344,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 45,
-	ViewSprite = 528,
+	SpriteId = 528,
 	Script = [[
 		bonus bDex,3;
 		bonus bCritical,5;
@@ -61360,7 +61360,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 25,
-	ViewSprite = 530,
+	SpriteId = 530,
 	Script = [[
 		bonus bMdef,2;
 		skill MC_LOUD,1;
@@ -61376,7 +61376,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 18,
+	SpriteId = 18,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -61393,7 +61393,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 18,
+	SpriteId = 18,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -61410,7 +61410,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 18,
+	SpriteId = 18,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -61427,7 +61427,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 18,
+	SpriteId = 18,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -61440,7 +61440,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 240,
+	SpriteId = 240,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -61463,7 +61463,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 531,
+	SpriteId = 531,
 	Script = [[
 		bonus bVit,2;
 		bonus2 bSubEle,Ele_Fire,5;
@@ -61482,7 +61482,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 532,
+	SpriteId = 532,
 	Script = [[
 		bonus bLuk,2;
 		bonus bVit,2;
@@ -61502,7 +61502,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 533,
+	SpriteId = 533,
 	Script = [[
 		bonus2 bSkillAtk,WZ_HEAVENDRIVE,15+getequiprefinerycnt(EQI_HAND_R);
 		bonus2 bSkillAtk,WZ_EARTHSPIKE,15+getequiprefinerycnt(EQI_HAND_R);
@@ -61519,7 +61519,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 534,
+	SpriteId = 534,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,1;
@@ -61534,7 +61534,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 535,
+	SpriteId = 535,
 	Script = [[
 		bonus bDex,2;
 		bonus bDelayrate,-2;
@@ -61554,7 +61554,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 536,
+	SpriteId = 536,
 	Script = [[
 		bonus bAgi,2;
 		bonus bDex,2;
@@ -61573,7 +61573,7 @@ item_db = {
 	Buy = 20,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 537,
+	SpriteId = 537,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -61591,7 +61591,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 93,
+	SpriteId = 93,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,3;
@@ -61605,7 +61605,7 @@ item_db = {
 	Def = 14,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[
 		bonus bMdef,4;
 		bonus2 bSubRace,RC_DemiPlayer,9;
@@ -61619,7 +61619,7 @@ item_db = {
 	Weight = 200,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 538,
+	SpriteId = 538,
 	Script = [[
 		bonus bMdef,3;
 		bonus3 bAutoSpell,SM_PROVOKE,5,10;
@@ -61634,7 +61634,7 @@ item_db = {
 	Weight = 100,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 539,
+	SpriteId = 539,
 	Script = [[
 		bonus bAgi,2;
 		bonus3 bAutoSpellWhenHit,AL_HEAL,3,10;
@@ -61648,7 +61648,7 @@ item_db = {
 	Weight = 500,
 	Def = 5,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 540,
+	SpriteId = 540,
 	Script = [[
 		bonus bInt,1;
 		bonus3 bAutoSpell,WZ_FROSTNOVA,1,30;
@@ -61668,7 +61668,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 541,
+	SpriteId = 541,
 	Script = [[ bonus bAgi,3; ]]
 },
 [ "Saci_Hat" ] = {
@@ -61681,7 +61681,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 542,
+	SpriteId = 542,
 	Script = [[ bonus3 bAddMonsterDropItem,510,RC_Plant,500; ]]
 },
 [ "Piece_Of_White_Cloth_E" ] = {
@@ -61690,7 +61690,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 5,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 543,
+	SpriteId = 543,
 	Script = [[
 		bonus2 bAddRace, RC_All, 6;
 		bonus bMatkRate,6;
@@ -61709,7 +61709,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 75,
-	ViewSprite = 322,
+	SpriteId = 322,
 	Script = [[
 		bonus bMaxHP,100;
 		bonus bNoKnockback,0;
@@ -61730,7 +61730,7 @@ item_db = {
 	Weight = 800,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 497,
+	SpriteId = 497,
 	Script = [[
 		bonus bInt,1;
 		bonus bMaxSP,50;
@@ -61749,7 +61749,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 489,
+	SpriteId = 489,
 	Script = [[
 		bonus bMdef,10;
 		bonus bVariableCastrate,-3;
@@ -61766,7 +61766,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 547,
+	SpriteId = 547,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus3 bAutoSpell,PR_LEXAETERNA,1,15;
@@ -61782,7 +61782,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 85,
-	ViewSprite = 544,
+	SpriteId = 544,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,10;
@@ -61798,7 +61798,7 @@ item_db = {
 	Def = 5,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 545,
+	SpriteId = 545,
 	Script = [[ bonus2 bAddRace,RC_DemiPlayer,10; ]]
 },
 [ "Tiger_Arhat_Mask" ] = {
@@ -61809,7 +61809,7 @@ item_db = {
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 546,
+	SpriteId = 546,
 	Script = [[ bonus2 bAddRace,RC_DemiPlayer,2; ]]
 },
 [ "Bright_Fury" ] = {
@@ -61821,7 +61821,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 548,
+	SpriteId = 548,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bAddRace, RC_All, 2;
@@ -61837,7 +61837,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 549,
+	SpriteId = 549,
 	Script = [[
 		bonus bInt,2;
 		bonus bDelayrate,-3;
@@ -61852,7 +61852,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 550,
+	SpriteId = 550,
 	Script = [[
 		bonus bDex,2;
 		bonus bAgi,2;
@@ -61873,7 +61873,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 551,
+	SpriteId = 551,
 	Script = [[
 		bonus bAgi,2;
 		bonus bBaseAtk,2;
@@ -61894,7 +61894,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 552,
+	SpriteId = 552,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Savage_Baby_Hat" ] = {
@@ -61906,7 +61906,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 553,
+	SpriteId = 553,
 	Script = [[
 		bonus bVit,2;
 		bonus2 bAddEff,Eff_Stun,500;
@@ -61922,7 +61922,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 554,
+	SpriteId = 554,
 	Script = [[
 		bonus bAddMonsterDropChainItem,ITMCHAIN_GEM;
 		bonus3 bAutoSpell,MC_MAMMONITE,5,70;
@@ -61937,7 +61937,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 555,
+	SpriteId = 555,
 	Script = [[
 		bonus bUnbreakableHelm, 0;
 		bonus bHitRate, 3;
@@ -61954,7 +61954,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 556,
+	SpriteId = 556,
 },
 [ "Japan_Winecup" ] = {
 	Id = 5576,
@@ -61964,7 +61964,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 557,
+	SpriteId = 557,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Dark_Knight_MaskB" ] = {
@@ -61975,7 +61975,7 @@ item_db = {
 	Weight = 3000,
 	Def = 5,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 479,
+	SpriteId = 479,
 	NoTrade = {
 		ItemTradeMask.Drop,
 	},
@@ -61992,7 +61992,7 @@ item_db = {
 	Weight = 10,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 236,
+	SpriteId = 236,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "Wanderers_Sakkat" ] = {
@@ -62004,7 +62004,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 558,
+	SpriteId = 558,
 	Script = [[
 		bonus bAgi,2;
 		bonus bFlee,3;
@@ -62027,7 +62027,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 559,
+	SpriteId = 559,
 	Script = [[
 		bonus2 bAddRace, RC_DemiPlayer, 5;
 		bonus2 bAddRaceTolerance, RC_DemiPlayer, 5;
@@ -62042,7 +62042,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 560,
+	SpriteId = 560,
 	Script = [[
 		bonus bInt,2;
 		bonus2 bSubEle,Ele_Water,5;
@@ -62062,7 +62062,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 561,
+	SpriteId = 561,
 	Script = [[
 		bonus bStr,2;
 		bonus2 bSubEle,Ele_Water,5;
@@ -62080,7 +62080,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 12,
-	ViewSprite = 465,
+	SpriteId = 465,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62098,7 +62098,7 @@ item_db = {
 	Weight = 400,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 562,
+	SpriteId = 562,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,3;
 		bonus2 bHPDrainRate,3,15;
@@ -62114,7 +62114,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 564,
+	SpriteId = 564,
 	Script = [[
 		bonus2 bSubEle,Ele_Neutral,3;
 		bonus bHit,5;
@@ -62130,7 +62130,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 563,
+	SpriteId = 563,
 },
 [ "Mosquito_Coil_1Use" ] = {
 	Id = 5587,
@@ -62138,7 +62138,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 563,
+	SpriteId = 563,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62168,7 +62168,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 565,
+	SpriteId = 565,
 	Script = [[
 		bonus bStr,2;
 		bonus2 bSubEle,Ele_Fire,5;
@@ -62187,7 +62187,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 566,
+	SpriteId = 566,
 	Script = [[
 		bonus bDex,2;
 		bonus2 bSubEle,Ele_Fire,5;
@@ -62206,7 +62206,7 @@ item_db = {
 	Weight = 200,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 417,
+	SpriteId = 417,
 	Script = [[
 		bonus bMdef,5;
 		bonus bLuk,3;
@@ -62225,7 +62225,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 567,
+	SpriteId = 567,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMaxSP,30;
@@ -62240,7 +62240,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 568,
+	SpriteId = 568,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62272,7 +62272,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 549,
+	SpriteId = 549,
 	Script = [[
 		bonus bBaseAtk,10;
 		bonus bMatk,10;
@@ -62299,7 +62299,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 569,
+	SpriteId = 569,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bHPRegenRate,1,10000;
@@ -62315,7 +62315,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 570,
+	SpriteId = 570,
 	Script = [[ bonus bMdef,2; ]]
 },
 [ "4Leaf_Clover_In_Mouth" ] = {
@@ -62326,7 +62326,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 571,
+	SpriteId = 571,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62351,7 +62351,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 572,
+	SpriteId = 572,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62375,7 +62375,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 573,
+	SpriteId = 573,
 	Script = [[
 		bonus bDex,2;
 		bonus bAspdRate,1;
@@ -62394,7 +62394,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 574,
+	SpriteId = 574,
 	Script = [[
 		bonus bAspdRate,3;
 		bonus2 bSubEle,Ele_Earth,5;
@@ -62409,7 +62409,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 575,
+	SpriteId = 575,
 	Script = [[
 		bonus bAllStats,3;
 		bonus bMdef,1;
@@ -62423,7 +62423,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 576,
+	SpriteId = 576,
 	Script = [[
 		bonus bLuk,3;
 		bonus bMdef,1;
@@ -62439,7 +62439,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 530,
+	SpriteId = 530,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "RTC_Winner_Only" ] = {
@@ -62450,7 +62450,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 577,
+	SpriteId = 577,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62475,7 +62475,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 578,
+	SpriteId = 578,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62500,7 +62500,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 579,
+	SpriteId = 579,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -62527,7 +62527,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 3,
-	ViewSprite = 580,
+	SpriteId = 580,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Lyria_Doll_Hat" ] = {
@@ -62539,7 +62539,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 581,
+	SpriteId = 581,
 	Script = [[
 		bonus bMaxHP,500;
 		bonus2 bSubRace,RC_DemiPlayer,5;
@@ -62554,7 +62554,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 582,
+	SpriteId = 582,
 	Script = [[
 		bonus bMaxHP,80;
 		bonus2 bSubRace,RC_DemiPlayer,5;
@@ -62571,7 +62571,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 583,
+	SpriteId = 583,
 	Script = [[
 		bonus bLuk,3;
 		bonus bMdef,4;
@@ -62586,7 +62586,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 584,
+	SpriteId = 584,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,1;
@@ -62600,7 +62600,7 @@ item_db = {
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 585,
+	SpriteId = 585,
 	Script = [[
 		bonus bAgi,1;
 		bonus3 bAutoSpellWhenHit,AL_DECAGI,3,5;
@@ -62618,7 +62618,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 277,
+	SpriteId = 277,
 	Script = [[ bonus bMdef,15; ]]
 },
 [ "F_Flying_Angel" ] = {
@@ -62630,7 +62630,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 264,
+	SpriteId = 264,
 	Script = [[
 		bonus bInt,1;
 		bonus bAgi,1;
@@ -62648,7 +62648,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 55,
+	SpriteId = 55,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "F_Pair_Of_Red_Ribbon_" ] = {
@@ -62661,7 +62661,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 169,
+	SpriteId = 169,
 },
 [ "F_Fish_On_Head_" ] = {
 	Id = 5616,
@@ -62672,7 +62672,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 149,
+	SpriteId = 149,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -62687,7 +62687,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 210,
+	SpriteId = 210,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -62702,7 +62702,7 @@ item_db = {
 	Weight = 300,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 182,
+	SpriteId = 182,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,10;
@@ -62716,7 +62716,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "F_Magestic_Goat_TW" ] = {
@@ -62737,7 +62737,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "F_Sheep_Hat" ] = {
@@ -62754,7 +62754,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 205,
+	SpriteId = 205,
 	Script = [[ bonus bShortWeaponDamageReturn,5; ]]
 },
 [ "F_Mini_Propeller_" ] = {
@@ -62765,7 +62765,7 @@ item_db = {
 	Weight = 200,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 270,
+	SpriteId = 270,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,2;
@@ -62787,7 +62787,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 208,
+	SpriteId = 208,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "F_Red_Glasses" ] = {
@@ -62798,7 +62798,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 316,
+	SpriteId = 316,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bInt,1;
@@ -62814,7 +62814,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 311,
+	SpriteId = 311,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "F_White_Deviruchi_Cap" ] = {
@@ -62830,7 +62830,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 272,
+	SpriteId = 272,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -62847,7 +62847,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 313,
+	SpriteId = 313,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "F_Pecopeco_Hairband" ] = {
@@ -62858,7 +62858,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 314,
+	SpriteId = 314,
 },
 [ "F_Vacation_Hat" ] = {
 	Id = 5629,
@@ -62871,7 +62871,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 315,
+	SpriteId = 315,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "F_Charming_Ribbon" ] = {
@@ -62884,7 +62884,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 211,
+	SpriteId = 211,
 },
 [ "F_Water_Lily_Crown" ] = {
 	Id = 5631,
@@ -62896,7 +62896,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 312,
+	SpriteId = 312,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -62912,7 +62912,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 317,
+	SpriteId = 317,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,5;
@@ -62926,7 +62926,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 249,
+	SpriteId = 249,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "F_Kettle_Hat" ] = {
@@ -62938,7 +62938,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 318,
+	SpriteId = 318,
 },
 [ "F_Dragon_Skull" ] = {
 	Id = 5635,
@@ -62949,7 +62949,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 319,
+	SpriteId = 319,
 },
 [ "F_Ramen_Hat" ] = {
 	Id = 5636,
@@ -62959,7 +62959,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 320,
+	SpriteId = 320,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bDex,4;
@@ -62973,7 +62973,7 @@ item_db = {
 	Weight = 350,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 281,
+	SpriteId = 281,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "F_Puppy_Hat" ] = {
@@ -62986,7 +62986,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 234,
+	SpriteId = 234,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "F_Magic_Eyes" ] = {
@@ -63004,7 +63004,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 209,
+	SpriteId = 209,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "F_Jumping_Poring" ] = {
@@ -63015,7 +63015,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 349,
+	SpriteId = 349,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,1;
@@ -63031,7 +63031,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 345,
+	SpriteId = 345,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRace, RC_All, 2;
@@ -63053,7 +63053,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 286,
+	SpriteId = 286,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "F_Crescent_Helm" ] = {
@@ -63073,7 +63073,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 213,
+	SpriteId = 213,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "F_Tiger_Mask" ] = {
@@ -63086,7 +63086,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 181,
+	SpriteId = 181,
 	Script = [[ bonus bStr,3; ]]
 },
 [ "F_Fantastic_Wig" ] = {
@@ -63097,7 +63097,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 308,
+	SpriteId = 308,
 },
 [ "F_Whisper_Mask" ] = {
 	Id = 5646,
@@ -63106,7 +63106,7 @@ item_db = {
 	Buy = 20,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 321,
+	SpriteId = 321,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAgi,3;
@@ -63120,7 +63120,7 @@ item_db = {
 	Def = 9,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "F_Centimental_Flower_C" ] = {
@@ -63135,7 +63135,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 56,
+	SpriteId = 56,
 },
 [ "F_Apple_Of_Archer_C" ] = {
 	Id = 5649,
@@ -63149,7 +63149,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 72,
+	SpriteId = 72,
 	Script = [[ bonus bDex,4; ]]
 },
 [ "F_Elven_Ears_C" ] = {
@@ -63164,7 +63164,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "F_Brooch_C" ] = {
@@ -63192,7 +63192,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Darkness_Helm_J" ] = {
@@ -63205,7 +63205,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 586,
+	SpriteId = 586,
 },
 [ "Holy_Marching_Hat_J" ] = {
 	Id = 5654,
@@ -63216,7 +63216,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 587,
+	SpriteId = 587,
 	Script = [[
 		bonus bMdef,5;
 		bonus bDex,1;
@@ -63234,7 +63234,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 372,
+	SpriteId = 372,
 	Script = [[
 		bonus bInt,2;
 		bonus bAgi,2;
@@ -63252,7 +63252,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 588,
+	SpriteId = 588,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Antique_Pipe_J" ] = {
@@ -63264,7 +63264,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 383,
+	SpriteId = 383,
 },
 [ "Imp_Hat" ] = {
 	Id = 5658,
@@ -63275,7 +63275,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 589,
+	SpriteId = 589,
 	Script = [[ bonus3 bAutoSpell,SA_FLAMELAUNCHER,1,5; ]]
 },
 [ "Sleepr_Hat" ] = {
@@ -63286,7 +63286,7 @@ item_db = {
 	Weight = 400,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 590,
+	SpriteId = 590,
 	Script = [[ bonus3 bAutoSpell,SA_SEISMICWEAPON,1,5; ]]
 },
 [ "Gryphon_Hat" ] = {
@@ -63298,7 +63298,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 591,
+	SpriteId = 591,
 	Script = [[
 		bonus bAgi,2;
 		bonus3 bAutoSpell,SA_LIGHTNINGLOADER,1,5;
@@ -63311,7 +63311,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 592,
+	SpriteId = 592,
 	Script = [[
 		bonus bStr,1;
 		bonus bDex,1;
@@ -63327,7 +63327,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 593,
+	SpriteId = 593,
 	Script = [[ bonus bDex,3; ]]
 },
 [ "Libra_Diadem" ] = {
@@ -63338,7 +63338,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 594,
+	SpriteId = 594,
 	Script = [[ bonus bDex,3; ]]
 },
 [ "Filir_Wing" ] = {
@@ -63351,7 +63351,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 595,
+	SpriteId = 595,
 	Script = [[
 		bonus bAspdRate,2;
 		bonus bVariableCastrate,-2;
@@ -63366,7 +63366,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 596,
+	SpriteId = 596,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bSubEle,Ele_Neutral,3;
@@ -63390,7 +63390,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 597,
+	SpriteId = 597,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -63407,7 +63407,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
-	ViewSprite = 598,
+	SpriteId = 598,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,10;
 		bonus2 bAddRaceTolerance,RC_Undead,10;
@@ -63421,7 +63421,7 @@ item_db = {
 	Buy = 20,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 206,
+	SpriteId = 206,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -63444,7 +63444,7 @@ item_db = {
 	Weight = 300,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 340,
+	SpriteId = 340,
 },
 [ "Aniv_Star_Hat" ] = {
 	Id = 5670,
@@ -63453,7 +63453,7 @@ item_db = {
 	Buy = 20,
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 599,
+	SpriteId = 599,
 },
 [ "Drooping_Morocc_Minion" ] = {
 	Id = 5671,
@@ -63465,7 +63465,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 600,
+	SpriteId = 600,
 	Script = [[
 		bonus bSPGainValue,2;
 		bonus3 bAutoSpellWhenHit,NPC_CRITICALWOUND,2,2;
@@ -63481,7 +63481,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 601,
+	SpriteId = 601,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Home_Cherry_Blossom" ] = {
@@ -63494,7 +63494,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 602,
+	SpriteId = 602,
 	Script = [[
 		bonus bNoCastCancel,0;
 		bonus bVariableCastrate,35;
@@ -63510,7 +63510,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 603,
+	SpriteId = 603,
 },
 [ "Poring_Letter" ] = {
 	Id = 5675,
@@ -63521,7 +63521,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 604,
+	SpriteId = 604,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Scorpio_Crown" ] = {
@@ -63532,7 +63532,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 605,
+	SpriteId = 605,
 },
 [ "Scorpio_Diadem" ] = {
 	Id = 5677,
@@ -63543,7 +63543,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 606,
+	SpriteId = 606,
 	Script = [[ bonus bDex,2; ]]
 },
 [ "Notation_Hairband" ] = {
@@ -63554,7 +63554,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 607,
+	SpriteId = 607,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Engineer_Cap" ] = {
@@ -63567,7 +63567,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 608,
+	SpriteId = 608,
 },
 [ "Hawkeyes" ] = {
 	Id = 5680,
@@ -63578,7 +63578,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 609,
+	SpriteId = 609,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "F_Ribbon_Green" ] = {
@@ -63590,7 +63590,7 @@ item_db = {
 	Def = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 244,
+	SpriteId = 244,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Triangle_Rune_Cap" ] = {
@@ -63602,7 +63602,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 610,
+	SpriteId = 610,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Majestic_Goat_Repl" ] = {
@@ -63613,7 +63613,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 41,
+	SpriteId = 41,
 },
 [ "Jewel_Crown_Repl" ] = {
 	Id = 5684,
@@ -63623,7 +63623,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 88,
+	SpriteId = 88,
 },
 [ "Prontera_Army_Cap_Repl" ] = {
 	Id = 5685,
@@ -63633,7 +63633,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 48,
+	SpriteId = 48,
 },
 [ "Feather_Bonnet_Repl" ] = {
 	Id = 5686,
@@ -63643,7 +63643,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 104,
+	SpriteId = 104,
 },
 [ "Viking_Helm_Repl" ] = {
 	Id = 5687,
@@ -63653,7 +63653,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 86,
+	SpriteId = 86,
 },
 [ "2009Love_Daddy" ] = {
 	Id = 5688,
@@ -63663,7 +63663,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 611,
+	SpriteId = 611,
 	Script = [[ bonus bVit,2; ]]
 },
 [ "Queen_Ant_Diadem" ] = {
@@ -63676,7 +63676,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 75,
-	ViewSprite = 612,
+	SpriteId = 612,
 },
 [ "Red_Wing_Hat" ] = {
 	Id = 5690,
@@ -63685,7 +63685,7 @@ item_db = {
 	Buy = 20,
 	Weight = 600,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 613,
+	SpriteId = 613,
 	Script = [[
 		if (getrefine() > 6) {
 			bonus2 bAddRace, RC_All, 2;
@@ -63706,7 +63706,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 542,
+	SpriteId = 542,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bDex,1;
@@ -63721,7 +63721,7 @@ item_db = {
 	Weight = 10,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 539,
+	SpriteId = 539,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bDex,1;
@@ -63735,7 +63735,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 30,
+	SpriteId = 30,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -63756,7 +63756,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 614,
+	SpriteId = 614,
 	Script = [[
 		bonus bVit,1;
 		bonus bUnbreakableHelm,0;
@@ -63770,7 +63770,7 @@ item_db = {
 	Weight = 500,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 277,
+	SpriteId = 277,
 	Script = [[ bonus bMdef,15; ]]
 },
 [ "E_Flying_Angel" ] = {
@@ -63782,7 +63782,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 264,
+	SpriteId = 264,
 	Script = [[
 		bonus bInt,1;
 		bonus bAgi,1;
@@ -63796,7 +63796,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 55,
+	SpriteId = 55,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "E_Pair_OE_Red_Ribbon_" ] = {
@@ -63809,7 +63809,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 169,
+	SpriteId = 169,
 },
 [ "E_Fish_On_Head_" ] = {
 	Id = 5699,
@@ -63820,7 +63820,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 149,
+	SpriteId = 149,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -63835,7 +63835,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 210,
+	SpriteId = 210,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -63850,7 +63850,7 @@ item_db = {
 	Weight = 300,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 182,
+	SpriteId = 182,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,10;
@@ -63864,7 +63864,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "E_Magestic_Goat_TW" ] = {
@@ -63885,7 +63885,7 @@ item_db = {
 		[ Job.StarGladiator ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "E_Sheep_Hat" ] = {
@@ -63902,7 +63902,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 205,
+	SpriteId = 205,
 },
 [ "E_Mini_Propeller_" ] = {
 	Id = 5705,
@@ -63912,7 +63912,7 @@ item_db = {
 	Weight = 200,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 270,
+	SpriteId = 270,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,2;
@@ -63934,7 +63934,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 208,
+	SpriteId = 208,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "E_Red_Glasses" ] = {
@@ -63945,7 +63945,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 316,
+	SpriteId = 316,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bInt,1;
@@ -63961,7 +63961,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 311,
+	SpriteId = 311,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "E_White_Deviruchi_Cap" ] = {
@@ -63977,7 +63977,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 272,
+	SpriteId = 272,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -63994,7 +63994,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 313,
+	SpriteId = 313,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "E_Pecopeco_Hairband" ] = {
@@ -64005,7 +64005,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 314,
+	SpriteId = 314,
 },
 [ "E_Vacation_Hat" ] = {
 	Id = 5712,
@@ -64018,7 +64018,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 315,
+	SpriteId = 315,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "E_Charming_Ribbon" ] = {
@@ -64031,7 +64031,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 211,
+	SpriteId = 211,
 },
 [ "E_Water_Lily_Crown" ] = {
 	Id = 5714,
@@ -64043,7 +64043,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 312,
+	SpriteId = 312,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -64059,7 +64059,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 317,
+	SpriteId = 317,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,5;
@@ -64073,7 +64073,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 249,
+	SpriteId = 249,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "E_Kettle_Hat" ] = {
@@ -64085,7 +64085,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 318,
+	SpriteId = 318,
 },
 [ "E_Dragon_Skull" ] = {
 	Id = 5718,
@@ -64096,7 +64096,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 319,
+	SpriteId = 319,
 },
 [ "E_Ramen_Hat" ] = {
 	Id = 5719,
@@ -64106,7 +64106,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 320,
+	SpriteId = 320,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bDex,4;
@@ -64120,7 +64120,7 @@ item_db = {
 	Weight = 350,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 281,
+	SpriteId = 281,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "E_Puppy_Hat" ] = {
@@ -64133,7 +64133,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 234,
+	SpriteId = 234,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "E_Magic_Eyes" ] = {
@@ -64151,7 +64151,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 209,
+	SpriteId = 209,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "E_Jumping_Poring" ] = {
@@ -64162,7 +64162,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 349,
+	SpriteId = 349,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,1;
@@ -64178,7 +64178,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 345,
+	SpriteId = 345,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bDex,1;
@@ -64198,7 +64198,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 286,
+	SpriteId = 286,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "E_Crescent_Helm" ] = {
@@ -64218,7 +64218,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 213,
+	SpriteId = 213,
 	Script = [[ bonus bVit,1; ]]
 },
 [ "E_Tiger_Mask" ] = {
@@ -64231,7 +64231,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 181,
+	SpriteId = 181,
 	Script = [[ bonus bStr,3; ]]
 },
 [ "E_Fantastic_Wig" ] = {
@@ -64242,7 +64242,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 308,
+	SpriteId = 308,
 },
 [ "E_Bunny_Band_C" ] = {
 	Id = 5729,
@@ -64252,7 +64252,7 @@ item_db = {
 	Def = 9,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "E_Centimental_Flower_C" ] = {
@@ -64267,7 +64267,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 56,
+	SpriteId = 56,
 },
 [ "E_Apple_OE_Archer_C" ] = {
 	Id = 5731,
@@ -64281,7 +64281,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 72,
+	SpriteId = 72,
 	Script = [[ bonus bDex,4; ]]
 },
 [ "E_Elven_Ears_C" ] = {
@@ -64296,7 +64296,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "E_Brooch_C" ] = {
@@ -64324,7 +64324,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "E_Ribbon_Green" ] = {
@@ -64336,7 +64336,7 @@ item_db = {
 	Def = 1,
 	Gender = ItemGenderType.Female,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 244,
+	SpriteId = 244,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "EF_Whisper_Mask" ] = {
@@ -64346,7 +64346,7 @@ item_db = {
 	Buy = 20,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 321,
+	SpriteId = 321,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAgi,3;
@@ -64362,7 +64362,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 615,
+	SpriteId = 615,
 	Script = [[
 		skill SM_PROVOKE,3;
 	]]
@@ -64376,7 +64376,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 616,
+	SpriteId = 616,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -64400,7 +64400,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 617,
+	SpriteId = 617,
 	Script = [[
 		bonus bDex,2;
 		bonus2 bSubEle,Ele_Fire,7;
@@ -64418,7 +64418,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 618,
+	SpriteId = 618,
 	Script = [[
 		bonus bDex,2;
 		bonus bMdef,3;
@@ -64437,7 +64437,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 101,
+	SpriteId = 101,
 	Script = [[
 		bonus bHealPower2,5;
 		bonus2 bAddMonsterDropItem,610,10;
@@ -64459,7 +64459,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 619,
+	SpriteId = 619,
 	Script = [[
 		bonus bLuk,1;
 		bonus2 bAddItemHealRate,Piece_Of_Cake,100;
@@ -64474,7 +64474,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 620,
+	SpriteId = 620,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,3;
@@ -64489,7 +64489,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 621,
+	SpriteId = 621,
 	Script = [[
 		bonus bVit,2;
 		bonus bDex,2;
@@ -64503,7 +64503,7 @@ item_db = {
 	Weight = 300,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 622,
+	SpriteId = 622,
 	Script = [[
 		bonus bDex,2;
 		bonus bMdef,5;
@@ -64524,7 +64524,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 623,
+	SpriteId = 623,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64558,7 +64558,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 624,
+	SpriteId = 624,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64592,7 +64592,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 100,
-	ViewSprite = 625,
+	SpriteId = 625,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64626,7 +64626,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 626,
+	SpriteId = 626,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64660,7 +64660,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 627,
+	SpriteId = 627,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64694,7 +64694,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 628,
+	SpriteId = 628,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64726,7 +64726,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 629,
+	SpriteId = 629,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64760,7 +64760,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 630,
+	SpriteId = 630,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64794,7 +64794,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 631,
+	SpriteId = 631,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64830,7 +64830,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 632,
+	SpriteId = 632,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64863,7 +64863,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 633,
+	SpriteId = 633,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64897,7 +64897,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 100,
-	ViewSprite = 634,
+	SpriteId = 634,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64931,7 +64931,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 635,
+	SpriteId = 635,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -64958,7 +64958,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 636,
+	SpriteId = 636,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Driver_Band_" ] = {
@@ -64976,7 +64976,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 637,
+	SpriteId = 637,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65004,7 +65004,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 638,
+	SpriteId = 638,
 	Script = [[
 		bonus bAgi,2;
 		bonus3 bAutoSpell,AS_SONICBLOW,5,50;
@@ -65018,7 +65018,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 639,
+	SpriteId = 639,
 	Script = [[
 		bonus bAllStats, 1;
 		bonus bMdef, 5;
@@ -65033,7 +65033,7 @@ item_db = {
 	Weight = 200,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 640,
+	SpriteId = 640,
 	Script = [[
 		bonus bAgi,2;
 		bonus bMdef,3;
@@ -65050,7 +65050,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 549,
+	SpriteId = 549,
 	Script = [[ bonus3 bAutoSpell,PR_GLORIA,3,((readparam(bAgi)>=80)?30:10); ]]
 },
 [ "Black_Tail_Ribbon" ] = {
@@ -65062,7 +65062,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 642,
+	SpriteId = 642,
 	Script = [[
 		bonus bMdef,5;
 		bonus bLongAtkDef,10;
@@ -65079,7 +65079,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 643,
+	SpriteId = 643,
 	Script = [[
 		bonus bVit,5;
 		bonus3 bAutoSpellWhenHit,NPC_STONESKIN,6,20;
@@ -65095,7 +65095,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 644,
+	SpriteId = 644,
 	Script = [[ bonus2 bAddRace, RC_All, 1; ]]
 },
 [ "Sakura_Coronet" ] = {
@@ -65107,7 +65107,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 645,
+	SpriteId = 645,
 	Script = [[
 		bonus bMdef,3;
 		bonus bMaxSP,25;
@@ -65122,7 +65122,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 646,
+	SpriteId = 646,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		skill RG_GRAFFITI,1;
@@ -65137,7 +65137,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 349,
+	SpriteId = 349,
 	Script = [[ autobonus "{ sc_start SC_PROPERTYWIND,180000,1; }",3,180000,BF_WEAPON,"{ specialeffect(EF_ENHANCE, AREA, playerattached()); }"; ]]
 },
 [ "Family_Hat" ] = {
@@ -65149,7 +65149,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 109,
+	SpriteId = 109,
 	Script = [[
 		bonus bDex,1;
 		bonus bMdef,1;
@@ -65167,7 +65167,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 651,
+	SpriteId = 651,
 	Script = [[ bonus2 bAddRaceTolerance, RC_DemiPlayer, 10; ]]
 },
 [ "Navy_Beret" ] = {
@@ -65179,7 +65179,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 652,
+	SpriteId = 652,
 	Script = [[ bonus2 bAddRaceTolerance, RC_DemiPlayer, 10; ]]
 },
 [ "Red_Pirate_Hat" ] = {
@@ -65191,7 +65191,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 496,
+	SpriteId = 496,
 	Script = [[ bonus2 bAddRaceTolerance, RC_DemiPlayer, 10; ]]
 },
 [ "Choco_Donut_In_Mouth" ] = {
@@ -65203,7 +65203,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 653,
+	SpriteId = 653,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMaxHP,50;
@@ -65215,7 +65215,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 500,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 654,
+	SpriteId = 654,
 	Script = [[
 		bonus2 bVariableCastrate,MG_FIREBOLT,-5;
 		bonus2 bSkillAtk,MG_FIREBOLT,5;
@@ -65236,7 +65236,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 655,
+	SpriteId = 655,
 	Script = [[
 		bonus bMdef,1;
 		bonus3 bAddMonsterDropItem,713,RC_Formless,200;
@@ -65253,7 +65253,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 656,
+	SpriteId = 656,
 	Script = [[
 		bonus bStr,2;
 		bonus2 bAddMonsterDropItem,574,500;
@@ -65274,7 +65274,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 657,
+	SpriteId = 657,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Tendrilion_Hat" ] = {
@@ -65284,7 +65284,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 658,
+	SpriteId = 658,
 	Script = [[
 		bonus2 bAddRaceTolerance, RC_DemiPlayer, 10;
 		skill WZ_EARTHSPIKE, 3;
@@ -65299,7 +65299,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 659,
+	SpriteId = 659,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bFlee,1;
@@ -65315,7 +65315,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 660,
+	SpriteId = 660,
 	Script = [[
 		bonus bMaxHPrate,3;
 	]]
@@ -65328,7 +65328,7 @@ item_db = {
 	Weight = 200,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 662,
+	SpriteId = 662,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -65351,7 +65351,7 @@ item_db = {
 	Weight = 200,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 663,
+	SpriteId = 663,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,2;
@@ -65374,7 +65374,7 @@ item_db = {
 	Weight = 200,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 664,
+	SpriteId = 664,
 	Script = [[
 		bonus bStr,2;
 		bonus bInt,1;
@@ -65398,7 +65398,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 665,
+	SpriteId = 665,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65424,7 +65424,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 666,
+	SpriteId = 666,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,2;
@@ -65439,7 +65439,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 661,
+	SpriteId = 661,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65465,7 +65465,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 667,
+	SpriteId = 667,
 	Script = [[
 		bonus bVit,1;
 		bonus bUnbreakableHelm,0;
@@ -65480,7 +65480,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 45,
-	ViewSprite = 610,
+	SpriteId = 610,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,-5;
 		bonus2 bAddRaceTolerance,RC_Undead,-5;
@@ -65497,7 +65497,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 668,
+	SpriteId = 668,
 	Script = [[
 		bonus bInt,-1;
 		bonus bDex,4;
@@ -65512,7 +65512,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 669,
+	SpriteId = 669,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Fish,1; ]]
 },
 [ "Ribbon_Of_Life" ] = {
@@ -65523,7 +65523,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 575,
+	SpriteId = 575,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65548,7 +65548,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 661,
+	SpriteId = 661,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65566,7 +65566,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 20,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 670,
+	SpriteId = 670,
 	Script = [[
 		bonus bMdef,7;
 		bonus bAtkRate,4;
@@ -65587,7 +65587,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65608,7 +65608,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65630,7 +65630,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65652,7 +65652,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65676,7 +65676,7 @@ item_db = {
 	Weight = 50,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 125,
+	SpriteId = 125,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,3;
@@ -65690,7 +65690,7 @@ item_db = {
 	Weight = 100,
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 167,
+	SpriteId = 167,
 	Script = [[
 		bonus bAllStats,2;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,10;
@@ -65710,7 +65710,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 215,
+	SpriteId = 215,
 },
 [ "Flower_Love_Hat" ] = {
 	Id = 5803,
@@ -65720,7 +65720,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[ bonus2 bAddMonsterDropItem,608,100; ]]
 },
 [ "Pirate_Eyepatch" ] = {
@@ -65731,7 +65731,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 13,
+	SpriteId = 13,
 },
 [ "Victorious_Coronet" ] = {
 	Id = 5805,
@@ -65743,7 +65743,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 43,
+	SpriteId = 43,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65767,7 +65767,7 @@ item_db = {
 	Def = 9,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 67,
+	SpriteId = 67,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65791,7 +65791,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 104,
+	SpriteId = 104,
 },
 [ "Diabolus_Helmet" ] = {
 	Id = 5808,
@@ -65852,7 +65852,7 @@ item_db = {
 		[ Job.BabyMinstrel ] = true,
 	},
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 364,
+	SpriteId = 364,
 	Script = [[
 		bonus2 bResEff,Eff_Stone,2000+(getrefine()*200);
 		bonus2 bResEff,Eff_Freeze,2000+(getrefine()*200);
@@ -65867,7 +65867,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 216,
+	SpriteId = 216,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65893,7 +65893,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 98,
+	SpriteId = 98,
 	Script = [[
 		bonus bInt,5;
 		bonus bVit,3;
@@ -65908,7 +65908,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 25,
+	SpriteId = 25,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Brute,5; ]]
 },
 [ "Hat_Of_Expert" ] = {
@@ -65917,7 +65917,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 16,
+	SpriteId = 16,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65944,7 +65944,7 @@ item_db = {
 	Buy = 1000,
 	Weight = 500,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 481,
+	SpriteId = 481,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Ati_Atihan_Hat3" ] = {
@@ -65956,7 +65956,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 303,
+	SpriteId = 303,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -65975,7 +65975,7 @@ item_db = {
 	Weight = 500,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 475,
+	SpriteId = 475,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bSubSize,Size_Small,5;
@@ -65990,7 +65990,7 @@ item_db = {
 	Buy = 20,
 	Weight = 500,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 411,
+	SpriteId = 411,
 },
 [ "Valentine_Pledge" ] = {
 	Id = 5817,
@@ -66026,7 +66026,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 505,
+	SpriteId = 505,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -66045,7 +66045,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 506,
+	SpriteId = 506,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -66067,7 +66067,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 498,
+	SpriteId = 498,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -66085,7 +66085,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 499,
+	SpriteId = 499,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -66104,7 +66104,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 500,
+	SpriteId = 500,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -66154,7 +66154,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 265,
+	SpriteId = 265,
 },
 [ "Badge_Of_Order_Grace" ] = {
 	Id = 5825,
@@ -66177,7 +66177,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 225,
+	SpriteId = 225,
 	Script = [[
 		bonus bStr,2;
 		bonus bInt,2;
@@ -66194,7 +66194,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 423,
+	SpriteId = 423,
 },
 [ "Honor_Gold_Ring" ] = {
 	Id = 5828,
@@ -66222,7 +66222,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 67,
+	SpriteId = 67,
 },
 [ "Woe_Big_Sis_Ribbon" ] = {
 	Id = 5831,
@@ -66232,7 +66232,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 28,
+	SpriteId = 28,
 },
 [ "Woe_Vane_Hairpin" ] = {
 	Id = 5832,
@@ -66242,7 +66242,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 313,
+	SpriteId = 313,
 },
 [ "Woe_Picnic_Hat" ] = {
 	Id = 5833,
@@ -66252,7 +66252,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 117,
+	SpriteId = 117,
 },
 [ "Woe_Crown" ] = {
 	Id = 5834,
@@ -66262,7 +66262,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 45,
+	SpriteId = 45,
 },
 [ "Woe_Tiara" ] = {
 	Id = 5835,
@@ -66272,7 +66272,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 19,
+	SpriteId = 19,
 },
 [ "Woe_Boys_Cap" ] = {
 	Id = 5836,
@@ -66282,7 +66282,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 102,
+	SpriteId = 102,
 },
 [ "Woe_Sunglass" ] = {
 	Id = 5837,
@@ -66293,7 +66293,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 12,
+	SpriteId = 12,
 },
 [ "Woe_Fin_Helm" ] = {
 	Id = 5838,
@@ -66304,7 +66304,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 100,
+	SpriteId = 100,
 },
 [ "Woe_Blush" ] = {
 	Id = 5839,
@@ -66315,7 +66315,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 125,
+	SpriteId = 125,
 },
 [ "Woe_Elven_Ears" ] = {
 	Id = 5840,
@@ -66326,7 +66326,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 },
 [ "Shaman_Hat_" ] = {
 	Id = 5841,
@@ -66338,7 +66338,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 596,
+	SpriteId = 596,
 	Script = [[
 		bonus bLuk,2;
 		bonus3 bSubEle,Ele_Neutral,3,BF_MAGIC;
@@ -66380,7 +66380,7 @@ item_db = {
 	Buy = 50,
 	Weight = 400,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 641,
+	SpriteId = 641,
 },
 [ "Buzzy_Ball_Gum" ] = {
 	Id = 5846,
@@ -66391,7 +66391,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 572,
+	SpriteId = 572,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,5;
@@ -66403,7 +66403,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 647,
+	SpriteId = 647,
 	Script = [[
 		bonus bInt,5;
 		bonus bVit,-3;
@@ -66417,7 +66417,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 50,
+	SpriteId = 50,
 },
 [ "Doctor_Hairband" ] = {
 	Id = 5849,
@@ -66426,7 +66426,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 60,
+	SpriteId = 60,
 },
 [ "Golden_Savage_Hat" ] = {
 	Id = 5850,
@@ -66437,7 +66437,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 648,
+	SpriteId = 648,
 },
 [ "Summer_Knight" ] = {
 	Id = 5851,
@@ -66448,7 +66448,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 138,
+	SpriteId = 138,
 },
 [ "Easter_Egg_Shell" ] = {
 	Id = 5852,
@@ -66459,7 +66459,7 @@ item_db = {
 	Def = -7,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 537,
+	SpriteId = 537,
 	Script = [[
 		bonus bDef,-7;
 		bonus bMdef,-7;
@@ -66493,7 +66493,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 671,
+	SpriteId = 671,
 	Script = [[
 		bonus bVit,2;
 		bonus bMdef,1;
@@ -66508,7 +66508,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 672,
+	SpriteId = 672,
 	Script = [[
 		bonus bStr,2;
 		bonus bMdef,1;
@@ -66523,7 +66523,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 673,
+	SpriteId = 673,
 	Script = [[
 		bonus bInt,2;
 		bonus bMdef,1;
@@ -66538,7 +66538,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 674,
+	SpriteId = 674,
 	Script = [[
 		bonus bAgi,3;
 		bonus bMdef,1;
@@ -66551,7 +66551,7 @@ item_db = {
 	Buy = 20,
 	Weight = 300,
 	Loc = EquipLocationMask.MidHead,
-	ViewSprite = 873,
+	SpriteId = 873,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -66574,7 +66574,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 1004,
+	SpriteId = 1004,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bBaseAtk,10;
@@ -66589,7 +66589,7 @@ item_db = {
 	Weight = 100,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 999,
+	SpriteId = 999,
 	Script = [[
 		bonus2 bAddEffWhenHit,Eff_Stone,600;
 		bonus bSpeedRate,25;
@@ -66603,7 +66603,7 @@ item_db = {
 	Weight = 100,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1000,
+	SpriteId = 1000,
 	Script = [[
 		bonus bAgi,3;
 		bonus bAspd,1;
@@ -66617,7 +66617,7 @@ item_db = {
 	Weight = 100,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1001,
+	SpriteId = 1001,
 	Script = [[
 		bonus bVit,3;
 		bonus bMdef,2;
@@ -66659,7 +66659,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 1055,
+	SpriteId = 1055,
 	Script = [[
 		bonus bAllStats,5;
 		bonus2 bSubEle,Ele_Neutral,5;
@@ -66699,7 +66699,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 1056,
+	SpriteId = 1056,
 	Script = [[
 		bonus bAllStats,5;
 		bonus2 bSubEle,Ele_Neutral,5;
@@ -66740,7 +66740,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 1057,
+	SpriteId = 1057,
 	Script = [[
 		bonus bAllStats,5;
 		bonus2 bSubEle,Ele_Neutral,5;
@@ -66758,7 +66758,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 1079,
+	SpriteId = 1079,
 	Script = [[
 		bonus bMaxHPrate,3;
 		bonus bMaxSPrate,3;
@@ -66786,7 +66786,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 1093,
+	SpriteId = 1093,
 	Script = [[
 		bonus bAllStats,1;
 		bonus bMdef,3;
@@ -66800,7 +66800,7 @@ item_db = {
 	Def = 7,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 1105,
+	SpriteId = 1105,
 	Script = [[
 		bonus5 bAutoSpell,DC_SCREAM,5,50,BF_WEAPON|BF_MAGIC,0; /* Custom - TWRO */
 	]]
@@ -66817,7 +66817,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1118,
+	SpriteId = 1118,
 	Script = [[
 		bonus bAllStats,10;
 		bonus bMaxHPrate,15;
@@ -66847,7 +66847,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 1119,
+	SpriteId = 1119,
 	Script = [[
 		bonus2 bSkillUseSP,SN_WINDWALK,20;
 		bonus bLongAtkRate,5;
@@ -66869,7 +66869,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1120,
+	SpriteId = 1120,
 	Script = [[
 		bonus2 bSkillAtk,RK_WINDCUTTER,50;
 		bonus2 bSkillAtk,RK_SONICWAVE,50;
@@ -66892,7 +66892,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1121,
+	SpriteId = 1121,
 	Script = [[
 		bonus2 bSubSize,Size_Medium,5;
 		bonus2 bSubSize,Size_Large,5;
@@ -66916,7 +66916,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1125,
+	SpriteId = 1125,
 	Script = [[
 		bonus bMatkRate,7;
 		if(getrefine()>6) { bonus bMatk,(readparam(bInt)/5)*2; }
@@ -66939,7 +66939,7 @@ item_db = {
 	Gender = ItemGenderType.Male,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1126,
+	SpriteId = 1126,
 	Script = [[
 		bonus2 bSkillAtk,WM_SEVERE_RAINSTORM_MELEE,15;
 		if(getrefine()>6) { bonus bFixedCastrate,-(getskilllv(BA_MUSICALLESSON)*4); }
@@ -66963,7 +66963,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1127,
+	SpriteId = 1127,
 	Script = [[
 		bonus2 bSkillAtk,GC_COUNTERSLASH,getskilllv(GC_WEAPONBLOCKING)*10;
 		if(getrefine()>6) {
@@ -66988,7 +66988,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1128,
+	SpriteId = 1128,
 	Script = [[
 		bonus2 bSkillAtk,NC_AXETORNADO,20;
 		bonus2 bSkillAtk,NC_AXEBOOMERANG,20;
@@ -67005,7 +67005,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 1202,
+	SpriteId = 1202,
 	Script = [[
 		bonus bCritical,3;
 		bonus bCritAtkRate,3;
@@ -67019,7 +67019,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
-	ViewSprite = 1218,
+	SpriteId = 1218,
 },
 [ "Heaven_Cage" ] = {
 	Id = 5932,
@@ -67030,7 +67030,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 1286,
+	SpriteId = 1286,
 	Script = [[
 		bonus bLuk,5;
 		bonus bCritical,5;
@@ -67048,7 +67048,7 @@ item_db = {
 	Weight = 300,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 80,
-	ViewSprite = 1287,
+	SpriteId = 1287,
 	Script = [[
 		bonus bAtkRate,1;
 		bonus bLongAtkRate,2;
@@ -67070,7 +67070,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 1289,
+	SpriteId = 1289,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,5;
@@ -67084,7 +67084,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1305,
+	SpriteId = 1305,
 	Script = [[
 		bonus bDex,5;
 		bonus bLuk,5;
@@ -67098,7 +67098,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1306,
+	SpriteId = 1306,
 	Script = [[
 		bonus bAllStats,3;
 		bonus5 bAutoSpellWhenHit,DC_WINKCHARM,1,500,BF_WEAPON,1;
@@ -67111,7 +67111,7 @@ item_db = {
 	Weight = 300,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
-	ViewSprite = 1357,
+	SpriteId = 1357,
 	Script = [[
 		bonus bMatk,2*(readparam(bDex)/10);
 		if(readparam(bDex)>=108) {
@@ -67131,7 +67131,7 @@ item_db = {
 	Weight = 500,
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 110,
-	ViewSprite = 1358,
+	SpriteId = 1358,
 	Script = [[
 		bonus3 bAutoSpell,HT_BLITZBEAT,getskilllv(HT_BLITZBEAT),(10*getskilllv(HT_BLITZBEAT))+(readparam(bLuk)/3);
 		if(getskilllv(HT_STEELCROW)>0) { skill HT_BLITZBEAT,40; }
@@ -67146,7 +67146,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 1359,
+	SpriteId = 1359,
 	Script = [[
 		bonus bHealPower,3;
 		bonus bNoCastCancel,0;
@@ -67164,7 +67164,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1360,
+	SpriteId = 1360,
 	Script = [[
 		bonus bStr,5;
 		bonus2 bAddRace, RC_All, 7;
@@ -67189,7 +67189,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 1361,
+	SpriteId = 1361,
 	Script = [[
 		bonus bVit,3;
 		bonus bMaxHPrate,4;
@@ -125202,7 +125202,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125224,7 +125224,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125246,7 +125246,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 369,
+	SpriteId = 369,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125271,7 +125271,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 562,
+	SpriteId = 562,
 	Script = [[
 		bonus bAtkRate,5;
 		bonus bMatkRate,5;
@@ -125288,7 +125288,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 485,
+	SpriteId = 485,
 	Script = [[
 		bonus bDefRate,-50;
 		bonus bMdefRate,-50;
@@ -125302,7 +125302,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 675,
+	SpriteId = 675,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125328,7 +125328,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 676,
+	SpriteId = 676,
 	Script = [[
 		bonus bMaxHPrate,10;
 		bonus bMaxSPrate,10;
@@ -125348,7 +125348,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 },
 [ "Garuda_Hat" ] = {
 	Id = 18508,
@@ -125364,7 +125364,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 677,
+	SpriteId = 677,
 	Script = [[
 		bonus2 bSubRace, RC_All, 5;
 		bonus bLuk,5;
@@ -125388,7 +125388,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 15,
-	ViewSprite = 678,
+	SpriteId = 678,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,10;
 		bonus bCritical,10;
@@ -125408,7 +125408,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 679,
+	SpriteId = 679,
 	Script = [[ bonus2 bSubRace,RC_DemiPlayer,10; ]]
 },
 [ "Blood_Angel_Wing_Ear" ] = {
@@ -125419,7 +125419,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 680,
+	SpriteId = 680,
 	Script = [[
 		bonus bMaxHPrate,2;
 		bonus bMaxSPrate,1;
@@ -125433,7 +125433,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 443,
+	SpriteId = 443,
 },
 [ "Shining_Sunflower" ] = {
 	Id = 18513,
@@ -125447,7 +125447,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 681,
+	SpriteId = 681,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "Para_Team_Hat2" ] = {
@@ -125458,7 +125458,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
-	ViewSprite = 682,
+	SpriteId = 682,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125487,7 +125487,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 90,
 	Refine = false,
-	ViewSprite = 683,
+	SpriteId = 683,
 },
 [ "RTC_2nd_Headgear" ] = {
 	Id = 18516,
@@ -125503,7 +125503,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 90,
 	Refine = false,
-	ViewSprite = 684,
+	SpriteId = 684,
 },
 [ "RTC_3rd_Headgear" ] = {
 	Id = 18517,
@@ -125519,7 +125519,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 90,
 	Refine = false,
-	ViewSprite = 685,
+	SpriteId = 685,
 },
 [ "Ear_Of_Angels_Wing_" ] = {
 	Id = 18518,
@@ -125532,7 +125532,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 158,
+	SpriteId = 158,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Ear_Of_Devils_Wing_" ] = {
@@ -125546,7 +125546,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 152,
+	SpriteId = 152,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Jaty_C" ] = {
@@ -125557,7 +125557,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 686,
+	SpriteId = 686,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125583,7 +125583,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 571,
+	SpriteId = 571,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,1;
@@ -125599,7 +125599,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 687,
+	SpriteId = 687,
 	Script = [[
 		bonus bStr,2;
 		bonus2 bAddRace, RC_All, 2;
@@ -125619,7 +125619,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 688,
+	SpriteId = 688,
 },
 [ "Dokkebi_Mask" ] = {
 	Id = 18524,
@@ -125631,7 +125631,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 689,
+	SpriteId = 689,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bStr,2;
@@ -125647,7 +125647,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 690,
+	SpriteId = 690,
 	Script = [[
 		bonus bLuk,1;
 		bonus bVit,1;
@@ -125662,7 +125662,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 446,
+	SpriteId = 446,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -125684,7 +125684,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 691,
+	SpriteId = 691,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddMonsterDropItem,12192,10;
@@ -125700,7 +125700,7 @@ item_db = {
 	Weight = 100,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 692,
+	SpriteId = 692,
 	Script = [[
 		bonus bInt,2;
 		bonus bMdef,5;
@@ -125716,7 +125716,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
-	ViewSprite = 541,
+	SpriteId = 541,
 	Script = [[
 		bonus bMaxHPrate,-10;
 		bonus bAspdRate,3;
@@ -125731,7 +125731,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 693,
+	SpriteId = 693,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,-5;
@@ -125747,7 +125747,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 694,
+	SpriteId = 694,
 	Script = [[ bonus2 bAddRace2,RC2_Turtle,20; ]]
 },
 [ "Heart_Ribbon_Band" ] = {
@@ -125759,7 +125759,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 708,
+	SpriteId = 708,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Honeybee_Hat" ] = {
@@ -125772,7 +125772,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 709,
+	SpriteId = 709,
 	Script = [[
 		bonus bMdef,3;
 		bonus2 bAddRace,RC_Insect,5;
@@ -125790,7 +125790,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 20,
-	ViewSprite = 710,
+	SpriteId = 710,
 	Script = [[
 		bonus bStr,1;
 		bonus bAtkRate,5;
@@ -125806,7 +125806,7 @@ item_db = {
 	Buy = 20,
 	Weight = 200,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 206,
+	SpriteId = 206,
 },
 [ "Foxtail" ] = {
 	Id = 18536,
@@ -125816,7 +125816,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 711,
+	SpriteId = 711,
 	Script = [[
 		bonus bVariableCastrate,-1;
 		bonus bMatk,10;
@@ -125831,7 +125831,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 726,
+	SpriteId = 726,
 	Script = [[ bonus bFlee,6; ]]
 },
 [ "Evil_Whisper" ] = {
@@ -125843,7 +125843,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 712,
+	SpriteId = 712,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,3;
@@ -125859,7 +125859,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 713,
+	SpriteId = 713,
 	Script = [[
 		bonus bMatkRate,2;
 		if(getrefine() >= 5) { bonus bMatkRate,3; }
@@ -125876,7 +125876,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 714,
+	SpriteId = 714,
 	Script = [[ bonus bAspdRate,1; ]]
 },
 [ "Little_Fhat" ] = {
@@ -125889,7 +125889,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 715,
+	SpriteId = 715,
 	Script = [[
 		bonus bDex,2;
 		bonus bCritAtkRate,10;
@@ -125906,7 +125906,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
-	ViewSprite = 716,
+	SpriteId = 716,
 	Script = [[
 		bonus bHealPower,2;
 		bonus bHealPower2,5;
@@ -125922,7 +125922,7 @@ item_db = {
 	Def = 7,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 717,
+	SpriteId = 717,
 	Script = [[
 		bonus bMatkRate,2;
 		bonus bInt,1;
@@ -125938,7 +125938,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 718,
+	SpriteId = 718,
 },
 [ "Whrabbit_Hband" ] = {
 	Id = 18545,
@@ -125949,7 +125949,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 719,
+	SpriteId = 719,
 },
 [ "Lover_In_Mouth" ] = {
 	Id = 18546,
@@ -125959,7 +125959,7 @@ item_db = {
 	Weight = 300,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 720,
+	SpriteId = 720,
 },
 [ "Campus_Festival" ] = {
 	Id = 18547,
@@ -125968,7 +125968,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 721,
+	SpriteId = 721,
 	Script = [[ skill AL_INCAGI,2; ]]
 },
 [ "Tiny_Hat" ] = {
@@ -125978,7 +125978,7 @@ item_db = {
 	Buy = 20,
 	Weight = 30,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 722,
+	SpriteId = 722,
 	Script = [[
 		bonus bInt,1;
 		bonus bAgi,1;
@@ -125994,7 +125994,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 723,
+	SpriteId = 723,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Asgard_Blessing" ] = {
@@ -126007,7 +126007,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 724,
+	SpriteId = 724,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Galaxy_Circlet" ] = {
@@ -126020,7 +126020,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 725,
+	SpriteId = 725,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Proba_Angel_Blessing" ] = {
@@ -126032,7 +126032,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 444,
+	SpriteId = 444,
 	Script = [[ bonus bLuk,2; ]]
 },
 [ "Mini_Tree" ] = {
@@ -126043,7 +126043,7 @@ item_db = {
 	Weight = 50,
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 727,
+	SpriteId = 727,
 },
 [ "King_Prawn_Hat" ] = {
 	Id = 18554,
@@ -126054,7 +126054,7 @@ item_db = {
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 728,
+	SpriteId = 728,
 },
 [ "General_Helmet" ] = {
 	Id = 18555,
@@ -126066,7 +126066,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 729,
+	SpriteId = 729,
 	Script = [[
 		bonus bMdef,3;
 		bonus2 bAddRaceTolerance,RC_Dragon,5;
@@ -126081,7 +126081,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 3,
+	SpriteId = 3,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -126098,7 +126098,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 12,
+	SpriteId = 12,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -126118,7 +126118,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 730,
+	SpriteId = 730,
 	Script = [[
 		bonus2 bExpAddRace,RC_Plant,5;
 		bonus2 bSubRace,RC_Plant,-10;
@@ -126134,7 +126134,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 152,
+	SpriteId = 152,
 },
 [ "Fafnir_Mask" ] = {
 	Id = 18560,
@@ -126146,7 +126146,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 180,
+	SpriteId = 180,
 },
 [ "B_Feather_Beret" ] = {
 	Id = 18561,
@@ -126158,7 +126158,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 731,
+	SpriteId = 731,
 	Script = [[
 		bonus bVit,2;
 		bonus bMdef,3;
@@ -126175,7 +126175,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 732,
+	SpriteId = 732,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Heart_Wing_Hairband" ] = {
@@ -126187,7 +126187,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 733,
+	SpriteId = 733,
 	Script = [[
 		bonus bDelayrate,-(5+(3*(getrefine()/3)));
 		bonus bUseSPrate,10-(3*(getrefine()/3));
@@ -126202,7 +126202,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 734,
+	SpriteId = 734,
 },
 [ "Leprechaun_Hat" ] = {
 	Id = 18565,
@@ -126215,7 +126215,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 735,
+	SpriteId = 735,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bStr,1;
@@ -126231,7 +126231,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 736,
+	SpriteId = 736,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -126251,7 +126251,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 737,
+	SpriteId = 737,
 },
 [ "Humming_Bird" ] = {
 	Id = 18568,
@@ -126263,7 +126263,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 702,
+	SpriteId = 702,
 	Script = [[ bonus bMdef,6; ]]
 },
 [ "Soft_Sheep_Hat" ] = {
@@ -126274,7 +126274,7 @@ item_db = {
 	Weight = 1000,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 738,
+	SpriteId = 738,
 },
 [ "Ancient_Gold_Deco" ] = {
 	Id = 18570,
@@ -126324,7 +126324,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 739,
+	SpriteId = 739,
 	Script = [[
 		if(BaseLevel >= 150) {
 			bonus bAllStats,2;
@@ -126349,7 +126349,7 @@ item_db = {
 	Weight = 1000,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 740,
+	SpriteId = 740,
 },
 [ "Korean_Judge_Hat" ] = {
 	Id = 18572,
@@ -126360,7 +126360,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 377,
+	SpriteId = 377,
 	Script = [[ bonus bMdef,2; ]]
 },
 [ "White_Feather" ] = {
@@ -126373,7 +126373,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 741,
+	SpriteId = 741,
 	Script = [[
 		bonus bHit,20;
 		bonus bMaxHPrate,-10;
@@ -126395,7 +126395,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 70,
-	ViewSprite = 742,
+	SpriteId = 742,
 	Script = [[
 		bonus2 bSubRace,RC_NonBoss,-5;
 		bonus2 bAddRace,RC_Boss,10;
@@ -126413,7 +126413,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 743,
+	SpriteId = 743,
 	Script = [[ bonus bMdef,10; ]]
 },
 [ "YinYang_Earring" ] = {
@@ -126425,7 +126425,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 744,
+	SpriteId = 744,
 },
 [ "24_Bolt" ] = {
 	Id = 18577,
@@ -126436,7 +126436,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 696,
+	SpriteId = 696,
 },
 [ "Helm_Of_Valor" ] = {
 	Id = 18578,
@@ -126445,7 +126445,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 258,
+	SpriteId = 258,
 },
 [ "9th_Anni_Hat" ] = {
 	Id = 18579,
@@ -126453,7 +126453,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 90,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 745,
+	SpriteId = 745,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -126477,7 +126477,7 @@ item_db = {
 	Slots = 1,
 	Gender = ItemGenderType.Male,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 746,
+	SpriteId = 746,
 	Script = [[
 		bonus bVit,2;
 		bonus bInt,2;
@@ -126497,7 +126497,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 747,
+	SpriteId = 747,
 	Script = [[ bonus bStr,3; ]]
 },
 [ "Blue_Tiger_Mask" ] = {
@@ -126510,7 +126510,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 748,
+	SpriteId = 748,
 	Script = [[ bonus bStr,3; ]]
 },
 [ "Navy_Drooping_Kitty" ] = {
@@ -126525,7 +126525,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 749,
+	SpriteId = 749,
 	Script = [[ bonus bMdef,15; ]]
 },
 [ "Brown_Drooping_Kitty" ] = {
@@ -126540,7 +126540,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 750,
+	SpriteId = 750,
 	Script = [[ bonus bMdef,15; ]]
 },
 [ "Orange_Bunny_Hairband" ] = {
@@ -126550,7 +126550,7 @@ item_db = {
 	Buy = 20,
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 751,
+	SpriteId = 751,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,2;
@@ -126564,7 +126564,7 @@ item_db = {
 	Buy = 20,
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 752,
+	SpriteId = 752,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,3;
@@ -126579,7 +126579,7 @@ item_db = {
 	Buy = 20,
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 753,
+	SpriteId = 753,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,1;
@@ -126594,7 +126594,7 @@ item_db = {
 	Buy = 20,
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 754,
+	SpriteId = 754,
 	Script = [[
 		bonus bStr,2;
 		bonus bInt,3;
@@ -126611,7 +126611,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 755,
+	SpriteId = 755,
 	Script = [[
 		bonus2 bAddMonsterDropItem,578,100+(10*getrefine());
 	]]
@@ -126626,7 +126626,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 564,
+	SpriteId = 564,
 	Script = [[ bonus bMdef,3; ]]
 },
 [ "Mini_Glasses_" ] = {
@@ -126643,7 +126643,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 47,
+	SpriteId = 47,
 },
 [ "Nestea_Hat" ] = {
 	Id = 18592,
@@ -126654,7 +126654,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 756,
+	SpriteId = 756,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,5;
@@ -126670,7 +126670,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 707,
+	SpriteId = 707,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,5;
@@ -126689,7 +126689,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 250,
+	SpriteId = 250,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Horn_Of_Ancient" ] = {
@@ -126702,7 +126702,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 757,
+	SpriteId = 757,
 	Script = [[ autobonus "{ bonus bBaseAtk,100; }",5,10000,0,"{ specialeffect(EF_POTION_BERSERK, AREA, playerattached()); }"; ]]
 },
 [ "Sprout_Hat" ] = {
@@ -126714,7 +126714,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 758,
+	SpriteId = 758,
 	Script = [[ skill WZ_HEAVENDRIVE,3; ]]
 },
 [ "Mercury_Helm" ] = {
@@ -126727,7 +126727,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 759,
+	SpriteId = 759,
 	Script = [[
 		bonus bAspdRate,3;
 		bonus bCritical,3;
@@ -126750,7 +126750,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 727,
+	SpriteId = 727,
 	Script = [[ bonus bMdef,20; ]]
 },
 [ "Black_Devil_Mask" ] = {
@@ -126761,7 +126761,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 760,
+	SpriteId = 760,
 	Script = [[ bonus bAllStats,2; ]]
 },
 [ "Cat_Ears_Beret" ] = {
@@ -126773,7 +126773,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 761,
+	SpriteId = 761,
 	Script = [[
 		bonus bAtkRate,5;
 		if(getrefine()>5) {
@@ -126790,7 +126790,7 @@ item_db = {
 	Weight = 300,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 762,
+	SpriteId = 762,
 	Script = [[
 		bonus bMdef,5;
 		bonus bMatkRate,5;
@@ -126809,7 +126809,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 763,
+	SpriteId = 763,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,4;
@@ -126825,7 +126825,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 760,
+	SpriteId = 760,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "Falcon_Mask" ] = {
@@ -126838,7 +126838,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 782,
+	SpriteId = 782,
 	Script = [[
 		bonus2 bAddEle,Ele_Water,5;
 	]]
@@ -126853,7 +126853,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 766,
+	SpriteId = 766,
 	Script = [[
 		bonus bMdef,3;
 		autobonus "{ bonus bAtkEle,Ele_Dark; }",30,60000;
@@ -126871,7 +126871,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 767,
+	SpriteId = 767,
 },
 [ "Blush_" ] = {
 	Id = 18607,
@@ -126882,7 +126882,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 125,
+	SpriteId = 125,
 },
 [ "Pair_Of_Red_Ribbon2" ] = {
 	Id = 18608,
@@ -126895,7 +126895,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 45,
 	Refine = false,
-	ViewSprite = 169,
+	SpriteId = 169,
 },
 [ "Dark_Blindfold_" ] = {
 	Id = 18609,
@@ -126910,7 +126910,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 187,
+	SpriteId = 187,
 	Script = [[
 		bonus2 bResEff,Eff_Blind,10000;
 		bonus2 bResEff,Eff_Stun,200;
@@ -126924,7 +126924,7 @@ item_db = {
 	Weight = 500,
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 778,
+	SpriteId = 778,
 	Script = [[
 		bonus bAllStats,5;
 		bonus bMdef,4;
@@ -126940,7 +126940,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 404,
+	SpriteId = 404,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bInt,1;
@@ -126956,7 +126956,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 770,
+	SpriteId = 770,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,2;
@@ -126973,7 +126973,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 771,
+	SpriteId = 771,
 	Script = [[
 		bonus bInt,2;
 		bonus bDex,2;
@@ -126991,7 +126991,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 732,
+	SpriteId = 732,
 	Script = [[ bonus bFlee,3; ]]
 },
 [ "Injured_Eyepatch" ] = {
@@ -127008,7 +127008,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 772,
+	SpriteId = 772,
 },
 [ "Long_Tongue" ] = {
 	Id = 18616,
@@ -127023,7 +127023,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 773,
+	SpriteId = 773,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Onigiri_In_Mouth" ] = {
@@ -127039,7 +127039,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 774,
+	SpriteId = 774,
 },
 [ "Airplane_Hat" ] = {
 	Id = 18618,
@@ -127055,7 +127055,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 775,
+	SpriteId = 775,
 },
 [ "Thief_Bandana" ] = {
 	Id = 18619,
@@ -127070,7 +127070,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 776,
+	SpriteId = 776,
 	Script = [[
 		bonus3 bAutoSpell,TF_STEAL,1,20;
 	]]
@@ -127085,7 +127085,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 779,
+	SpriteId = 779,
 },
 [ "Gangster_Mask_A" ] = {
 	Id = 18621,
@@ -127095,7 +127095,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 52,
+	SpriteId = 52,
 },
 [ "Rocket_Helm1" ] = {
 	Id = 18622,
@@ -127107,7 +127107,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 764,
+	SpriteId = 764,
 	Script = [[
 		bonus bMdef,5;
 		bonus bAllStats,5;
@@ -127124,7 +127124,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 765,
+	SpriteId = 765,
 	Script = [[
 		bonus bMdef,5;
 		bonus bAllStats,4;
@@ -127141,7 +127141,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 768,
+	SpriteId = 768,
 	Script = [[
 		bonus bMdef,5;
 		bonus bAllStats,3;
@@ -127158,7 +127158,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
-	ViewSprite = 769,
+	SpriteId = 769,
 	Script = [[
 		bonus bMdef,5;
 		bonus bAllStats,2;
@@ -127175,7 +127175,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 777,
+	SpriteId = 777,
 	Script = [[
 		bonus bMaxHP,300;
 		if(getrefine()>6) {
@@ -127195,7 +127195,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 711,
+	SpriteId = 711,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRace,RC_Plant,3;
@@ -127212,7 +127212,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 781,
+	SpriteId = 781,
 	Script = [[
 		bonus bMdef, 5;
 		bonus bMaxHPrate, 2;
@@ -127227,7 +127227,7 @@ item_db = {
 	Weight = 300,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 783,
+	SpriteId = 783,
 	Script = [[
 		bonus2 bAddSize,Size_Small,15;
 	]]
@@ -127245,7 +127245,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 784,
+	SpriteId = 784,
 	Script = [[
 		bonus2 bAddRace, RC_DemiPlayer, 10;
 		bonus2 bAddRace, RC_Demon, 10;
@@ -127263,7 +127263,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 785,
+	SpriteId = 785,
 	Script = [[
 		bonus bDex,3;
 		bonus bLuk,1;
@@ -127285,7 +127285,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 786,
+	SpriteId = 786,
 },
 [ "Pink_Poring_Hairpin" ] = {
 	Id = 18633,
@@ -127296,7 +127296,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 787,
+	SpriteId = 787,
 },
 [ "Green_Poring_Hairpin" ] = {
 	Id = 18634,
@@ -127307,7 +127307,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 788,
+	SpriteId = 788,
 },
 [ "Blue_Poring_Hairpin" ] = {
 	Id = 18635,
@@ -127318,7 +127318,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 789,
+	SpriteId = 789,
 },
 [ "Bridal_Ribbon" ] = {
 	Id = 18636,
@@ -127329,7 +127329,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 790,
+	SpriteId = 790,
 	Script = [[
 		bonus bDex,1;
 		bonus4 bAutoSpellWhenHit,DC_WINKCHARM,1,100,1;
@@ -127344,7 +127344,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 660,
+	SpriteId = 660,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,1;
@@ -127363,7 +127363,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 791,
+	SpriteId = 791,
 	Script = [[
 		bonus bLuk,3;
 		bonus2 bAddRaceTolerance,RC_Plant,10;
@@ -127381,7 +127381,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 792,
+	SpriteId = 792,
 	Script = [[
 		bonus bLuk,3;
 		/* Increase damage against water property monster by +10% */
@@ -127399,7 +127399,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 793,
+	SpriteId = 793,
 },
 [ "Ribbon_Magic_Hat" ] = {
 	Id = 18641,
@@ -127413,7 +127413,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 794,
+	SpriteId = 794,
 	Script = [[
 		bonus bInt,3;
 		bonus bMaxSP,50;
@@ -127433,7 +127433,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 795,
+	SpriteId = 795,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Rockhand_Model" ] = {
@@ -127449,7 +127449,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 796,
+	SpriteId = 796,
 	Script = [[ bonus bStr,1; ]]
 },
 [ "Paperhand_Model" ] = {
@@ -127465,7 +127465,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 797,
+	SpriteId = 797,
 },
 [ "Sailor_Hat" ] = {
 	Id = 18645,
@@ -127475,7 +127475,7 @@ item_db = {
 	Weight = 200,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 798,
+	SpriteId = 798,
 	Script = [[
 		bonus bInt, 1;
 		bonus2 bAddRace, RC_DemiPlayer, 5;
@@ -127490,7 +127490,7 @@ item_db = {
 	Def = 4,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 799,
+	SpriteId = 799,
 	Script = [[
 		bonus2 bAddMonsterDropItem,519,100;
 		bonus bDex,2;
@@ -127504,7 +127504,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 800,
+	SpriteId = 800,
 	Script = [[ bonus2 bResEff,Eff_Stun,1500; ]]
 },
 [ "Tongue_Charm" ] = {
@@ -127515,7 +127515,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 801,
+	SpriteId = 801,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Demon,3; ]]
 },
 [ "Lude_Mask" ] = {
@@ -127526,7 +127526,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
-	ViewSprite = 802,
+	SpriteId = 802,
 },
 [ "RWC_Shouting_Mouth" ] = {
 	Id = 18650,
@@ -127536,7 +127536,7 @@ item_db = {
 	Weight = 50,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 194,
+	SpriteId = 194,
 },
 [ "Ignis_Cap" ] = {
 	Id = 18651,
@@ -127548,7 +127548,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 803,
+	SpriteId = 803,
 },
 [ "Vanargand_Helm" ] = {
 	Id = 18652,
@@ -127560,7 +127560,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 80,
-	ViewSprite = 804,
+	SpriteId = 804,
 	Script = [[
 		bonus2 bHPDrainRate,10*(5+1*(getrefine()>7)+2*(getrefine()>8)+2*(getrefine()>9)),1+2*(getrefine()>5)+2*(getrefine()>7)+3*(getrefine()>9);
 		bonus2 bSPDrainRate,10*(5+1*(getrefine()>8)+2*(getrefine()>9)),1+(getrefine()>7)+2*(getrefine()>9);
@@ -127576,7 +127576,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 805,
+	SpriteId = 805,
 	Script = [[
 		bonus bMdef,4;
 		bonus bAgi,2;
@@ -127591,7 +127591,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 806,
+	SpriteId = 806,
 	Script = [[
 		bonus2 bResEff,Eff_Curse,10000;
 		bonus bMdef,5;
@@ -127607,7 +127607,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 23,
+	SpriteId = 23,
 },
 [ "Wit_Pumpkin_Hat" ] = {
 	Id = 18656,
@@ -127618,7 +127618,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 717,
+	SpriteId = 717,
 	Script = [[
 		bonus bMdef,10;
 		bonus bStr,2;
@@ -127639,7 +127639,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 80,
 	Refine = false,
-	ViewSprite = 568,
+	SpriteId = 568,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAspdRate,1;
@@ -127655,7 +127655,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 25,
+	SpriteId = 25,
 },
 [ "Boitata_Hat" ] = {
 	Id = 18659,
@@ -127665,7 +127665,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 808,
+	SpriteId = 808,
 	Script = [[
 		bonus3 bAutoSpell,AS_SONICBLOW,5,10;
 		autobonus "{ bonus bAtkEle,Ele_Fire; }",10000,1800000;
@@ -127684,7 +127684,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 809,
+	SpriteId = 809,
 	Script = [[ bonus bAgi,2; ]]
 },
 [ "Trident_Helmet" ] = {
@@ -127701,7 +127701,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 810,
+	SpriteId = 810,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Antler_Fedora" ] = {
@@ -127716,7 +127716,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 811,
+	SpriteId = 811,
 	Script = [[ bonus bInt,3; ]]
 },
 [ "Sunglasses_Bball_Hat" ] = {
@@ -127733,7 +127733,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 812,
+	SpriteId = 812,
 	Script = [[ bonus bInt,3; ]]
 },
 [ "Blind_Glasses" ] = {
@@ -127749,7 +127749,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
-	ViewSprite = 813,
+	SpriteId = 813,
 },
 [ "Orange_In_Mouth" ] = {
 	Id = 18665,
@@ -127764,7 +127764,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 814,
+	SpriteId = 814,
 },
 [ "CD_In_Mouth" ] = {
 	Id = 18666,
@@ -127775,7 +127775,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 815,
+	SpriteId = 815,
 	Script = [[
 		bonus3 bAutoSpell,MG_COLDBOLT,3,30;
 		bonus3 bAutoSpell,MG_SOULSTRIKE,3, 30;
@@ -127798,7 +127798,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 816,
+	SpriteId = 816,
 	Script = [[ bonus bDex,3; ]]
 },
 [ "Droopy_Turtle_Hat" ] = {
@@ -127810,7 +127810,7 @@ item_db = {
 	Def = 1,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 694,
+	SpriteId = 694,
 	Script = [[ skill AL_DECAGI,3; ]]
 },
 [ "Cowhide_Hat" ] = {
@@ -127826,7 +127826,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 819,
+	SpriteId = 819,
 	Script = [[
 		bonus bDex,2;
 		bonus bMaxHPrate,1;
@@ -127842,7 +127842,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 12,
 	Refine = false,
-	ViewSprite = 818,
+	SpriteId = 818,
 	Script = [[ bonus2 bAddRaceTolerance,RC_DemiPlayer,3; ]]
 },
 [ "Rudolf_Hairband" ] = {
@@ -127854,7 +127854,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 836,
+	SpriteId = 836,
 	Script = [[
 		bonus3 bAutoSpell,AL_INCAGI,10,50;
 		bonus2 bAddItemHealRate,Carrot,2000;
@@ -127868,7 +127868,7 @@ item_db = {
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 817,
+	SpriteId = 817,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,1;
@@ -127883,7 +127883,7 @@ item_db = {
 	Weight = 300,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 817,
+	SpriteId = 817,
 	Script = [[
 		bonus bMdef,7;
 		bonus bHealPower,5;
@@ -127905,7 +127905,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 11,
+	SpriteId = 11,
 	Script = [[
 		bonus bAgi,3;
 		bonus bAspdRate,1;
@@ -127926,7 +127926,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 11,
+	SpriteId = 11,
 	Script = [[
 		bonus bDex,2;
 		bonus bHit,5;
@@ -127946,7 +127946,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 822,
+	SpriteId = 822,
 	Script = [[ bonus bFlee,2; ]]
 },
 [ "Cherry_Twig_In_Mouth" ] = {
@@ -127962,7 +127962,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 823,
+	SpriteId = 823,
 	Script = [[
 		bonus2 bAddRace,RC_Plant,2;
 	]]
@@ -127980,7 +127980,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 824,
+	SpriteId = 824,
 	Script = [[
 		bonus2 bSubSize,Size_Small,2;
 	]]
@@ -127998,7 +127998,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 825,
+	SpriteId = 825,
 	Script = [[
 		skill MC_IDENTIFY,1;
 	]]
@@ -128013,7 +128013,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 35,
 	Refine = false,
-	ViewSprite = 826,
+	SpriteId = 826,
 	Script = [[
 		bonus bAgi,1;
 		bonus2 bExpAddRace,RC_Insect,5;
@@ -128027,7 +128027,7 @@ item_db = {
 	Weight = 200,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 827,
+	SpriteId = 827,
 	Script = [[
 		bonus bVit,2;
 		bonus bMaxHP,100;
@@ -128041,7 +128041,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
-	ViewSprite = 828,
+	SpriteId = 828,
 	Script = [[ bonus bMaxSP,15; ]]
 },
 [ "Carrot_In_Mouth" ] = {
@@ -128053,7 +128053,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 829,
+	SpriteId = 829,
 	Script = [[ bonus2 bAddRaceTolerance,RC_Plant,3;]]
 },
 [ "Showy_High_Cap" ] = {
@@ -128069,7 +128069,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 11,
+	SpriteId = 11,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,2;
@@ -128084,7 +128084,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 831,
+	SpriteId = 831,
 },
 [ "2011_RMSC_1" ] = {
 	Id = 18686,
@@ -128096,7 +128096,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 832,
+	SpriteId = 832,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAllStats,5;
@@ -128112,7 +128112,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 832,
+	SpriteId = 832,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAllStats,3;
@@ -128128,7 +128128,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 832,
+	SpriteId = 832,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAllStats,1;
@@ -128142,7 +128142,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 832,
+	SpriteId = 832,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Sirt_Evil_Eye" ] = {
@@ -128154,7 +128154,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 345,
+	SpriteId = 345,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bStr,1;
@@ -128168,7 +128168,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 863,
+	SpriteId = 863,
 },
 [ "Mike_Hat" ] = {
 	Id = 18692,
@@ -128183,7 +128183,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 837,
+	SpriteId = 837,
 	Script = [[
 		bonus bDex,2;
 		bonus bLuk,1;
@@ -128203,7 +128203,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 838,
+	SpriteId = 838,
 	Script = [[
 		bonus2 bAddRace,RC_Brute,2;
 	]]
@@ -128222,7 +128222,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 839,
+	SpriteId = 839,
 	Script = [[
 		bonus bCritical,10;
 	]]
@@ -128241,7 +128241,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 840,
+	SpriteId = 840,
 	Script = [[ bonus bInt,2; ]]
 },
 [ "Orange_Hat" ] = {
@@ -128257,7 +128257,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 841,
+	SpriteId = 841,
 	Script = [[
 		skill MC_MAMMONITE,2;
 	]]
@@ -128275,7 +128275,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 842,
+	SpriteId = 842,
 },
 [ "Cheesy_Snack_In_Mouth" ] = {
 	Id = 18698,
@@ -128290,7 +128290,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 843,
+	SpriteId = 843,
 },
 [ "Starving_Fish_Hat" ] = {
 	Id = 18699,
@@ -128301,7 +128301,7 @@ item_db = {
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 844,
+	SpriteId = 844,
 	Script = [[
 		bonus2 bSubRace,RC_Fish,15;
 		bonus3 bAddMonsterDropItem,579,RC_Fish,5;
@@ -128317,7 +128317,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 845,
+	SpriteId = 845,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Ancient_Civil_Man" ] = {
@@ -128334,7 +128334,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 846,
+	SpriteId = 846,
 	Script = [[
 		bonus bInt,3;
 		bonus bDex,2;
@@ -128352,7 +128352,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 847,
+	SpriteId = 847,
 },
 [ "Stem_In_Mouth" ] = {
 	Id = 18703,
@@ -128362,7 +128362,7 @@ item_db = {
 	Weight = 50,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 848,
+	SpriteId = 848,
 	Script = [[
 		bonus2 bResEff,Eff_Poison,2000;
 	]]
@@ -128377,7 +128377,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 64,
-	ViewSprite = 850,
+	SpriteId = 850,
 	Script = [[ bonus bMdef,4; ]]
 },
 [ "Flip_Hat" ] = {
@@ -128389,7 +128389,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 862,
+	SpriteId = 862,
 },
 [ "Can_Hat" ] = {
 	Id = 18706,
@@ -128404,7 +128404,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 851,
+	SpriteId = 851,
 	Script = [[ bonus bLuk,3; ]]
 },
 [ "Maneater_Flower_Hat" ] = {
@@ -128420,7 +128420,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 852,
+	SpriteId = 852,
 },
 [ "Candy_Hat" ] = {
 	Id = 18708,
@@ -128435,7 +128435,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 853,
+	SpriteId = 853,
 	Script = [[
 		skill AL_HEAL,3;
 	]]
@@ -128453,7 +128453,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 854,
+	SpriteId = 854,
 },
 [ "Sugared_Fruit_Stick" ] = {
 	Id = 18710,
@@ -128468,7 +128468,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 855,
+	SpriteId = 855,
 },
 [ "Electric_Sunglass" ] = {
 	Id = 18711,
@@ -128484,7 +128484,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 856,
+	SpriteId = 856,
 },
 [ "Fan_In_Mouth" ] = {
 	Id = 18712,
@@ -128499,7 +128499,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 857,
+	SpriteId = 857,
 },
 [ "Monkey_On_Fur_Hat" ] = {
 	Id = 18713,
@@ -128511,7 +128511,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 858,
+	SpriteId = 858,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -128527,7 +128527,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 859,
+	SpriteId = 859,
 },
 [ "Helm_Of_Thoth" ] = {
 	Id = 18715,
@@ -128544,7 +128544,7 @@ item_db = {
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 80,
 	Refine = false,
-	ViewSprite = 860,
+	SpriteId = 860,
 	Script = [[
 		bonus bInt,2;
 		bonus bMdef,5;
@@ -128560,7 +128560,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 861,
+	SpriteId = 861,
 },
 [ "Skull_Hood_" ] = {
 	Id = 18717,
@@ -128570,7 +128570,7 @@ item_db = {
 	Weight = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 598,
+	SpriteId = 598,
 },
 [ "Rose_Hairband" ] = {
 	Id = 18718,
@@ -128582,7 +128582,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 864,
+	SpriteId = 864,
 	Script = [[
 		bonus bInt,1;
 		bonus bVit,1;
@@ -128598,7 +128598,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 873,
+	SpriteId = 873,
 	Script = [[
 		bonus bMatkRate,3;
 	]]
@@ -128611,7 +128611,7 @@ item_db = {
 	Weight = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 865,
+	SpriteId = 865,
 },
 [ "Winged_Feather_Ears" ] = {
 	Id = 18722,
@@ -128620,7 +128620,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 80,
 	Refine = false,
-	ViewSprite = 724,
+	SpriteId = 724,
 	Script = [[
 		bonus bMaxHPrate,1;
 		if(BaseLevel >= 100) {
@@ -128639,7 +128639,7 @@ item_db = {
 	Weight = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 866,
+	SpriteId = 866,
 },
 [ "Baphomet_Horns" ] = {
 	Id = 18724,
@@ -128647,7 +128647,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 380,
+	SpriteId = 380,
 },
 [ "Rabbit_Knithat" ] = {
 	Id = 18725,
@@ -128657,7 +128657,7 @@ item_db = {
 	Weight = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 867,
+	SpriteId = 867,
 },
 [ "Skymet" ] = {
 	Id = 18726,
@@ -128667,7 +128667,7 @@ item_db = {
 	Weight = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 868,
+	SpriteId = 868,
 },
 [ "Sedora_Hat" ] = {
 	Id = 18727,
@@ -128679,7 +128679,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 869,
+	SpriteId = 869,
 },
 [ "Egir_Helm" ] = {
 	Id = 18728,
@@ -128691,7 +128691,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 110,
-	ViewSprite = 870,
+	SpriteId = 870,
 	Script = [[
 		bonus bMdef, 5;
 		bonus bUnbreakableHelm, 0;
@@ -128706,7 +128706,7 @@ item_db = {
 	Def = 6,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 871,
+	SpriteId = 871,
 	Script = [[
 		bonus2 bSubRace,RC_DemiPlayer,10;
 		bonus2 bAddItemHealRate,522,30;
@@ -128724,7 +128724,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 872,
+	SpriteId = 872,
 	Script = [[
 		bonus bMaxSP,5;
 		bonus bMaxHP,15;
@@ -128736,7 +128736,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 225,
+	SpriteId = 225,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -128755,7 +128755,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 14,
+	SpriteId = 14,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -128789,7 +128789,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 40,
+	SpriteId = 40,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -128820,7 +128820,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 209,
+	SpriteId = 209,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -128846,7 +128846,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 229,
+	SpriteId = 229,
 	Script = [[
 		bonus bMdef,1;
 		bonus bUnbreakableHelm,0;
@@ -128862,7 +128862,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 876,
+	SpriteId = 876,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Carnation_Hairband" ] = {
@@ -128872,7 +128872,7 @@ item_db = {
 	Buy = 20,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 878,
+	SpriteId = 878,
 	Script = [[ bonus bLuk,1; ]]
 },
 [ "C_Hair_Of_The_Strong" ] = {
@@ -128882,7 +128882,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 879,
+	SpriteId = 879,
 },
 [ "C_Will_O_Wisp" ] = {
 	Id = 18741,
@@ -128891,7 +128891,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 880,
+	SpriteId = 880,
 	OnEquipScript = [[ sc_start SC_STRANGELIGHTS,-1,0;s]],
 	OnUnequipScript = [[ sc_end SC_STRANGELIGHTS; ]]
 },
@@ -128902,7 +128902,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 881,
+	SpriteId = 881,
 	OnEquipScript = [[ sc_start SC_MOONSTAR,-1,0;s]],
 	OnUnequipScript = [[ sc_end SC_MOONSTAR; ]]
 },
@@ -128913,7 +128913,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 882,
+	SpriteId = 882,
 },
 [ "C_World_Star" ] = {
 	Id = 18744,
@@ -128922,7 +128922,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 883,
+	SpriteId = 883,
 	OnEquipScript = [[ sc_start SC_SUPER_STAR,-1,0;s]],
 	OnUnequipScript = [[ sc_end SC_SUPER_STAR; ]]
 },
@@ -128935,7 +128935,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 884,
+	SpriteId = 884,
 },
 [ "Chilly_Breath" ] = {
 	Id = 18746,
@@ -128946,7 +128946,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 885,
+	SpriteId = 885,
 	Script = [[ bonus bInt,1; ]]
 },
 [ "Eyes_Of_Ifrit" ] = {
@@ -128959,7 +128959,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 886,
+	SpriteId = 886,
 	Script = [[ bonus bDex,1; ]]
 },
 [ "Gold_Ingot_Poring_Hat" ] = {
@@ -128971,7 +128971,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 887,
+	SpriteId = 887,
 	Script = [[
 		bonus bDex,2;
 		bonus bLuk,2;
@@ -128986,7 +128986,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 888,
+	SpriteId = 888,
 	Script = [[
 		bonus bStr,2;
 		bonus bMaxHP,100;
@@ -129001,7 +129001,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 889,
+	SpriteId = 889,
 },
 [ "Cursed_Book" ] = {
 	Id = 18752,
@@ -129009,7 +129009,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 890,
+	SpriteId = 890,
 },
 [ "Tw_Rice_Ball" ] = {
 	Id = 18753,
@@ -129020,7 +129020,7 @@ item_db = {
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 892,
+	SpriteId = 892,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bLuk,1;
@@ -129035,7 +129035,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 40,
 	Refine = false,
-	ViewSprite = 893,
+	SpriteId = 893,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Feather_Beret_" ] = {
@@ -129051,7 +129051,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 224,
+	SpriteId = 224,
 	Script = [[
 		bonus bMdef, 1;
 		bonus bUnbreakableHelm, 0;
@@ -129068,7 +129068,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 894,
+	SpriteId = 894,
 },
 [ "Holy_Klobuk" ] = {
 	Id = 18757,
@@ -129079,7 +129079,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	Refine = false,
-	ViewSprite = 895,
+	SpriteId = 895,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bAddRaceTolerance,RC_Demon,10;
@@ -129096,7 +129096,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 896,
+	SpriteId = 896,
 },
 [ "Stretched_Nose_M" ] = {
 	Id = 18759,
@@ -129107,7 +129107,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 737,
+	SpriteId = 737,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Remodel_Wizardry_Hat" ] = {
@@ -129125,7 +129125,7 @@ item_db = {
 		[ Job.SoulLinker ] = true,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 112,
+	SpriteId = 112,
 	Script = [[
 		bonus bInt,2;
 		bonus bMaxSP,150;
@@ -129152,7 +129152,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 130,
+	SpriteId = 130,
 	Script = [[
 		bonus bDex,1;
 		bonus bAgi,1;
@@ -129172,7 +129172,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 153,
+	SpriteId = 153,
 	Script = [[
 		bonus bAgi,2;
 		bonus bLuk,2;
@@ -129192,7 +129192,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 89,
+	SpriteId = 89,
 	Script = [[
 		bonus bLuk,2;
 		bonus bMdef,5;
@@ -129208,7 +129208,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 15,
+	SpriteId = 15,
 	Script = [[
 		bonus bLuk,2;
 		if(getrefine()>=7) { bonus bCritical,5; }
@@ -129228,7 +129228,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 99,
-	ViewSprite = 105,
+	SpriteId = 105,
 	Script = [[
 		bonus bVit,1;
 		bonus bMaxHPrate,5;
@@ -129260,7 +129260,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 99,
-	ViewSprite = 110,
+	SpriteId = 110,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -129296,7 +129296,7 @@ item_db = {
 	},
 	Loc = { EquipLocationMask.TopHead, EquipLocationMask.MidHead },
 	EquipLv = 99,
-	ViewSprite = 138,
+	SpriteId = 138,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,2;
@@ -129330,7 +129330,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 103,
+	SpriteId = 103,
 	Script = [[
 		bonus2 bSubEle,Ele_Dark,-15;
 		bonus2 bSubEle,Ele_Neutral,2;
@@ -129347,7 +129347,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 51,
+	SpriteId = 51,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Undead,10;
 		if(getrefine()>=7) { bonus2 bAddRaceTolerance,RC_Undead,10; }
@@ -129362,7 +129362,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead, EquipLocationMask.MidHead },
-	ViewSprite = 139,
+	SpriteId = 139,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Undead,10;
 		if(getrefine()>=7) { bonus2 bAddRaceTolerance,RC_Undead,10; }
@@ -129378,7 +129378,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 20,
 	Refine = false,
-	ViewSprite = 128,
+	SpriteId = 128,
 	Script = [[
 		bonus bMatk,5;
 		bonus bAtk,5;
@@ -129399,7 +129399,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 83,
+	SpriteId = 83,
 	Script = [[
 		bonus bDex,1;
 		bonus bLongAtkRate,1;
@@ -129420,7 +129420,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 65,
 	Refine = false,
-	ViewSprite = 100,
+	SpriteId = 100,
 	Script = [[
 		bonus bMaxHP,300+(BaseLevel*10);
 	]]
@@ -129439,7 +129439,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 180,
+	SpriteId = 180,
 	Script = [[
 		bonus bCritical,1;
 		bonus bCriticalRate,1;
@@ -129460,7 +129460,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 79,
+	SpriteId = 79,
 	Script = [[
 		bonus2 bSubEle,Ele_Fire,10;
 		bonus bDex,5;
@@ -129480,7 +129480,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 99,
-	ViewSprite = 255,
+	SpriteId = 255,
 	Script = [[
 		bonus bSPrecovRate,30;
 	]]
@@ -129493,7 +129493,7 @@ item_db = {
 	Weight = 100,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 897,
+	SpriteId = 897,
 	Script = [[
 		bonus bLuk,10;
 	]]
@@ -129503,7 +129503,7 @@ item_db = {
 	Name = "Pink Bunny Hair Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 898,
+	SpriteId = 898,
 },
 [ "RWC_Champ_Crown_Red" ] = {
 	Id = 18779,
@@ -129512,7 +129512,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 902,
+	SpriteId = 902,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -129530,7 +129530,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 903,
+	SpriteId = 903,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -129548,7 +129548,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 904,
+	SpriteId = 904,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -129567,7 +129567,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 695,
+	SpriteId = 695,
 	Script = [[
 		bonus bDex,2;
 		bonus bUnbreakableHelm,0;
@@ -129583,7 +129583,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 583,
+	SpriteId = 583,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,10;
@@ -129602,7 +129602,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 757,
+	SpriteId = 757,
 	Script = [[
 		bonus bInt,2;
 		bonus2 bMagicAddRace,RC_DemiPlayer,5;
@@ -129619,7 +129619,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 905,
+	SpriteId = 905,
 	Script = [[
 		bonus bDex,1;
 		bonus bLuk,1;
@@ -129638,7 +129638,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 906,
+	SpriteId = 906,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Goaltender_Mask" ] = {
@@ -129650,7 +129650,7 @@ item_db = {
 	Def = 5,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 50,
-	ViewSprite = 336,
+	SpriteId = 336,
 	Script = [[
 		bonus2 bAddRace,RC_DemiPlayer,8;
 	]]
@@ -129663,7 +129663,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 30,
-	ViewSprite = 83,
+	SpriteId = 83,
 	Script = [[
 		bonus bDex,1;
 		bonus bLongAtkRate,1;
@@ -129681,7 +129681,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 899,
+	SpriteId = 899,
 	Script = [[
 		bonus2 bAddMonsterDropItem,921,100+((getrefine()/2)*20); /* Custom - JRO */
 		bonus2 bAddMonsterDropItem,7033,100+((getrefine()/2)*20);
@@ -129696,7 +129696,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 900,
+	SpriteId = 900,
 	Script = [[
 		bonus2 bRaceTolerance,RC_DemiPlayer,-5;
 		bonus bAtkRate,5;
@@ -129717,7 +129717,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 908,
+	SpriteId = 908,
 	Script = [[
 		bonus2 bSkillAtk,PR_MAGNUS,30;
 		bonus2 bSkillAtk,PR_MAGNUS,(getrefine()/2)*5;
@@ -129737,7 +129737,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 45,
-	ViewSprite = 901,
+	SpriteId = 901,
 	Script = [[
 		bonus bVit,10;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,10;
@@ -129759,7 +129759,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 911,
+	SpriteId = 911,
 	Script = [[
 		bonus bMdef,10;
 		bonus2 bSkillAtk,MG_FIREBOLT,50;
@@ -129783,7 +129783,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 912,
+	SpriteId = 912,
 	Script = [[
 		bonus2 bSkillAtk, WL_CRIMSONROCK, 5;
 		bonus2 bSkillAtk, WL_JACKFROST, 5;
@@ -129815,7 +129815,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 913,
+	SpriteId = 913,
 	Script = [[
 		bonus bFixedCastrate,-(getskilllv(BA_MUSICALLESSON)*5);
 		if(getrefine()>6) { bonus2 bSkillAtk,WM_SEVERE_RAINSTORM_MELEE,25; }
@@ -129830,7 +129830,7 @@ item_db = {
 	Def = 12,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 914,
+	SpriteId = 914,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -129858,7 +129858,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 915,
+	SpriteId = 915,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -129878,7 +129878,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 916,
+	SpriteId = 916,
 	Script = [[
 		bonus bAgi,1;
 		bonus bLuk,1;
@@ -129894,7 +129894,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 917,
+	SpriteId = 917,
 	Script = [[
 		bonus2 bMagicAtkEle,Ele_Water,4;
 	]]
@@ -129907,7 +129907,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 918,
+	SpriteId = 918,
 	Script = [[
 		bonus2 bMagicAtkEle,Ele_Earth,4;
 	]]
@@ -129919,7 +129919,7 @@ item_db = {
 	Weight = 250,
 	Def = 6,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 809,
+	SpriteId = 809,
 	Script = [[
 		bonus bInt,2;
 		skill NJ_RAIGEKISAI,3;
@@ -129935,7 +129935,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 919,
+	SpriteId = 919,
 	Script = [[
 		bonus bMaxHPrate,5;
 		if (getrefine()>4) {
@@ -129956,7 +129956,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 920,
+	SpriteId = 920,
 	Script = [[
 		bonus bUseSPrate,-5;
 		if(readparam(bDex)>=100) {
@@ -129976,7 +129976,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 921,
+	SpriteId = 921,
 	Script = [[
 		bonus bDex,1;
 		bonus bInt,1;
@@ -130000,7 +130000,7 @@ item_db = {
 	Weight = 300,
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 922,
+	SpriteId = 922,
 	Script = [[
 		bonus bLuk,3;
 		bonus bMdef,5;
@@ -130015,7 +130015,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 923,
+	SpriteId = 923,
 	Script = [[
 		bonus bDex,2;
 		bonus bAgi,3;
@@ -130034,7 +130034,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 924,
+	SpriteId = 924,
 	Script = [[
 		bonus bVit,2;
 		bonus bLuk,3;
@@ -130047,7 +130047,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 925,
+	SpriteId = 925,
 	Script = [[ bonus bAgi,1; ]]
 },
 [ "Hell_Pumpkin_Hat" ] = {
@@ -130057,7 +130057,7 @@ item_db = {
 	Weight = 500,
 	Def = 12,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 717,
+	SpriteId = 717,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,5;
 		bonus2 bAddRaceTolerance,RC_Undead,5;
@@ -130071,7 +130071,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 413,
+	SpriteId = 413,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,5;
 		bonus2 bAddRaceTolerance,RC_Undead,5;
@@ -130085,7 +130085,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 933,
+	SpriteId = 933,
 	Script = [[
 		bonus bInt,1;
 		bonus bMdef,5;
@@ -130102,7 +130102,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 856,
+	SpriteId = 856,
 	Script = [[
 		bonus bDelayrate,-10;
 	]]
@@ -130119,7 +130119,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 927,
+	SpriteId = 927,
 	Script = [[
 		bonus bInt,2;
 		bonus bVit,1;
@@ -130138,7 +130138,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 928,
+	SpriteId = 928,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,1;
@@ -130157,7 +130157,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 929,
+	SpriteId = 929,
 	Script = [[
 		bonus bInt,2;
 		bonus bVit,2;
@@ -130177,7 +130177,7 @@ item_db = {
 		[ Job.Novice ] = false,
 	},
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 930,
+	SpriteId = 930,
 	Script = [[
 		bonus bStr,2;
 		bonus bVit,2;
@@ -130192,7 +130192,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 931,
+	SpriteId = 931,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bHit,3;
@@ -130206,7 +130206,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 932,
+	SpriteId = 932,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bHit,3;
@@ -130226,7 +130226,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 120,
-	ViewSprite = 941,
+	SpriteId = 941,
 	Script = [[ bonus2 bSubEle,Ele_Holy,3+(getrefine()/2); ]]
 },
 [ "Rainbow_Feather_Deco" ] = {
@@ -130238,7 +130238,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 934,
+	SpriteId = 934,
 	Script = [[
 		bonus bAtkRate,1;
 		bonus bMatkRate,1;
@@ -130252,7 +130252,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 422,
+	SpriteId = 422,
 	Script = [[ bonus3 bAutoSpell,SM_MAGNUM,1,30; ]]
 },
 [ "Imperial_Feather" ] = {
@@ -130263,7 +130263,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 935,
+	SpriteId = 935,
 	Script = [[
 		bonus bAspdRate,1;
 		bonus2 bSubEle,Ele_Wind,5;
@@ -130281,7 +130281,7 @@ item_db = {
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.MidHead },
 	EquipLv = 49,
 	Refine = false,
-	ViewSprite = 936,
+	SpriteId = 936,
 	Script = [[
 		bonus3 bHPDrainRate,10,1,0;
 		bonus3 bSPDrainRate,10,1,0;
@@ -130297,7 +130297,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 38,
-	ViewSprite = 107,
+	SpriteId = 107,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -130311,7 +130311,7 @@ item_db = {
 	Weight = 300,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 939,
+	SpriteId = 939,
 	Script = [[
 		bonus bInt,2;
 		bonus bVit,2;
@@ -130327,7 +130327,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 940,
+	SpriteId = 940,
 	Script = [[
 		bonus bStr,1;
 		bonus2 bAddEle,Ele_Dark,10;
@@ -130344,7 +130344,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
 	Refine = false,
-	ViewSprite = 942,
+	SpriteId = 942,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -130371,7 +130371,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
 	Refine = false,
-	ViewSprite = 943,
+	SpriteId = 943,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -130398,7 +130398,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
 	Refine = false,
-	ViewSprite = 944,
+	SpriteId = 944,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -130425,7 +130425,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 95,
 	Refine = false,
-	ViewSprite = 945,
+	SpriteId = 945,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAllStats,2;
@@ -130439,7 +130439,7 @@ item_db = {
 	Buy = 20,
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 946,
+	SpriteId = 946,
 },
 [ "Marin_Crown" ] = {
 	Id = 18833,
@@ -130449,7 +130449,7 @@ item_db = {
 	Def = 3,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 948,
+	SpriteId = 948,
 	Script = [[
 		bonus bAllStats,1;
 		bonus bMdef,2;
@@ -130463,7 +130463,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Def = 3,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 949,
+	SpriteId = 949,
 	Script = [[
 		bonus bLuk,3;
 		bonus3 bAutoSpellWhenHit,HP_ASSUMPTIO,3,10;
@@ -130475,7 +130475,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 950,
+	SpriteId = 950,
 },
 [ "TW_10th_Anni_Lmtd_Hat" ] = {
 	Id = 18836,
@@ -130484,7 +130484,7 @@ item_db = {
 	Weight = 100,
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 951,
+	SpriteId = 951,
 	Script = [[
 		bonus bMatk,2;
 		bonus bMdef,10;
@@ -130509,7 +130509,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 952,
+	SpriteId = 952,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "Poring_Sunglasses_" ] = {
@@ -130521,7 +130521,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 954,
+	SpriteId = 954,
 	Script = [[
 		bonus bDex,1;
 		bonus bVariableCastrate,-5;
@@ -130536,7 +130536,7 @@ item_db = {
 	Def = 10,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 905,
+	SpriteId = 905,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bMdef,10;
@@ -130551,7 +130551,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 955,
+	SpriteId = 955,
 	Script = [[
 		bonus bAspdRate,(getrefine()/3)*2;
 		bonus2 bExpAddRace, RC_All, 3;
@@ -130567,7 +130567,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 956,
+	SpriteId = 956,
 	Script = [[
 		bonus bInt,(getrefine()/3)*2;
 		bonus2 bSubRace,RC_DemiPlayer,7;
@@ -130583,7 +130583,7 @@ item_db = {
 	Def = 7,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 957,
+	SpriteId = 957,
 	Script = [[
 		bonus2 bAddRaceTolerance, RC_DemiPlayer, 5;
 		if (getrefine() > 7) { bonus bMaxHPrate, getrefine()-7; }
@@ -130598,7 +130598,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 958,
+	SpriteId = 958,
 	Script = [[
 		bonus bAllStats,2;
 		bonus bFlee2,2;
@@ -130613,7 +130613,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 959,
+	SpriteId = 959,
 	Script = [[
 		bonus bUnbreakableHelm, 0;
 		bonus bMaxSPrate, 3;
@@ -130628,7 +130628,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 960,
+	SpriteId = 960,
 	Script = [[ bonus2 bSubEle,Ele_Water,5; ]]
 },
 [ "Jolly_Roger" ] = {
@@ -130640,7 +130640,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 962,
+	SpriteId = 962,
 	Script = [[
 		bonus bVit,1;
 		bonus2 bSubEle,Ele_Water,2;
@@ -130656,7 +130656,7 @@ item_db = {
 	Weight = 200,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 963,
+	SpriteId = 963,
 	Script = [[ bonus bMatk,20+getrefine(); ]]
 },
 [ "Celines_Ribbon" ] = {
@@ -130666,7 +130666,7 @@ item_db = {
 	Weight = 200,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 967,
+	SpriteId = 967,
 	Script = [[
 		bonus bDex,3;
 		bonus bMatk,40+getrefine();
@@ -130683,7 +130683,7 @@ item_db = {
 	Def = 7,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 966,
+	SpriteId = 966,
 	Script = [[
 		bonus bMdef,3;
 		bonus bDex,1;
@@ -130697,7 +130697,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 397,
+	SpriteId = 397,
 	Script = [[ bonus bMaxHPrate,5+(getrefine()/2); ]]
 },
 [ "Berry_Hat_Decoration" ] = {
@@ -130709,7 +130709,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 968,
+	SpriteId = 968,
 	Script = [[
 		bonus bAllStats,1;
 		if (getrefine()>=12) { bonus bAspd,2; }
@@ -130725,7 +130725,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 968,
+	SpriteId = 968,
 	Script = [[
 		bonus bAllStats,1;
 		if (getrefine()>=12) { bonus bAspd,2; }
@@ -130737,7 +130737,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 40,
-	ViewSprite = 865,
+	SpriteId = 865,
 	Script = [[ bonus bMaxSPrate,5+(getrefine()/2); ]]
 },
 [ "Aviator_Hat" ] = {
@@ -130747,7 +130747,7 @@ item_db = {
 	Weight = 100,
 	Def = 10,
 	Loc = EquipLocationMask.LowerHead,
-	ViewSprite = 972,
+	SpriteId = 972,
 	Script = [[
 		bonus bAgi,3;
 		bonus bInt,3;
@@ -130761,7 +130761,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 975,
+	SpriteId = 975,
 	Script = [[
 		bonus bMaxHP,200;
 		bonus bAspd,1;
@@ -130775,7 +130775,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 976,
+	SpriteId = 976,
 	Script = [[
 		bonus bDex,1;
 		bonus bMatkRate,2;
@@ -130790,7 +130790,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 977,
+	SpriteId = 977,
 },
 [ "Very_Sweet_Candy_Bar" ] = {
 	Id = 18870,
@@ -130798,7 +130798,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 446,
+	SpriteId = 446,
 },
 [ "Very_Sweet_Candy" ] = {
 	Id = 18871,
@@ -130806,7 +130806,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 446,
+	SpriteId = 446,
 },
 [ "Snake_Hat" ] = {
 	Id = 18872,
@@ -130817,7 +130817,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 986,
+	SpriteId = 986,
 	Script = [[
 		bonus bStr,3;
 		bonus bInt,3;
@@ -130833,7 +130833,7 @@ item_db = {
 	Weight = 100,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 865,
+	SpriteId = 865,
 },
 [ "One_Eyed_Glass_" ] = {
 	Id = 18874,
@@ -130842,7 +130842,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 23,
+	SpriteId = 23,
 },
 [ "Angry_Scorpion_Hat" ] = {
 	Id = 18879,
@@ -130853,7 +130853,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 995,
+	SpriteId = 995,
 	Script = [[ bonus bMdef,5; ]]
 },
 [ "Advanced_Jao_King_Hat" ] = {
@@ -130862,7 +130862,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 996,
+	SpriteId = 996,
 },
 [ "Jejecap" ] = {
 	Id = 18885,
@@ -130872,7 +130872,7 @@ item_db = {
 	Def = 8,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 70,
-	ViewSprite = 1011,
+	SpriteId = 1011,
 	Script = [[
 		bonus bStr,2;
 		bonus bInt,3;
@@ -130886,7 +130886,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
 	Refine = false,
-	ViewSprite = 1007,
+	SpriteId = 1007,
 	Script = [[
 		bonus bVit,2;
 		bonus bDex,3;
@@ -130900,7 +130900,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1012,
+	SpriteId = 1012,
 	Script = [[
 		bonus bVit,3;
 		bonus bMdef,5;
@@ -130920,7 +130920,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1013,
+	SpriteId = 1013,
 	Script = [[
 		bonus bInt,5;
 		bonus bLuk,5;
@@ -130941,7 +130941,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1014,
+	SpriteId = 1014,
 	Script = [[
 		bonus bAgi,5;
 		bonus bLuk,5;
@@ -130960,7 +130960,7 @@ item_db = {
 	Def = 2,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1015,
+	SpriteId = 1015,
 	Script = [[
 		bonus bInt,5;
 		bonus bLuk,5;
@@ -130981,7 +130981,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1016,
+	SpriteId = 1016,
 	Script = [[
 		bonus bAtkRate,5;
 		bonus bMatkRate,5;
@@ -130997,7 +130997,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 1017,
+	SpriteId = 1017,
 	Script = [[
 		bonus bMdef,5;
 		bonus bFlee,5;
@@ -131020,7 +131020,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 1018,
+	SpriteId = 1018,
 	Script = [[
 		bonus2 bAddRaceTolerance, RC_DemiPlayer, 8;
 		bonus2 bAddRaceTolerance, RC_Dragon, 8;
@@ -131040,7 +131040,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 1019,
+	SpriteId = 1019,
 	Script = [[ bonus2 bAddRaceTolerance, RC_DemiPlayer, 5; ]]
 },
 [ "Celestial_Dark_Flame" ] = {
@@ -131052,7 +131052,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 1008,
+	SpriteId = 1008,
 	Script = [[ bonus2 bSubEle,Ele_Fire,5; ]]
 },
 [ "Pterios_Fins" ] = {
@@ -131064,7 +131064,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 1009,
+	SpriteId = 1009,
 	Script = [[ bonus2 bSubEle,Ele_Fire,8; ]]
 },
 [ "Azure_Diadem" ] = {
@@ -131076,7 +131076,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 1010,
+	SpriteId = 1010,
 	Script = [[ bonus2 bSubEle,Ele_Water,8; ]]
 },
 [ "Yggdrasil_Herald_Crown" ] = {
@@ -131089,7 +131089,7 @@ item_db = {
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 997,
+	SpriteId = 997,
 	Script = [[
 		bonus bAllStats,5;
 		bonus bMaxHP,100;
@@ -131110,7 +131110,7 @@ item_db = {
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 60,
 	Refine = false,
-	ViewSprite = 1022,
+	SpriteId = 1022,
 },
 [ "Seppl_Hat" ] = {
 	Id = 18901,
@@ -131122,7 +131122,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.LowerHead,
 	EquipLv = 60,
-	ViewSprite = 1023,
+	SpriteId = 1023,
 },
 [ "Isabella_Red_Ear" ] = {
 	Id = 18908,
@@ -131132,7 +131132,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1030,
+	SpriteId = 1030,
 	Script = [[
 		bonus bStr,5;
 		bonus bMaxHPrate,5;
@@ -131148,7 +131148,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1031,
+	SpriteId = 1031,
 	Script = [[
 		bonus bMaxHPrate,10;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
@@ -131163,7 +131163,7 @@ item_db = {
 	Def = 8,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1032,
+	SpriteId = 1032,
 	Script = [[
 		bonus2 bAddSize,Size_Medium,10;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,5;
@@ -131178,7 +131178,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1033,
+	SpriteId = 1033,
 	Script = [[
 		bonus bDex,5;
 		bonus2 bSubEle,Ele_Earth,3;
@@ -131195,7 +131195,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 1034,
+	SpriteId = 1034,
 	Script = [[
 		bonus bAllStats,1;
 		bonus5 bAutoSpellWhenHit,AL_RUWACH,1,50,BF_WEAPON,0; /* Custom - PRO */
@@ -131210,7 +131210,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 1035,
+	SpriteId = 1035,
 	Script = [[
 		bonus bAllStats,1;
 		bonus5 bAutoSpellWhenHit,AL_RUWACH,1,50,BF_WEAPON,0; /* Custom - PRO */
@@ -131225,7 +131225,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 1036,
+	SpriteId = 1036,
 	Script = [[
 		bonus bAllStats,1;
 		bonus3 bAutoSpell,AL_BLESSING,7,50;
@@ -131240,7 +131240,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 1037,
+	SpriteId = 1037,
 	Script = [[
 		bonus bFlee,1;
 		bonus bMaxHP,200;
@@ -131254,7 +131254,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 1038,
+	SpriteId = 1038,
 	Script = [[
 		bonus bStr,1;
 		bonus bLuk,1;
@@ -131269,7 +131269,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 1039,
+	SpriteId = 1039,
 	Script = [[
 		bonus bAllStats,1;
 	]]
@@ -131282,7 +131282,7 @@ item_db = {
 	Def = 5,
 	Loc = EquipLocationMask.LowerHead,
 	Refine = false,
-	ViewSprite = 1040,
+	SpriteId = 1040,
 	Script = [[
 		bonus bVit,1;
 		bonus bInt,1;
@@ -131297,7 +131297,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 50,
 	Refine = false,
-	ViewSprite = 897,
+	SpriteId = 897,
 },
 [ "Elephant_Model_Hat" ] = {
 	Id = 18929,
@@ -131308,7 +131308,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 1065,
+	SpriteId = 1065,
 	Script = [[
 		bonus bDex,2;
 		bonus5 bAutoSpellWhenHit,WZ_STORMGUST,5,50,BF_WEAPON,0; /* Custom - IRO */
@@ -131323,7 +131323,7 @@ item_db = {
 	Def = 4,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 1070,
+	SpriteId = 1070,
 },
 [ "Memories_Of_Lovers" ] = {
 	Id = 18937,
@@ -131331,7 +131331,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1072,
+	SpriteId = 1072,
 },
 [ "Astro_Circle" ] = {
 	Id = 18938,
@@ -131340,7 +131340,7 @@ item_db = {
 	Weight = 300,
 	Def = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1073,
+	SpriteId = 1073,
 },
 [ "Knit_Cap_Of_Water" ] = {
 	Id = 18942,
@@ -131349,7 +131349,7 @@ item_db = {
 	Weight = 1000,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 90,
-	ViewSprite = 1077,
+	SpriteId = 1077,
 },
 [ "Silk_Hat_Of_Earth" ] = {
 	Id = 18943,
@@ -131358,7 +131358,7 @@ item_db = {
 	Weight = 1000,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 90,
-	ViewSprite = 1078,
+	SpriteId = 1078,
 },
 [ "Deviruchi_Balloon" ] = {
 	Id = 18944,
@@ -131369,7 +131369,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1082,
+	SpriteId = 1082,
 	Script = [[
 		bonus bAllStats,1;
 		bonus2 bAddRace,RC_Demon,1;
@@ -131385,7 +131385,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 1083,
+	SpriteId = 1083,
 	Script = [[
 		bonus bInt,2;
 		bonus bDex,2;
@@ -131405,7 +131405,7 @@ item_db = {
 	Def = 2,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 1084,
+	SpriteId = 1084,
 	Script = [[
 		bonus bStr,2;
 		bonus bLuk,2;
@@ -131420,7 +131420,7 @@ item_db = {
 	Name = "Boss Beret_J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1134,
+	SpriteId = 1134,
 },
 [ "Riot_Chip" ] = {
 	Id = 18997,
@@ -131431,7 +131431,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 100,
-	ViewSprite = 1201,
+	SpriteId = 1201,
 	Script = [[
 		bonus bHit,50;
 		bonus bFlee,50;
@@ -131446,7 +131446,7 @@ item_db = {
 	Def = 1,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
-	ViewSprite = 1210,
+	SpriteId = 1210,
 	Script = [[
 		bonus2 bSubRace,RC_Undead,5;
 		bonus2 bAddRace,RC_Undead,5;
@@ -131457,7 +131457,7 @@ item_db = {
 	Name = "Costume Kama's Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 564,
+	SpriteId = 564,
 },
 [ "Elemental_Crown" ] = {
 	Id = 19019,
@@ -131468,7 +131468,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 1219,
+	SpriteId = 1219,
 	Script = [[
 		bonus bDex,3;
 		bonus bLongAtkRate,4;
@@ -131486,7 +131486,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 1220,
+	SpriteId = 1220,
 	Script = [[
 		bonus bInt,3;
 		bonus bMatkRate,4;
@@ -131503,7 +131503,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 50,
-	ViewSprite = 1221,
+	SpriteId = 1221,
 	Script = [[
 		bonus bStr,3;
 		bonus bAtkRate,4;
@@ -131517,7 +131517,7 @@ item_db = {
 	Name = "Floating Stone Of Intelligence",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1230,
+	SpriteId = 1230,
 	OnEquipScript = [[ sc_start SC_FSTONE, -1, 0;s]],
 	OnUnequipScript = [[ sc_end SC_FSTONE; ]]
 },
@@ -131529,7 +131529,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.LowerHead, EquipLocationMask.TopHead },
 	EquipLv = 70,
-	ViewSprite = 1231,
+	SpriteId = 1231,
 	Script = [[
 		bonus bDefRate,-50;
 		bonus bMdefRate,-50;
@@ -131546,7 +131546,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 70,
 	Refine = false,
-	ViewSprite = 1232,
+	SpriteId = 1232,
 	Script = [[
 		bonus bMdef,2;
 		bonus2 bAddRaceTolerance,RC_DemiPlayer,2;
@@ -131570,7 +131570,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 10,
-	ViewSprite = 827,
+	SpriteId = 827,
 	Script = [[
 		bonus bMdef,3;
 		bonus2 bMagicAddRace,RC_Brute,5;
@@ -131589,7 +131589,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 110,
-	ViewSprite = 870,
+	SpriteId = 870,
 	Script = [[
 		bonus bVit, 3;
 		bonus bUnbreakableHelm, 0;
@@ -131602,7 +131602,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
-	ViewSprite = 1237,
+	SpriteId = 1237,
 	Script = [[
 		bonus2 bMagicAddRace,RC_Brute,4;
 		bonus2 bAddRaceTolerance,RC_Brute,5;
@@ -131615,7 +131615,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 40,
-	ViewSprite = 1036,
+	SpriteId = 1036,
 	Script = [[
 		skill AM_POTIONPITCHER,3;
 	]]
@@ -131626,7 +131626,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 300,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1249,
+	SpriteId = 1249,
 	Script = [[
 		bonus2 bAddRace,RC_Boss,15;
 	]]
@@ -131641,7 +131641,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 1250,
+	SpriteId = 1250,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Angel,5;
 		bonus2 bAddRace,RC_Angel,3;
@@ -131655,7 +131655,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
-	ViewSprite = 498,
+	SpriteId = 498,
 	Script = [[
 		bonus2 bAddRaceTolerance,RC_Demon,5;
 		bonus2 bMagicAddRace,RC_Demon,4;
@@ -131671,7 +131671,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 852,
+	SpriteId = 852,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bSPDrainValueRace,RC_Insect,5;
@@ -131692,7 +131692,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 54,
-	ViewSprite = 258,
+	SpriteId = 258,
 	Script = [[
 		bonus bVit,3;
 		bonus bMdef,3;
@@ -131712,7 +131712,7 @@ item_db = {
 	},
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 61,
-	ViewSprite = 257,
+	SpriteId = 257,
 	Script = [[
 		bonus bLuk,2;
 		bonus bBaseAtk,3;
@@ -131726,7 +131726,7 @@ item_db = {
 	Weight = 200,
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
-	ViewSprite = 1186,
+	SpriteId = 1186,
 	Script = [[
 		bonus2 bMagicAddRace,RC_Angel,4;
 		bonus2 bAddRaceTolerance,RC_Angel,5;
@@ -131761,7 +131761,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 20,
-	ViewSprite = 953,
+	SpriteId = 953,
 	Script = [[
 		bonus bMdef,5;
 		bonus2 bSPDrainValueRace,RC_Angel,5;
@@ -131779,7 +131779,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1308,
+	SpriteId = 1308,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -131804,7 +131804,7 @@ item_db = {
 	Def = 5,
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
-	ViewSprite = 1308,
+	SpriteId = 1308,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -131827,7 +131827,7 @@ item_db = {
 	Buy = 20,
 	Weight = 200,
 	Loc = EquipLocationMask.LowerHead,
-	ViewSprite = 720,
+	SpriteId = 720,
 	NoTrade = {
 		ItemTradeMask.StoreInGuildStorage,
 		ItemTradeMask.Mail,
@@ -131844,7 +131844,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.TopHead,
 	EquipLv = 30,
-	ViewSprite = 1308,
+	SpriteId = 1308,
 	Script = [[
 		bonus bHit,20;
 /*
@@ -131891,7 +131891,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 568,
+	SpriteId = 568,
 	Script = [[
 		if(BaseClass==Job_Swordman||BaseClass==Job_Merchant||BaseClass==Job_Thief||(BaseJob==Job_Taekwon&&Class!=Job_Soul_Linker)) {
 			bonus bAspd,1;
@@ -131921,7 +131921,7 @@ item_db = {
 	Loc = EquipLocationMask.MidHead,
 	EquipLv = 10,
 	Refine = false,
-	ViewSprite = 345,
+	SpriteId = 345,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRace, RC_All, 1;
@@ -131938,7 +131938,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.MidHead,
 	Refine = false,
-	ViewSprite = 394,
+	SpriteId = 394,
 	Script = [[
 		bonus bStr,1;
 		bonus bHit,8;
@@ -131952,7 +131952,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 65,
+	SpriteId = 65,
 	Script = [[ bonus bStr,2; ]]
 },
 [ "T_Spinx_Helm" ] = {
@@ -131962,7 +131962,7 @@ item_db = {
 	Slots = 1,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 137,
+	SpriteId = 137,
 },
 [ "T_Goggle" ] = {
 	Id = 19502,
@@ -131971,7 +131971,7 @@ item_db = {
 	Buy = 20,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "T_Munak_Hat" ] = {
 	Id = 19503,
@@ -131979,7 +131979,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 51,
+	SpriteId = 51,
 },
 [ "T_Sunglasses" ] = {
 	Id = 19504,
@@ -131988,7 +131988,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 12,
+	SpriteId = 12,
 },
 [ "T_Cigarette" ] = {
 	Id = 19505,
@@ -131997,7 +131997,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeLowerHead,
 	Refine = false,
-	ViewSprite = 54,
+	SpriteId = 54,
 },
 [ "T_Valkyrie_Feather_Band" ] = {
 	Id = 19506,
@@ -132005,7 +132005,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 300,
+	SpriteId = 300,
 },
 [ "Fine_Sun" ] = {
 	Id = 19507,
@@ -132014,7 +132014,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 654,
+	SpriteId = 654,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "T_Gemmed_Sallet" ] = {
@@ -132033,7 +132033,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 695,
+	SpriteId = 695,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Nut_On_Head" ] = {
@@ -132043,7 +132043,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 696,
+	SpriteId = 696,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Heart_Eye_Patch1" ] = {
@@ -132053,7 +132053,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 697,
+	SpriteId = 697,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Heart_Eye_Patch2" ] = {
@@ -132063,7 +132063,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 698,
+	SpriteId = 698,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Chicken_Beak" ] = {
@@ -132073,7 +132073,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeLowerHead,
 	Refine = false,
-	ViewSprite = 699,
+	SpriteId = 699,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Charlie_Beard" ] = {
@@ -132083,7 +132083,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeLowerHead,
 	Refine = false,
-	ViewSprite = 700,
+	SpriteId = 700,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Yellow_Hat" ] = {
@@ -132093,7 +132093,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 701,
+	SpriteId = 701,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Singing_Bird" ] = {
@@ -132103,7 +132103,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 702,
+	SpriteId = 702,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Cocks_Comb" ] = {
@@ -132113,7 +132113,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 703,
+	SpriteId = 703,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Rainbow" ] = {
@@ -132123,7 +132123,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 704,
+	SpriteId = 704,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Lightning_Cloud" ] = {
@@ -132133,7 +132133,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 688,
+	SpriteId = 688,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Rain_Cloud" ] = {
@@ -132143,7 +132143,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 705,
+	SpriteId = 705,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Charlie_Hat" ] = {
@@ -132153,7 +132153,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 706,
+	SpriteId = 706,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Mini_Crown1" ] = {
@@ -132163,7 +132163,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 707,
+	SpriteId = 707,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Donation_Ribbon" ] = {
@@ -132173,7 +132173,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 244,
+	SpriteId = 244,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -132192,7 +132192,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 85,
+	SpriteId = 85,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Jack_A_Dandy" ] = {
@@ -132202,7 +132202,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 58,
+	SpriteId = 58,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Helm" ] = {
@@ -132212,7 +132212,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 40,
+	SpriteId = 40,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Sharp_Gear" ] = {
@@ -132222,7 +132222,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 43,
+	SpriteId = 43,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Iron_Cane" ] = {
@@ -132232,7 +132232,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeLowerHead,
 	Refine = false,
-	ViewSprite = 53,
+	SpriteId = 53,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Angelic_Chain" ] = {
@@ -132242,7 +132242,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 38,
+	SpriteId = 38,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bVit,1;
@@ -132256,7 +132256,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 541,
+	SpriteId = 541,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bAtk,2;
@@ -132269,7 +132269,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 472,
+	SpriteId = 472,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -132288,7 +132288,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 640,
+	SpriteId = 640,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -132310,7 +132310,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 114,
+	SpriteId = 114,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bVit,1;
@@ -132323,7 +132323,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 693,
+	SpriteId = 693,
 	Script = [[
 		bonus bAtkRate,1;
 		bonus bMatkRate,1;
@@ -132337,7 +132337,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 730,
+	SpriteId = 730,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bStr,1;
@@ -132351,7 +132351,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 533,
+	SpriteId = 533,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus bInt,1;
@@ -132365,7 +132365,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 591,
+	SpriteId = 591,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Full_Moon" ] = {
@@ -132375,7 +132375,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 780,
+	SpriteId = 780,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Reginleif_Hairband" ] = {
@@ -132385,7 +132385,7 @@ item_db = {
 	Buy = 20,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
 	Refine = false,
-	ViewSprite = 468,
+	SpriteId = 468,
 	Script = [[ bonus bAllStats,1; ]]
 },
 [ "C_Rabbit_Earplug" ] = {
@@ -132395,7 +132395,7 @@ item_db = {
 	Buy = 20,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
 	Refine = false,
-	ViewSprite = 515,
+	SpriteId = 515,
 	Script = [[
 		bonus bAgi,1;
 		bonus bFlee,2;
@@ -132408,7 +132408,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeLowerHead,
 	Refine = false,
-	ViewSprite = 259,
+	SpriteId = 259,
 	Script = [[
 		bonus bHit,1;
 		bonus bUnbreakableHelm,0;
@@ -132421,7 +132421,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 712,
+	SpriteId = 712,
 	Script = [[
 		bonus bUnbreakableHelm,0;
 		bonus2 bAddRaceTolerance,RC_Angel,1;
@@ -132438,7 +132438,7 @@ item_db = {
 	Weight = 300,
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 70,
-	ViewSprite = 849,
+	SpriteId = 849,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Tare_Neko_Cru" ] = {
@@ -132448,7 +132448,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 692,
+	SpriteId = 692,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Boys_Cap" ] = {
@@ -132460,7 +132460,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 102,
+	SpriteId = 102,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Valkyrie_Helm" ] = {
@@ -132472,7 +132472,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 225,
+	SpriteId = 225,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Deviruchi_Cap" ] = {
@@ -132484,7 +132484,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 123,
+	SpriteId = 123,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Frog_Cap" ] = {
@@ -132496,7 +132496,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 448,
+	SpriteId = 448,
 	OnEquipScript = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Magestic_Goat" ] = {
@@ -132508,7 +132508,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 41,
+	SpriteId = 41,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Blush" ] = {
@@ -132520,7 +132520,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeMidHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 125,
+	SpriteId = 125,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Elven_Ears" ] = {
@@ -132532,7 +132532,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeMidHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 73,
+	SpriteId = 73,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Centimental_Flower" ] = {
@@ -132544,7 +132544,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeLowerHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 56,
+	SpriteId = 56,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Assassin_Mask_" ] = {
@@ -132556,7 +132556,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeLowerHead,
 	EquipLv = 100,
 	Refine = false,
-	ViewSprite = 180,
+	SpriteId = 180,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Hahoe_Mask" ] = {
@@ -132567,7 +132567,7 @@ item_db = {
 	Weight = 100,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 230,
+	SpriteId = 230,
 },
 [ "C_Crescent_Helm" ] = {
 	Id = 19555,
@@ -132575,7 +132575,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 213,
+	SpriteId = 213,
 },
 [ "C_Kabuki_Mask" ] = {
 	Id = 19556,
@@ -132583,7 +132583,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 214,
+	SpriteId = 214,
 },
 [ "C_Ayothaya_Hat" ] = {
 	Id = 19557,
@@ -132591,7 +132591,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 334,
+	SpriteId = 334,
 },
 [ "C_Raven_Cap" ] = {
 	Id = 19558,
@@ -132599,7 +132599,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 524,
+	SpriteId = 524,
 },
 [ "C_B_Dragon_Hat" ] = {
 	Id = 19559,
@@ -132607,7 +132607,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 525,
+	SpriteId = 525,
 },
 [ "C_Quati_Hat" ] = {
 	Id = 19560,
@@ -132615,7 +132615,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 527,
+	SpriteId = 527,
 },
 [ "C_Tucan_Hat" ] = {
 	Id = 19561,
@@ -132623,7 +132623,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 528,
+	SpriteId = 528,
 },
 [ "C_Jaguar_Mask" ] = {
 	Id = 19562,
@@ -132631,7 +132631,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 530,
+	SpriteId = 530,
 },
 [ "C_Dragon_Arhat_Mask" ] = {
 	Id = 19563,
@@ -132639,7 +132639,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 545,
+	SpriteId = 545,
 },
 [ "C_Tiger_Arhat_Mask" ] = {
 	Id = 19564,
@@ -132647,7 +132647,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 546,
+	SpriteId = 546,
 },
 [ "C_Chung_Hairband" ] = {
 	Id = 19565,
@@ -132655,7 +132655,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 583,
+	SpriteId = 583,
 },
 [ "C_Samurai_Mask" ] = {
 	Id = 19566,
@@ -132663,7 +132663,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 644,
+	SpriteId = 644,
 },
 [ "C_Hatah_Black" ] = {
 	Id = 19567,
@@ -132671,7 +132671,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 676,
+	SpriteId = 676,
 },
 [ "C_Horn_Of_The_Ancient" ] = {
 	Id = 19568,
@@ -132679,7 +132679,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 757,
+	SpriteId = 757,
 },
 [ "C_Sprout_Hat" ] = {
 	Id = 19569,
@@ -132687,7 +132687,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 758,
+	SpriteId = 758,
 },
 [ "C_Mercury_Helm" ] = {
 	Id = 19570,
@@ -132695,7 +132695,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 759,
+	SpriteId = 759,
 },
 [ "C_White_Musang_Hat" ] = {
 	Id = 19571,
@@ -132703,7 +132703,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 770,
+	SpriteId = 770,
 },
 [ "C_Black_Musang_Hat" ] = {
 	Id = 19572,
@@ -132711,7 +132711,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 771,
+	SpriteId = 771,
 },
 [ "C_Heart_Wing_Hairband" ] = {
 	Id = 19573,
@@ -132719,14 +132719,14 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 733,
+	SpriteId = 733,
 },
 [ "C_Lord_of_Death" ] = {
 	Id = 19574,
 	Name = "Costume Lord Of Death Helm",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 742,
+	SpriteId = 742,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Rising_Black_Dragon" ] = {
@@ -132735,7 +132735,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 863,
+	SpriteId = 863,
 },
 [ "C_Tare_Pope" ] = {
 	Id = 19576,
@@ -132743,7 +132743,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 817,
+	SpriteId = 817,
 },
 [ "10th_Anni_Poring_Hat" ] = {
 	Id = 19577,
@@ -132752,7 +132752,7 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 874,
+	SpriteId = 874,
 },
 [ "C_Red_Wing_Hat" ] = {
 	Id = 19579,
@@ -132760,7 +132760,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 613,
+	SpriteId = 613,
 },
 [ "C_Sphinx_Helm" ] = {
 	Id = 19580,
@@ -132769,7 +132769,7 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 137,
+	SpriteId = 137,
 },
 [ "C_Adventurers_Hat" ] = {
 	Id = 19581,
@@ -132778,7 +132778,7 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 891,
+	SpriteId = 891,
 },
 [ "C_Cowboy_Hat" ] = {
 	Id = 19582,
@@ -132787,7 +132787,7 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 411,
+	SpriteId = 411,
 },
 [ "C_Gangster_Patch" ] = {
 	Id = 19583,
@@ -132796,7 +132796,7 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 50,
+	SpriteId = 50,
 },
 [ "C_Dagger_In_Mouth" ] = {
 	Id = 19584,
@@ -132805,7 +132805,7 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 327,
+	SpriteId = 327,
 },
 [ "C_Feather_Beret" ] = {
 	Id = 19585,
@@ -132813,7 +132813,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 224,
+	SpriteId = 224,
 },
 [ "C_Pink_Bunny_Band_J" ] = {
 	Id = 19586,
@@ -132825,7 +132825,7 @@ item_db = {
 		TransJobs = true
 	},
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 898,
+	SpriteId = 898,
 },
 [ "C_King_Poring_Hat" ] = {
 	Id = 19587,
@@ -132834,7 +132834,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 905,
+	SpriteId = 905,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "C_Fallen_Angel_Lost_J" ] = {
@@ -132843,21 +132843,21 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 907,
+	SpriteId = 907,
 },
 [ "C_Flying_Angel" ] = {
 	Id = 19596,
 	Name = "Costume Flapping Angel Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 264,
+	SpriteId = 264,
 },
 [ "C_Magic_Eyes" ] = {
 	Id = 19597,
 	Name = "Costume Magic Eyes",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 209,
+	SpriteId = 209,
 },
 [ "C_Wondering_Wolf_Helm" ] = {
 	Id = 19598,
@@ -132865,7 +132865,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 490,
+	SpriteId = 490,
 },
 [ "C_Imp_Hat" ] = {
 	Id = 19599,
@@ -132873,7 +132873,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 589,
+	SpriteId = 589,
 },
 [ "Drooping_Kiehl" ] = {
 	Id = 19600,
@@ -132883,7 +132883,7 @@ item_db = {
 	Loc = EquipLocationMask.CostumeTopHead,
 	EquipLv = 30,
 	Refine = false,
-	ViewSprite = 909,
+	SpriteId = 909,
 },
 [ "Drooping_Aliot" ] = {
 	Id = 19601,
@@ -132892,7 +132892,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 910,
+	SpriteId = 910,
 },
 [ "C_Invisible_Cap" ] = {
 	Id = 19602,
@@ -132906,7 +132906,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 378,
+	SpriteId = 378,
 },
 [ "C_Invisible_Mask" ] = {
 	Id = 19604,
@@ -132919,77 +132919,77 @@ item_db = {
 	Name = "Costume Gang Scarf",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 369,
+	SpriteId = 369,
 },
 [ "C_Ninja_Scroll" ] = {
 	Id = 19606,
 	Name = "Costume Ninja Scroll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 370,
+	SpriteId = 370,
 },
 [ "C_Love_Chick_Hat" ] = {
 	Id = 19607,
 	Name = "Costume Chicken Love Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 500,
+	SpriteId = 500,
 },
 [ "C_Chick_Hat" ] = {
 	Id = 19608,
 	Name = "Costume Chick Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 311,
+	SpriteId = 311,
 },
 [ "C_Red_Glasses" ] = {
 	Id = 19609,
 	Name = "Costume Red Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 316,
+	SpriteId = 316,
 },
 [ "C_Whisper_Mask" ] = {
 	Id = 19610,
 	Name = "Costume Whisper Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 321,
+	SpriteId = 321,
 },
 [ "C_Pecopeco_Wing_Ears" ] = {
 	Id = 19611,
 	Name = "Costume Peco Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 366,
+	SpriteId = 366,
 },
 [ "C_Headset_OST" ] = {
 	Id = 19612,
 	Name = "Costume Note Headphone",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 220,
+	SpriteId = 220,
 },
 [ "C_Valkyrie_Feather_Band" ] = {
 	Id = 19613,
 	Name = "Costume Valkyrie Feather Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 300,
+	SpriteId = 300,
 },
 [ "C_Super_Novice_Hat" ] = {
 	Id = 19614,
 	Name = "Costume Super Novice Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 193,
+	SpriteId = 193,
 },
 [ "C_Loki_Mask" ] = {
 	Id = 19615,
 	Name = "Costume Loki Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 346,
+	SpriteId = 346,
 },
 [ "C_Wickebines_Black_Cat_Ears" ] = {
 	Id = 19616,
@@ -132998,14 +132998,14 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 368,
+	SpriteId = 368,
 },
 [ "C_Puppy_Headband" ] = {
 	Id = 19617,
 	Name = "Costume Puppy Headband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 199,
+	SpriteId = 199,
 },
 [ "C_Corsair" ] = {
 	Id = 19619,
@@ -133014,42 +133014,42 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 105,
+	SpriteId = 105,
 },
 [ "C_Detective_Hat" ] = {
 	Id = 19620,
 	Name = "Costume Detective Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 189,
+	SpriteId = 189,
 },
 [ "C_Ear_Of_Devils_Wing" ] = {
 	Id = 19621,
 	Name = "Costume Evil Wing Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 152,
+	SpriteId = 152,
 },
 [ "C_Crescent_Hairpin" ] = {
 	Id = 19622,
 	Name = "Costume Crescent Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 132,
+	SpriteId = 132,
 },
 [ "C_Bijofnil_Wings" ] = {
 	Id = 19623,
 	Name = "Costume Bijofnil Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 477,
+	SpriteId = 477,
 },
 [ "C_Round_Eyes" ] = {
 	Id = 19624,
 	Name = "Costume Blank Eyes",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 185,
+	SpriteId = 185,
 },
 [ "C_Bunny_Band" ] = {
 	Id = 19625,
@@ -133057,7 +133057,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 15,
+	SpriteId = 15,
 },
 [ "C_Satellite_Hairband" ] = {
 	Id = 19627,
@@ -133066,14 +133066,14 @@ item_db = {
 	Buy = 1000,
 	Slots = 1,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 266,
+	SpriteId = 266,
 },
 [ "C_Headset" ] = {
 	Id = 19628,
 	Name = "Costume Headset",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 97,
+	SpriteId = 97,
 },
 [ "C_Tiara" ] = {
 	Id = 19629,
@@ -133081,7 +133081,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 19,
+	SpriteId = 19,
 },
 [ "C_Crown" ] = {
 	Id = 19630,
@@ -133089,14 +133089,14 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 45,
+	SpriteId = 45,
 },
 [ "C_Poring_Fedora_Hat" ] = {
 	Id = 19631,
 	Name = "Costume Poring Fedora Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 919,
+	SpriteId = 919,
 },
 [ "C_Hat" ] = {
 	Id = 19632,
@@ -133104,7 +133104,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 16,
+	SpriteId = 16,
 },
 [ "C_Flower_Hairband" ] = {
 	Id = 19633,
@@ -133112,7 +133112,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 5,
+	SpriteId = 5,
 },
 [ "C_Flu_Mask" ] = {
 	Id = 19634,
@@ -133120,7 +133120,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 8,
+	SpriteId = 8,
 },
 [ "C_Mini_Propeller" ] = {
 	Id = 19635,
@@ -133128,7 +133128,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 46,
+	SpriteId = 46,
 },
 [ "C_Pierrot_Nose" ] = {
 	Id = 19636,
@@ -133136,7 +133136,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 49,
+	SpriteId = 49,
 },
 [ "C_Nurse_Cap" ] = {
 	Id = 19637,
@@ -133144,14 +133144,14 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 64,
+	SpriteId = 64,
 },
 [ "C_Mr_Smile" ] = {
 	Id = 19638,
 	Name = "Costume Mr Smile",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 65,
+	SpriteId = 65,
 },
 [ "C_Sahkkat" ] = {
 	Id = 19639,
@@ -133159,84 +133159,84 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 67,
+	SpriteId = 67,
 },
 [ "C_Charming_Ribbon" ] = {
 	Id = 19640,
 	Name = "Costume Charming Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 211,
+	SpriteId = 211,
 },
 [ "C_Helm_of_Darkness" ] = {
 	Id = 19641,
 	Name = "Costume Helm of Darkness",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 233,
+	SpriteId = 233,
 },
 [ "C_Moonlight_Flower_Hat" ] = {
 	Id = 19642,
 	Name = "Costume Moonlight Flower Hat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 268,
+	SpriteId = 268,
 },
 [ "C_Whikebain_Ears" ] = {
 	Id = 19643,
 	Name = "Costume Wickebine Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 368,
+	SpriteId = 368,
 },
 [ "C_Takius_Blindfold" ] = {
 	Id = 19644,
 	Name = "Costume Takius Blindfold",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 184,
+	SpriteId = 184,
 },
 [ "C_Chinese_Crown_" ] = {
 	Id = 19645,
 	Name = "Costume Phoenix Crown",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 221,
+	SpriteId = 221,
 },
 [ "C_Ramen_Hat" ] = {
 	Id = 19646,
 	Name = "Costume Ramen Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 271,
+	SpriteId = 271,
 },
 [ "C_Red_Deviruchi_Cap" ] = {
 	Id = 19647,
 	Name = "Costume Red Deviruchi Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 271,
+	SpriteId = 271,
 },
 [ "C_Fallen_Leaves" ] = {
 	Id = 19648,
 	Name = "Costume Autumn Leaves",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 241,
+	SpriteId = 241,
 },
 [ "C_White_Baby_Cat_Ears" ] = {
 	Id = 19649,
 	Name = "Costume White Kitten Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 926,
+	SpriteId = 926,
 },
 [ "C_Rainbow_Feather_Deco" ] = {
 	Id = 19650,
 	Name = "Costume Five Colored Feathers",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 934,
+	SpriteId = 934,
 },
 [ "C_RWC_Shouting_Mouth" ] = {
 	Id = 19651,
@@ -133248,28 +133248,28 @@ item_db = {
 		TransJobs = true
 	},
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 194,
+	SpriteId = 194,
 },
 [ "C_Rabbit_Magic_Hat" ] = {
 	Id = 19652,
 	Name = "Costume Rabbit Magic Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 497,
+	SpriteId = 497,
 },
 [ "C_Marcher_Hat" ] = {
 	Id = 19653,
 	Name = "Costume Marcher Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 269,
+	SpriteId = 269,
 },
 [ "C_J_Captain_Hat" ] = {
 	Id = 19654,
 	Name = "Costume Master's Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 367,
+	SpriteId = 367,
 },
 [ "C_Tiraya_Bonnet" ] = {
 	Id = 19655,
@@ -133278,189 +133278,189 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 398,
+	SpriteId = 398,
 },
 [ "C_Minstrel_Hat" ] = {
 	Id = 19656,
 	Name = "Costume Minstrel Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 240,
+	SpriteId = 240,
 },
 [ "C_Captain_Hat" ] = {
 	Id = 19657,
 	Name = "Costume Captain Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 236,
+	SpriteId = 236,
 },
 [ "C_Vacation_Hat" ] = {
 	Id = 19658,
 	Name = "Costume Vacation Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 315,
+	SpriteId = 315,
 },
 [ "C_Gray_Fur_Hat" ] = {
 	Id = 19659,
 	Name = "Costume Brown Beanie",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 279,
+	SpriteId = 279,
 },
 [ "C_Coppola" ] = {
 	Id = 19660,
 	Name = "Costume Coppola",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 252,
+	SpriteId = 252,
 },
 [ "C_Sweet_Bonnet" ] = {
 	Id = 19661,
 	Name = "Costume Sweet Bonnet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 938,
+	SpriteId = 938,
 },
 [ "C_Magician_Hat" ] = {
 	Id = 19662,
 	Name = "Costume Magician Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 130,
+	SpriteId = 130,
 },
 [ "Wishing_Sky_Lantern" ] = {
 	Id = 19663,
 	Name = "Costume Wish Lamp",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 947,
+	SpriteId = 947,
 },
 [ "C_Campus_Festival" ] = {
 	Id = 19664,
 	Name = "Costume Campus Festival",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 721,
+	SpriteId = 721,
 },
 [ "C_Poring_Cake_Hat" ] = {
 	Id = 19665,
 	Name = "Costume Poring Cake Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 417,
+	SpriteId = 417,
 },
 [ "C_Cookie_Hat" ] = {
 	Id = 19666,
 	Name = "Costume Cookie Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 217,
+	SpriteId = 217,
 },
 [ "C_Dragon_Helm" ] = {
 	Id = 19667,
 	Name = "Costume Dragon Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 464,
+	SpriteId = 464,
 },
 [ "C_Wind_Milestone" ] = {
 	Id = 19668,
 	Name = "Costume Wind Milestone",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 463,
+	SpriteId = 463,
 },
 [ "C_Reginleif_Hairband_" ] = {
 	Id = 19669,
 	Name = "Costume Reginrev's Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 468,
+	SpriteId = 468,
 },
 [ "C_Southern_Cross" ] = {
 	Id = 19670,
 	Name = "Costume Southern Cross",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 601,
+	SpriteId = 601,
 },
 [ "C_Piggie_Bank" ] = {
 	Id = 19671,
 	Name = "Costume Piggie Bank",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 603,
+	SpriteId = 603,
 },
 [ "C_Poring_Letter" ] = {
 	Id = 19672,
 	Name = "Costume Poring Letter",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 604,
+	SpriteId = 604,
 },
 [ "C_Benevolent_Guardian" ] = {
 	Id = 19673,
 	Name = "Costume Benevolent Guardian",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 716,
+	SpriteId = 716,
 },
 [ "C_Evil_Mask" ] = {
 	Id = 19674,
 	Name = "Costume Demon Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 714,
+	SpriteId = 714,
 },
 [ "C_Jumping_Poring" ] = {
 	Id = 19675,
 	Name = "Costume Jumping Poring",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 349,
+	SpriteId = 349,
 },
 [ "C_Rainbow_Poring_Hat" ] = {
 	Id = 19676,
 	Name = "Costume Rainbow Poring Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 900,
+	SpriteId = 900,
 },
 [ "C_Soulless_Wing" ] = {
 	Id = 19677,
 	Name = "Costume Soulless Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 301,
+	SpriteId = 301,
 },
 [ "C_Bell_Ribbon" ] = {
 	Id = 19678,
 	Name = "Costume Bell Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 388,
+	SpriteId = 388,
 },
 [ "C_Round_Eyes_J" ] = {
 	Id = 19679,
 	Name = "Costume Round Eyes J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 185,
+	SpriteId = 185,
 },
 [ "C_Tongue_Mask" ] = {
 	Id = 19680,
 	Name = "Costume Tongue Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 253,
+	SpriteId = 253,
 },
 [ "C_Silver_Tiara" ] = {
 	Id = 19681,
 	Name = "Costume Silver Tiara",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 218,
+	SpriteId = 218,
 },
 [ "C_Santa_Poring_Hat" ] = {
 	Id = 19682,
@@ -133469,28 +133469,28 @@ item_db = {
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 387,
+	SpriteId = 387,
 },
 [ "C_Sweet_Candy" ] = {
 	Id = 19683,
 	Name = "Costume Sweet Candy",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 414,
+	SpriteId = 414,
 },
 [ "C_Happy_Wig" ] = {
 	Id = 19684,
 	Name = "Costume Happy Wig",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 305,
+	SpriteId = 305,
 },
 [ "C_ShineSantaPoring" ] = {
 	Id = 19685,
 	Name = "Costume Shine Stanta Poring",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 981,
+	SpriteId = 981,
 },
 [ "C_SantaHairband" ] = {
 	Id = 19686,
@@ -133498,7 +133498,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 964,
+	SpriteId = 964,
 },
 [ "C_Lush_Rose" ] = {
 	Id = 19687,
@@ -133506,98 +133506,98 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 963,
+	SpriteId = 963,
 },
 [ "C_RJC_Katusa" ] = {
 	Id = 19688,
 	Name = "Costume Katusa",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 533,
+	SpriteId = 533,
 },
 [ "C_Ati_Atihan_Hat" ] = {
 	Id = 19689,
 	Name = "Costume Ati Atihan",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 303,
+	SpriteId = 303,
 },
 [ "C_Dark_Snake_Lord_Hat_J" ] = {
 	Id = 19690,
 	Name = "Costume Dark Snake Lord Hat J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 372,
+	SpriteId = 372,
 },
 [ "C_Blue_Ribbon" ] = {
 	Id = 19691,
 	Name = "Costume Blue Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 407,
+	SpriteId = 407,
 },
 [ "C_Antique_Pipe_J" ] = {
 	Id = 19692,
 	Name = "Costume Antique Pipe J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 383,
+	SpriteId = 383,
 },
 [ "C_Triple_Poring_Hat" ] = {
 	Id = 19693,
 	Name = "Costume Triple Poring Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 299,
+	SpriteId = 299,
 },
 [ "C_Vane_Hairpin" ] = {
 	Id = 19694,
 	Name = "Costume Vane Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 313,
+	SpriteId = 313,
 },
 [ "C_Kettle_Hat" ] = {
 	Id = 19695,
 	Name = "Costume Kettle Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 318,
+	SpriteId = 318,
 },
 [ "C_Friend_Mochiring_Hat" ] = {
 	Id = 19696,
 	Name = "Costume Friend Mochiring Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 965,
+	SpriteId = 965,
 },
 [ "C_Rudolph_Santa_Hat" ] = {
 	Id = 19697,
 	Name = "Costume Rudolph Santa Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 919,
+	SpriteId = 919,
 },
 [ "C_Bf_Recruiter_Hat" ] = {
 	Id = 19698,
 	Name = "Costume Bf Recruiter Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 352,
+	SpriteId = 352,
 },
 [ "C_Gf_Recruiter_Hat" ] = {
 	Id = 19699,
 	Name = "Costume Gf Recruiter Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 360,
+	SpriteId = 360,
 },
 [ "C_RWC_Champ_Crown_2nd" ] = {
 	Id = 19700,
 	Name = "Costume RWC Champ Crown 2nd",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 903,
+	SpriteId = 903,
 },
 [ "C_Red_Bonnet" ] = {
 	Id = 19701,
@@ -133605,7 +133605,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 190,
+	SpriteId = 190,
 },
 [ "C_Santa_Hat_1" ] = {
 	Id = 19702,
@@ -133613,7 +133613,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 390,
+	SpriteId = 390,
 },
 [ "C_Red_Dress_Hat" ] = {
 	Id = 19706,
@@ -133621,7 +133621,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 670,
+	SpriteId = 670,
 },
 [ "C_Polar_Bear_Cap" ] = {
 	Id = 19707,
@@ -133630,7 +133630,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 966,
+	SpriteId = 966,
 },
 [ "C_Withe_Snake_Hat" ] = {
 	Id = 19708,
@@ -133638,147 +133638,147 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 413,
+	SpriteId = 413,
 },
 [ "C_Yellow_Ribbon" ] = {
 	Id = 19709,
 	Name = "Costume Yellow Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 310,
+	SpriteId = 310,
 },
 [ "C_Wings_Of_Victory" ] = {
 	Id = 19710,
 	Name = "Costume Wings of Victory",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 365,
+	SpriteId = 365,
 },
 [ "C_Little_Angel_Doll" ] = {
 	Id = 19712,
 	Name = "Costume Little Angel Doll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 344,
+	SpriteId = 344,
 },
 [ "C_Lucky_Clover" ] = {
 	Id = 19713,
 	Name = "Costume Lucky Clover",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 571,
+	SpriteId = 571,
 },
 [ "C_Lady_Tanee_Doll" ] = {
 	Id = 19714,
 	Name = "Costume Lady Tanee Doll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 520,
+	SpriteId = 520,
 },
 [ "C_Scarf" ] = {
 	Id = 19715,
 	Name = "Costume Scarf",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 343,
+	SpriteId = 343,
 },
 [ "C_Alice_Doll" ] = {
 	Id = 19716,
 	Name = "Costume Alice Doll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 208,
+	SpriteId = 208,
 },
 [ "C_Ribbon_Pink" ] = {
 	Id = 19717,
 	Name = "Costume Pink Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 245,
+	SpriteId = 245,
 },
 [ "C_Gothic_Head_Dress" ] = {
 	Id = 19718,
 	Name = "Costume Gothic Head Dress",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 978,
+	SpriteId = 978,
 },
 [ "C_Coronet" ] = {
 	Id = 19719,
 	Name = "Costume Coronet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 33,
+	SpriteId = 33,
 },
 [ "C_Romantic_Gent" ] = {
 	Id = 19720,
 	Name = "Costume Romantic Gent",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 31,
+	SpriteId = 31,
 },
 [ "C_Darkness_Helm" ] = {
 	Id = 19721,
 	Name = "Costume Darkness Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 586,
+	SpriteId = 586,
 },
 [ "C_Black_Glasses" ] = {
 	Id = 19722,
 	Name = "Costume Black Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 404,
+	SpriteId = 404,
 },
 [ "C_Sacred_Torch_Coronet" ] = {
 	Id = 19723,
 	Name = "Costume Sacred Torch Coronet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 431,
+	SpriteId = 431,
 },
 [ "C_Deprotai_Doll_Hat" ] = {
 	Id = 19724,
 	Name = "Costume Deprotai Doll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 354,
+	SpriteId = 354,
 },
 [ "C_Bread_Bag2" ] = {
 	Id = 19725,
 	Name = "Costume Bread Bag2",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 412,
+	SpriteId = 412,
 },
 [ "C_Scarlet_Rose" ] = {
 	Id = 19726,
 	Name = "Costume Scarlet Rose",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 534,
+	SpriteId = 534,
 },
 [ "C_Deviling_Hat" ] = {
 	Id = 19727,
 	Name = "Costume Deviling Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 298,
+	SpriteId = 298,
 },
 [ "C_Tare_Zonda" ] = {
 	Id = 19728,
 	Name = "Costume Tare Zonda",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 985,
+	SpriteId = 985,
 },
 [ "C_Neko_Mimi_Kafra" ] = {
 	Id = 19729,
 	Name = "Costume Neko Mimi Kafra",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 392,
+	SpriteId = 392,
 },
 [ "C_Snake_Hat" ] = {
 	Id = 19730,
@@ -133788,7 +133788,7 @@ item_db = {
 	Weight = 10,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 986,
+	SpriteId = 986,
 },
 [ "C_Satanic_Chain" ] = {
 	Id = 19731,
@@ -133796,7 +133796,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 39,
+	SpriteId = 39,
 },
 [ "C_Goblin_Mask_04" ] = {
 	Id = 19732,
@@ -133804,7 +133804,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 174,
+	SpriteId = 174,
 },
 [ "C_Panda_Cap" ] = {
 	Id = 19733,
@@ -133812,7 +133812,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 115,
+	SpriteId = 115,
 },
 [ "C_Binoculars" ] = {
 	Id = 19734,
@@ -133820,7 +133820,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 83,
+	SpriteId = 83,
 },
 [ "C_Fin_Helm" ] = {
 	Id = 19735,
@@ -133828,7 +133828,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 100,
+	SpriteId = 100,
 },
 [ "C_Gas_Mask" ] = {
 	Id = 19736,
@@ -133836,7 +133836,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 91,
+	SpriteId = 91,
 },
 [ "C_Corsair_K" ] = {
 	Id = 19737,
@@ -133844,7 +133844,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 105,
+	SpriteId = 105,
 },
 [ "C_Detective_Hat_K" ] = {
 	Id = 19738,
@@ -133852,7 +133852,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 189,
+	SpriteId = 189,
 },
 [ "C_Sleeping_Kitty_Cat" ] = {
 	Id = 19739,
@@ -133860,21 +133860,21 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 838,
+	SpriteId = 838,
 },
 [ "C_Majestic_Devil_Horns" ] = {
 	Id = 19741,
 	Name = "Costume Majestic Devil Horns",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 562,
+	SpriteId = 562,
 },
 [ "C_Small_Golden_Wings" ] = {
 	Id = 19742,
 	Name = "Costume Small Golden Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 724,
+	SpriteId = 724,
 	Script = [[ bonus2 bExpAddRace, RC_All, 1; ]]
 },
 [ "C_Anubis_Helm_J" ] = {
@@ -133882,147 +133882,147 @@ item_db = {
 	Name = "Costume Anubis Helm J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 485,
+	SpriteId = 485,
 },
 [ "C_Black_Tail_Ribbon" ] = {
 	Id = 19744,
 	Name = "Costume Black Tail Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 642,
+	SpriteId = 642,
 },
 [ "C_Holy_Marching_Hat_J" ] = {
 	Id = 19745,
 	Name = "Costume Holy Marching Hat J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 587,
+	SpriteId = 587,
 },
 [ "C_Cap_Of_Blindness" ] = {
 	Id = 19746,
 	Name = "Costume Executioner Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 326,
+	SpriteId = 326,
 },
 [ "C_Tha_Despero_Mask_J" ] = {
 	Id = 19747,
 	Name = "Costume Tha Despero Mask J",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 693,
+	SpriteId = 693,
 },
 [ "C_Diadem" ] = {
 	Id = 19748,
 	Name = "Costume Diadem",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 335,
+	SpriteId = 335,
 },
 [ "C_Gold_Spirit_Chain" ] = {
 	Id = 19749,
 	Name = "Costume Gold Spirit Chain",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 260,
+	SpriteId = 260,
 },
 [ "C_Saint_Frill_Ribbon" ] = {
 	Id = 19750,
 	Name = "Costume Saint Frill Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 987,
+	SpriteId = 987,
 },
 [ "C_Light_Darkness_Crown" ] = {
 	Id = 19751,
 	Name = "Costume Light Darkness Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 988,
+	SpriteId = 988,
 },
 [ "C_Shelter_Wing_Ears" ] = {
 	Id = 19752,
 	Name = "Costume Shelter Wing Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 990,
+	SpriteId = 990,
 },
 [ "C_Celestial_Hat" ] = {
 	Id = 19753,
 	Name = "Costume Celestial Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 462,
+	SpriteId = 462,
 },
 [ "C_Good_Wedding_Veil" ] = {
 	Id = 19754,
 	Name = "Costume Good Wedding Veil",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 489,
+	SpriteId = 489,
 },
 [ "C_YinYang_Earring" ] = {
 	Id = 19755,
 	Name = "Costume YinYang Earring",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 744,
+	SpriteId = 744,
 },
 [ "C_Holy_Mom_Love" ] = {
 	Id = 19756,
 	Name = "Costume Holy Mom Love",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 610,
+	SpriteId = 610,
 },
 [ "C_Water_Lily_Crown" ] = {
 	Id = 19757,
 	Name = "Costume Water Lily Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 312,
+	SpriteId = 312,
 },
 [ "C_Frog_King_Hat" ] = {
 	Id = 19758,
 	Name = "Costume Frog King Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 522,
+	SpriteId = 522,
 },
 [ "C_Umbrella_Hat" ] = {
 	Id = 19759,
 	Name = "Costume Umbrella Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 338,
+	SpriteId = 338,
 },
 [ "C_Rainbow_Veil" ] = {
 	Id = 19760,
 	Name = "Costume Rainbow Veil",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 992,
+	SpriteId = 992,
 },
 [ "C_White_Lily" ] = {
 	Id = 19761,
 	Name = "Costume White Lily",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 993,
+	SpriteId = 993,
 },
 [ "C_Happy_Peace_Proof" ] = {
 	Id = 19762,
 	Name = "Costume Happy Peace Proof",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 994,
+	SpriteId = 994,
 },
 [ "C_Leaf_Cat_Hat" ] = {
 	Id = 19763,
 	Name = "Costume Leaf Cat Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 539,
+	SpriteId = 539,
 },
 [ "C_Monster_Card" ] = {
 	Id = 19764,
@@ -134030,7 +134030,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 526,
+	SpriteId = 526,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -134047,7 +134047,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Buy = 1000,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 158,
+	SpriteId = 158,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -134063,147 +134063,147 @@ item_db = {
 	Name = "Costume Yggdrasil Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 997,
+	SpriteId = 997,
 },
 [ "C_Home_Cherry_Blossom" ] = {
 	Id = 19767,
 	Name = "Costume Home Cherry Blossom",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 602,
+	SpriteId = 602,
 },
 [ "C_Sakura_Coronet" ] = {
 	Id = 19768,
 	Name = "Costume Sakura Coronet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 645,
+	SpriteId = 645,
 },
 [ "C_Mischievous_Fairy" ] = {
 	Id = 19769,
 	Name = "Costume Mischievous Fairy",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 405,
+	SpriteId = 405,
 },
 [ "C_Japan_Winecup" ] = {
 	Id = 19770,
 	Name = "Costume Japan Winecup",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 557,
+	SpriteId = 557,
 },
 [ "C_Butterfly_Hairpin" ] = {
 	Id = 19771,
 	Name = "Costume Butterfly Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 723,
+	SpriteId = 723,
 },
 [ "C_Honeybee_Hat" ] = {
 	Id = 19772,
 	Name = "Costume Honeybee Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 709,
+	SpriteId = 709,
 },
 [ "C_Angeling_Hairpin" ] = {
 	Id = 19773,
 	Name = "Costume Angeling Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 222,
+	SpriteId = 222,
 },
 [ "C_Emperor_Wreath_J" ] = {
 	Id = 19774,
 	Name = "Costume Emperor Wreath J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 261,
+	SpriteId = 261,
 },
 [ "C_Marvelous_Wig" ] = {
 	Id = 19775,
 	Name = "Costume Afro Wig",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 307,
+	SpriteId = 307,
 },
 [ "C_Tomboy_Fairy" ] = {
 	Id = 19776,
 	Name = "Costume Tomboy Fairy",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 998,
+	SpriteId = 998,
 },
 [ "C_Twinkle_Little_Star" ] = {
 	Id = 19777,
 	Name = "Costume Twinkle Little Star",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1005,
+	SpriteId = 1005,
 },
 [ "C_King_Berry" ] = {
 	Id = 19778,
 	Name = "Costume King Strawberry",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 968,
+	SpriteId = 968,
 },
 [ "C_Persika" ] = {
 	Id = 19779,
 	Name = "Costume Persica",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 659,
+	SpriteId = 659,
 },
 [ "C_Rabbit_Ear_Knit_Hat" ] = {
 	Id = 19780,
 	Name = "Costume Knit Rabbit Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 867,
+	SpriteId = 867,
 },
 [ "C_Ear_Of_Angels_Wing_" ] = {
 	Id = 19781,
 	Name = "Costume Angel Wing Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 158,
+	SpriteId = 158,
 },
 [ "C_Drooping_Kitty" ] = {
 	Id = 19782,
 	Name = "Costume Drooping Cat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 142,
+	SpriteId = 142,
 },
 [ "C_Granpa_Beard" ] = {
 	Id = 19783,
 	Name = "Costume Grampa Beard",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 25,
+	SpriteId = 25,
 },
 [ "C_Morriganes_Helm" ] = {
 	Id = 19784,
 	Name = "Costume Morrigane's Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 257,
+	SpriteId = 257,
 },
 [ "C_Well_Baked_Toast" ] = {
 	Id = 19785,
 	Name = "Costume Crunch Toast",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 188,
+	SpriteId = 188,
 },
 [ "C_Mistress_Crown" ] = {
 	Id = 19786,
 	Name = "Costume Crown of Mistress",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 165,
+	SpriteId = 165,
 },
 [ "C_Devoted_Eyes" ] = {
 	Id = 19787,
@@ -134211,7 +134211,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 1021,
+	SpriteId = 1021,
 },
 [ "C_Heart_Eyepatch" ] = {
 	Id = 19788,
@@ -134219,280 +134219,280 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 779,
+	SpriteId = 779,
 },
 [ "C_Sweet_Gents" ] = {
 	Id = 19789,
 	Name = "Costume Sweet Gents",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 29,
+	SpriteId = 29,
 },
 [ "C_Wedding_Veil" ] = {
 	Id = 19790,
 	Name = "Costume Veil",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 44,
+	SpriteId = 44,
 },
 [ "C_Alarm_Mask" ] = {
 	Id = 19791,
 	Name = "Costume Alarm Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 170,
+	SpriteId = 170,
 },
 [ "C_Goblin_Mask_01" ] = {
 	Id = 19792,
 	Name = "Costume Poker Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 171,
+	SpriteId = 171,
 },
 [ "C_Goblin_Mask_02" ] = {
 	Id = 19793,
 	Name = "Costume Surprised Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 172,
+	SpriteId = 172,
 },
 [ "C_Goblin_Mask_03" ] = {
 	Id = 19794,
 	Name = "Costume Annoyed Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 173,
+	SpriteId = 173,
 },
 [ "C_Lord_Circlet" ] = {
 	Id = 19795,
 	Name = "Costume Grand Circlet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 93,
+	SpriteId = 93,
 },
 [ "C_Bone_Helm" ] = {
 	Id = 19796,
 	Name = "Costume Bone Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 103,
+	SpriteId = 103,
 },
 [ "C_Apple_Of_Archer" ] = {
 	Id = 19797,
 	Name = "Costume Apple of Archer",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 72,
+	SpriteId = 72,
 },
 [ "C_Angry_Mouth" ] = {
 	Id = 19798,
 	Name = "Costume Angry Snarl",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 194,
+	SpriteId = 194,
 },
 [ "C_Golden_Gear" ] = {
 	Id = 19799,
 	Name = "Costume Golden Gear",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 30,
+	SpriteId = 30,
 },
 [ "C_Carnation_Hairband" ] = {
 	Id = 19800,
 	Name = "Costume Carnation Headband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 878,
+	SpriteId = 878,
 },
 [ "C_Fox_Hat_J" ] = {
 	Id = 19801,
 	Name = "Costume Fox Hat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 403,
+	SpriteId = 403,
 },
 [ "C_Drooping_Nine_Tail" ] = {
 	Id = 19802,
 	Name = "Costume Drooping Nine Tail",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 296,
+	SpriteId = 296,
 },
 [ "C_Pinwheel_Cap" ] = {
 	Id = 19803,
 	Name = "Costume Pinwheel Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 456,
+	SpriteId = 456,
 },
 [ "C_Red_Vane_Hairpin" ] = {
 	Id = 19804,
 	Name = "Costume Red Vane Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1044,
+	SpriteId = 1044,
 },
 [ "C_Taboo_Curse_Scroll" ] = {
 	Id = 19805,
 	Name = "Costume Taboo Curse Scroll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1045,
+	SpriteId = 1045,
 },
 [ "C_Full_Bloom_Hairpin" ] = {
 	Id = 19806,
 	Name = "Costume Full Bloom Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1046,
+	SpriteId = 1046,
 },
 [ "C_Majestic_Helmet" ] = {
 	Id = 19807,
 	Name = "Costume Majestic Helmet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1047,
+	SpriteId = 1047,
 },
 [ "C_Blazing_Sun" ] = {
 	Id = 19808,
 	Name = "Costume Blazing Sun",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 654,
+	SpriteId = 654,
 },
 [ "C_Purple_Cowboy_Hat" ] = {
 	Id = 19809,
 	Name = "Costume Purple Cowboy Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 411,
+	SpriteId = 411,
 },
 [ "C_Ifrits_Ear" ] = {
 	Id = 19810,
 	Name = "Costume Ifrit's Ear",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 422,
+	SpriteId = 422,
 },
 [ "C_Beer_Cap" ] = {
 	Id = 19811,
 	Name = "Costume Beer Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 418,
+	SpriteId = 418,
 },
 [ "C_Large_Hibiscus" ] = {
 	Id = 19812,
 	Name = "Costume Large Hibiscus",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 333,
+	SpriteId = 333,
 },
 [ "C_Icecream_Hat" ] = {
 	Id = 19813,
 	Name = "Costume Icecream Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 488,
+	SpriteId = 488,
 },
 [ "C_Shiny_Wig" ] = {
 	Id = 19814,
 	Name = "Costume Shiny Wig",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 306,
+	SpriteId = 306,
 },
 [ "C_Lolita_Ten_Gallon_Hat" ] = {
 	Id = 19815,
 	Name = "Costume Lolita Ten Gallon Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1048,
+	SpriteId = 1048,
 },
 [ "C_Pecopeco_Cap" ] = {
 	Id = 19816,
 	Name = "Costume Pecopeco Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1049,
+	SpriteId = 1049,
 },
 [ "C_Ifrits_Breath" ] = {
 	Id = 19817,
 	Name = "Costume Ifrit's Breath",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1050,
+	SpriteId = 1050,
 },
 [ "C_Droop_Morocc_Minion" ] = {
 	Id = 19818,
 	Name = "Costume Drooping Morocc Minion",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 600,
+	SpriteId = 600,
 },
 [ "C_Bone_Hat" ] = {
 	Id = 19820,
 	Name = "Costume Necromencer Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 491,
+	SpriteId = 491,
 },
 [ "C_Hyegun_Hat" ] = {
 	Id = 19821,
 	Name = "Costume Hyegun Hat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 375,
+	SpriteId = 375,
 },
 [ "C_Yellow_Bandana" ] = {
 	Id = 19822,
 	Name = "Costume Yellow Bandana",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 309,
+	SpriteId = 309,
 },
 [ "C_White_Cat_Hood" ] = {
 	Id = 19823,
 	Name = "Costume White Cat Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 1052,
+	SpriteId = 1052,
 },
 [ "C_Evil_Druid_Hat" ] = {
 	Id = 19824,
 	Name = "Costume Evil Druid Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1053,
+	SpriteId = 1053,
 },
 [ "C_Vicious_Stop_Bandage" ] = {
 	Id = 19825,
 	Name = "Costume Vicious Stop Bandage",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1054,
+	SpriteId = 1054,
 },
 [ "C_Ice_Wing_Ear" ] = {
 	Id = 19826,
 	Name = "Costume Ice Wings Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 584,
+	SpriteId = 584,
 },
 [ "C_Amistr_Cap" ] = {
 	Id = 19827,
 	Name = "Costume Amistr Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 643,
+	SpriteId = 643,
 },
 [ "C_Fedora" ] = {
 	Id = 19828,
 	Name = "Costume Fedora",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 195,
+	SpriteId = 195,
 },
 [ "C_Straw_Hat" ] = {
 	Id = 19829,
@@ -134501,161 +134501,161 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 146,
+	SpriteId = 146,
 },
 [ "C_Sunglasses" ] = {
 	Id = 19830,
 	Name = "Costume Sunglasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 12,
+	SpriteId = 12,
 },
 [ "C_Filir_Hat" ] = {
 	Id = 19831,
 	Name = "Costume Filir Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 408,
+	SpriteId = 408,
 },
 [ "C_Poring_Hat" ] = {
 	Id = 19832,
 	Name = "Costume Poring Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 120,
+	SpriteId = 120,
 },
 [ "C_Fillet" ] = {
 	Id = 19833,
 	Name = "Costume Cute Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 34,
+	SpriteId = 34,
 },
 [ "C_Baseball_Cap" ] = {
 	Id = 19834,
 	Name = "Costume Baseball Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 216,
+	SpriteId = 216,
 },
 [ "C_Lif_Doll_Hat" ] = {
 	Id = 19835,
 	Name = "Costume Lif Doll Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 297,
+	SpriteId = 297,
 },
 [ "C_L_Magestic_Goat" ] = {
 	Id = 19836,
 	Name = "Costume Large Majestic Horns",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 380,
+	SpriteId = 380,
 },
 [ "C_Asara_Fairy_Hat" ] = {
 	Id = 19837,
 	Name = "Costume Asara Fairy Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 492,
+	SpriteId = 492,
 },
 [ "C_Fox_Hat" ] = {
 	Id = 19838,
 	Name = "Costume Fox Hatt",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 403,
+	SpriteId = 403,
 },
 [ "C_Vanilmirth_Hat" ] = {
 	Id = 19839,
 	Name = "Costume Vanilmirth Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 317,
+	SpriteId = 317,
 },
 [ "C_Dragonhelm_Copper" ] = {
 	Id = 19841,
 	Name = "Costume Dragonhelm Copper",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 454,
+	SpriteId = 454,
 },
 [ "C_Puppy_Hat" ] = {
 	Id = 19842,
 	Name = "Costume Puppy Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 234,
+	SpriteId = 234,
 },
 [ "C_Cat_Hairband" ] = {
 	Id = 19843,
 	Name = "Costume Kitty Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 2,
+	SpriteId = 2,
 },
 [ "C_Turban" ] = {
 	Id = 19844,
 	Name = "Costume Turban",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 7,
+	SpriteId = 7,
 },
 [ "C_Hair_Protector" ] = {
 	Id = 19845,
 	Name = "Costume Bao Bao",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 127,
+	SpriteId = 127,
 },
 [ "C_Opera_Ghost_Mask" ] = {
 	Id = 19846,
 	Name = "Costume Opera Phantom Mask",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 128,
+	SpriteId = 128,
 },
 [ "C_Big_Sis_Ribbon" ] = {
 	Id = 19847,
 	Name = "Costume Big Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 28,
+	SpriteId = 28,
 },
 [ "C_Angeling_Hat" ] = {
 	Id = 19848,
 	Name = "Costume Angeling Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 204,
+	SpriteId = 204,
 },
 [ "C_Munak_Turban" ] = {
 	Id = 19849,
 	Name = "Costume Munak Hat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 51,
+	SpriteId = 51,
 },
 [ "C_Bongun_Hat" ] = {
 	Id = 19850,
 	Name = "Costume Bongun Hat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 139,
+	SpriteId = 139,
 },
 [ "C_Brown_Bear_Cap" ] = {
 	Id = 19851,
 	Name = "Costume Teddybear Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 143,
+	SpriteId = 143,
 },
 [ "C_Filir_Wing" ] = {
 	Id = 19853,
 	Name = "Costume Filir Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 595,
+	SpriteId = 595,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -134672,105 +134672,105 @@ item_db = {
 	Name = "Costume Happy Summer Wig",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1059,
+	SpriteId = 1059,
 },
 [ "C_Iceflake_Hat" ] = {
 	Id = 19856,
 	Name = "Costume Snow Cone Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1080,
+	SpriteId = 1080,
 },
 [ "C_King_Prawn_Hat" ] = {
 	Id = 19857,
 	Name = "Costume Crayfish Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 728,
+	SpriteId = 728,
 },
 [ "C_Leaf_Headgear" ] = {
 	Id = 19858,
 	Name = "Costume Smokie Leaf",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 148,
+	SpriteId = 148,
 },
 [19859] = {
 	AegisName = "C_Flying_Angel_", -- FIXME ,= Unknown,
 	Name = "Costume Flying Angel",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 264,
+	SpriteId = 264,
 },
 [ "C_Cryptura_Hair_Cap" ] = {
 	Id = 19860,
 	Name = "Costume School Criatura Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 872,
+	SpriteId = 872,
 },
 [ "C_Heart_Hair_Pin" ] = {
 	Id = 19861,
 	Name = "Costume Heart Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 126,
+	SpriteId = 126,
 },
 [ "C_Horn_Of_Succubus" ] = {
 	Id = 19862,
 	Name = "Costume Succubus Horn",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 150,
+	SpriteId = 150,
 },
 [ "C_Inccubus_Horn" ] = {
 	Id = 19863,
 	Name = "Costume Incubus Horn",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 156,
+	SpriteId = 156,
 },
 [ "C_Dokebis_Wig" ] = {
 	Id = 19864,
 	Name = "Costume Dokebi's Wig",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 302,
+	SpriteId = 302,
 },
 [ "C_Joker_Jester" ] = {
 	Id = 19865,
 	Name = "Costume Joker Jester",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 89,
+	SpriteId = 89,
 },
 [ "C_Blue_Pajamas_Hat" ] = {
 	Id = 19866,
 	Name = "Costume Blue Pajamas",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 501,
+	SpriteId = 501,
 },
 [ "C_Pink_Pajamas_Hat" ] = {
 	Id = 19867,
 	Name = "Costume Red Pajamas",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 501,
+	SpriteId = 501,
 },
 [ "C_Showy_High_Cap" ] = {
 	Id = 19868,
 	Name = "Costume Showy High Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 830,
+	SpriteId = 830,
 },
 [ "C_Ancient_Civil_Man" ] = {
 	Id = 19869,
 	Name = "Costume Antiquity Helmet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 846,
+	SpriteId = 846,
 },
 [ "C_Music_Decoration" ] = {
 	Id = 19871,
@@ -134779,7 +134779,7 @@ item_db = {
 	Buy = 20,
 	Loc = EquipLocationMask.CostumeMidHead,
 	Refine = false,
-	ViewSprite = 1074,
+	SpriteId = 1074,
 	OnEquipScript = [[ sc_start SC_DECORATION_OF_MUSIC, -1, 0;s]],
 	OnUnequipScript = [[ sc_end SC_DECORATION_OF_MUSIC; ]]
 },
@@ -134788,21 +134788,21 @@ item_db = {
 	Name = "Costume Carnival Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 505,
+	SpriteId = 505,
 },
 [ "C_Carnival_Circlet" ] = {
 	Id = 19874,
 	Name = "Costume Carnival Circlet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 506,
+	SpriteId = 506,
 },
 [ "C_Love_Rabbit_Hood" ] = {
 	Id = 19875,
 	Name = "Costume Love Rabbit Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 549,
+	SpriteId = 549,
 	NoTrade = {
 		ItemTradeMask.Mail,
 		ItemTradeMask.Auction,
@@ -134813,42 +134813,42 @@ item_db = {
 	Name = "Costume Rabbit Ear Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 384,
+	SpriteId = 384,
 },
 [ "C_Eyes_Of_Darkness" ] = {
 	Id = 19877,
 	Name = "Costume Eyes Of Darkness",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 467,
+	SpriteId = 467,
 },
 [ "C_Drooping_Bunny" ] = {
 	Id = 19878,
 	Name = "Costume Drooping Bunny",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 249,
+	SpriteId = 249,
 },
 [ "C_Black_Bunny_Band" ] = {
 	Id = 19879,
 	Name = "Costume Black Bunny Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 267,
+	SpriteId = 267,
 },
 [ "C_Golden_Tiara" ] = {
 	Id = 19880,
 	Name = "Costume Golden Tiara",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 232,
+	SpriteId = 232,
 },
 [ "C_Pretty_Rabbit_Hood" ] = {
 	Id = 19881,
 	Name = "Costume Pretty Rabbit Hood",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1085,
+	SpriteId = 1085,
 	NoTrade = {
 		ItemTradeMask.Mail,
 		ItemTradeMask.Auction,
@@ -134859,112 +134859,112 @@ item_db = {
 	Name = "Costume Flowerpot Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1086,
+	SpriteId = 1086,
 },
 [ "C_Piamette_Hood" ] = {
 	Id = 19883,
 	Name = "Costume Piamette Hood",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1087,
+	SpriteId = 1087,
 },
 [ "C_Vanargandr_Helm" ] = {
 	Id = 19884,
 	Name = "Costume Vanargand Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 804,
+	SpriteId = 804,
 },
 [ "C_Blinker" ] = {
 	Id = 19885,
 	Name = "Costume Blinker",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 82,
+	SpriteId = 82,
 },
 [ "C_Luxury_Sunglasses" ] = {
 	Id = 19886,
 	Name = "Costume Purple Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 26,
+	SpriteId = 26,
 },
 [ "C_One_Eyed_Glass" ] = {
 	Id = 19887,
 	Name = "Costume Cyclops Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 23,
+	SpriteId = 23,
 },
 [ "C_Glasses" ] = {
 	Id = 19888,
 	Name = "Costume Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "C_Pair_Of_Red_Ribbon" ] = {
 	Id = 19889,
 	Name = "Costume Small Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 169,
+	SpriteId = 169,
 },
 [ "C_Mage_Hat" ] = {
 	Id = 19890,
 	Name = "Costume Mage Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 112,
+	SpriteId = 112,
 },
 [ "C_Magnolia_Hat" ] = {
 	Id = 19891,
 	Name = "Costume Magnolia Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 373,
+	SpriteId = 373,
 },
 [ "C_Night_Sparrow_Hat" ] = {
 	Id = 19892,
 	Name = "Costume Night Sparrow Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 913,
+	SpriteId = 913,
 },
 [ "C_Ordinary_Black_Magician_Hat" ] = {
 	Id = 19893,
 	Name = "Costume Ordinary Black Magician Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 912,
+	SpriteId = 912,
 },
 [ "C_Shrine_Maiden_Hat" ] = {
 	Id = 19894,
 	Name = "Costume Shrine Maiden Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 908,
+	SpriteId = 908,
 },
 [ "C_Magicians_Night_Cap" ] = {
 	Id = 19895,
 	Name = "Costume Magician's Night Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 911,
+	SpriteId = 911,
 },
 [ "C_PRO_10th_Cap" ] = {
 	Id = 19896,
 	Name = "Costume PRO 10th Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1094,
+	SpriteId = 1094,
 },
 [ "C_RPC13_1ST_Wreath" ] = {
 	Id = 19897,
 	Name = "Costume RPC13 1ST Wreath",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 261,
+	SpriteId = 261,
 	Script = [[
 		bonus bAllStats,3;
 		bonus bMdef,3;
@@ -134975,7 +134975,7 @@ item_db = {
 	Name = "Costume RPC13 2ND Wreath",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 261,
+	SpriteId = 261,
 	Script = [[
 		bonus bAllStats,2;
 		bonus bMdef,2;
@@ -134986,7 +134986,7 @@ item_db = {
 	Name = "Costume RPC13 3RD Wreath",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 261,
+	SpriteId = 261,
 	Script = [[
 		bonus bAllStats,1;
 		bonus bMdef,1;
@@ -134998,7 +134998,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1097,
+	SpriteId = 1097,
 },
 [ "C_Orc_Helm" ] = {
 	Id = 19901,
@@ -135006,14 +135006,14 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 86,
+	SpriteId = 86,
 },
 [ "C_Cigar" ] = {
 	Id = 19902,
 	Name = "Costume Cigarette",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 54,
+	SpriteId = 54,
 },
 [ "C_Witchs_Hat" ] = {
 	Id = 19903,
@@ -135021,91 +135021,91 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 717,
+	SpriteId = 717,
 },
 [ "C_Skull_Cap" ] = {
 	Id = 19904,
 	Name = "Costume Skull Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 713,
+	SpriteId = 713,
 },
 [ "C_Secret_Society_Hood" ] = {
 	Id = 19905,
 	Name = "Costume Secret Society Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 806,
+	SpriteId = 806,
 },
 [ "C_Screw_stuck_in_head" ] = {
 	Id = 19906,
 	Name = "Costume Screw stuck in head",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 696,
+	SpriteId = 696,
 },
 [ "C_Fascinating_Phantom_Mask" ] = {
 	Id = 19907,
 	Name = "Costume Fascinating Phantom Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 710,
+	SpriteId = 710,
 },
 [ "C_Flag_Crown_Hat" ] = {
 	Id = 19908,
 	Name = "Costume Flag Crown Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 219,
+	SpriteId = 219,
 },
 [ "C_White_Deviruchi_Hat" ] = {
 	Id = 19909,
 	Name = "Costume White Deviruchi Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 272,
+	SpriteId = 272,
 },
 [ "C_Halloween_Hat" ] = {
 	Id = 19910,
 	Name = "Costume Halloween Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1098,
+	SpriteId = 1098,
 },
 [ "C_Triangle_Roof_Hat" ] = {
 	Id = 19911,
 	Name = "Costume Triangle Roof Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1099,
+	SpriteId = 1099,
 },
 [ "C_Cat_Eye" ] = {
 	Id = 19912,
 	Name = "Costume Cat Eye",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1100,
+	SpriteId = 1100,
 },
 [ "C_Poo_Poo_Hat" ] = {
 	Id = 19913,
 	Name = "Costume Poo Poo Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 76,
+	SpriteId = 76,
 },
 [ "Felock_Cap" ] = {
 	Id = 19914,
 	Name = "Costume Tarlock's Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1101,
+	SpriteId = 1101,
 },
 [ "C_Black_Cat_Hat" ] = {
 	Id = 19916,
 	Name = "Costume Black Cat Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1105,
+	SpriteId = 1105,
 },
 [ "C_Gloomy_Pumpkin_Hat" ] = {
 	Id = 19917,
@@ -135113,7 +135113,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
 	Refine = false,
-	ViewSprite = 691,
+	SpriteId = 691,
 },
 [ "C_Lude_Mask" ] = {
 	Id = 19918,
@@ -135121,7 +135121,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 802,
+	SpriteId = 802,
 },
 [ "C_Cube_Mask_" ] = {
 	Id = 19919,
@@ -135129,7 +135129,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 472,
+	SpriteId = 472,
 },
 [ "C_Adv_Whisper_Mask" ] = {
 	Id = 19920,
@@ -135137,392 +135137,392 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
 	Refine = false,
-	ViewSprite = 458,
+	SpriteId = 458,
 },
 [ "C_Noah_Hat" ] = {
 	Id = 19922,
 	Name = "Costume Noah's Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 636,
+	SpriteId = 636,
 },
 [ "C_One_Eyed_Glasses" ] = {
 	Id = 19925,
 	Name = "Costume Monocle",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 23,
+	SpriteId = 23,
 },
 [ "C_Gothic_Heart_Wing" ] = {
 	Id = 19928,
 	Name = "Costume Gothic Heart Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1111,
+	SpriteId = 1111,
 },
 [ "C_Classical_Ribbon" ] = {
 	Id = 19929,
 	Name = "Costume Classical Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1112,
+	SpriteId = 1112,
 },
 [ "C_Angel_Mini_Silk_Hat" ] = {
 	Id = 19930,
 	Name = "Costume Angel Mini Silk Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1113,
+	SpriteId = 1113,
 },
 [ "C_Lazy_Raccoon" ] = {
 	Id = 19931,
 	Name = "Costume Lazy Smokie",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 168,
+	SpriteId = 168,
 },
 [ "C_Cap_Of_Concentration" ] = {
 	Id = 19932,
 	Name = "Costume Model Training Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 157,
+	SpriteId = 157,
 },
 [ "C_10Gallon_Hat_Of_Flame" ] = {
 	Id = 19934,
 	Name = "Costume Flaming Ten Gallon Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1075,
+	SpriteId = 1075,
 },
 [ "C_Hunting_Cap_Of_Gust" ] = {
 	Id = 19935,
 	Name = "Costume Hunting Cap Of Gust",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1076,
+	SpriteId = 1076,
 },
 [ "C_Knit_Cap_Of_Water" ] = {
 	Id = 19936,
 	Name = "Costume Knit Cap Of Water",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1077,
+	SpriteId = 1077,
 },
 [ "C_Love_Bunny_Hood" ] = {
 	Id = 19938,
 	Name = "Costume Love Bunny Hood",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 549,
+	SpriteId = 549,
 },
 [ "C_Antler" ] = {
 	Id = 19939,
 	Name = "Costume Antlers",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 71,
+	SpriteId = 71,
 },
 [ "C_Ear_Mufs" ] = {
 	Id = 19941,
 	Name = "Costume Ear Muffs",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 70,
+	SpriteId = 70,
 },
 [ "C_RWC2013_Japan_Hat" ] = {
 	Id = 19949,
 	Name = "Costume RWC2013 Japan Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1136,
+	SpriteId = 1136,
 },
 [ "C_Bubble_Gum_In_Mouth" ] = {
 	Id = 19952,
 	Name = "Costume Bubble Gum in Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 572,
+	SpriteId = 572,
 },
 [ "C_Parade_Cap" ] = {
 	Id = 19953,
 	Name = "Costume Parade Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 465,
+	SpriteId = 465,
 },
 [ "C_3D_Glasses" ] = {
 	Id = 19954,
 	Name = "Costume 3D Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 661,
+	SpriteId = 661,
 },
 [ "C_Mini_Tree_J" ] = {
 	Id = 19955,
 	Name = "Costume Mini Tree",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 727,
+	SpriteId = 727,
 },
 [ "C_Soldier_Hat" ] = {
 	Id = 19956,
 	Name = "Costume Soldier Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 420,
+	SpriteId = 420,
 },
 [ "C_Scooter_Hat_J" ] = {
 	Id = 19957,
 	Name = "Costume Scooter Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 588,
+	SpriteId = 588,
 },
 [ "C_Choir_Hat" ] = {
 	Id = 19958,
 	Name = "Costume Choir Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1137,
+	SpriteId = 1137,
 },
 [ "C_Drooping_Argiope" ] = {
 	Id = 19959,
 	Name = "Costume Drooping Argiope",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1138,
+	SpriteId = 1138,
 },
 [ "C_Chain_Puppet" ] = {
 	Id = 19960,
 	Name = "Costume Chain Puppet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1139,
+	SpriteId = 1139,
 },
 [ "C_Rune_Circlet" ] = {
 	Id = 19961,
 	Name = "Costume Rune Circlet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 623,
+	SpriteId = 623,
 },
 [ "C_Mitra" ] = {
 	Id = 19962,
 	Name = "Costume Mitra",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 624,
+	SpriteId = 624,
 },
 [ "C_Driver_Band_R" ] = {
 	Id = 19963,
 	Name = "Costume Driver Band Red",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 626,
+	SpriteId = 626,
 },
 [ "C_Driver_Band_Y" ] = {
 	Id = 19964,
 	Name = "Costume Driver Band Yellow",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 637,
+	SpriteId = 637,
 },
 [ "C_Shadow_Handicraft" ] = {
 	Id = 19965,
 	Name = "Costume Shadow Handicraft",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 627,
+	SpriteId = 627,
 },
 [ "C_Minstrel_Song_Hat" ] = {
 	Id = 19966,
 	Name = "Costume Minstrel Song's Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 628,
+	SpriteId = 628,
 },
 [ "C_Midas_Whisper" ] = {
 	Id = 19967,
 	Name = "Costume Midas Whisper",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 629,
+	SpriteId = 629,
 },
 [ "C_Magic_Stone_Hat" ] = {
 	Id = 19968,
 	Name = "Costume Magic Stone Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 630,
+	SpriteId = 630,
 },
 [ "C_Blazing_Soul" ] = {
 	Id = 19969,
 	Name = "Costume Blazing Soul",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 631,
+	SpriteId = 631,
 },
 [ "C_Wind_Whisper" ] = {
 	Id = 19970,
 	Name = "Costume Wind Whisper",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 633,
+	SpriteId = 633,
 },
 [ "C_Dying_Swan" ] = {
 	Id = 19971,
 	Name = "Costume Dying Swan",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 635,
+	SpriteId = 635,
 },
 [ "C_Protect_Of_Crown" ] = {
 	Id = 19972,
 	Name = "Costume Protect Of Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1140,
+	SpriteId = 1140,
 },
 [ "C_Circlet_Of_Bone" ] = {
 	Id = 19973,
 	Name = "Costume Circlet Of Bones",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1141,
+	SpriteId = 1141,
 },
 [ "C_Camouflage_RabbitHood" ] = {
 	Id = 19974,
 	Name = "Costume Camouflage Rabbit Hood",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1142,
+	SpriteId = 1142,
 },
 [ "C_Cat_Santa_Hat" ] = {
 	Id = 19976,
 	Name = "Costume Cat Santa Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1144,
+	SpriteId = 1144,
 },
 [ "C_Golden_Exclamation" ] = {
 	Id = 19977,
 	Name = "Costume Golden Exclamation Mark",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1145,
+	SpriteId = 1145,
 },
 [ "C_Silver_Exclamation" ] = {
 	Id = 19978,
 	Name = "Costume Silver Exclamation Mark",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1146,
+	SpriteId = 1146,
 },
 [ "C_Golden_Question" ] = {
 	Id = 19979,
 	Name = "Costume Golden Question Mark",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1147,
+	SpriteId = 1147,
 },
 [ "C_Silver_Question" ] = {
 	Id = 19980,
 	Name = "Costume Silver Question Mark",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1148,
+	SpriteId = 1148,
 },
 [ "C_Santas_Hat" ] = {
 	Id = 19982,
 	Name = "Costume Santa Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 727,
+	SpriteId = 727,
 },
 [ "C_Flower_Hairpin" ] = {
 	Id = 19983,
 	Name = "Costume Flower Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 145,
+	SpriteId = 145,
 },
 [ "C_Winter_Hat" ] = {
 	Id = 19984,
 	Name = "Costume Winter Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 196,
+	SpriteId = 196,
 },
 [ "C_Aura_Quartz_Crown" ] = {
 	Id = 19985,
 	Name = "Costume Aura Quartz",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 866,
+	SpriteId = 866,
 },
 [ "C_Lunatic_Hat" ] = {
 	Id = 19986,
 	Name = "Costume Lunatic Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 521,
+	SpriteId = 521,
 },
 [ "C_Blue_Fur_Hat" ] = {
 	Id = 19987,
 	Name = "Costume Blue Fur Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 280,
+	SpriteId = 280,
 },
 [ "C_Elder_Crown" ] = {
 	Id = 19988,
 	Name = "Costume Elder Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 933,
+	SpriteId = 933,
 },
 [ "C_Mouton_Life" ] = {
 	Id = 19989,
 	Name = "Costume Mouton Life",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1156,
+	SpriteId = 1156,
 },
 [ "C_Snow_Rabbit_Knit_Hat" ] = {
 	Id = 19990,
 	Name = "Costume Rabbit Knit Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1157,
+	SpriteId = 1157,
 },
 [ "C_Galanthus_Guard" ] = {
 	Id = 19991,
 	Name = "Costume Galanthus Guard",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1158,
+	SpriteId = 1158,
 },
 [ "C_Chilly_Breath" ] = {
 	Id = 19992,
 	Name = "Costume Chilly Breath",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 885,
+	SpriteId = 885,
 },
 [ "C_saLUsalo_Hat" ] = {
 	Id = 19994,
 	Name = "Costume saLUsalo Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1171,
+	SpriteId = 1171,
 },
 [ "Horse_King" ] = {
 	Id = 19996,
 	Name = "Costume Horse King",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1189,
+	SpriteId = 1189,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135537,21 +135537,21 @@ item_db = {
 	Name = "Costume Bomb Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1191,
+	SpriteId = 1191,
 },
 [ "C_Dragon_Turtle_Hat" ] = {
 	Id = 19998,
 	Name = "Costume Dragon Turtle Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1192,
+	SpriteId = 1192,
 },
 [ "Mouse_Hat1" ] = {
 	Id = 19999,
 	Name = "Costume Mouse Hat1",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1193,
+	SpriteId = 1193,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135566,7 +135566,7 @@ item_db = {
 	Name = "Costume Mouse Hat2",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1194,
+	SpriteId = 1194,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135581,7 +135581,7 @@ item_db = {
 	Name = "Costume Mouse Hat3",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1195,
+	SpriteId = 1195,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135596,7 +135596,7 @@ item_db = {
 	Name = "Costume Mouse Hat4",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1196,
+	SpriteId = 1196,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135611,7 +135611,7 @@ item_db = {
 	Name = "Costume Mouse Hat5",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1197,
+	SpriteId = 1197,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135626,147 +135626,147 @@ item_db = {
 	Name = "Costume Big Golden Bell",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 175,
+	SpriteId = 175,
 },
 [ "C_Sigrun_Wing" ] = {
 	Id = 20005,
 	Name = "Costume Sigrun Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 568,
+	SpriteId = 568,
 },
 [ "C_Dark_Knight_Mask" ] = {
 	Id = 20006,
 	Name = "Costume Dark Knight Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 479,
+	SpriteId = 479,
 },
 [ "C_Horned_Hat" ] = {
 	Id = 20007,
 	Name = "Costume Horned Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 322,
+	SpriteId = 322,
 },
 [ "C_Dragon_General_Helm" ] = {
 	Id = 20008,
 	Name = "Costume Dragon General Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 729,
+	SpriteId = 729,
 },
 [ "C_Dragon_Skull_Hat" ] = {
 	Id = 20009,
 	Name = "Costume Dragon Skull Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 319,
+	SpriteId = 319,
 },
 [ "C_Rainbow_Wing_Ears" ] = {
 	Id = 20010,
 	Name = "Costume Rainbow Ears Feather",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1198,
+	SpriteId = 1198,
 },
 [ "C_Lightning_Speed" ] = {
 	Id = 20011,
 	Name = "Costume Lightning Speed",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1199,
+	SpriteId = 1199,
 },
 [ "C_Double_Horn_Helm" ] = {
 	Id = 20012,
 	Name = "Costume Double Horn Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1200,
+	SpriteId = 1200,
 },
 [ "C_Chef_Hat" ] = {
 	Id = 20013,
 	Name = "Costume Chef Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 111,
+	SpriteId = 111,
 },
 [ "Lincoln_Hat" ] = {
 	Id = 20014,
 	Name = "Costume Lincoln Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1204,
+	SpriteId = 1204,
 },
 [ "Lincoln_Beard" ] = {
 	Id = 20015,
 	Name = "Costume Lincoln Beard",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1205,
+	SpriteId = 1205,
 },
 [ "Lobster_Hat" ] = {
 	Id = 20016,
 	Name = "Costume Cool Dinner Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1206,
+	SpriteId = 1206,
 },
 [ "C_Marionette_Doll" ] = {
 	Id = 20017,
 	Name = "Costume Marionette Doll",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 212,
+	SpriteId = 212,
 },
 [ "Beret_Of_Artist" ] = {
 	Id = 20019,
 	Name = "Costume Artisant Beret",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1209,
+	SpriteId = 1209,
 },
 [ "C_Zaha_Doll_Hat" ] = {
 	Id = 20020,
 	Name = "Costume Zaha Doll Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 461,
+	SpriteId = 461,
 },
 [ "C_Heart_Ribbon_Hairband" ] = {
 	Id = 20021,
 	Name = "Costume Heart Ribbon Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 708,
+	SpriteId = 708,
 },
 [ "C_Love_Fragment" ] = {
 	Id = 20022,
 	Name = "Costume Love Fragment",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 734,
+	SpriteId = 734,
 },
 [ "C_Red_Beret" ] = {
 	Id = 20023,
 	Name = "Costume Red Beret",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 559,
+	SpriteId = 559,
 },
 [ "C_Orange_Ribbon" ] = {
 	Id = 20024,
 	Name = "Costume Orange Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 247,
+	SpriteId = 247,
 },
 [ "Cow_Hat1" ] = {
 	Id = 20025,
 	Name = "Costume Cow Hat1",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1211,
+	SpriteId = 1211,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135781,7 +135781,7 @@ item_db = {
 	Name = "Costume Cow Hat2",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1212,
+	SpriteId = 1212,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135796,7 +135796,7 @@ item_db = {
 	Name = "Costume Cow Hat3",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1213,
+	SpriteId = 1213,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135811,7 +135811,7 @@ item_db = {
 	Name = "Costume Cow Hat4",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1214,
+	SpriteId = 1214,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -135826,175 +135826,175 @@ item_db = {
 	Name = "Costume Donut in Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 569,
+	SpriteId = 569,
 },
 [ "C_Choco_Donut_in_Mouth" ] = {
 	Id = 20030,
 	Name = "Costume Choco Donut in Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 653,
+	SpriteId = 653,
 },
 [ "C_Bunny_Head_Dress" ] = {
 	Id = 20031,
 	Name = "Costume Bunny Headress",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1215,
+	SpriteId = 1215,
 },
 [ "C_Firinto_Scarf" ] = {
 	Id = 20032,
 	Name = "Costume Firinto Scarf",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1216,
+	SpriteId = 1216,
 },
 [ "C_Buddhist_Priest_Crown" ] = {
 	Id = 20033,
 	Name = "Costume Monk Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1217,
+	SpriteId = 1217,
 },
 [ "C_Jack_Castle_Bat" ] = {
 	Id = 20034,
 	Name = "Costume Jack Castle Bat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1041,
+	SpriteId = 1041,
 },
 [ "C_Miracle_Blue_Rose" ] = {
 	Id = 20035,
 	Name = "Costume Miracle Blue Rose",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1064,
+	SpriteId = 1064,
 },
 [ "C_Sword_Master_Crown" ] = {
 	Id = 20036,
 	Name = "Costume Crown of Victory",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 981,
+	SpriteId = 981,
 },
 [ "C_Owlduke_Silk_Hat" ] = {
 	Id = 20037,
 	Name = "Costume Owlduke Silk Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 982,
+	SpriteId = 982,
 },
 [ "C_Alphonse_Helm" ] = {
 	Id = 20038,
 	Name = "Costume Alphonse Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1214,
+	SpriteId = 1214,
 },
 [ "C_Butterfly_Wing_Ears" ] = {
 	Id = 20039,
 	Name = "Costume Butterfly Wing Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 695,
+	SpriteId = 695,
 },
 [ "C_Chung_Hairband_" ] = {
 	Id = 20040,
 	Name = "Costume Chung Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 583,
+	SpriteId = 583,
 },
 [ "C_Rose_Headband" ] = {
 	Id = 20041,
 	Name = "Costume Rose Headband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 864,
+	SpriteId = 864,
 },
 [ "C_Hermos_Cap" ] = {
 	Id = 20042,
 	Name = "Costume Hermos Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 478,
+	SpriteId = 478,
 },
 [ "C_Cherryblossom_in_Mouth" ] = {
 	Id = 20043,
 	Name = "Costume Cherryblossom in Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 823,
+	SpriteId = 823,
 },
 [ "C_Carmen_Mirandas_Hat" ] = {
 	Id = 20044,
 	Name = "Costume Carmen Miranda's Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 329,
+	SpriteId = 329,
 },
 [ "C_Samambaia" ] = {
 	Id = 20045,
 	Name = "Costume Samambaia",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 508,
+	SpriteId = 508,
 },
 [ "C_Blue_Ribbon_Band" ] = {
 	Id = 20046,
 	Name = "Costume Blue Ribbon Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1222,
+	SpriteId = 1222,
 },
 [ "C_Pray_Cherry_Blossom" ] = {
 	Id = 20047,
 	Name = "Costume Prayer Cherry Blossom",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1223,
+	SpriteId = 1223,
 },
 [ "C_Wind_Of_The_Prairie" ] = {
 	Id = 20048,
 	Name = "Costume Wind Prairie",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1224,
+	SpriteId = 1224,
 },
 [ "C_Plaster" ] = {
 	Id = 20049,
 	Name = "Costume Giant Aid Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 147,
+	SpriteId = 147,
 },
 [ "C_Ph_D_Hat" ] = {
 	Id = 20050,
 	Name = "Costume Ph.D Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 98,
+	SpriteId = 98,
 },
 [ "C_Stop_Post" ] = {
 	Id = 20051,
 	Name = "Costume Stop Post",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 59,
+	SpriteId = 59,
 },
 [ "C_AFK_Hat" ] = {
 	Id = 20052,
 	Name = "Costume AFK Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 471,
+	SpriteId = 471,
 },
 [ "C_WKing_Tiger_Doll_Hat" ] = {
 	Id = 20053,
 	Name = "Costume WKing Tiger Doll Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 973,
+	SpriteId = 973,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136009,56 +136009,56 @@ item_db = {
 	Name = "Costume Pacifier",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 191,
+	SpriteId = 191,
 },
 [ "C_Ghost_Bandana" ] = {
 	Id = 20055,
 	Name = "Costume Ghost Bandana",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 61,
+	SpriteId = 61,
 },
 [ "C_Bride_Corolla" ] = {
 	Id = 20056,
 	Name = "Costume Bride's Corolla",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 437,
+	SpriteId = 437,
 },
 [ "C_Feather_Bonnet" ] = {
 	Id = 20057,
 	Name = "Costume Feather Bonnet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 104,
+	SpriteId = 104,
 },
 [ "C_Hot_Blood_Headband" ] = {
 	Id = 20058,
 	Name = "Costume Hot Blood Headband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 154,
+	SpriteId = 154,
 },
 [ "C_Welding_Mask" ] = {
 	Id = 20059,
 	Name = "Costume Welding Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 79,
+	SpriteId = 79,
 },
 [ "C_Construction_Helmet" ] = {
 	Id = 20060,
 	Name = "Costume Construction Helmet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 95,
+	SpriteId = 95,
 },
 [ "C_Demo_Mask" ] = {
 	Id = 20061,
 	Name = "Costume Demo Mask",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 52,
+	SpriteId = 52,
 },
 [ "C_Angel_Stair" ] = {
 	Id = 20062,
@@ -136073,7 +136073,7 @@ item_db = {
 	Name = "Costume Yellow Brain Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1228,
+	SpriteId = 1228,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136089,7 +136089,7 @@ item_db = {
 	Name = "Costume Blue Brain Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1229,
+	SpriteId = 1229,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136105,21 +136105,21 @@ item_db = {
 	Name = "Costume Grand Peco Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 473,
+	SpriteId = 473,
 },
 [ "C_Pecopeco_Hairband" ] = {
 	Id = 20066,
 	Name = "Costume Pecopeco Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 314,
+	SpriteId = 314,
 },
 [ "C_White_Rabbit_Headband" ] = {
 	Id = 20067,
 	Name = "Costume White Rabbit Headband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 719,
+	SpriteId = 719,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136134,7 +136134,7 @@ item_db = {
 	Name = "Costume Black Rabbit Headband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 718,
+	SpriteId = 718,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136149,119 +136149,119 @@ item_db = {
 	Name = "Costume Gryphon Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1233,
+	SpriteId = 1233,
 },
 [ "C_Alpaca_Hood" ] = {
 	Id = 20070,
 	Name = "Costume Alpaca Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1234,
+	SpriteId = 1234,
 },
 [ "C_Worg_In_Mouth" ] = {
 	Id = 20071,
 	Name = "Costume Worg In Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1235,
+	SpriteId = 1235,
 },
 [ "C_Hair_Band" ] = {
 	Id = 20073,
 	Name = "Costume Hair Band",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 9,
+	SpriteId = 9,
 },
 [ "C_Biretta" ] = {
 	Id = 20074,
 	Name = "Costume Biretta",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 11,
+	SpriteId = 11,
 },
 [ "C_Little_Fhat" ] = {
 	Id = 20075,
 	Name = "Costume Little Feather Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 715,
+	SpriteId = 715,
 },
 [ "C_Idun_Wing_Ears" ] = {
 	Id = 20076,
 	Name = "Costume Idun Feather Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 724,
+	SpriteId = 724,
 },
 [ "C_Wing_Form_Spectacle" ] = {
 	Id = 20077,
 	Name = "Costume Wing Frame Sunglasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 925,
+	SpriteId = 925,
 },
 [ "C_White_Feather" ] = {
 	Id = 20078,
 	Name = "Costume White Feather",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 741,
+	SpriteId = 741,
 },
 [ "C_Love_Daddy_2013" ] = {
 	Id = 20079,
 	Name = "Costume Forgotten Angel Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1104,
+	SpriteId = 1104,
 },
 [ "C_Shamans_Hair_Orna" ] = {
 	Id = 20080,
 	Name = "Costume Shaman Hair Ornament",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 476,
+	SpriteId = 476,
 },
 [ "C_Metal_Dragon_Helm" ] = {
 	Id = 20081,
 	Name = "Costume Metal Dragon Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1242,
+	SpriteId = 1242,
 },
 [ "C_Metal_Dragon_Hat" ] = {
 	Id = 20082,
 	Name = "Costume Metal Dragon Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1243,
+	SpriteId = 1243,
 },
 [ "C_Mythlit_Hat" ] = {
 	Id = 20083,
 	Name = "Costume Mythlit Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1244,
+	SpriteId = 1244,
 },
 [ "C_Clover_Coronet" ] = {
 	Id = 20084,
 	Name = "Costume Ceremonial Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 325,
+	SpriteId = 325,
 },
 [ "C_Clover_Silkhat" ] = {
 	Id = 20085,
 	Name = "Costume St Patrick's Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 735,
+	SpriteId = 735,
 },
 [ "C_Dragon_Cintamani_Hat1" ] = {
 	Id = 20086,
 	Name = "Costume Dragon Cintamani Hat1",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1245,
+	SpriteId = 1245,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136276,7 +136276,7 @@ item_db = {
 	Name = "Costume Dragon Cintamani Hat2",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1246,
+	SpriteId = 1246,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136291,7 +136291,7 @@ item_db = {
 	Name = "Costume Dragon Cintamani Hat3",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1247,
+	SpriteId = 1247,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136306,7 +136306,7 @@ item_db = {
 	Name = "Costume Dragon Cintamani Hat4",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1248,
+	SpriteId = 1248,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136321,70 +136321,70 @@ item_db = {
 	Name = "Costume Egg Shell",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 101,
+	SpriteId = 101,
 },
 [ "C_Smoking_Pipe" ] = {
 	Id = 20091,
 	Name = "Costume Smoking Pipe",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 55,
+	SpriteId = 55,
 },
 [ "C_Sales_Signboard" ] = {
 	Id = 20092,
 	Name = "Costume Sale Banner",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 183,
+	SpriteId = 183,
 },
 [ "C_Star_Sparkling" ] = {
 	Id = 20093,
 	Name = "Costume Wizard Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 36,
+	SpriteId = 36,
 },
 [ "C_Fillet_Green" ] = {
 	Id = 20094,
 	Name = "Costume Green Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 439,
+	SpriteId = 439,
 },
 [ "C_Fillet_Red" ] = {
 	Id = 20095,
 	Name = "Costume Red Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 440,
+	SpriteId = 440,
 },
 [ "C_Fillet_Blue" ] = {
 	Id = 20096,
 	Name = "Costume Blue Ribbonn",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 441,
+	SpriteId = 441,
 },
 [ "C_Fillet_White" ] = {
 	Id = 20097,
 	Name = "Costume White Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 442,
+	SpriteId = 442,
 },
 [ "C_Vampire_Hairband" ] = {
 	Id = 20098,
 	Name = "Costume Vampire Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1238,
+	SpriteId = 1238,
 },
 [ "C_Ljosalfar" ] = {
 	Id = 20099,
 	Name = "Costume Ljosalfar",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1239,
+	SpriteId = 1239,
 	OnEquipScript = [[ sc_start SC_LJOSALFAR,-1,0;s]],
 	OnUnequipScript = [[ sc_end SC_LJOSALFAR; ]]
 },
@@ -136393,77 +136393,77 @@ item_db = {
 	Name = "Costume Volume Fhat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1240,
+	SpriteId = 1240,
 },
 [ "C_Bragi_Wing_Ears" ] = {
 	Id = 20101,
 	Name = "Costume Bragi Wing Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1241,
+	SpriteId = 1241,
 },
 [ "C_Horse_King_J" ] = {
 	Id = 20102,
 	Name = "Costume Horse King_J",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1189,
+	SpriteId = 1189,
 },
 [ "C_Drooping_Panda" ] = {
 	Id = 20103,
 	Name = "Costume Drooping Panda",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1029,
+	SpriteId = 1029,
 },
 [ "C_Picky_Egg_Shell" ] = {
 	Id = 20104,
 	Name = "Costume Picky Egg Shell",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1001,
+	SpriteId = 1001,
 },
 [ "C_Fish_Head" ] = {
 	Id = 20105,
 	Name = "Costume Fish Head",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 386,
+	SpriteId = 386,
 },
 [ "C_Classic_Hat" ] = {
 	Id = 20106,
 	Name = "Costume Classic Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 475,
+	SpriteId = 475,
 },
 [ "C_Fish_in_mouth" ] = {
 	Id = 20107,
 	Name = "Costume Fish in mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 406,
+	SpriteId = 406,
 },
 [ "C_Blind_Glasses" ] = {
 	Id = 20108,
 	Name = "Costume Blind Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 813,
+	SpriteId = 813,
 },
 [ "C_Jolly_Roger_Hat" ] = {
 	Id = 20109,
 	Name = "Costume Jolly Roger Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 962,
+	SpriteId = 962,
 },
 [ "C_Coiledup_Snake_Hat1" ] = {
 	Id = 20110,
 	Name = "Costume Coiledup Snake Hat1",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1258,
+	SpriteId = 1258,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136478,7 +136478,7 @@ item_db = {
 	Name = "Costume Coiledup Snake Hat2",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1259,
+	SpriteId = 1259,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136493,168 +136493,168 @@ item_db = {
 	Name = "Costume Aqua Ten Gallon Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1256,
+	SpriteId = 1256,
 },
 [ "C_Star_Reading_Hat" ] = {
 	Id = 20113,
 	Name = "Costume Star Reading Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1253,
+	SpriteId = 1253,
 },
 [ "C_Funeral_Costume" ] = {
 	Id = 20114,
 	Name = "Costume Funeral Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 77,
+	SpriteId = 77,
 },
 [ "C_Under_Rim_Glasses" ] = {
 	Id = 20115,
 	Name = "Costume Under Rim Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1255,
+	SpriteId = 1255,
 },
 [ "C_Mermaid_Headphone" ] = {
 	Id = 20116,
 	Name = "Costume Mermaid Headphones",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1254,
+	SpriteId = 1254,
 },
 [ "C_Raspberry_Mousse_Hat" ] = {
 	Id = 20117,
 	Name = "Costume Raspberry Mousse Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1257,
+	SpriteId = 1257,
 },
 [ "C_Hat_Of_Cake" ] = {
 	Id = 20118,
 	Name = "Costume Cake Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 109,
+	SpriteId = 109,
 },
 [ "C_Fur_Hat" ] = {
 	Id = 20119,
 	Name = "Costume Beanie",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 160,
+	SpriteId = 160,
 },
 [ "C_Antenna" ] = {
 	Id = 20120,
 	Name = "Costume Antenna",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 97,
+	SpriteId = 97,
 },
 [ "C_Lotus_Flower_Hat" ] = {
 	Id = 20121,
 	Name = "Costume Water Lily Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 324,
+	SpriteId = 324,
 },
 [ "Happy_Summer_Ribbon" ] = {
 	Id = 20122,
 	Name = "Costume Happy Summer Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1260,
+	SpriteId = 1260,
 },
 [ "C_Eagle_Eyes" ] = {
 	Id = 20123,
 	Name = "Costume Eagle Eyes",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 63,
+	SpriteId = 63,
 },
 [ "C_Masquerade" ] = {
 	Id = 20124,
 	Name = "Costume Masquerade",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 78,
+	SpriteId = 78,
 },
 [ "C_Mini_Glasses" ] = {
 	Id = 20125,
 	Name = "Costume Mini Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 47,
+	SpriteId = 47,
 },
 [ "C_Odium_Thanatos_Mask" ] = {
 	Id = 20126,
 	Name = "Costume Odium Thanatos Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 667,
+	SpriteId = 667,
 },
 [ "C_Abysmal_Knight_Helm" ] = {
 	Id = 20127,
 	Name = "Costume Abysmal Knight Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 371,
+	SpriteId = 371,
 },
 [ "C_Remover_Hat" ] = {
 	Id = 20128,
 	Name = "Costume Remover Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 655,
+	SpriteId = 655,
 },
 [ "C_Poporing_Hat" ] = {
 	Id = 20129,
 	Name = "Costume Poporing Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 361,
+	SpriteId = 361,
 },
 [ "C_Whisper_Tall_Hat" ] = {
 	Id = 20130,
 	Name = "Costume Whisper Tall Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1265,
+	SpriteId = 1265,
 },
 [ "C_C_Tower_Manager_Hat" ] = {
 	Id = 20131,
 	Name = "Costume Clock Tower Manager Incom",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1266,
+	SpriteId = 1266,
 },
 [ "C_Subject_Aura" ] = {
 	Id = 20132,
 	Name = "Costume Subject Aura",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1267,
+	SpriteId = 1267,
 },
 [ "C_Poring_Mascot_Costume" ] = {
 	Id = 20133,
 	Name = "Costume Poring Mascot",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1268,
+	SpriteId = 1268,
 },
 [ "C_Helm_Of_Abyss_White" ] = {
 	Id = 20134,
 	Name = "Costume White Helm Of Abyss",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1269,
+	SpriteId = 1269,
 },
 [ "C_12th_Anniversary_Crown" ] = {
 	Id = 20135,
 	Name = "Costume 12th Anniversary Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1117,
+	SpriteId = 1117,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136671,7 +136671,7 @@ item_db = {
 	Name = "Costume 12th Anniversary Fairy Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 875,
+	SpriteId = 875,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136688,21 +136688,21 @@ item_db = {
 	Name = "Costume Bomb Wick",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 66,
+	SpriteId = 66,
 },
 [ "C_Sea_Otter_Hat" ] = {
 	Id = 20138,
 	Name = "Costume Sea Otter Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 162,
+	SpriteId = 162,
 },
 [ "C_Mini_Horse_Hairpin1" ] = {
 	Id = 20139,
 	Name = "Costume Mini Horse Hairpin1",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1271,
+	SpriteId = 1271,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136717,7 +136717,7 @@ item_db = {
 	Name = "Costume Mini Horse Hairpin2",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1272,
+	SpriteId = 1272,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136732,98 +136732,98 @@ item_db = {
 	Name = "Costume Observer",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 337,
+	SpriteId = 337,
 },
 [ "C_Machoman_Glasses" ] = {
 	Id = 20142,
 	Name = "Costume Machoman Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 92,
+	SpriteId = 92,
 },
 [ "C_Candy_Cane_In_Mouth" ] = {
 	Id = 20143,
 	Name = "Costume Candy Cane In Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 665,
+	SpriteId = 665,
 },
 [ "C_Ancient_Elven_Ear" ] = {
 	Id = 20144,
 	Name = "Costume Ancient Elven Ear",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 665,
+	SpriteId = 665,
 },
 [ "C_Robo_Eye" ] = {
 	Id = 20145,
 	Name = "Costume Robo Eye",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 345,
+	SpriteId = 345,
 },
 [ "C_Angel_Spirit" ] = {
 	Id = 20146,
 	Name = "Costume Angel Of Ghost",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 394,
+	SpriteId = 394,
 },
 [ "C_Bell_Pigeon" ] = {
 	Id = 20147,
 	Name = "Costume Pigeon On Shoulder",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1034,
+	SpriteId = 1034,
 },
 [ "C_Musketeer_Hat" ] = {
 	Id = 20148,
 	Name = "Costume Musketeer Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 466,
+	SpriteId = 466,
 },
 [ "C_Hexagon_Glasses" ] = {
 	Id = 20149,
 	Name = "Costume Hexagon Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 822,
+	SpriteId = 822,
 },
 [ "C_Wind_Fan" ] = {
 	Id = 20150,
 	Name = "Costume Wind Fan",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1051,
+	SpriteId = 1051,
 },
 [ "C_Poison_Spore_Hat" ] = {
 	Id = 20151,
 	Name = "Costume Poison Spore Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 899,
+	SpriteId = 899,
 },
 [ "C_Straw_Rice_Bag" ] = {
 	Id = 20152,
 	Name = "Costume Straw Rice Bag",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1273,
+	SpriteId = 1273,
 },
 [ "C_Monochrome_Cap" ] = {
 	Id = 20153,
 	Name = "Costume Monochrome Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1274,
+	SpriteId = 1274,
 },
 [ "C_Maple_Which_Falls" ] = {
 	Id = 20154,
 	Name = "Costume Falling Maple leafs",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1275,
+	SpriteId = 1275,
 	OnEquipScript = [[ sc_start SC_MAPLE_FALLS, -1, 0;s]],
 	OnUnequipScript = [[ sc_end SC_MAPLE_FALLS; ]]
 },
@@ -136832,56 +136832,56 @@ item_db = {
 	Name = "Costume Lady Feather Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1276,
+	SpriteId = 1276,
 },
 [ "C_Fan_In_Mouth" ] = {
 	Id = 20156,
 	Name = "Costume Fan in Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 857,
+	SpriteId = 857,
 },
 [ "C_Fish_On_Head" ] = {
 	Id = 20157,
 	Name = "Costume Blue Fish",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 149,
+	SpriteId = 149,
 },
 [ "C_Circlet" ] = {
 	Id = 20158,
 	Name = "Costume Circlet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 18,
+	SpriteId = 18,
 },
 [ "C_Blue_Hair_Band" ] = {
 	Id = 20159,
 	Name = "Costume Blue Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 136,
+	SpriteId = 136,
 },
 [ "C_Fried_Egg" ] = {
 	Id = 20160,
 	Name = "Costume Magnolia Hat_J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 373,
+	SpriteId = 373,
 },
 [ "C_Prontera_Army_Cap" ] = {
 	Id = 20161,
 	Name = "Costume Army Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 48,
+	SpriteId = 48,
 },
 [ "C_Lamb_Hat1" ] = {
 	Id = 20162,
 	Name = "Costume Lamb Hat1",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1277,
+	SpriteId = 1277,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136896,7 +136896,7 @@ item_db = {
 	Name = "Costume Lamb Hat2",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1278,
+	SpriteId = 1278,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -136911,112 +136911,112 @@ item_db = {
 	Name = "Costume Duneyrr Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 639,
+	SpriteId = 639,
 },
 [ "C_Tendrilion_Hat" ] = {
 	Id = 20165,
 	Name = "Costume Tendrilion Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 658,
+	SpriteId = 658,
 },
 [ "C_Hockey_Mask" ] = {
 	Id = 20166,
 	Name = "Costume Hockey Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 336,
+	SpriteId = 336,
 },
 [ "C_Deviruchi_Headphone" ] = {
 	Id = 20167,
 	Name = "Costume Deviruchi Headphone",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 805,
+	SpriteId = 805,
 },
 [ "C_Skull_Hood" ] = {
 	Id = 20168,
 	Name = "Costume Skull Hood",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 598,
+	SpriteId = 598,
 },
 [ "C_Long_Tongue" ] = {
 	Id = 20169,
 	Name = "Costume Long Tongue",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 773,
+	SpriteId = 773,
 },
 [ "C_Brown_Deviruchi_Cap" ] = {
 	Id = 20170,
 	Name = "Costume Brown Deviruchi Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 273,
+	SpriteId = 273,
 },
 [ "C_Sepia_Cap" ] = {
 	Id = 20171,
 	Name = "Costume Sepia Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1280,
+	SpriteId = 1280,
 },
 [ "C_Pumpkin_Head" ] = {
 	Id = 20172,
 	Name = "Costume Pumpkin Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1281,
+	SpriteId = 1281,
 },
 [ "C_Lude_Hood" ] = {
 	Id = 20173,
 	Name = "Costume Lude Hood",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1282,
+	SpriteId = 1282,
 },
 [ "C_Halloween_Hat_Orange" ] = {
 	Id = 20174,
 	Name = "Costume Orange Halloween Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1283,
+	SpriteId = 1283,
 },
 [ "C_Diabolic_Headphone" ] = {
 	Id = 20175,
 	Name = "Costume Diabolic Headphone",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1284,
+	SpriteId = 1284,
 },
 [ "Happy_Pierrot_Mask" ] = {
 	Id = 20176,
 	Name = "Costume Happy Pierrot Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1288,
+	SpriteId = 1288,
 },
 [ "C_Drooping_Dorasuke" ] = {
 	Id = 20177,
 	Name = "Costume Drooping Dorasuke",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1290,
+	SpriteId = 1290,
 },
 [ "C_Puppy_Love" ] = {
 	Id = 20178,
 	Name = "Costume Puppy Love",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 94,
+	SpriteId = 94,
 },
 [ "C_Monkey_Fur_Hat" ] = {
 	Id = 20179,
 	Name = "Costume Monkey Fur Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 858,
+	SpriteId = 858,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -137031,21 +137031,21 @@ item_db = {
 	Name = "Costume Western Grace",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 32,
+	SpriteId = 32,
 },
 [ "C_Mistic_Rose" ] = {
 	Id = 20181,
 	Name = "Costume Mystic Rose",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 198,
+	SpriteId = 198,
 },
 [ "C_Mottled_Egg_Shell" ] = {
 	Id = 20182,
 	Name = "Costume Rainbow Eggshell",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 124,
+	SpriteId = 124,
 },
 [ "C_There_Is_Something" ] = {
 	Id = 20183,
@@ -137053,168 +137053,168 @@ item_db = {
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
 	Refine = false,
-	ViewSprite = 1091,
+	SpriteId = 1091,
 },
 [ "C_Party_Hat" ] = {
 	Id = 20184,
 	Name = "Costume Party Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 144,
+	SpriteId = 144,
 },
 [ "C_Fashionable_Glasses" ] = {
 	Id = 20185,
 	Name = "Costume Fashionable Glasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 131,
+	SpriteId = 131,
 },
 [ "C_Magni_Cap" ] = {
 	Id = 20186,
 	Name = "Costume Magni's Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 250,
+	SpriteId = 250,
 },
 [ "C_Friccas_Circlet" ] = {
 	Id = 20187,
 	Name = "Costume Fricca's Circlet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 251,
+	SpriteId = 251,
 },
 [ "C_Morpheuss_Hood" ] = {
 	Id = 20188,
 	Name = "Costume Morpheus's Hood",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 256,
+	SpriteId = 256,
 },
 [ "C_Goibnes_Helm" ] = {
 	Id = 20189,
 	Name = "Costume Goibne's Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 258,
+	SpriteId = 258,
 },
 [ "C_Chick_Hat_J" ] = {
 	Id = 20190,
 	Name = "Costume Chick Hat J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 432,
+	SpriteId = 432,
 },
 [ "C_Black_Cat_Ears_Beret" ] = {
 	Id = 20191,
 	Name = "Costume Black Cat Ears Beret",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1071,
+	SpriteId = 1071,
 },
 [ "C_Green_Foxtail" ] = {
 	Id = 20192,
 	Name = "Costume Green Foxtail",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1058,
+	SpriteId = 1058,
 },
 [ "C_Puppy_Grass" ] = {
 	Id = 20193,
 	Name = "Costume Puppy Grass",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 711,
+	SpriteId = 711,
 },
 [ "C_Lion_Mask" ] = {
 	Id = 20194,
 	Name = "Costume Lion Mask",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 202,
+	SpriteId = 202,
 },
 [ "C_Scratching_Cat" ] = {
 	Id = 20195,
 	Name = "Costume Scratching Cat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1292,
+	SpriteId = 1292,
 },
 [ "C_Leopard_Ear_Hat" ] = {
 	Id = 20196,
 	Name = "Costume Leopard Ear Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1293,
+	SpriteId = 1293,
 },
 [ "C_Amistr_Beret" ] = {
 	Id = 20197,
 	Name = "Costume Amistr Beret",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1294,
+	SpriteId = 1294,
 },
 [ "C_Misty_Ears" ] = {
 	Id = 20198,
 	Name = "Costume Misty Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1295,
+	SpriteId = 1295,
 },
 [ "C_Evil_Marcher_Hat" ] = {
 	Id = 20199,
 	Name = "Costume Evil Marching Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 687,
+	SpriteId = 687,
 },
 [ "C_Rabbit_Head_Dress" ] = {
 	Id = 20200,
 	Name = "Costume Rabbit Headdress",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1095,
+	SpriteId = 1095,
 },
 [ "C_Banshee_Master_Kiss" ] = {
 	Id = 20201,
 	Name = "Costume Banshee Master Kiss",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 959,
+	SpriteId = 959,
 },
 [ "C_Deviruchi_Balloon" ] = {
 	Id = 20202,
 	Name = "Costume Deviruchi Balloon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1082,
+	SpriteId = 1082,
 },
 [ "C_Bandana" ] = {
 	Id = 20203,
 	Name = "Costume Bandana",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 6,
+	SpriteId = 6,
 },
 [ "C_Hunting_Cap" ] = {
 	Id = 20204,
 	Name = "Costume Hunting Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 389,
+	SpriteId = 389,
 },
 [ "C_Fancy_Flower" ] = {
 	Id = 20205,
 	Name = "Costume Fancy Flower",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 4,
+	SpriteId = 4,
 },
 [ "C_Chicken_Hat1" ] = {
 	Id = 20206,
 	Name = "Costume Chicken Hat1",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1296,
+	SpriteId = 1296,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -137229,21 +137229,21 @@ item_db = {
 	Name = "Costume Striped Hairband",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 133,
+	SpriteId = 133,
 },
 [ "C_Necktie" ] = {
 	Id = 20208,
 	Name = "Costume Necktie",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 443,
+	SpriteId = 443,
 },
 [ "C_Mermaid_Longing" ] = {
 	Id = 20209,
 	Name = "Costume Mermaid Bubbles",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1299,
+	SpriteId = 1299,
 	OnEquipScript = [[ sc_start SC_MERMAID_LONGING,-1,0;s]],
 	OnUnequipScript = [[ sc_end SC_MERMAID_LONGING; ]]
 },
@@ -137252,7 +137252,7 @@ item_db = {
 	Name = "Costume Chicken Hat2",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1297,
+	SpriteId = 1297,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -137267,7 +137267,7 @@ item_db = {
 	Name = "Costume Chicken Hat3",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1298,
+	SpriteId = 1298,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -137282,112 +137282,112 @@ item_db = {
 	Name = "Costume Loki & Nidhoggur dolls",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1304,
+	SpriteId = 1304,
 },
 [ "C_Robot_Eyes" ] = {
 	Id = 20213,
 	Name = "Costume Robot Eyes",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 345,
+	SpriteId = 345,
 },
 [ "C_Evil_Marcher_Hat_J" ] = {
 	Id = 20214,
 	Name = "Costume Evil Marcher Hat J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1002,
+	SpriteId = 1002,
 },
 [ "C_Black_Devil_Mask" ] = {
 	Id = 20215,
 	Name = "Costume Black Devil Mask",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 760,
+	SpriteId = 760,
 },
 [ "C_Rideword_Hat" ] = {
 	Id = 20216,
 	Name = "Costume Rideword Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 890,
+	SpriteId = 890,
 },
 [ "C_Arabian_Veil" ] = {
 	Id = 20217,
 	Name = "Costume Arabian Veil",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1300,
+	SpriteId = 1300,
 },
 [ "C_Spell_Circuit" ] = {
 	Id = 20218,
 	Name = "Costume Spell Circuit",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1301,
+	SpriteId = 1301,
 },
 [ "C_Angel_Marcher_Hat" ] = {
 	Id = 20219,
 	Name = "Costume Angel Marcher Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1302,
+	SpriteId = 1302,
 },
 [ "C_Dark_Night_Veil" ] = {
 	Id = 20220,
 	Name = "Costume Dark Night Veil",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1303,
+	SpriteId = 1303,
 },
 [ "C_Ifrit_Eyes" ] = {
 	Id = 20221,
 	Name = "Costume Ifrit Eyes",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 886,
+	SpriteId = 886,
 },
 [ "C_Santa_Hat_2" ] = {
 	Id = 20222,
 	Name = "Costume Blue Santa Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 395,
+	SpriteId = 395,
 },
 [ "C_Centimental_Leaf" ] = {
 	Id = 20223,
 	Name = "Costume Romantic Leaf",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 57,
+	SpriteId = 57,
 },
 [ "C_Red_Tailed_Ribbon" ] = {
 	Id = 20224,
 	Name = "Costume Red Tailed Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 167,
+	SpriteId = 167,
 },
 [ "C_Pumpkin_Hat" ] = {
 	Id = 20225,
 	Name = "Costume Pumpkin Head",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 206,
+	SpriteId = 206,
 },
 [ "C_Hair_Brush" ] = {
 	Id = 20226,
 	Name = "Costume Red Comb",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 445,
+	SpriteId = 445,
 },
 [ "C_Husky_Hat" ] = {
 	Id = 20227,
 	Name = "Costume Husky Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1016,
+	SpriteId = 1016,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -137402,7 +137402,7 @@ item_db = {
 	Name = "Costume Piggie Bank J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 603,
+	SpriteId = 603,
 	NoTrade = {
 		ItemTradeMask.Drop,
 		ItemTradeMask.Trade,
@@ -137417,77 +137417,77 @@ item_db = {
 	Name = "Costume New Year Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1155,
+	SpriteId = 1155,
 },
 [ "C_Mask_Of_Bankrupt" ] = {
 	Id = 20230,
 	Name = "Costume Bankruptcy Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 936,
+	SpriteId = 936,
 },
 [ "C_Snowman_Hat" ] = {
 	Id = 20231,
 	Name = "Costume Snowman Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 616,
+	SpriteId = 616,
 },
 [ "C_Celines_Ribbon" ] = {
 	Id = 20232,
 	Name = "Costume Celines Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 967,
+	SpriteId = 967,
 },
 [ "C_Gold_Angel_Sculpture" ] = {
 	Id = 20233,
 	Name = "Costume Golden Statue of Baby Angel",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 646,
+	SpriteId = 646,
 },
 [ "C_Baphomet_Hat" ] = {
 	Id = 20234,
 	Name = "Costume Baphomet Hat",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1311,
+	SpriteId = 1311,
 },
 [ "C_Frozen_Land_Rose" ] = {
 	Id = 20235,
 	Name = "Costume Frozen Rose",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1025,
+	SpriteId = 1025,
 },
 [ "C_Hellomother_Hat" ] = {
 	Id = 20236,
 	Name = "Costume Arc Angeling Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 241,
+	SpriteId = 241,
 },
 [ "C_Pink_Fur_Hat" ] = {
 	Id = 20237,
 	Name = "Costume Pink Beanie",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 281,
+	SpriteId = 281,
 },
 [ "C_Blue_Drooping_Kitty" ] = {
 	Id = 20238,
 	Name = "Costume Drooping Blue Cat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 277,
+	SpriteId = 277,
 },
 [ "C_Large_Ribbon_Muffler" ] = {
 	Id = 20239,
 	Name = "Costume Large Ribbon Muffler",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1312,
+	SpriteId = 1312,
 },
 [ "C_Gift_Of_Snow" ] = {
 	Id = 20240,
@@ -137500,42 +137500,42 @@ item_db = {
 	Name = "Costume Eclipse Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 922,
+	SpriteId = 922,
 },
 [ "C_Snownow_Hat" ] = {
 	Id = 20242,
 	Name = "Costume Snownow Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1313,
+	SpriteId = 1313,
 },
 [ "C_Choco_Mint_Bonnet" ] = {
 	Id = 20243,
 	Name = "Costume Choco Mint Bonnet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1314,
+	SpriteId = 1314,
 },
 [ "C_Zealotus_Mask" ] = {
 	Id = 20244,
 	Name = "Costume Zealotus Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead },
-	ViewSprite = 200,
+	SpriteId = 200,
 },
 [ "C_Cat_Paw_Hairpin" ] = {
 	Id = 20245,
 	Name = "Costume Cat Paw Hairpin",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 447,
+	SpriteId = 447,
 },
 [ "C_Decoration_of_Time" ] = {
 	Id = 20246,
 	Name = "Costume Decoration of Time",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1309,
+	SpriteId = 1309,
 	OnEquipScript = [[ sc_start SC_TIME_ACCESSORY, -1, 0;s]],
 	OnUnequipScript = [[ sc_end SC_TIME_ACCESSORY; ]]
 },
@@ -137544,252 +137544,252 @@ item_db = {
 	Name = "Costume Black Hand of Fate",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1310,
+	SpriteId = 1310,
 },
 [ "C_Black_Strong_Hair" ] = {
 	Id = 20248,
 	Name = "Costume Black Strong Hair",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1315,
+	SpriteId = 1315,
 },
 [ "C_Red_Strong_Hair" ] = {
 	Id = 20249,
 	Name = "Costume Red Strong Hair",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1316,
+	SpriteId = 1316,
 },
 [ "C_White_Strong_Hair" ] = {
 	Id = 20250,
 	Name = "Costume White Strong Hair",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1317,
+	SpriteId = 1317,
 },
 [ "C_Rose_Cascade" ] = {
 	Id = 20251,
 	Name = "Costume Rose Cascade",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 920,
+	SpriteId = 920,
 },
 [ "C_Accessory_of_Ascetic" ] = {
 	Id = 20252,
 	Name = "Costume Mage Decoration",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1150,
+	SpriteId = 1150,
 },
 [ "C_Droopy_Alice_Doll" ] = {
 	Id = 20253,
 	Name = "Costume Drooping Alicel",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 784,
+	SpriteId = 784,
 },
 [ "C_Ribbon_Yellow" ] = {
 	Id = 20254,
 	Name = "Costume Yellow Ribbonn",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 243,
+	SpriteId = 243,
 },
 [ "C_Love_Cheek" ] = {
 	Id = 20255,
 	Name = "Costume Love Cheeks",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1318,
+	SpriteId = 1318,
 },
 [ "C_Honey_Pancakes" ] = {
 	Id = 20256,
 	Name = "Costume Honey Pancake",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1319,
+	SpriteId = 1319,
 },
 [ "C_Black_Rabbit_Bonnet" ] = {
 	Id = 20257,
 	Name = "Costume Black Rabbit Bonnet",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1320,
+	SpriteId = 1320,
 },
 [ "C_Blue_Head_Dress" ] = {
 	Id = 20258,
 	Name = "Costume Blue Headdress",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1321,
+	SpriteId = 1321,
 },
 [ "C_Pink_Clover" ] = {
 	Id = 20259,
 	Name = "Costume Pink Clover",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1322,
+	SpriteId = 1322,
 },
 [ "C_Stardust" ] = {
 	Id = 20260,
 	Name = "Costume Stardust",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 81,
+	SpriteId = 81,
 },
 [ "C_Fox_Ears_Bell_Ribbon" ] = {
 	Id = 20262,
 	Name = "Costume Fox Ears Drop Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1070,
+	SpriteId = 1070,
 },
 [ "C_Hat_Of_Drowsy_Cat" ] = {
 	Id = 20263,
 	Name = "Costume Sleeping Cat Hat J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 838,
+	SpriteId = 838,
 },
 [ "C_Blood_Sucker" ] = {
 	Id = 20264,
 	Name = "Costume Blood Sucker",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 893,
+	SpriteId = 893,
 },
 [ "C_Bird_Nest_Hat" ] = {
 	Id = 20265,
 	Name = "Costume Bird Nest Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 235,
+	SpriteId = 235,
 },
 [ "C_Secret_Zipper" ] = {
 	Id = 20266,
 	Name = "Costume Secret Zipper",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1324,
+	SpriteId = 1324,
 },
 [ "C_Penguin_Cap" ] = {
 	Id = 20267,
 	Name = "Costume Penguin Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1325,
+	SpriteId = 1325,
 },
 [ "C_Sleep_Eclipse_Family" ] = {
 	Id = 20268,
 	Name = "Costume Sleep Eclipse Family",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1326,
+	SpriteId = 1326,
 },
 [ "C_White_Fox_Ear_Ribbon" ] = {
 	Id = 20269,
 	Name = "Costume White Fox Ear Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1327,
+	SpriteId = 1327,
 },
 [ "C_Gryphon_Wing_Ears" ] = {
 	Id = 20270,
 	Name = "Costume Gryphon Wing Ears",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1328,
+	SpriteId = 1328,
 },
 [ "C_Sunflower" ] = {
 	Id = 20271,
 	Name = "Costume Sunflower",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 37,
+	SpriteId = 37,
 },
 [ "C_Snowy_Horn" ] = {
 	Id = 20272,
 	Name = "Costume Unicorn Horn",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 42,
+	SpriteId = 42,
 },
 [ "C_Soft_Sheep_Hat" ] = {
 	Id = 20273,
 	Name = "Costume Soft Sheep Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 738,
+	SpriteId = 738,
 },
 [ "C_Polar_Bear_Cap_J" ] = {
 	Id = 20274,
 	Name = "Costume Polar Bear Cap J",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 966,
+	SpriteId = 966,
 },
 [ "C_Balloon_Hat" ] = {
 	Id = 20277,
 	Name = "Costume Balloon Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 385,
+	SpriteId = 385,
 },
 [ "C_Mans_Medal" ] = {
 	Id = 20278,
 	Name = "Costume Man's Medal",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 775,
+	SpriteId = 775,
 },
 [ "C_Cheering_Whistle" ] = {
 	Id = 20279,
 	Name = "Costume Cheering Whistle",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 952,
+	SpriteId = 952,
 },
 [ "C_Pencil_In_Mouth" ] = {
 	Id = 20280,
 	Name = "Costume Well-Chewed Pencil",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 555,
+	SpriteId = 555,
 },
 [ "C_Kindergarten_Hat" ] = {
 	Id = 20281,
 	Name = "Costume Kindergarten Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 977,
+	SpriteId = 977,
 },
 [ "C_White_Student_Cap" ] = {
 	Id = 20282,
 	Name = "Costume White Student Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 877,
+	SpriteId = 877,
 },
 [ "C_Over_Protector" ] = {
 	Id = 20283,
 	Name = "Costume Over Protector",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1329,
+	SpriteId = 1329,
 },
 [ "C_Cherry_Blossom_Hat" ] = {
 	Id = 20284,
 	Name = "Costume Sakura Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1330,
+	SpriteId = 1330,
 },
 [ "C_Blossom_Fluttering" ] = {
 	Id = 20285,
 	Name = "Costume Dancing Fallen Sakura",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1331,
+	SpriteId = 1331,
 	OnEquipScript = [[ sc_start SC_BLOSSOM_FLUTTERING, -1, 0;s]],
 	OnUnequipScript = [[ sc_end SC_BLOSSOM_FLUTTERING; ]]
 },
@@ -137798,126 +137798,126 @@ item_db = {
 	Name = "Costume Under Rim Glasses Red",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1332,
+	SpriteId = 1332,
 },
 [ "C_Mans_Medal_" ] = {
 	Id = 20287,
 	Name = "Costume Man's Medal(Gold)",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1333,
+	SpriteId = 1333,
 },
 [ "C_Bijou_Hat" ] = {
 	Id = 20288,
 	Name = "Costume Bijou Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1334,
+	SpriteId = 1334,
 },
 [ "C_Helm_of_Thoth" ] = {
 	Id = 20291,
 	Name = "Costume Helm of Thoth",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 860,
+	SpriteId = 860,
 },
 [ "C_Black_Ramen_Hat" ] = {
 	Id = 20292,
 	Name = "Costume Black Ramen Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1338,
+	SpriteId = 1338,
 },
 [ "C_Sleeper_Hat" ] = {
 	Id = 20293,
 	Name = "Costume Sleeper Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 590,
+	SpriteId = 590,
 },
 [ "C_Savage_Babe_Hat" ] = {
 	Id = 20294,
 	Name = "Costume Savage Babe Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 553,
+	SpriteId = 553,
 },
 [ "C_Poring_Sunglasses" ] = {
 	Id = 20295,
 	Name = "Costume Poring Sunglasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 954,
+	SpriteId = 954,
 },
 [ "C_Yoyo_Hat" ] = {
 	Id = 20296,
 	Name = "Costume Yoyo Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 391,
+	SpriteId = 391,
 },
 [ "C_Cactus_Hat" ] = {
 	Id = 20297,
 	Name = "Costume Cactus Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 615,
+	SpriteId = 615,
 },
 [ "C_Happy_Lunatic_Ear" ] = {
 	Id = 20298,
 	Name = "Costume Happy Lunatic Hanging Ear",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1340,
+	SpriteId = 1340,
 },
 [ "C_Face_Crusher" ] = {
 	Id = 20299,
 	Name = "Costume Face Crusher",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1341,
+	SpriteId = 1341,
 },
 [ "C_Hill_Wind_Mask" ] = {
 	Id = 20300,
 	Name = "Costume Hill Wind Mask",
 	Type = ItemType.Armor,
 	Loc = { EquipLocationMask.CostumeTopHead, EquipLocationMask.CostumeMidHead, EquipLocationMask.CostumeLowerHead },
-	ViewSprite = 1342,
+	SpriteId = 1342,
 },
 [ "C_Golden_Savage_Hat" ] = {
 	Id = 20301,
 	Name = "Costume Golden Savage Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 648,
+	SpriteId = 648,
 },
 [ "C_Beelzebub_Crown" ] = {
 	Id = 20302,
 	Name = "Costume Beelzebub Crown",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1343,
+	SpriteId = 1343,
 },
 [ "C_Mandragora_Cap" ] = {
 	Id = 20303,
 	Name = "Costume Mandragora Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 402,
+	SpriteId = 402,
 },
 [ "C_Raccoon_Hat" ] = {
 	Id = 20304,
 	Name = "Costume Raccoon Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 118,
+	SpriteId = 118,
 },
 [ "C_Beginner_Cap" ] = {
 	Id = 20307,
 	Name = "Costume Beginner Cap",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1348,
+	SpriteId = 1348,
 	Script = [[
 		if(BaseLevel<100) {
 			bonus bHit,30-(3*(BaseLevel/10));
@@ -137935,98 +137935,98 @@ item_db = {
 	Name = "Costume Magical Booster",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 873,
+	SpriteId = 873,
 },
 [ "C_Barons_Evil_Eye" ] = {
 	Id = 20312,
 	Name = "Costume Baron's Evil Eye",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 989,
+	SpriteId = 989,
 },
 [ "C_CD_in_Mouth" ] = {
 	Id = 20313,
 	Name = "Costume CD in Mouth",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 815,
+	SpriteId = 815,
 },
 [ "C_New_Wave_Sunglasses" ] = {
 	Id = 20314,
 	Name = "Costume New Wave Sunglasses",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 856,
+	SpriteId = 856,
 },
 [ "C_Analyze_Eye" ] = {
 	Id = 20315,
 	Name = "Costume Analyze Eye",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeLowerHead,
-	ViewSprite = 1351,
+	SpriteId = 1351,
 },
 [ "C_Seraph_Wing_Helm" ] = {
 	Id = 20316,
 	Name = "Costume Seraph Wing Helm",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1352,
+	SpriteId = 1352,
 },
 [ "C_Nekomimi_Cyber_Headphone" ] = {
 	Id = 20317,
 	Name = "Costume Nekomimi Cyber Headphone",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1353,
+	SpriteId = 1353,
 },
 [ "C_Charleston_Antenna" ] = {
 	Id = 20318,
 	Name = "Costume Charleston Antenna",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1354,
+	SpriteId = 1354,
 },
 [ "C_Crimson_Booster" ] = {
 	Id = 20319,
 	Name = "Costume Crimson Booster",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeMidHead,
-	ViewSprite = 1355,
+	SpriteId = 1355,
 },
 [ "C_Very_Cute_Doll_Hat" ] = {
 	Id = 20329,
 	Name = "Costume Very Cute Doll Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1084,
+	SpriteId = 1084,
 },
 [ "C_Sombrero" ] = {
 	Id = 20330,
 	Name = "Costume Sombrero",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 151,
+	SpriteId = 151,
 },
 [ "C_Desert_Prince" ] = {
 	Id = 20331,
 	Name = "Costume Desert Prince",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 567,
+	SpriteId = 567,
 },
 [ "C_Pure_White_Ribbon" ] = {
 	Id = 20332,
 	Name = "Costume Pure White Ribbon",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 1175,
+	SpriteId = 1175,
 },
 [ "C_Family_Hat" ] = {
 	Id = 20333,
 	Name = "Costume Family Hat",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeTopHead,
-	ViewSprite = 650,
+	SpriteId = 650,
 },
 
 ---- New Garments ------------------------------------------
@@ -138037,7 +138037,7 @@ item_db = {
 	Weight = 100,
 	Loc = EquipLocationMask.CostumeGarment,
 	Refine = false,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[ bonus bUnbreakableHelm,0; ]]
 },
 [ "Fantastic_Aura" ] = {
@@ -138163,7 +138163,7 @@ item_db = {
 	Weight = 500,
 	Def = 18,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bAllStats,1;
 		bonus2 bSubEle,Ele_Neutral,5;
@@ -138185,7 +138185,7 @@ item_db = {
 	Buy = 20,
 	Def = 18,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 6,
+	SpriteId = 6,
 	Script = [[
 		bonus bStr,1;
 		bonus bInt,1;
@@ -138296,7 +138296,7 @@ item_db = {
 	Def = 15,
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 5,
+	SpriteId = 5,
 	Script = [[
 		if(readparam(bStr)>=90) {
 			bonus bAllStats,1;
@@ -138343,7 +138343,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
 	EquipLv = 30,
-	ViewSprite = 7,
+	SpriteId = 7,
 	Script = [[
 		bonus bInt,1;
 		bonus bDex,1;
@@ -138355,7 +138355,7 @@ item_db = {
 	Name = "Brilliant Golden Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 5,
+	SpriteId = 5,
 },
 [ "Hood_of_Loyal" ] = {
 	Id = 20730,
@@ -138420,7 +138420,7 @@ item_db = {
 	Name = "Costume Kirin Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 6,
+	SpriteId = 6,
 },
 [ "Airship_Cape" ] = {
 	Id = 20743,
@@ -138470,7 +138470,7 @@ item_db = {
 	Name = "Costume Rudra Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 8,
+	SpriteId = 8,
 },
 [ "Manteau_Of_Fallen" ] = {
 	Id = 20748,
@@ -138544,7 +138544,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 9,
+	SpriteId = 9,
 	Script = [[
 		bonus bAllStats,3;
 		skill AL_INCAGI,3;
@@ -138557,7 +138557,7 @@ item_db = {
 	Def = 10,
 	Slots = 1,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 9,
+	SpriteId = 9,
 	Script = [[
 		bonus bAllStats,3;
 		skill AL_INCAGI,3;
@@ -138568,21 +138568,21 @@ item_db = {
 	Name = "Costume Wing of Happiness",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 9,
+	SpriteId = 9,
 },
 [ "C_GreatDevilWing" ] = {
 	Id = 20762,
 	Name = "Costume Great Devil Wings",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 10,
+	SpriteId = 10,
 },
 [ "C_Amistr_Bag" ] = {
 	Id = 20763,
 	Name = "Costume Amistr Bag",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 4,
+	SpriteId = 4,
 	Script = [[
 		bonus bMdef,10;
 		bonus2 bAddRaceTolerance,RC_Player,1;
@@ -138593,14 +138593,14 @@ item_db = {
 	Name = "Costume Fallen Angel Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 3,
+	SpriteId = 3,
 },
 [ "C_Archangel_Wing" ] = {
 	Id = 20765,
 	Name = "Costume Archangel Wing",
 	Type = ItemType.Armor,
 	Loc = EquipLocationMask.CostumeGarment,
-	ViewSprite = 1,
+	SpriteId = 1,
 },
 [ "Arch_Angel_Wing" ] = {
 	Id = 20768,
@@ -138609,7 +138609,7 @@ item_db = {
 	Weight = 200,
 	Def = 18,
 	Loc = EquipLocationMask.Garment,
-	ViewSprite = 10,
+	SpriteId = 10,
 },
 [ "Excellion_Wing" ] = {
 	Id = 20773,
@@ -144075,7 +144075,7 @@ item_db = {
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
 	EquipLv = 100,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[
 		skill LG_SHIELDSPELL,1;
 		bonus3 bAutoSpellWhenHit,HP_ASSUMPTIO,3,20+(getrefine());
@@ -144089,7 +144089,7 @@ item_db = {
 	Type = ItemType.Armor,
 	Weight = 100,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[
 		bonus bAspd,3;
 		bonus bAtkRate,5;
@@ -144117,7 +144117,7 @@ item_db = {
 	Weight = 100,
 	Slots = 1,
 	Loc = EquipLocationMask.Shield,
-	ViewSprite = 1,
+	SpriteId = 1,
 	Script = [[
 		bonus bAtkRate,5;
 		bonus bMatkRate,5;

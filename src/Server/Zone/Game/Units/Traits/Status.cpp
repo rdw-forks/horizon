@@ -31,6 +31,7 @@
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp" // map()->container()
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/Units/Traits/Appearance.hpp"
@@ -46,94 +47,94 @@
 using namespace Horizon::Zone::Traits;
 
 
-void Status::StatusRegistry::add_to_base(Attribute *attribute, uint16_t value, std::string source)
+void Status::StatusRegistry::add_to_base(Attribute *attribute, uint32_t value, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint16_t value, std::string source)
+void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint32_t value, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint16_t value, std::string source)
+void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint32_t value, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint16_t value, std::string source)
+void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint32_t value, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_status(Attribute *attribute, uint16_t value, std::string source)
+void Status::StatusRegistry::add_to_status(Attribute *attribute, uint32_t value, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint16_t value, std::string source)
+void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint32_t value, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_base_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+void Status::StatusRegistry::add_to_base_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_TEMPORARY, value, duration, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::sub_from_base_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+void Status::StatusRegistry::sub_from_base_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_TEMPORARY, value, duration, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::add_to_equip_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+void Status::StatusRegistry::add_to_equip_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_TEMPORARY, value, duration, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::sub_from_equip_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+void Status::StatusRegistry::sub_from_equip_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_TEMPORARY, value, duration, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::add_to_status_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+void Status::StatusRegistry::add_to_status_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_TEMPORARY, value, duration, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::sub_from_status_temporary(Attribute *attribute, uint16_t value, uint64_t duration, std::string source)
+void Status::StatusRegistry::sub_from_status_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
 { 
 	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_TEMPORARY, value, duration, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::add_to_base_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+void Status::StatusRegistry::add_to_base_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_INTERVAL, value, duration, interval, source);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_INTERVAL, value, minmax, duration, interval, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::sub_from_base_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+void Status::StatusRegistry::sub_from_base_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL, value, duration, interval, source);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL, value, minmax, duration, interval, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::add_to_equip_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+void Status::StatusRegistry::add_to_equip_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL, value, duration, interval, source);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL, value, minmax, duration, interval, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::sub_from_equip_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+void Status::StatusRegistry::sub_from_equip_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL, value, duration, interval, source);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL, value, minmax, duration, interval, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::add_to_status_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+void Status::StatusRegistry::add_to_status_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_INTERVAL, value, duration, interval, source);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_INTERVAL, value, minmax, duration, interval, source);
 	_status_operation_queue.push(operation);
 }
-void Status::StatusRegistry::sub_from_status_interval(Attribute *attribute, uint16_t value, uint64_t duration, uint64_t interval, std::string source)
+void Status::StatusRegistry::sub_from_status_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL, value, duration, interval, source);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL, value, minmax, duration, interval, source);
 	_status_operation_queue.push(operation);
 }
 
@@ -191,26 +192,38 @@ void Status::StatusRegistry::StatusOperation::execute()
 		break;
 	case STATUS_OPERATION_ADD_TO_BASE_INTERVAL:
 		attr.set_base(_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
 		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL:
 		attr.set_base(-_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
 		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	case STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL:
 		attr.set_equip(_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
 		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL:
 		attr.set_equip(-_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
 		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	case STATUS_OPERATION_ADD_TO_STATUS_INTERVAL:
 		attr.set_status(_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
 		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL:
 		attr.set_status(-_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
 		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	}
@@ -319,6 +332,16 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	attack_speed()->set_dexterity(dexterity().get());
 	attack_speed()->compute();
 
+	set_hp_regeneration(std::make_shared<HPRegeneration>(_unit));
+	hp_regeneration()->set_vitality(vitality().get());
+	hp_regeneration()->set_max_hp(max_hp().get());
+	hp_regeneration()->compute();
+
+	set_sp_regeneration(std::make_shared<SPRegeneration>(_unit));
+	sp_regeneration()->set_intelligence(intelligence().get());
+	sp_regeneration()->set_max_sp(max_sp().get());
+	sp_regeneration()->compute();
+
 	// Register Status Observables
 	strength()->register_observable(strength().get());
 	agility()->register_observable(agility().get());
@@ -330,6 +353,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	job_experience()->register_observable(job_experience().get());
 	base_level()->register_observable(base_level().get());
 	job_level()->register_observable(job_level().get());
+	max_hp()->register_observable(max_hp().get());
+	max_sp()->register_observable(max_sp().get());
 
 	set_base_attack(std::make_shared<BaseAttack>(_unit));
 
@@ -350,12 +375,14 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	vitality()->register_observers(
 		vitality_cost().get(),
 		soft_def().get(),
-		soft_mdef().get());
+		soft_mdef().get(),
+		hp_regeneration().get());
 
 	intelligence()->register_observers(
 		intelligence_cost().get(),
 		status_matk().get(),
-		soft_mdef().get());
+		soft_mdef().get(),
+		sp_regeneration().get());
 
 	dexterity()->register_observers(
 		dexterity_cost().get(),
@@ -391,6 +418,12 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	job_level()->register_observers(
 		skill_point().get(),
 		next_job_experience().get());
+
+	max_hp()->register_observers(
+		hp_regeneration().get());
+	
+	max_sp()->register_observers(
+		sp_regeneration().get());
 
 	base_experience()->register_observers(base_level().get());
 
@@ -433,6 +466,22 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	player->get_session()->clif()->notify_initial_status();
 
 	set_initialized(true);
+
+	current_hp()->add_periodic_change(
+		s_attribute_change_values(hp_regeneration().get(), s_min_max(0, max_hp()->total()), [player, this](s_attribute_change_values &this_) {
+				player->get_session()->clif()->notify_recovery(ZC_NOTIFY_RECOVERY_HP, this_.get_live_attribute().get_attribute()->total());
+		}), 
+		0,
+		player->map()->container()->game_config().get_natural_heal_hp_interval(), 
+		"natural_hp_regen");
+		
+	current_sp()->add_periodic_change(
+		s_attribute_change_values(sp_regeneration().get(), s_min_max(0, max_sp()->total()), [player, this](s_attribute_change_values &this_) {
+				player->get_session()->clif()->notify_recovery(ZC_NOTIFY_RECOVERY_SP, this_.get_live_attribute().get_attribute()->total());
+		}), 
+		0,
+		player->map()->container()->game_config().get_natural_heal_sp_interval(), 
+		"natural_sp_regen");
 	return true;
 }
 
@@ -762,6 +811,22 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 
 		weapon_attack_left()->on_equipment_changed();
 		weapon_attack_right()->on_equipment_changed();
+
+		if ((item->config->equip_location_mask & IT_EQPM_HAND_L) == IT_EQPM_HAND_L)
+			weapon_sprite()->set_left(equipped ? item->item_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HAND_R) == IT_EQPM_HAND_R)
+			weapon_sprite()->set(equipped ? item->item_id : 0);
+	} else if (item->type == IT_TYPE_ARMOR) {
+		if ((item->config->equip_location_mask & IT_EQPM_HEAD_TOP) == IT_EQPM_HEAD_TOP)
+			head_top_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HEAD_MID) == IT_EQPM_HEAD_MID)
+			head_mid_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HEAD_LOW) == IT_EQPM_HEAD_LOW)
+			head_bottom_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HAND_L) == IT_EQPM_HAND_L)
+			shield_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_GARMENT) == IT_EQPM_GARMENT)
+			robe_sprite()->set(equipped ? item->config->sprite_id : 0);
 	}
 
 	attack_speed()->on_equipment_changed();

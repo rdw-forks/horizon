@@ -29,7 +29,9 @@
 
 #include "Zone.hpp"
 
-#include "Server/Zone/SocketMgr/ClientSocketMgr.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
+#include "Server/Zone/Persistence/PersistenceManager.hpp"
+#include "Server/Zone/Script/ScriptManager.hpp"
 #include <boost/bind/bind.hpp>
 
 #include <signal.h>
@@ -152,6 +154,12 @@ bool ZoneServer::read_config()
 	config().set_max_script_vm_threads(tbl.get_or("max_script_vm_threads", 1));
 	HLog(info) << "Maximum script VM threads set to '" << config().max_script_vm_threads() << "'.";
 
+	game_config().set_natural_heal_hp_interval(tbl.get_or("natural_heal_hp_interval", 6000));
+	HLog(info) << "Natural heal HP interval set to '" << game_config().get_natural_heal_hp_interval() << "' milliseconds.";
+
+	game_config().set_natural_heal_sp_interval(tbl.get_or("natural_heal_sp_interval", 8000));
+	HLog(info) << "Natural heal SP interval set to '" << game_config().get_natural_heal_sp_interval() << "' milliseconds.";
+
 	/**
 	 * Process Configuration that is common between servers.
 	 */
@@ -242,7 +250,7 @@ void ZoneServer::initialize()
 	get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->initialize();
 	
 	for (int i = 0; i < config().max_game_logic_threads(); i++) {
-		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>());
+		register_component(Horizon::System::RUNTIME_GAMELOGIC, std::make_shared<GameLogicProcess>(game_config()));
 		get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, i + 1)->initialize(i + 1);
 	}
 

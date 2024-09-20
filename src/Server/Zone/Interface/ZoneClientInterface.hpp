@@ -349,6 +349,11 @@ public:
 	 */
 	void private_airship_request(std::string map_name, int item_id);
   
+	/*
+	 * 
+	 */
+	bool notify_resurrection(int32_t guid, int type);
+	bool notify_recovery(zc_notify_recovery_type type, int amount);
 protected:
 	uint32_t _npc_contact_guid{0};
 	UI::Chatroom _chat_room;
