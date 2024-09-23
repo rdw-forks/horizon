@@ -101,9 +101,9 @@ public:
 	void view_equipment(int account_id);
 
 	/* Movement & Viewport*/
-	bool notify_player_movement(MapCoords from, MapCoords to);
+	bool notify_player_movement(int32_t time, MapCoords from, MapCoords to);
 	bool notify_movement_stop(int32_t guid, int16_t x, int16_t y);
-	bool notify_unit_move(int32_t guid, MapCoords from, MapCoords to);
+	bool notify_unit_move(int32_t guid, int32_t time, MapCoords from, MapCoords to);
 
 	item_viewport_entry create_viewport_item_entry(std::shared_ptr<Units::Item> item);
 	unit_viewport_entry create_viewport_entry(std::shared_ptr<Unit> unit);

@@ -149,7 +149,7 @@ void Monster::on_pathfinding_failure()
 	//HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
-void Monster::on_movement_begin()
+void Monster::on_movement_begin(int32_t time)
 {
 
 }

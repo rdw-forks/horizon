@@ -902,27 +902,17 @@ int32_t MobMagicAttackDamage::compute()
 	return std::rand() % (_max - _min + 1) + _min;
 }
 
-int32_t AttackMotion::compute()
-{
-	if (unit()->type() == UNIT_PLAYER)
-		set_base(_attack_speed->get_base());
-	else if (unit()->type() == UNIT_MONSTER)
-		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_motion);
-
-	return total();
-}
-
 int32_t AttackDelay::compute()
 {
 	if (unit()->type() == UNIT_PLAYER)
-		set_base(2 * _attack_motion->total());
+		set_base(2 * _aspd->total());
 	else if (unit()->type() == UNIT_MONSTER)
 		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_delay);
 
 	return total();
 }
 
-int32_t DamageMotion::compute()
+int32_t DamageWalkDelay::compute()
 {
 	if (unit()->type() == UNIT_PLAYER)
 		set_base(800 - _agi->get_base() * 4);

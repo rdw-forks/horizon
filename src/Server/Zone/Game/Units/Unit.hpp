@@ -129,7 +129,7 @@ protected:
 	void walk();
 	
 	virtual void on_pathfinding_failure() = 0;
-	virtual void on_movement_begin() = 0;
+	virtual void on_movement_begin(int32_t time) = 0;
 	virtual void on_movement_step() = 0;
 	virtual void on_movement_end() = 0;
 
@@ -255,6 +255,12 @@ public:
 
 	std::shared_ptr<CombatRegistry> combat_registry() { return _combat_registry; }
 
+	/**
+	 * Walk Delay
+	 */
+	bool has_damage_walk_delay() { return _damage_walk_delay; }
+	void set_damage_walk_delay(bool delay) { _damage_walk_delay = delay; }
+
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false}, _is_finalized{ false };
 	bool _is_attacking{false};
@@ -285,6 +291,9 @@ private:
 	// Combat data
 	std::shared_ptr<Combat> _combat;
     std::shared_ptr<CombatRegistry> _combat_registry;
+
+	// Damage Walk Delay
+	bool _damage_walk_delay{false};
 };
 }
 }

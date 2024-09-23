@@ -71,7 +71,7 @@ void Item::on_pathfinding_failure()
 {
     
 }
-void Item::on_movement_begin() 
+void Item::on_movement_begin(int32_t time) 
 {
     
 }

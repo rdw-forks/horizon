@@ -1313,11 +1313,13 @@ namespace Traits
 	};
 
 	class AttackSpeed
-	: public Attribute
+	: public Attribute,
+	  public ObservableStatus<AttackSpeed *, AttackDelay *>
 	{
 	public:
 		AttackSpeed(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_ASPD)
+		: Attribute(unit, STATUS_ASPD),
+		  ObservableStatus(nullptr)
 		{ }
 		~AttackSpeed() { }
 
@@ -1352,30 +1354,6 @@ namespace Traits
 		int32_t compute();
 	};
 
-	class AttackMotion
-	: public Attribute
-	{
-	public:
-		AttackMotion(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_AMOTION)
-		{ }
-		~AttackMotion() { }
-
-		void on_observable_changed(AttackSpeed *) { if (is_compute_ready()) compute(); }
-		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
-
-		int32_t compute();
-
-		void on_equipment_changed() { if (is_compute_ready()) compute(); }
-
-		void set_attack_speed(AttackSpeed *aspd) { _attack_speed = aspd; }
-		void set_agility(Agility *agi) { _agi = agi; }
-
-	private:
-		Agility *_agi{nullptr};
-		AttackSpeed *_attack_speed{nullptr};
-	};
-
 	class AttackDelay
 	: public Attribute
 	{
@@ -1385,28 +1363,26 @@ namespace Traits
 		{ }
 		~AttackDelay() { }
 
-		void on_observable_changed(AttackMotion *) { if (is_compute_ready()) compute(); }
-		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+		void on_observable_changed(AttackSpeed *) { if (is_compute_ready()) compute(); }
 		
 		int32_t compute();
 
-		void set_attack_motion(AttackMotion *amotion) { _attack_motion = amotion; }
+		void set_attack_speed(AttackSpeed *aspd) { _aspd = aspd; }
 
 	private:
-		AttackMotion *_attack_motion{nullptr};
+		AttackSpeed *_aspd{nullptr};
 	};
 
-	class DamageMotion
+	class DamageWalkDelay
 	: public Attribute
 	{
 	public:
-		DamageMotion(std::weak_ptr<Unit> unit)
+		DamageWalkDelay(std::weak_ptr<Unit> unit)
 		: Attribute(unit, STATUS_DMOTION)
 		{ }
-		~DamageMotion() { }
+		~DamageWalkDelay() { }
 
 		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
-		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 

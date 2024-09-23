@@ -2037,10 +2037,10 @@ ByteBuffer &ZC_NOTIFY_MAPPROPERTY2::serialize()
 /**
  * ZC_NOTIFY_MOVE
  */
-void ZC_NOTIFY_MOVE::deliver(int32_t guid, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
+void ZC_NOTIFY_MOVE::deliver(int32_t guid, int time, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
 {
 	_guid = guid;
-	_timestamp = (int32_t) get_sys_time();
+	_timestamp = time;
 	PackPosition((int8_t *) _packed_pos, from_x, from_y, to_x, to_y, 8, 8);
 
 	serialize();
@@ -2110,11 +2110,11 @@ ByteBuffer &ZC_NOTIFY_PLAYERCHAT::serialize()
 /**
  * ZC_NOTIFY_PLAYERMOVE
  */
-void ZC_NOTIFY_PLAYERMOVE::deliver(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
+void ZC_NOTIFY_PLAYERMOVE::deliver(int32_t time, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
 {
 	//std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 	PackPosition(_packed_pos, from_x, from_y, to_x, to_y, 8, 8);
-	_timestamp = (int32_t) get_sys_time();
+	_timestamp = time;
 
 	serialize();
 	transmit();
@@ -5278,8 +5278,8 @@ void ZC_NOTIFY_MOVEENTRY11::deliver(unit_viewport_entry entry)
 ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 {
 	char packed_pos[6]{0};
-	
-	_entry.move_start_time = (int32_t) get_sys_time();
+
+	HLog(info) << "Packet[MoveStartTime]: " << _entry.move_start_time;
 	
 	buf() << _packet_id;
 #if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \

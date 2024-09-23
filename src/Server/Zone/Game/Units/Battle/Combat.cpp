@@ -535,8 +535,8 @@ void CombatRegistry::MeleeResultOperation::execute() const
             config.guid = source->guid();
             config.target_guid = target->guid();
             config.start_time = get_sys_time();
-            config.delay_skill = source->status()->attack_motion()->total();
-            config.delay_damage = source->status()->attack_delay()->total();
+            config.delay_skill = source->status()->attack_delay()->total();
+            config.delay_damage = source->status()->damage_walk_delay()->total();
             config.damage = value->get_damage().right_damage;
             config.is_sp_damaged = 0;
             config.number_of_hits = value->get_damage().number_of_hits;

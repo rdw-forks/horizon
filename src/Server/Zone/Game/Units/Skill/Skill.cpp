@@ -45,6 +45,6 @@ Skill::~Skill()
 
 void Skill::stop_movement() { }
 void Skill::on_pathfinding_failure() { }
-void Skill::on_movement_begin() { }
+void Skill::on_movement_begin(int32_t time) { }
 void Skill::on_movement_step() { }
 void Skill::on_movement_end() { }

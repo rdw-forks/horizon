@@ -355,6 +355,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	job_level()->register_observable(job_level().get());
 	max_hp()->register_observable(max_hp().get());
 	max_sp()->register_observable(max_sp().get());
+	attack_speed()->register_observable(attack_speed().get());
 
 	set_base_attack(std::make_shared<BaseAttack>(_unit));
 
@@ -431,20 +432,18 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	base_experience()->register_observers(base_level().get());
 
 	job_experience()->register_observers(job_level().get());
+
+	attack_speed()->register_observers(
+		attack_delay().get());
 	
 	/* Combat Status Attributes */
-	set_attack_motion(std::make_shared<AttackMotion>(_unit));
-	attack_motion()->set_attack_speed(attack_speed().get());
-	attack_motion()->set_agility(agility().get());
-	attack_motion()->compute();
-
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
-	attack_delay()->set_attack_motion(attack_motion().get());
+	attack_delay()->set_attack_speed(attack_speed().get());
 	attack_delay()->compute();
 
-	set_damage_motion(std::make_shared<DamageMotion>(_unit));
-	damage_motion()->set_agility(agility().get());
-	damage_motion()->compute();
+	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
+	damage_walk_delay()->set_agility(agility().get());
+	damage_walk_delay()->compute();
 
 	base_attack()->set_strength(strength().get());
 	base_attack()->set_dexterity(dexterity().get());
@@ -621,14 +620,11 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
 
-	set_attack_motion(std::make_shared<AttackMotion>(_unit));
-	attack_motion()->compute();
-
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->compute();
 
-	set_damage_motion(std::make_shared<DamageMotion>(_unit));
-	damage_motion()->compute();
+	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
+	damage_walk_delay()->compute();
 
 	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
@@ -844,9 +840,6 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 	attack_speed()->on_equipment_changed();
 	attack_range()->on_equipment_changed();
 	base_attack()->on_equipment_changed();
-	attack_motion()->on_equipment_changed();
-	attack_delay()->on_equipment_changed();
-	damage_motion()->on_equipment_changed();
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)

@@ -45,7 +45,7 @@ Homunculus::~Homunculus()
 
 void Homunculus::stop_movement() { }
 void Homunculus::on_pathfinding_failure() { }
-void Homunculus::on_movement_begin() { }
+void Homunculus::on_movement_begin(int32_t time) { }
 void Homunculus::on_movement_step() { }
 void Homunculus::on_movement_end() { }
 

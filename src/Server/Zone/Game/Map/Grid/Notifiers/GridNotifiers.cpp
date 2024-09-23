@@ -233,9 +233,9 @@ void GridUnitMovementNotifier::notify(GridRefManager<T> &m)
             continue;
 
         if (_new_entry == true)
-            tpl->realize_unit_movement_entry(src_unit);
+            tpl->realize_unit_movement_entry((int32_t) get_sys_time(), src_unit);
         else
-            tpl->realize_unit_movement(src_unit);
+            tpl->realize_unit_movement((int32_t) get_sys_time(), src_unit);
     }
 }
 

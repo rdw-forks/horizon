@@ -80,7 +80,7 @@ void NPC::on_pathfinding_failure()
 
 }
 
-void NPC::on_movement_begin()
+void NPC::on_movement_begin(int32_t time)
 {
 
 }

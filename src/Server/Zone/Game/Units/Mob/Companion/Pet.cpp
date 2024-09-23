@@ -45,7 +45,7 @@ Pet::~Pet()
 
 void Pet::stop_movement() { }
 void Pet::on_pathfinding_failure() { }
-void Pet::on_movement_begin() { }
+void Pet::on_movement_begin(int32_t time) { }
 void Pet::on_movement_step() { }
 void Pet::on_movement_end() { }
 

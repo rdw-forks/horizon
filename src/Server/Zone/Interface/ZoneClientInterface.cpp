@@ -398,10 +398,10 @@ unit_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<U
 	
 	return entry;
 }
-bool ZoneClientInterface::notify_player_movement(MapCoords from, MapCoords to)
+bool ZoneClientInterface::notify_player_movement(int32_t time, MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_PLAYERMOVE pkt(get_session());
-	pkt.deliver(from.x(), from.y(), to.x(), to.y());
+	pkt.deliver(time, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
 bool ZoneClientInterface::notify_movement_stop(int32_t guid, int16_t x, int16_t y)
@@ -438,10 +438,10 @@ bool ZoneClientInterface::notify_viewport_item_entry(item_viewport_entry entry)
 	pkt.deliver(entry);
 	return true;
 }
-bool ZoneClientInterface::notify_unit_move(int32_t guid, MapCoords from, MapCoords to)
+bool ZoneClientInterface::notify_unit_move(int32_t guid, int32_t time, MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_MOVE pkt(get_session());
-	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
+	pkt.deliver(guid, time, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
 bool ZoneClientInterface::notify_viewport_remove_unit(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)

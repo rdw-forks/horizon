@@ -300,9 +300,9 @@ void Player::on_pathfinding_failure()
 	//HLog(debug) << "Player " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
-void Player::on_movement_begin()
+void Player::on_movement_begin(int32_t time)
 {
-	get_session()->clif()->notify_player_movement(map_coords(), dest_coords());
+	get_session()->clif()->notify_player_movement(time, map_coords(), dest_coords());
 }
 
 void Player::on_movement_end()
@@ -405,20 +405,21 @@ bool Player::unit_is_in_viewport(std::shared_ptr<Unit> unit)
 	return (it != _viewport_entities.end());
 }
 
-void Player::realize_unit_movement(std::shared_ptr<Unit> unit)
+void Player::realize_unit_movement(int32_t time, std::shared_ptr<Unit> unit)
 {
 	if (unit == nullptr)
 		return;
 
-	get_session()->clif()->notify_unit_move(unit->guid(), unit->map_coords(), unit->dest_coords());
+	get_session()->clif()->notify_unit_move(unit->guid(), time, unit->map_coords(), unit->dest_coords());
 }
 
-void Player::realize_unit_movement_entry(std::shared_ptr<Unit> unit)
+void Player::realize_unit_movement_entry(int32_t time, std::shared_ptr<Unit> unit)
 {
 	if (unit == nullptr)
 		return;
 
 	unit_viewport_entry entry = get_session()->clif()->create_viewport_entry(unit);
+	entry.move_start_time = time;
 	get_session()->clif()->notify_viewport_moving_unit(entry);
 }
 
@@ -436,7 +437,8 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 	if (dest_map == nullptr)
 		return false;
 
-	force_movement_stop_internal(true);
+	if (is_walking())
+		force_movement_stop_internal(true);
 
 	std::shared_ptr<Player> myself = downcast<Player>();
 

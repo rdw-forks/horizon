@@ -45,7 +45,7 @@ Elemental::~Elemental()
 
 void Elemental::stop_movement() { }
 void Elemental::on_pathfinding_failure() { }
-void Elemental::on_movement_begin() { }
+void Elemental::on_movement_begin(int32_t time) { }
 void Elemental::on_movement_step() { }
 void Elemental::on_movement_end() { }
 

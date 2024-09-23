@@ -108,8 +108,8 @@ public:
 	/**
 	 * Movement
 	 */
-	void realize_unit_movement(std::shared_ptr<Unit> unit);
-	void realize_unit_movement_entry(std::shared_ptr<Unit> unit);
+	void realize_unit_movement(int32_t time, std::shared_ptr<Unit> unit);
+	void realize_unit_movement_entry(int32_t time, std::shared_ptr<Unit> unit);
 	void realize_nearby_items(unit_viewport_notification_type notif_type);
 
 	void add_unit_to_viewport(std::shared_ptr<Unit> unit);
@@ -124,7 +124,7 @@ public:
 
 	void stop_movement() override;
 	void on_pathfinding_failure() override;
-	void on_movement_begin() override;
+	void on_movement_begin(int32_t time) override;
 	void on_movement_step() override;
 	void on_movement_end() override;
 

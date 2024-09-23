@@ -141,7 +141,7 @@ bool Unit::schedule_walk()
 	}
 
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	on_movement_begin();				 // 0us
+	on_movement_begin((int32_t) get_sys_time());				 // 0us
 	notify_nearby_players_of_movement(); // 3us
 	walk();								 // 3~6 us
 	return true;
@@ -162,7 +162,7 @@ void Unit::walk()
 		stop_attacking();
 
 	MapCoords c = _walk_path.at(0); // for the first step.
-
+	
 	map()->container()->getScheduler().Schedule(
 		Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(UNIT_SCHEDULE_WALK),
 		[this](TaskContext context)
@@ -205,8 +205,16 @@ void Unit::walk()
 				stop_walking();
 			}
 
+			std::chrono::milliseconds walk_delay = std::chrono::milliseconds(status()->movement_speed()->get_with_cost(c.move_cost()));
+			
+			if (has_damage_walk_delay() && is_dead() == false)
+				walk_delay += std::chrono::milliseconds(status()->damage_walk_delay()->total());
+
+			set_damage_walk_delay(false);
+
 			if (!_walk_path.empty())
-				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
+				context.Repeat(walk_delay);
+			
 		});
 }
 
@@ -526,8 +534,12 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 				set_attacking(true);
 
 			// Let the target start attacking back.
-			if (combat()->weapon_attack() == CBT_RET_DEF && target->is_attacking() == false)
+			combat_retaliate_type result = combat()->weapon_attack();
+			if (result == CBT_RET_DEF && target->is_attacking() == false)
 				target->attack(shared_from_this(), true);
+			if (result == CBT_RET_DEF) {
+				target->set_damage_walk_delay(true);
+			}
 
 			if (continuous)
 				context.Repeat(Milliseconds(_attackable_time));

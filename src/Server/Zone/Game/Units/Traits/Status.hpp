@@ -577,14 +577,6 @@ public:
 	/**
 	 * Combat Status
 	 */
-	std::shared_ptr<AttackMotion> attack_motion() { return _attack_motion; }
-	void set_attack_motion(std::shared_ptr<AttackMotion> m) {
-		if (_attack_motion != nullptr)
-			remove_attribute(_attack_motion);
-		add_attribute(m);
-		_attack_motion = m;
-	}
-
 	std::shared_ptr<AttackDelay> attack_delay() { return _attack_delay; }
 	void set_attack_delay(std::shared_ptr<AttackDelay> a) {
 		if (_attack_delay != nullptr)
@@ -593,12 +585,12 @@ public:
 		_attack_delay = a;
 	}
 
-	std::shared_ptr<DamageMotion> damage_motion() { return _damage_motion; }
-	void set_damage_motion(std::shared_ptr<DamageMotion> m) {
-		if (_damage_motion != nullptr)
-			remove_attribute(_damage_motion);
+	std::shared_ptr<DamageWalkDelay> damage_walk_delay() { return _damage_walk_delay; }
+	void set_damage_walk_delay(std::shared_ptr<DamageWalkDelay> m) {
+		if (_damage_walk_delay != nullptr)
+			remove_attribute(_damage_walk_delay);
 		add_attribute(m);
-		_damage_motion = m;
+		_damage_walk_delay = m;
 	} 
 
 	std::shared_ptr<BaseAttack> base_attack() { return _base_attack; }
@@ -839,9 +831,8 @@ private:
 	std::shared_ptr<Manner> _manner;
 	std::shared_ptr<Virtue> _virtue;
 	/* Combat Status */
-	std::shared_ptr<AttackMotion> _attack_motion;
 	std::shared_ptr<AttackDelay> _attack_delay;
-	std::shared_ptr<DamageMotion> _damage_motion;
+	std::shared_ptr<DamageWalkDelay> _damage_walk_delay;
 	std::shared_ptr<BaseAttack> _base_attack;
 	std::shared_ptr<WeaponAttackLeft> _weapon_attack_left;
 	std::shared_ptr<WeaponAttackRight> _weapon_attack_right;

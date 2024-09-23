@@ -45,7 +45,7 @@ Mercenary::~Mercenary()
 
 void Mercenary::stop_movement() { }
 void Mercenary::on_pathfinding_failure() { }
-void Mercenary::on_movement_begin() { }
+void Mercenary::on_movement_begin(int32_t time) { }
 void Mercenary::on_movement_step() { }
 void Mercenary::on_movement_end() { }
 
