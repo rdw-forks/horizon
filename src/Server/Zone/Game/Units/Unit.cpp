@@ -481,21 +481,22 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 		Milliseconds(0), get_scheduler_task_id(UNIT_SCHEDULE_ATTACK),
 		[this, continuous, target](TaskContext context)
 		{
-			if (target == nullptr)
-			{
+			if (target == nullptr) {
 				on_attack_end();
 				return;
 			}
 
-			if (target->is_dead())
-			{
+			if (is_dead()) {
+				return;
+			}
+
+			if (target->is_dead()) {
 				on_attack_end();
 				return;
 			}
 
 			std::shared_ptr<AStar::CoordinateList> wp = path_to(target);
-			if (wp && (wp->size() == 0 || wp->size() > MAX_VIEW_RANGE))
-			{
+			if (wp && (wp->size() == 0 || wp->size() > MAX_VIEW_RANGE)) {
 				on_attack_end();
 				return;
 			}
@@ -510,8 +511,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 
 			_attackable_time = status()->attack_delay()->total();
 
-			if (!is_in_range_of(target, range) && !is_walking())
-			{
+			if (!is_in_range_of(target, range) && !is_walking()) {
 
 				walk_to_unit(target);
 
@@ -521,8 +521,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 				return;
 			}
 
-			if (!is_in_range_of(target, range) && is_walking())
-			{
+			if (!is_in_range_of(target, range) && is_walking()) {
 				context.Repeat(Milliseconds(_attackable_time));
 				return;
 			}

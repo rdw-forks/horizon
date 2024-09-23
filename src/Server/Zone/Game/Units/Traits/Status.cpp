@@ -432,14 +432,14 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	base_experience()->register_observers(base_level().get());
 
 	job_experience()->register_observers(job_level().get());
-
-	attack_speed()->register_observers(
-		attack_delay().get());
 	
 	/* Combat Status Attributes */
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->set_attack_speed(attack_speed().get());
 	attack_delay()->compute();
+	
+	attack_speed()->register_observers(
+		attack_delay().get());
 
 	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
 	damage_walk_delay()->set_agility(agility().get());

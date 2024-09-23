@@ -46,7 +46,7 @@
 #define PACKET_VERSION 20190530
 
 #define MAX_LEVEL 175
-#define MAX_STATUS_POINTS 130
+#define MAX_STATUS_POINTS 400
 
 /* Maximum Character Slots (in multiples of 3) */
 #define MAX_CHARACTER_SLOTS 9
