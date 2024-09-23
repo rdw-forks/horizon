@@ -349,14 +349,6 @@ void Player::add_unit_to_viewport(std::shared_ptr<Unit> unit)
 	}
 	
 	_viewport_entities.push_back(unit);
-
-	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
-	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
-		if ((*it).expired())
-			continue;
-		HLog(debug) << "Unit:" << it->lock()->name() << " " << it->lock()->guid();
-	}
-	HLog(debug) << "--------------------";
 }
 
 void Player::remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)
@@ -376,14 +368,6 @@ void Player::remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport
 		get_session()->clif()->notify_item_removal_from_floor(unit->guid());
 	else
 		get_session()->clif()->notify_viewport_remove_unit(unit, type);
-
-	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
-	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
-		if ((*it).expired())
-			continue;
-		HLog(debug) << "Unit:" << it->lock()->name() << " " << it->lock()->guid();
-	}
-	HLog(debug) << "--------------------";
 }
 
 bool Player::unit_is_in_viewport(std::shared_ptr<Unit> unit)
@@ -742,6 +726,8 @@ bool Player::stop_attack()
 void Player::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
 	Unit::on_killed(killer, with_drops, with_exp);
-
-	get_session()->clif()->notify_viewport_remove_unit(shared_from_this(), EVP_NOTIFY_DEAD);
+	
+	if (killer->type() == UNIT_PLAYER) {
+		killer->downcast<Player>()->remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
+	}
 }

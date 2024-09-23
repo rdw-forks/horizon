@@ -99,7 +99,7 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
 
             std::shared_ptr<Horizon::Zone::Unit> vp_e = iter->source()->shared_from_this();
     
-            if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
+            if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking() && !vp_e->is_dead())
                 pl->add_unit_to_viewport(vp_e);
             else if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
                 pl->remove_unit_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);

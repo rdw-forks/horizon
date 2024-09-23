@@ -47,6 +47,7 @@
 
 #define MAX_LEVEL 175
 #define MAX_STATUS_POINTS 400
+#define MAX_ATTACK_SPEED 199
 
 /* Maximum Character Slots (in multiples of 3) */
 #define MAX_CHARACTER_SLOTS 9

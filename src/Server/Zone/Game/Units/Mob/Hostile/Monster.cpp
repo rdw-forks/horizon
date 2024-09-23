@@ -216,8 +216,7 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 		HLog(warning) << "Monster::on_killed: Unknown unit type killed monster " << uuid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
-
+	
 	map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(uuid());
-
 	return;
 }

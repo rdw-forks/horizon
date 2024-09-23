@@ -830,12 +830,13 @@ int32_t AttackSpeed::compute()
 #define ASPD_FROM_SKILLS 0
 		amotion = (int)(temp_aspd + ((float)((ASPD_FROM_STATUS_EFFECTS + ASPD_FROM_SKILLS) * _agi->get_base() / 200)) - std::min(amotion, 200));
 		amotion += (std::max(0xc3 - amotion, 2) * (ASPD_FROM_STATUS_EFFECTS)) / 100;
+		amotion = std::min(amotion, MAX_ATTACK_SPEED);
 		amotion = 10 * (200 - amotion);
 #undef ASPD_FROM_STATUS_EFFECTS
 #undef ASPD_FROM_SKILLS
 	}
 
- 	set_base(amotion);
+	set_base(amotion);
 
 	return total();
 }

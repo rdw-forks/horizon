@@ -32,8 +32,9 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Game/Units/Mob/Mob.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
-
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 using namespace Horizon::Zone::Units;
 
 Mob::Mob(uint64_t uuid, unit_type type, unit_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
@@ -75,4 +76,8 @@ void Mob::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
 void Mob::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
 	Unit::on_killed(killer, with_drops, with_exp);
+
+	if (killer->type() == UNIT_PLAYER) {
+		killer->downcast<Player>()->remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
+	}
 }
