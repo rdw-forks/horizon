@@ -142,7 +142,7 @@ protected:
 	 */
 	virtual void run()
 	{
-		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(500));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
 		_io_context.run();
@@ -162,7 +162,7 @@ protected:
 	 */
 	virtual void update()
 	{
-		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
+		_update_timer.expires_from_now(boost::posix_time::microseconds(500));
 		_update_timer.async_wait(std::bind(&NetworkThread<SocketType>::update, this));
 
 		add_new_sockets();
