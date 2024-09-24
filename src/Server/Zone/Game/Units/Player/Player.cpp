@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Player.hpp"
@@ -353,8 +344,12 @@ void Player::add_unit_to_viewport(std::shared_ptr<Unit> unit)
 
 void Player::remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)
 {
-	if (!unit_is_in_viewport(unit))
+	if (is_dead()) {
+		get_session()->clif()->notify_viewport_remove_unit(unit, EVP_NOTIFY_DEAD);
 		return;
+	} else if (!unit_is_in_viewport(unit)) {
+		return;
+	}
 
 	_viewport_entities.erase(std::remove_if(_viewport_entities.begin(), _viewport_entities.end(),
 		[unit] (std::weak_ptr<Unit> wp_e) {
@@ -565,7 +560,7 @@ void Player::on_map_enter()
 	get_session()->clif()->notify_learnt_skill_list();
 
 	if (is_dead()) {
-		get_session()->clif()->notify_viewport_remove_unit(shared_from_this(), EVP_NOTIFY_DEAD);
+		remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
 	}
 }
 
@@ -726,8 +721,5 @@ bool Player::stop_attack()
 void Player::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
 	Unit::on_killed(killer, with_drops, with_exp);
-	
-	if (killer->type() == UNIT_PLAYER) {
-		killer->downcast<Player>()->remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
-	}
+	remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
 }

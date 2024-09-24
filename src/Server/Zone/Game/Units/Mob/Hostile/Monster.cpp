@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Monster.hpp"
@@ -216,7 +207,7 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 		HLog(warning) << "Monster::on_killed: Unknown unit type killed monster " << uuid() << " at " << map()->get_name() << " (" << map_coords().x() << ", " << map_coords().y() << ").";
 		break;
 	}
-	
+
 	map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(uuid());
 	return;
 }
