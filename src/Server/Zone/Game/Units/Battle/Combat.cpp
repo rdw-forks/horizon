@@ -147,6 +147,15 @@ combat_retaliate_type Combat::weapon_attack()
 		damage_total = 0;
 	}
 
+	int cri = unit()->status()->crit()->total();
+
+	cri -= target()->status()->base_level()->total() / 15 + 2 * target()->status()->luck()->total();
+
+	dmg.is_critical = (std::rand() % 1000 < cri) ? true : false;
+	
+	if (dmg.is_critical)
+		hit = true;
+
 	if (hit) {
 		dmg.result = combat_retaliate_type::CBT_RET_DEF;
 	} else {
@@ -164,6 +173,7 @@ combat_retaliate_type Combat::weapon_attack()
 		else
 			dmg.number_of_hits = 1;
 	}
+
 		
 	CombatRegistry::MeleeResultOperation::MeleeResultOperand *melee_operand = new CombatRegistry::MeleeResultOperation::MeleeResultOperand(unit(), target());
 	CombatRegistry::CombatValueDamage *melee_value = new CombatRegistry::CombatValueDamage(dmg);
@@ -531,7 +541,7 @@ void CombatRegistry::MeleeResultOperation::execute() const
             config.damage = value->get_damage().right_damage;
             config.is_sp_damaged = 0;
             config.number_of_hits = value->get_damage().number_of_hits;
-            config.action_type = ZCNA3_DAMAGE;
+            config.action_type = value->get_damage().is_critical ? ZCNA3_CRITICAL_HIT : ZCNA3_DAMAGE;
             config.left_damage = value->get_damage().left_damage;
             source->notify_nearby_players_of_basic_attack(config);
             target->on_damage_received(source, value->get_damage().left_damage + value->get_damage().right_damage);

@@ -277,7 +277,6 @@ void Attribute::notify()
 	case STATUS_HIT:
 	case STATUS_FLEE:
 	case STATUS_PERFECT_DODGE:
-	case STATUS_CRITICAL:
 	case STATUS_MAXHP:    
 	case STATUS_MAXSP:        
 	case STATUS_CURRENTHP:
@@ -294,8 +293,13 @@ void Attribute::notify()
 	case STATUS_ZENY:
 	{
 		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_compound_attribute_update(_status_point_type, total());
-	}      
-	break;  
+	}
+	break;
+	case STATUS_CRITICAL: 
+	{
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_compound_attribute_update(_status_point_type, total() / 10);
+	} 
+	break;
 	case STATUS_BASEEXP:
 	case STATUS_JOBEXP:
 	case STATUS_NEXTBASEEXP:
@@ -692,7 +696,7 @@ int32_t CRIT::compute()
 		luk = _luk->total();
 
 	// LUK × 0.3 + Bonus
-	set_base(luk / 3);
+	set_base(10 + (luk * 10 / 3));
 	
 	return total();
 }

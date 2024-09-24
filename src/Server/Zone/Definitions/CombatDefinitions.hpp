@@ -104,6 +104,7 @@ struct combat_damage : public combat_structures {
     combat_retaliate_type result{CBT_RET_NONE};
     element_type ele_type{ELE_NEUTRAL};
     int8_t element_level{1};
+	bool is_critical{false};
 };
 
 struct combat_healing : public combat_structures  {
