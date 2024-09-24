@@ -364,4 +364,4 @@ jobs:
       run: |
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\auth.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\auth-server.lua.dist" --test-run 
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\char.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\char-server.lua.dist" --test-run
-        ${{github.workspace}}\build\bin\${{matrix.build_type}}\zone.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\zone-server.lua.dist" --test-run 
+        ${{github.workspace}}\build\bin\${{matrix.build_type}}\zone.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\zone-server.lua.dist" --test-run
