@@ -66,11 +66,6 @@ jobs:
           t=$(basename ${f::-4});
           ${{github.workspace}}/build/bin/${t};
         done
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: (GCC) Linux Tests (${{matrix.build_type}})
-        path: ${{github.workspace}}/build/bin/**/*
   Debian-GCC-Servers-ASAN:
     strategy:
       matrix:
@@ -165,11 +160,6 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: (GCC) Linux Servers (${{matrix.build_type}})
-        path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
   Debian-Clang-Tests-Tools-SAN:
     strategy:
       matrix:
@@ -219,11 +209,6 @@ jobs:
           t=$(basename ${f::-4});
           ${{github.workspace}}/build/bin/${t}
         done
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: (Clang) Horizon Linux Tests (${{matrix.build_type}})
-        path: ${{github.workspace}}/build/bin/**/*
   Debian-Clang-Servers-ASAN:
     strategy:
       matrix:
@@ -318,11 +303,6 @@ jobs:
         ./auth --with-config="config/auth-server.lua.dist" --test-run
         ./char --with-config="config/char-server.lua.dist" --test-run
         ./zone --with-config="config/zone-server.lua.dist" --test-run
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: (Clang) Horizon Linux Servers (${{matrix.build_type}})
-        path: ${{github.workspace}}/build/bin/${{matrix.build_type}}/**/*
 
   Windows-Tests:
     strategy:
@@ -345,12 +325,7 @@ jobs:
         foreach ($file in $files) {
           $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
           & "${{github.workspace}}\build\bin\${{matrix.build_type}}\$t"
-        }   
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: Horizon Windows Tests (${{matrix.build_type}})
-        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
+        }
       
   Windows-Tools:
     strategy:
@@ -390,8 +365,3 @@ jobs:
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\auth.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\auth-server.lua.dist" --test-run 
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\char.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\char-server.lua.dist" --test-run
         ${{github.workspace}}\build\bin\${{matrix.build_type}}\zone.exe --with-config="${{github.workspace}}\build\bin\${{matrix.build_type}}\config\zone-server.lua.dist" --test-run 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with: 
-        name: Horizon Windows Servers (${{matrix.build_type}})
-        path: ${{github.workspace}}\build\bin\${{matrix.build_type}}\**\*
