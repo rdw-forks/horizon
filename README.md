@@ -1,11 +1,7 @@
 # HorizonXYZ/Horizon
 
-[![MSVC](https://img.shields.io/github/actions/workflow/status/horizonxyz/horizon/cmake.yml?label=MSVC&logo=visual-studio)](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml?job=Windows-MSVC-ALL-ASAN)
-[![GCC](https://img.shields.io/github/actions/workflow/status/horizonxyz/horizon/cmake.yml?label=GCC&logo=gnu)](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml?job=Debian-GCC-ALL-ASAN)
-[![CLANG](https://img.shields.io/github/actions/workflow/status/horizonxyz/horizon/cmake.yml?label=Clang&logo=llvm)](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml?job=Debian-CLANG-ALL-ASAN)
-[![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](http://perso.crans.org/besson/LICENSE.html)
-![Repo Size](https://img.shields.io/github/repo-size/horizonxyz/horizon.svg)
-![Contributors](https://img.shields.io/github/contributors/horizonxyz/horizon)
+[![CMake](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml/badge.svg)](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml)
+[![Proprietary license](https://img.shields.io/badge/License-Proprietary-blue.svg)](https://github.com/horizonxyz/horizon/tree/master?tab=License-1-ov-file)
 
 [![CMake](https://img.shields.io/badge/CMake-3.17-blue?logo=cmake)](https://cmake.org/) [![C++](https://img.shields.io/badge/C++-17-blue?logo=c%2B%2B)](https://isocpp.org/) [![Lua](https://img.shields.io/badge/Lua-5.4-blue?logo=lua)](https://www.lua.org/) [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql&logoColor=white)](https://www.mysql.com/) [![Boost](https://img.shields.io/badge/Boost-1.85.0-blue)](https://www.boost.org/) [![sol2](https://img.shields.io/badge/sol2-3.2.3-blue.svg)](https://github.com/ThePhD/sol2)
 
