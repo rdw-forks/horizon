@@ -14,7 +14,8 @@ env:
   MYSQL_HOSTNAME: "15.235.163.198"
   LINUX_BOOST_ROOT: "/home/debian/boost_1_85_0"
   LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
-  WINDOWS_PARALLEL: "2"
+  WINDOWS_PARALLEL: "12"
+  LINUX_PARALLEL: "8"
 jobs:
   Debian-GCC-Tests-Tools-SAN:
     strategy:
@@ -28,7 +29,7 @@ jobs:
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
         cmake --build ${{github.workspace}}/build --config Debug
-        cmake --build ${{github.workspace}}/build --target install --config Debug
+        cmake --build ${{github.workspace}}/build --target install --config Debug --parallel ${{env.LINUX_PARALLEL}}
     - name: Run
       run: |
         cp ${{github.workspace}}/config ${{github.workspace}}/build/bin/config -r
@@ -53,7 +54,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -78,7 +79,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
       # Run the servers with ASAN enabled, not under gdb because LeakSanitizer doesn't run under gdb.
       # ==28178==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
@@ -103,7 +104,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -126,7 +127,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITH_LSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -149,7 +150,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -171,7 +172,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}} ${{matrix.sanitizer}}
-        cmake --build ${{github.workspace}}/build --config Debug
+        cmake --build ${{github.workspace}}/build --config Debug --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config Debug
     - name: Run
       run: |
@@ -196,7 +197,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -221,7 +222,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=false -DWITH_ASAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
       # Run the servers with ASAN enabled, not under gdb because LeakSanitizer doesn't run under gdb.
       # ==28178==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)
@@ -246,7 +247,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -269,7 +270,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_LSAN=true -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -292,7 +293,7 @@ jobs:
     - name: Configure & Build
       run: |
         cmake -B"${{github.workspace}}/build" -S"${{github.workspace}}" -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DBOOST_ROOT=${{env.LINUX_BOOST_ROOT}} -DBOOST_LIBRARYDIR=${{env.LINUX_BOOST_LIBRARYDIR}}
-        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
+        cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}} --parallel ${{env.LINUX_PARALLEL}}
         cmake --build ${{github.workspace}}/build --target install --config ${{matrix.build_type}}
     - name: Run
       run: |
@@ -315,7 +316,7 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${{env.WINDOWS_PARALLEL}}
     - name: Run
       run: |
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
@@ -340,7 +341,7 @@ jobs:
     - name: Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DWITHOUT_SERVERS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${{env.WINDOWS_PARALLEL}}
 
   Windows-Servers:
     strategy:
@@ -355,7 +356,7 @@ jobs:
     - name: Configure Step & Build
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
-        cmake --build build --config ${{matrix.build_type}}
+        cmake --build build --config ${{matrix.build_type}} --parallel ${{env.WINDOWS_PARALLEL}}
         Xcopy /E /I ${{github.workspace}}\config ${{github.workspace}}\build\bin\${{matrix.build_type}}\config
         Xcopy /E /I ${{github.workspace}}\db ${{github.workspace}}\build\bin\${{matrix.build_type}}\db
         Xcopy /E /I ${{github.workspace}}\scripts ${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts
