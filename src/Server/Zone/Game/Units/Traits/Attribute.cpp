@@ -584,6 +584,30 @@ int32_t StatusATK::compute()
 	return total();
 }
 
+int32_t EquipMATK::compute()
+{
+	if (unit() == nullptr || unit()->type() != UNIT_PLAYER)
+		return 0;
+
+	std::shared_ptr<Horizon::Zone::Units::Player> player = unit()->downcast<Horizon::Zone::Units::Player>();
+	EquipmentListType const &equipments = player->inventory()->equipments();
+	
+	std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
+	std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
+	
+	set_base(0, false);
+
+	if (lhw) add_base(lhw->config->magic_atk);
+	if (rhw) add_base(rhw->config->magic_atk);
+	
+	int variance = total() * rhw->config->level.weapon / 10;
+
+	set_min(total() - variance);
+	set_max(total() + variance);
+	
+	return total();
+}
+
 int32_t StatusMATK::compute()
 {
 	int32_t blvl = 1, int_ = 1, dex = 1, luk = 1;
@@ -644,6 +668,11 @@ int32_t HardDEF::compute()
 		}
 	}
 
+	return total();
+}
+
+int32_t HardMDEF::compute()
+{
 	return total();
 }
 

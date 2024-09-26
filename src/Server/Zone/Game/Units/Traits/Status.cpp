@@ -285,6 +285,9 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	status_matk()->set_luck(luck().get());
 	status_matk()->compute();
 
+	set_equip_matk(std::make_shared<EquipMATK>(_unit));
+	equip_matk()->compute();
+
 	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
 	soft_def()->set_base_level(base_level().get());
@@ -831,6 +834,7 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 	attack_speed()->on_equipment_changed();
 	attack_range()->on_equipment_changed();
 	base_attack()->on_equipment_changed();
+	equip_matk()->on_equipment_changed();
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)

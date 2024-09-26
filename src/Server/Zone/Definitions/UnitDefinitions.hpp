@@ -120,8 +120,8 @@ enum status_point_type
 	STATUS_28                         =  40,
 	STATUS_STATUS_ATK                 =  41,
 	STATUS_EQUIP_ATK                  =  42,
-	STATUS_EQUIP_MATK                 =  43,
-	STATUS_STATUS_MATK                =  44,
+	STATUS_EQUIP_MATK                 =  43,  // Right side in status window
+	STATUS_STATUS_MATK                =  44,  // Left-side in status window
 	STATUS_SOFT_DEF                   =  45,
 	STATUS_HARD_DEF                   =  46,
 	STATUS_SOFT_MDEF                  =  47,

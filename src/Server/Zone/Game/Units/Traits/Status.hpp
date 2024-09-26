@@ -424,6 +424,14 @@ public:
 		add_attribute(smatk);
 		_status_matk = smatk;
 	}
+	
+	std::shared_ptr<EquipMATK> equip_matk() { return _equip_matk; }
+	void set_equip_matk(std::shared_ptr<EquipMATK> ematk) {
+		if (_equip_matk != nullptr)
+			remove_attribute(_equip_matk);
+		add_attribute(ematk);
+		_equip_matk = ematk;
+	}
 
 	std::shared_ptr<SoftDEF> soft_def() { return _soft_def; }
 	void set_soft_def(std::shared_ptr<SoftDEF> sdef) {
@@ -447,6 +455,14 @@ public:
 			remove_attribute(_soft_mdef);
 		add_attribute(smdef);
 		_soft_mdef = smdef;
+	}
+	
+	std::shared_ptr<HardMDEF> hard_mdef() { return _hard_mdef; }
+	void set_hard_mdef(std::shared_ptr<HardMDEF> hmdef) {
+		if (_hard_mdef != nullptr)
+			remove_attribute(_hard_mdef);
+		add_attribute(hmdef);
+		_hard_mdef = hmdef;
 	}
 
 	std::shared_ptr<HIT> hit() { return _hit; }
@@ -795,9 +811,11 @@ private:
 	std::shared_ptr<StatusATK> _status_atk;
 	std::shared_ptr<EquipATK> _equip_atk;
 	std::shared_ptr<StatusMATK> _status_matk;
+	std::shared_ptr<EquipMATK> _equip_matk;
 	std::shared_ptr<SoftDEF> _soft_def;
 	std::shared_ptr<HardDEF> _hard_def;
 	std::shared_ptr<SoftMDEF> _soft_mdef;
+	std::shared_ptr<HardMDEF> _hard_mdef;
 	std::shared_ptr<HIT> _hit;
 	std::shared_ptr<CRIT> _crit;
 	std::shared_ptr<FLEE> _flee;

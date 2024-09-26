@@ -42,6 +42,7 @@ namespace Traits
 	class StatusMATK;
 	class SoftDEF;
 	class SoftMDEF;
+	class HardMDEF;
 	class HIT;
 	class CRIT;
 	class FLEE;
@@ -1203,6 +1204,21 @@ namespace Traits
 		int32_t _rhw_overupgrade{0};
 	};
 
+	class EquipMATK
+	: public Attribute,
+	  public AttributeVariance
+	{
+	public:
+		EquipMATK(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_EQUIP_MATK)
+		{ }
+		~EquipMATK() { }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+	};
+
 	class StatusMATK
 	: public Attribute
 	{
@@ -1296,6 +1312,19 @@ namespace Traits
 		Intelligence *_int{nullptr};
 		Dexterity *_dex{nullptr};
 		Vitality *_vit{nullptr};
+	};
+
+	class HardMDEF
+	: public Attribute
+	{
+	public:
+		HardMDEF(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
+		: Attribute(unit, STATUS_HARD_MDEF, base, equip, status)
+		{ }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
 	};
 
 	class HIT

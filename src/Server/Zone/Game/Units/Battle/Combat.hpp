@@ -648,10 +648,13 @@ public:
     std::shared_ptr<Unit> unit() const { return _unit.lock(); }
     std::shared_ptr<Unit> target() const { return _target.lock(); }
 
+
     combat_retaliate_type weapon_attack();
-    int64_t calculate_weapon_attack(int64_t damage);
-    int64_t calculate_magic_attack(int64_t damage);
-    int64_t calculate_misc_attack(int64_t damage);
+	int64_t calculate_weapon_defense(int64_t damage);
+	int64_t calculate_magic_defense(int64_t damage);
+    combat_damage calculate_weapon_attack();
+    combat_damage calculate_magic_attack();
+    combat_damage calculate_misc_attack();
     int64_t deduce_weapon_element_attack(int64_t damage, element_type def_ele, item_equip_location_index loc);
     int64_t deduce_damage_size_modifier(int64_t damage, item_equip_location_index loc);
 private:
