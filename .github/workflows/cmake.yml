@@ -319,9 +319,9 @@ jobs:
         cmake --build build --config ${{matrix.build_type}} --parallel ${{env.WINDOWS_PARALLEL}}
     - name: Run
       run: |
-        robocopy "${{github.workspace}}\config" "${{github.workspace}}\build\bin\${{matrix.build_type}}\config" /E
-        robocopy "${{github.workspace}}\db" "${{github.workspace}}\build\bin\${{matrix.build_type}}\db" /E
-        robocopy "${{github.workspace}}\scripts" "${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts" /E
+        Copy-Item -Path "${{github.workspace}}\config" -Destination "${{github.workspace}}\build\bin\${{matrix.build_type}}\config" -Recurse -Force
+        Copy-Item -Path "${{github.workspace}}\db" -Destination "${{github.workspace}}\build\bin\${{matrix.build_type}}\db" -Recurse -Force
+        Copy-Item -Path "${{github.workspace}}\scripts" -Destination "${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts" -Recurse -Force
         $files = Get-ChildItem -Path "${{github.workspace}}/src/Tests" -Filter "*Test.cpp" -Recurse
         foreach ($file in $files) {
           $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
@@ -357,9 +357,9 @@ jobs:
       run: |
         cmake -B build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
         cmake --build build --config ${{matrix.build_type}} --parallel ${{env.WINDOWS_PARALLEL}}
-        robocopy "${{github.workspace}}\config" "${{github.workspace}}\build\bin\${{matrix.build_type}}\config" /E
-        robocopy "${{github.workspace}}\db" "${{github.workspace}}\build\bin\${{matrix.build_type}}\db" /E
-        robocopy "${{github.workspace}}\scripts" "${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts" /E
+        Copy-Item -Path "${{github.workspace}}\config" -Destination "${{github.workspace}}\build\bin\${{matrix.build_type}}\config" -Recurse -Force
+        Copy-Item -Path "${{github.workspace}}\db" -Destination "${{github.workspace}}\build\bin\${{matrix.build_type}}\db" -Recurse -Force
+        Copy-Item -Path "${{github.workspace}}\scripts" -Destination "${{github.workspace}}\build\bin\${{matrix.build_type}}\scripts" -Recurse -Force
     - name: Run
       working-directory: ${{github.workspace}}\build\bin\${{matrix.build_type}}
       run: |
