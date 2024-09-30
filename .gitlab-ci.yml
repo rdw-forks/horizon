@@ -11,7 +11,6 @@ variables:
   LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
   LINUX_PARALLEL: "8"
-  CMAKE: "C:\PROGRAM FILES\MICROSOFT VISUAL STUDIO\2022\COMMUNITY\COMMON7\IDE\COMMONEXTENSIONS\MICROSOFT\CMAKE\CMake\\bin\cmake.exe"
 
 Debian-GCC-Tests-Tools-SAN:
   stage: test-tools
@@ -140,9 +139,8 @@ Windows-Tests-Tools:
     matrix:
       - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
   script:
-    - | 
-      & "$CMAKE" -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
-      & "$CMAKE" --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+    - cmake --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
     - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
     - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
     - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
@@ -171,9 +169,8 @@ Windows-Servers:
     matrix:
       - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
   script:
-    - |
-      & $CMAKE -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
-      & $CMAKE --build build --parallel $WINDOWS_PARALLEL
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+    - cmake --build build --parallel $WINDOWS_PARALLEL
     - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
     - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
     - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
