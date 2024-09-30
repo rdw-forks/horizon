@@ -141,13 +141,13 @@ Windows-Tests-Tools:
   script:
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_TOOLCHAIN_FILE% -DVCPKG_TARGET_TRIPLET=%VCPKG_TARGET_TRIPLET%
     - cmake --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
-    - Xcopy /E /I %CI_PROJECT_DIR%\config %CI_PROJECT_DIR%\build\bin\$BUILD_TYPE\config
-    - Xcopy /E /I %CI_PROJECT_DIR%\db %CI_PROJECT_DIR%\build\bin\$BUILD_TYPE\db
-    - Xcopy /E /I %CI_PROJECT_DIR%\scripts %CI_PROJECT_DIR%\build\bin\$BUILD_TYPE\scripts
-    - $files = Get-ChildItem -Path "%CI_PROJECT_DIR%/src/Tests" -Filter "*Test.cpp" -Recurse
+    - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
+    - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
+    - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
+    - $files = Get-ChildItem -Path "$CI_PROJECT_DIR/src/Tests" -Filter "*Test.cpp" -Recurse
     - foreach ($file in $files) {
         $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
-        & "%CI_PROJECT_DIR%\build\bin\$BUILD_TYPE\$t"
+        & "$CI_PROJECT_DIR\build\bin\$BUILD_TYPE\$t"
       }
   artifacts:
     paths:
