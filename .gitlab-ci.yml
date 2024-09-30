@@ -16,6 +16,7 @@ variables:
   LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
   LINUX_PARALLEL: "8"
+  RETRY_MAX_COUNT: "2"
 
 before_script:
   - apt-get update -y
@@ -45,6 +46,11 @@ Debian-GCC-Tests-Tools-SAN:
   artifacts:
     paths:
       - build/
+  retry:
+    max: $RETRY_MAX_COUNT
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 Debian-GCC-Servers:
   stage: Debian-GCC-Servers
@@ -70,6 +76,11 @@ Debian-GCC-Servers:
   artifacts:
     paths:
       - build/bin/$BUILD_TYPE/**
+  retry:
+    max: $RETRY_MAX_COUNT
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 
 Debian-Clang-Tests-Tools-SAN:
@@ -96,6 +107,11 @@ Debian-Clang-Tests-Tools-SAN:
   artifacts:
     paths:
       - build/
+  retry:
+    max: $RETRY_MAX_COUNT
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 Debian-Clang-Servers:
   stage: Debian-Clang-Servers
@@ -119,6 +135,11 @@ Debian-Clang-Servers:
   artifacts:
     paths:
       - build/bin/$BUILD_TYPE/**
+  retry:
+    max: $RETRY_MAX_COUNT
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 Windows-Tests:
   stage: Windows-Tests
@@ -142,6 +163,11 @@ Windows-Tests:
     paths:
       - build/bin/$BUILD_TYPE/**/*
     name: "Horizon Windows Tests ($BUILD_TYPE)"
+  retry:
+    max: $RETRY_MAX_COUNT
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
 
 Windows-Tools:
   stage: Windows-Tools
@@ -177,3 +203,8 @@ Windows-Servers:
     paths:
       - build/bin/$BUILD_TYPE/**/*
     name: "Horizon Windows Servers ($BUILD_TYPE)"
+  retry:
+    max: $RETRY_MAX_COUNT
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
