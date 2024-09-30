@@ -16,7 +16,6 @@ variables:
   LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
   LINUX_PARALLEL: "8"
-  RETRY_MAX_COUNT: 2
 
 before_script:
   - apt-get update -y
@@ -47,7 +46,7 @@ Debian-GCC-Tests-Tools-SAN:
     paths:
       - build/
   retry:
-    max: $RETRY_MAX_COUNT
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -77,7 +76,7 @@ Debian-GCC-Servers:
     paths:
       - build/bin/$BUILD_TYPE/**
   retry:
-    max: $RETRY_MAX_COUNT
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -108,7 +107,7 @@ Debian-Clang-Tests-Tools-SAN:
     paths:
       - build/
   retry:
-    max: $RETRY_MAX_COUNT
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -136,7 +135,7 @@ Debian-Clang-Servers:
     paths:
       - build/bin/$BUILD_TYPE/**
   retry:
-    max: $RETRY_MAX_COUNT
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -164,7 +163,7 @@ Windows-Tests:
       - build/bin/$BUILD_TYPE/**/*
     name: "Horizon Windows Tests ($BUILD_TYPE)"
   retry:
-    max: $RETRY_MAX_COUNT
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
@@ -204,7 +203,7 @@ Windows-Servers:
       - build/bin/$BUILD_TYPE/**/*
     name: "Horizon Windows Servers ($BUILD_TYPE)"
   retry:
-    max: $RETRY_MAX_COUNT
+    max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
