@@ -16,7 +16,7 @@ variables:
   LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
   LINUX_PARALLEL: "8"
-  RETRY_MAX_COUNT: "2"
+  RETRY_MAX_COUNT: 2
 
 before_script:
   - apt-get update -y
