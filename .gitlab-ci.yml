@@ -12,8 +12,8 @@ variables:
   MYSQL_USERNAME: horizon
   MYSQL_DATABASE: horizon
   MYSQL_HOSTNAME: "15.235.163.198"
-  LINUX_BOOST_ROOT: "/home/debian/boost_1_85_0"
-  LINUX_BOOST_LIBRARYDIR: "/home/debian/boost_1_85_0/stage/lib"
+  LINUX_BOOST_ROOT: "/home/gitlab-runner/boost_1_85_0"
+  LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
   LINUX_PARALLEL: "8"
 
