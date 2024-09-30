@@ -1,5 +1,6 @@
 stages:
-  - build
+  - test-tools
+  - servers
 
 variables:
   MYSQL_PASSWORD: horizon
@@ -12,7 +13,7 @@ variables:
   LINUX_PARALLEL: "8"
 
 Debian-GCC-Tests-Tools-SAN:
-  stage: build
+  stage: test-tools
   tags:
     - Linux
   parallel:
@@ -42,7 +43,7 @@ Debian-GCC-Tests-Tools-SAN:
       - stuck_or_timeout_failure
 
 Debian-GCC-Servers:
-  stage: build
+  stage: servers
   tags:
     - Linux
   needs: ["Debian-GCC-Tests-Tools-SAN"]
@@ -73,7 +74,7 @@ Debian-GCC-Servers:
 
 
 Debian-Clang-Tests-Tools-SAN:
-  stage: build
+  stage: test-tools
   tags:
     - Linux
   parallel:
@@ -103,7 +104,7 @@ Debian-Clang-Tests-Tools-SAN:
       - stuck_or_timeout_failure
 
 Debian-Clang-Servers:
-  stage: build
+  stage: servers
   tags:
     - Linux
   needs: ["Debian-Clang-Tests-Tools-SAN"]
@@ -130,15 +131,15 @@ Debian-Clang-Servers:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-Windows-Tests:
-  stage: build
+Windows-Tests-Tools:
+  stage: test-tools
   tags:
     - Windows
   parallel:
     matrix:
       - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
   script:
-    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_TOOLCHAIN_FILE% -DVCPKG_TARGET_TRIPLET=%VCPKG_TARGET_TRIPLET%
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_TOOLCHAIN_FILE% -DVCPKG_TARGET_TRIPLET=%VCPKG_TARGET_TRIPLET%
     - cmake --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
     - Xcopy /E /I %CI_PROJECT_DIR%\config %CI_PROJECT_DIR%\build\bin\$BUILD_TYPE\config
     - Xcopy /E /I %CI_PROJECT_DIR%\db %CI_PROJECT_DIR%\build\bin\$BUILD_TYPE\db
@@ -158,20 +159,8 @@ Windows-Tests:
       - runner_system_failure
       - stuck_or_timeout_failure
 
-Windows-Tools:
-  stage: build
-  tags:
-    - Windows
-  needs: ["Windows-Tests"]
-  parallel:
-    matrix:
-      - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
-  script:
-    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_TOOLCHAIN_FILE% -DVCPKG_TARGET_TRIPLET=%VCPKG_TARGET_TRIPLET%
-    - cmake --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
-
 Windows-Servers:
-  stage: build
+  stage: servers
   tags:
     - Windows
   needs: ["Windows-Tests", "Windows-Tools"]
