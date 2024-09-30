@@ -144,8 +144,9 @@ Windows-Tests-Tools:
     - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
     - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
     - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
-    - $files = Get-ChildItem -Path "$CI_PROJECT_DIR/src/Tests" -Filter "*Test.cpp" -Recurse
-    - foreach ($file in $files) {
+    - |
+      $files = Get-ChildItem -Path "$CI_PROJECT_DIR/src/Tests" -Filter "*Test.cpp" -Recurse
+      foreach ($file in $files) {
         $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
         & "$CI_PROJECT_DIR\build\bin\$BUILD_TYPE\$t"
       }
