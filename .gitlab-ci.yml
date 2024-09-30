@@ -163,7 +163,7 @@ Windows-Servers:
   stage: servers
   tags:
     - Windows
-  needs: ["Windows-Tests", "Windows-Tools"]
+  needs: ["Windows-Tests-Tools"]
   parallel:
     matrix:
       - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
