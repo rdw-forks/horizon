@@ -1,6 +1,7 @@
 stages:
-  - test-tools
-  - servers
+  - test
+  - build
+  - deploy
 
 variables:
   MYSQL_PASSWORD: horizon
@@ -10,16 +11,32 @@ variables:
   LINUX_BOOST_ROOT: "/home/gitlab-runner/boost_1_85_0"
   LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
-  LINUX_PARALLEL: "8"
+  LINUX_PARALLEL: "12"
 
 Debian-GCC-Tests-Tools-SAN:
-  stage: test-tools
-  tags:
-    - Linux
+  timeout: 1h
+  stage: test
+  tags: [ "Linux", "Debian"]
   parallel:
     matrix:
-      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
-      - SANITIZER: [ "-DWITH_ASAN=true", "-DWITH_TSAN=true", "-DWITH_LSAN=true" ]
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
   script:
     - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
     - cmake --build build --parallel $LINUX_PARALLEL
@@ -31,27 +48,69 @@ Debian-GCC-Tests-Tools-SAN:
       files=$(find src/Tests -type f -iname "*Test.cpp")
       for f in ${files[@]}; do
         t=$(basename ${f::-4})
-        gdb -ex run -ex quit --args "build/bin/${t}"
+        "build/bin/${t}"
       done
   artifacts:
     paths:
-      - build/
+      - build/bin/**
   retry:
     max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+    when: always
 
-Debian-GCC-Servers:
-  stage: servers
+Debian-GCC-Servers-SAN:
+  timeout: 1h
+  stage: build
   tags:
     - Linux
   needs: ["Debian-GCC-Tests-Tools-SAN"]
   parallel:
     matrix:
-      - BUILD_TYPE: "Debug"
-      - BUILD_TYPE: "Release"
-      - BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/$BUILD_TYPE/config
+    - cp -r db build/bin/$BUILD_TYPE/db
+    - cp -r scripts build/bin/$BUILD_TYPE/scripts
+    - cd build/bin/$BUILD_TYPE
+    - ./auth --with-config="config/auth-server.lua.dist" --test-run
+    - ./char --with-config="config/char-server.lua.dist" --test-run
+    - ./zone --with-config="config/zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**
+  retry:
+    max: 2
+    when: always
+
+
+Debian-GCC-Servers:
+  timeout: 1h
+  stage: deploy
+  tags:
+    - Linux
+  needs: ["Debian-GCC-Servers-SAN"]
+  parallel:
+    matrix:
+      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
   script:
     - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR
     - cmake --build build --parallel $LINUX_PARALLEL
@@ -68,19 +127,34 @@ Debian-GCC-Servers:
       - build/bin/$BUILD_TYPE/**
   retry:
     max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+    when: always
 
 
 Debian-Clang-Tests-Tools-SAN:
-  stage: test-tools
+  timeout: 1h
+  stage: test
   tags:
     - Linux
   parallel:
     matrix:
-      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
-      - SANITIZER: [ "-DWITH_ASAN=true", "-DWITH_TSAN=true", "-DWITH_LSAN=true" ]
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
   script:
     - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
     - cmake --build build --parallel $LINUX_PARALLEL
@@ -92,22 +166,65 @@ Debian-Clang-Tests-Tools-SAN:
       files=$(find src/Tests -type f -iname "*Test.cpp")
       for f in ${files[@]}; do
         t=$(basename ${f::-4})
-        gdb -ex run -ex quit --args "build/bin/${t}"
+        "build/bin/${t}"
       done
   artifacts:
     paths:
-      - build/
+      - build/bin/**
   retry:
     max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+    when: always
 
-Debian-Clang-Servers:
-  stage: servers
+Debian-Clang-Servers-SAN:
+  timeout: 1h
+  stage: build
   tags:
     - Linux
   needs: ["Debian-Clang-Tests-Tools-SAN"]
+  parallel:
+    matrix:
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/$BUILD_TYPE/config
+    - cp -r db build/bin/$BUILD_TYPE/db
+    - cp -r scripts build/bin/$BUILD_TYPE/scripts
+    - cd build/bin/$BUILD_TYPE
+    - ./auth --with-config="config/auth-server.lua.dist" --test-run
+    - ./char --with-config="config/char-server.lua.dist" --test-run
+    - ./zone --with-config="config/zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**
+  retry:
+    max: 2
+    when: always
+
+Debian-Clang-Servers:
+  timeout: 1h
+  stage: deploy
+  tags:
+    - Linux
+  needs: ["Debian-Clang-Servers-SAN"]
   parallel:
     matrix:
       - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
@@ -127,12 +244,12 @@ Debian-Clang-Servers:
       - build/bin/$BUILD_TYPE/**
   retry:
     max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+    when: always
 
 Windows-Tests-Tools:
-  stage: test-tools
+  timeout: 1h
+  stage: test
+  resource_group: windows-servers
   tags:
     - Windows
   parallel:
@@ -156,12 +273,12 @@ Windows-Tests-Tools:
     name: "Horizon Windows Tests ($BUILD_TYPE)"
   retry:
     max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+    when: always
 
 Windows-Servers:
-  stage: servers
+  timeout: 1h
+  stage: deploy
+  resource_group: windows-servers
   tags:
     - Windows
   needs: ["Windows-Tests-Tools"]
@@ -184,6 +301,4 @@ Windows-Servers:
     name: "Horizon Windows Servers ($BUILD_TYPE)"
   retry:
     max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
+    when: always
