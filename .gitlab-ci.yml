@@ -1,0 +1,304 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  MYSQL_PASSWORD: horizon
+  MYSQL_USERNAME: horizon
+  MYSQL_DATABASE: horizon
+  MYSQL_HOSTNAME: "15.235.163.198"
+  LINUX_BOOST_ROOT: "/home/gitlab-runner/boost_1_85_0"
+  LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
+  WINDOWS_PARALLEL: "12"
+  LINUX_PARALLEL: "12"
+
+Debian-GCC-Tests-Tools-SAN:
+  timeout: 1h
+  stage: test
+  tags: [ "Linux", "Debian"]
+  parallel:
+    matrix:
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/config
+    - cp -r db build/bin/db
+    - cp -r scripts build/bin/scripts
+    - |
+      files=$(find src/Tests -type f -iname "*Test.cpp")
+      for f in ${files[@]}; do
+        t=$(basename ${f::-4})
+        "build/bin/${t}"
+      done
+  artifacts:
+    paths:
+      - build/bin/**
+  retry:
+    max: 2
+    when: always
+
+Debian-GCC-Servers-SAN:
+  timeout: 1h
+  stage: build
+  tags:
+    - Linux
+  needs: ["Debian-GCC-Tests-Tools-SAN"]
+  parallel:
+    matrix:
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/$BUILD_TYPE/config
+    - cp -r db build/bin/$BUILD_TYPE/db
+    - cp -r scripts build/bin/$BUILD_TYPE/scripts
+    - cd build/bin/$BUILD_TYPE
+    - ./auth --with-config="config/auth-server.lua.dist" --test-run
+    - ./char --with-config="config/char-server.lua.dist" --test-run
+    - ./zone --with-config="config/zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**
+  retry:
+    max: 2
+    when: always
+
+
+Debian-GCC-Servers:
+  timeout: 1h
+  stage: deploy
+  tags:
+    - Linux
+  needs: ["Debian-GCC-Servers-SAN"]
+  parallel:
+    matrix:
+      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/$BUILD_TYPE/config
+    - cp -r db build/bin/$BUILD_TYPE/db
+    - cp -r scripts build/bin/$BUILD_TYPE/scripts
+    - cd build/bin/$BUILD_TYPE
+    - ./auth --with-config="config/auth-server.lua.dist" --test-run
+    - ./char --with-config="config/char-server.lua.dist" --test-run
+    - ./zone --with-config="config/zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**
+  retry:
+    max: 2
+    when: always
+
+
+Debian-Clang-Tests-Tools-SAN:
+  timeout: 1h
+  stage: test
+  tags:
+    - Linux
+  parallel:
+    matrix:
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=true -DWITH_TOOLS=true -DWITHOUT_SERVERS=true -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/config
+    - cp -r db build/bin/db
+    - cp -r scripts build/bin/scripts
+    - |
+      files=$(find src/Tests -type f -iname "*Test.cpp")
+      for f in ${files[@]}; do
+        t=$(basename ${f::-4})
+        "build/bin/${t}"
+      done
+  artifacts:
+    paths:
+      - build/bin/**
+  retry:
+    max: 2
+    when: always
+
+Debian-Clang-Servers-SAN:
+  timeout: 1h
+  stage: build
+  tags:
+    - Linux
+  needs: ["Debian-Clang-Tests-Tools-SAN"]
+  parallel:
+    matrix:
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_ASAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_TSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Debug"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "Release"
+      - SANITIZER: "-DWITH_LSAN=true"
+        BUILD_TYPE: "RelWithDebInfo"
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR $SANITIZER
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/$BUILD_TYPE/config
+    - cp -r db build/bin/$BUILD_TYPE/db
+    - cp -r scripts build/bin/$BUILD_TYPE/scripts
+    - cd build/bin/$BUILD_TYPE
+    - ./auth --with-config="config/auth-server.lua.dist" --test-run
+    - ./char --with-config="config/char-server.lua.dist" --test-run
+    - ./zone --with-config="config/zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**
+  retry:
+    max: 2
+    when: always
+
+Debian-Clang-Servers:
+  timeout: 1h
+  stage: deploy
+  tags:
+    - Linux
+  needs: ["Debian-Clang-Servers-SAN"]
+  parallel:
+    matrix:
+      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
+  script:
+    - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR
+    - cmake --build build --parallel $LINUX_PARALLEL
+    - cmake --build build --target install
+    - cp -r config build/bin/$BUILD_TYPE/config
+    - cp -r db build/bin/$BUILD_TYPE/db
+    - cp -r scripts build/bin/$BUILD_TYPE/scripts
+    - cd build/bin/$BUILD_TYPE
+    - ./auth --with-config="config/auth-server.lua.dist" --test-run
+    - ./char --with-config="config/char-server.lua.dist" --test-run
+    - ./zone --with-config="config/zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**
+  retry:
+    max: 2
+    when: always
+
+Windows-Tests-Tools:
+  timeout: 1h
+  stage: test
+  resource_group: windows-servers
+  tags:
+    - Windows
+  parallel:
+    matrix:
+      - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
+  script:
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+    - cmake --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
+    - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
+    - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
+    - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
+    - |
+      $files = Get-ChildItem -Path "$CI_PROJECT_DIR/src/Tests" -Filter "*Test.cpp" -Recurse
+      foreach ($file in $files) {
+        $t = [System.IO.Path]::GetFileNameWithoutExtension($file.FullName)
+        & "$CI_PROJECT_DIR\build\bin\$BUILD_TYPE\$t"
+      }
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**/*
+    name: "Horizon Windows Tests ($BUILD_TYPE)"
+  retry:
+    max: 2
+    when: always
+
+Windows-Servers:
+  timeout: 1h
+  stage: deploy
+  resource_group: windows-servers
+  tags:
+    - Windows
+  needs: ["Windows-Tests-Tools"]
+  parallel:
+    matrix:
+      - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
+  script:
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+    - cmake --build build --parallel $WINDOWS_PARALLEL
+    - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
+    - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
+    - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
+    - cd $CI_PROJECT_DIR\build\bin\$BUILD_TYPE
+    - $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\auth.exe --with-config="$CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config\auth-server.lua.dist" --test-run
+    - $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\char.exe --with-config="$CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config\char-server.lua.dist" --test-run
+    - $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\zone.exe --with-config="$CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config\zone-server.lua.dist" --test-run
+  artifacts:
+    paths:
+      - build/bin/$BUILD_TYPE/**/*
+    name: "Horizon Windows Servers ($BUILD_TYPE)"
+  retry:
+    max: 2
+    when: always
