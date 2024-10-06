@@ -4,19 +4,20 @@ stages:
   - deploy
 
 variables:
-  MYSQL_PASSWORD: horizon
-  MYSQL_USERNAME: horizon
-  MYSQL_DATABASE: horizon
-  MYSQL_HOSTNAME: "15.235.163.198"
   LINUX_BOOST_ROOT: "/home/gitlab-runner/boost_1_85_0"
   LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
-  LINUX_PARALLEL: "12"
+  LINUX_PARALLEL: "8"
 
 Debian-GCC-Tests-Tools-SAN:
   timeout: 1h
   stage: test
-  tags: [ "Linux", "Debian"]
+  tags: 
+    - Linux
+  dependencies: []
+  resource_group:
+    key: debian
+    max_concurrent: 6  
   parallel:
     matrix:
       - SANITIZER: "-DWITH_ASAN=true"
@@ -63,6 +64,10 @@ Debian-GCC-Servers-SAN:
   tags:
     - Linux
   needs: ["Debian-GCC-Tests-Tools-SAN"]
+  dependencies: []
+  resource_group:
+    key: debian
+    max_concurrent: 6  
   parallel:
     matrix:
       - SANITIZER: "-DWITH_ASAN=true"
@@ -108,6 +113,10 @@ Debian-GCC-Servers:
   tags:
     - Linux
   needs: ["Debian-GCC-Servers-SAN"]
+  dependencies: []
+  resource_group:
+    key: debian
+    max_concurrent: 6  
   parallel:
     matrix:
       - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
@@ -135,6 +144,10 @@ Debian-Clang-Tests-Tools-SAN:
   stage: test
   tags:
     - Linux
+  dependencies: []
+  resource_group:
+    key: debian
+    max_concurrent: 6  
   parallel:
     matrix:
       - SANITIZER: "-DWITH_ASAN=true"
@@ -178,9 +191,13 @@ Debian-Clang-Tests-Tools-SAN:
 Debian-Clang-Servers-SAN:
   timeout: 1h
   stage: build
+  resource_group:
+    key: debian
+    max_concurrent: 6  
   tags:
     - Linux
   needs: ["Debian-Clang-Tests-Tools-SAN"]
+  dependencies: []
   parallel:
     matrix:
       - SANITIZER: "-DWITH_ASAN=true"
@@ -225,6 +242,10 @@ Debian-Clang-Servers:
   tags:
     - Linux
   needs: ["Debian-Clang-Servers-SAN"]
+  resource_group:
+    key: debian
+    max_concurrent: 6  
+  dependencies: []
   parallel:
     matrix:
       - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
@@ -249,7 +270,10 @@ Debian-Clang-Servers:
 Windows-Tests-Tools:
   timeout: 1h
   stage: test
-  resource_group: windows-servers
+  resource_group:
+    key: windows-servers
+    max_concurrent: 2
+  dependencies: []
   tags:
     - Windows
   parallel:
@@ -278,7 +302,10 @@ Windows-Tests-Tools:
 Windows-Servers:
   timeout: 1h
   stage: deploy
-  resource_group: windows-servers
+  resource_group:
+    key: windows-servers
+    max_concurrent: 2 
+  dependencies: []
   tags:
     - Windows
   needs: ["Windows-Tests-Tools"]
