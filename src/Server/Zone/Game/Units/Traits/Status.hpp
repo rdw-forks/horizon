@@ -170,6 +170,7 @@ public:
 	bool load(std::shared_ptr<Horizon::Zone::Units::Player> pl);
 
 	void on_equipment_changed(bool equipped, std::shared_ptr<const item_entry_data> item);
+	void on_job_changed(uint32_t job_id);
 
 	/**
 	 * Attributes

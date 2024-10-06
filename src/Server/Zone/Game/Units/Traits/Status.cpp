@@ -837,6 +837,18 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 	equip_matk()->on_equipment_changed();
 }
 
+void Status::on_job_changed(uint32_t job_id)
+{
+	base_appearance()->set(job_id);
+	max_hp()->compute();
+	max_sp()->compute();
+	next_base_experience()->compute();
+	next_job_experience()->compute();
+	attack_speed()->compute();
+	base_level()->compute();
+	job_level()->compute();
+}
+
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)
 {
 	uint32_t sp = 0;

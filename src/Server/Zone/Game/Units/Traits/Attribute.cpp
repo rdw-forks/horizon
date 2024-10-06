@@ -600,7 +600,10 @@ int32_t EquipMATK::compute()
 	if (lhw) add_base(lhw->config->magic_atk);
 	if (rhw) add_base(rhw->config->magic_atk);
 	
-	int variance = total() * rhw->config->level.weapon / 10;
+	int variance = 0;
+	
+	if (rhw) 
+		variance = total() * rhw->config->level.weapon / 10;
 
 	set_min(total() - variance);
 	set_max(total() + variance);

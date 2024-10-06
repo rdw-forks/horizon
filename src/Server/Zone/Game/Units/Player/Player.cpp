@@ -631,7 +631,7 @@ bool Player::job_change(int32_t job_id)
 	}
 
 	set_job_id(job_id);
-	status()->base_appearance()->set(job_id);
+	status()->on_job_changed(job_id);
 
 	return true;
 }
