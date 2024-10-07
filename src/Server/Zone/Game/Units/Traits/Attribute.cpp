@@ -444,7 +444,7 @@ int32_t MaxHP::compute()
 	else if ((job_mask & JMASK_BABY) != 0)
 		val = val * 70 / 100; //Baby classes get a 30% hp penalty
 
-	val += val * unit()->status()->vitality()->total() / 100; // +1% per each point of VIT
+	val += val * _vit->total() / 100; // +1% per each point of VIT
 
 	set_base(val);
 
