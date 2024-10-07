@@ -6,9 +6,9 @@ stages:
 variables:
   LINUX_BOOST_ROOT: "/home/gitlab-runner/boost_1_85_0"
   LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
-  WINDOWS_PARALLEL: "12"
-  LINUX_PARALLEL: "8"
-
+  WINDOWS_PARALLEL: "8"
+  LINUX_PARALLEL: "4"
+  
 Debian-GCC-Tests-Tools:
   timeout: 1h
   stage: test
