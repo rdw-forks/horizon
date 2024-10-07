@@ -7,7 +7,7 @@ variables:
   LINUX_BOOST_ROOT: "/home/gitlab-runner/boost_1_85_0"
   LINUX_BOOST_LIBRARYDIR: "/home/gitlab-runner/boost_1_85_0/stage/lib"
   WINDOWS_PARALLEL: "12"
-  LINUX_PARALLEL: "10"
+  LINUX_PARALLEL: "8"
 
 Debian-GCC-Tests-Tools-SAN:
   timeout: 1h
