@@ -247,8 +247,9 @@ variables:
 #     matrix:
 #       - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
 #   script:
-#     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+#     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/build/install/$BUILD_TYPE
 #     - cmake --build build --config $BUILD_TYPE --parallel $WINDOWS_PARALLEL
+#     - if (!(Test-Path -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE")) { New-Item -ItemType Directory -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE" }
 #     - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
 #     - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
 #     - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
@@ -273,8 +274,9 @@ Windows-Servers:
     matrix:
       - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
   script:
-    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+    - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/build/install/$BUILD_TYPE
     - cmake --build build --parallel $WINDOWS_PARALLEL
+    - if (!(Test-Path -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE")) { New-Item -ItemType Directory -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE" }
     - dir $CI_PROJECT_DIR/build/bin/$BUILD_TYPE
     - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
     - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
