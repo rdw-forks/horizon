@@ -104,7 +104,9 @@ Debian-GCC-Servers:
   dependencies: [] 
   parallel:
     matrix:
-      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
+      - BUILD_TYPE: "Debug"
+      - BUILD_TYPE: "Release"
+      - BUILD_TYPE: "RelWithDebInfo"
   script:
     - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR
     - cmake --build build --parallel $LINUX_PARALLEL
@@ -218,7 +220,9 @@ Debian-Clang-Servers:
   dependencies: []
   parallel:
     matrix:
-      - BUILD_TYPE: ["Debug", "Release", "RelWithDebInfo"]
+      - BUILD_TYPE: "Debug"
+      - BUILD_TYPE: "Release"
+      - BUILD_TYPE: "RelWithDebInfo"
   script:
     - cmake -Bbuild -H. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DWITH_TESTS=false -DWITH_TOOLS=false -DWITHOUT_SERVERS=false -DBOOST_ROOT=$LINUX_BOOST_ROOT -DBOOST_LIBRARYDIR=$LINUX_BOOST_LIBRARYDIR
     - cmake --build build --parallel $LINUX_PARALLEL
@@ -245,7 +249,9 @@ Windows-Tests-Tools:
     - Windows
   parallel:
     matrix:
-      - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
+      - BUILD_TYPE: "Debug"
+      - BUILD_TYPE: "Release"
+      - BUILD_TYPE: "RelWithDebInfo"
   script:
     - if (!(Test-Path -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE")) { New-Item -ItemType Directory -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE" }
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWITHOUT_SERVERS=1 -DWITH_TESTS=1 -DWITH_TOOLS=1 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/build/install/$BUILD_TYPE
@@ -272,7 +278,9 @@ Windows-Servers:
   needs: ["Windows-Tests-Tools"]
   parallel:
     matrix:
-      - BUILD_TYPE: ["Debug", "RelWithDebInfo", "Release"]
+      - BUILD_TYPE: "Debug"
+      - BUILD_TYPE: "Release"
+      - BUILD_TYPE: "RelWithDebInfo"
   script:
     - if (!(Test-Path -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE")) { New-Item -ItemType Directory -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE" }
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/build/install/$BUILD_TYPE
