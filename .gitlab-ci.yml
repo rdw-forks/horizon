@@ -282,6 +282,7 @@ Windows-Servers:
       - BUILD_TYPE: "Release"
       - BUILD_TYPE: "RelWithDebInfo"
   script:
+    - echo "Building with configuration: $BUILD_TYPE"
     - if (!(Test-Path -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE")) { New-Item -ItemType Directory -Path "$CI_PROJECT_DIR/build/bin/$BUILD_TYPE" }
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX=$CI_PROJECT_DIR/build/install/$BUILD_TYPE
     - cmake --build build --parallel $WINDOWS_PARALLEL
