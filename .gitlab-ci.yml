@@ -275,10 +275,13 @@ Windows-Servers:
   script:
     - cmake -B build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
     - cmake --build build --parallel $WINDOWS_PARALLEL
+    - dir $CI_PROJECT_DIR/build/bin/$BUILD_TYPE
     - Xcopy /E /I $CI_PROJECT_DIR\config $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\config
     - Xcopy /E /I $CI_PROJECT_DIR\db $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\db
     - Xcopy /E /I $CI_PROJECT_DIR\scripts $CI_PROJECT_DIR\build\bin\$BUILD_TYPE\scripts
+    - dir $CI_PROJECT_DIR/build/bin/$BUILD_TYPE
     - cd $CI_PROJECT_DIR/build/bin/$BUILD_TYPE
+    - dir
     - ./auth.exe --with-config="config\auth-server.lua.dist" --test-run
     - ./char.exe --with-config="config\char-server.lua.dist" --test-run
     - ./zone.exe --with-config="config\zone-server.lua.dist" --test-run
