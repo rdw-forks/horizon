@@ -134,7 +134,6 @@ Debian-GCC-Servers:
   stage: deploy
   tags:
     - Linux
-  needs: ["Debian-GCC-Servers-SAN"]
   dependencies: [] 
   parallel:
     matrix:
@@ -284,7 +283,6 @@ Debian-Clang-Servers:
   stage: deploy
   tags:
     - Linux
-  needs: ["Debian-Clang-Servers-SAN"] 
   dependencies: []
   parallel:
     matrix:
