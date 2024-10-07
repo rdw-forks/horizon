@@ -11,18 +11,9 @@
  *
  * Base Author - Sagun Khosla. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "ZoneClientInterface.hpp"
@@ -30,6 +21,7 @@
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Units/Battle/Combat.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Storage.hpp"
@@ -133,7 +125,18 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
 	}
 
-	get_session()->player()->initialize();
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager());
+	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> w_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask>(s_task);
+	s_task->get_runtime_synchronization_mutex().lock();
+	s_task->set_session(get_session());
+	w_task->set_task([](std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK::GenericTask> task) {
+		std::shared_ptr<ZoneSession> session = std::dynamic_pointer_cast<Horizon::Zone::ActiveRuntimeScenario>(task->get_runtime_context())->get_session();
+		session->player()->initialize();
+	});
+	s_task->get_runtime_synchronization_mutex().unlock();
+	s_task->push(w_task);
+	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager().push(s_task);
+
 	return true;
 }
 
@@ -152,6 +155,7 @@ bool ZoneClientInterface::restart(uint8_t type)
 		switch (type) {
 			case 0:
 				task->get_message_agent().set_status_message("Character (GUID:" + std::to_string(session->player()->guid()) + ") is being respawned.");
+				session->player()->respawn(0, 0);
 				break;
 			default:
 				task->get_message_agent().set_status_message("Character (GUID:" + std::to_string(session->player()->guid()) + ") has moved to the character server.");
@@ -166,6 +170,12 @@ bool ZoneClientInterface::restart(uint8_t type)
 	return true;
 }
 
+bool ZoneClientInterface::notify_resurrection(int32_t guid, int type)
+{
+	ZC_RESURRECTION pkt(get_session());
+	pkt.deliver(guid, type);
+	return true;
+}
 /**
  * Character
  */
@@ -260,7 +270,6 @@ bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t di
 
 	sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_system_routine_manager().push(s_task);
 
-
 	return true;
 }
 bool ZoneClientInterface::notify_time()
@@ -269,7 +278,6 @@ bool ZoneClientInterface::notify_time()
 	pkt.deliver();
 	return true;
 }
-
 
 bool ZoneClientInterface::notify_unit_name(uint32_t guid)
 {
@@ -381,10 +389,10 @@ unit_viewport_entry ZoneClientInterface::create_viewport_entry(std::shared_ptr<U
 	
 	return entry;
 }
-bool ZoneClientInterface::notify_player_movement(MapCoords from, MapCoords to)
+bool ZoneClientInterface::notify_player_movement(int32_t time, MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_PLAYERMOVE pkt(get_session());
-	pkt.deliver(from.x(), from.y(), to.x(), to.y());
+	pkt.deliver(time, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
 bool ZoneClientInterface::notify_movement_stop(int32_t guid, int16_t x, int16_t y)
@@ -421,10 +429,10 @@ bool ZoneClientInterface::notify_viewport_item_entry(item_viewport_entry entry)
 	pkt.deliver(entry);
 	return true;
 }
-bool ZoneClientInterface::notify_unit_move(int32_t guid, MapCoords from, MapCoords to)
+bool ZoneClientInterface::notify_unit_move(int32_t guid, int32_t time, MapCoords from, MapCoords to)
 {
 	ZC_NOTIFY_MOVE pkt(get_session());
-	pkt.deliver(guid, from.x(), from.y(), to.x(), to.y());
+	pkt.deliver(guid, time, from.x(), from.y(), to.x(), to.y());
 	return true;
 }
 bool ZoneClientInterface::notify_viewport_remove_unit(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)
@@ -1584,4 +1592,15 @@ void ZoneClientInterface::cash_point_purchase(int kafra_points, std::vector<cz_p
 void ZoneClientInterface::private_airship_request(std::string map_name, int item_id)
 {
 
+}
+
+bool ZoneClientInterface::notify_recovery(zc_notify_recovery_type type, int amount)
+{
+#if PACKET_VERSION < 20150513
+	ZC_RECOVERY pkt(get_session());
+#else 
+	ZC_RECOVERY2 pkt(get_session());
+#endif
+	pkt.deliver(type, amount);
+	return true;
 }

@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_UNIT_HPP
@@ -129,7 +120,7 @@ protected:
 	void walk();
 	
 	virtual void on_pathfinding_failure() = 0;
-	virtual void on_movement_begin() = 0;
+	virtual void on_movement_begin(int32_t time) = 0;
 	virtual void on_movement_step() = 0;
 	virtual void on_movement_end() = 0;
 
@@ -255,6 +246,12 @@ public:
 
 	std::shared_ptr<CombatRegistry> combat_registry() { return _combat_registry; }
 
+	/**
+	 * Walk Delay
+	 */
+	bool has_damage_walk_delay() { return _damage_walk_delay; }
+	void set_damage_walk_delay(bool delay) { _damage_walk_delay = delay; }
+
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false}, _is_finalized{ false };
 	bool _is_attacking{false};
@@ -285,6 +282,9 @@ private:
 	// Combat data
 	std::shared_ptr<Combat> _combat;
     std::shared_ptr<CombatRegistry> _combat_registry;
+
+	// Damage Walk Delay
+	bool _damage_walk_delay{false};
 };
 }
 }

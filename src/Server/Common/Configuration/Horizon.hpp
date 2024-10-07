@@ -12,18 +12,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_HORIZON_HPP
@@ -46,7 +37,8 @@
 #define PACKET_VERSION 20190530
 
 #define MAX_LEVEL 175
-#define MAX_STATUS_POINTS 130
+#define MAX_STATUS_POINTS 400
+#define MAX_ATTACK_SPEED 199
 
 /* Maximum Character Slots (in multiples of 3) */
 #define MAX_CHARACTER_SLOTS 9
@@ -74,5 +66,19 @@ static_assert(MAX_CORE_UPDATE_INTERVAL >= 1,
             "MAX_CORE_UPDATE_INTERVAL should be greater than or equal to 500 microseconds (µs).");
 
 #include "Client.hpp"
+
+struct s_min_max
+{
+	s_min_max(int min, int max) : min(min), max(max) {}
+
+	void set_min(int min) { this->min = min; }
+	void set_max(int max) { this->max = max; }
+	
+	int get_min() { return min; }
+	int get_max() { return max; }
+
+	int min;
+	int max;
+};
 
 #endif //HORIZON_HORIZON_HPP

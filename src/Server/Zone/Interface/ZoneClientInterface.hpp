@@ -11,18 +11,9 @@
  *
  * Base Author - Sagun Khosla. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONECLIENTINTERFACE_HPP
@@ -101,9 +92,9 @@ public:
 	void view_equipment(int account_id);
 
 	/* Movement & Viewport*/
-	bool notify_player_movement(MapCoords from, MapCoords to);
+	bool notify_player_movement(int32_t time, MapCoords from, MapCoords to);
 	bool notify_movement_stop(int32_t guid, int16_t x, int16_t y);
-	bool notify_unit_move(int32_t guid, MapCoords from, MapCoords to);
+	bool notify_unit_move(int32_t guid, int32_t time, MapCoords from, MapCoords to);
 
 	item_viewport_entry create_viewport_item_entry(std::shared_ptr<Units::Item> item);
 	unit_viewport_entry create_viewport_entry(std::shared_ptr<Unit> unit);
@@ -349,6 +340,11 @@ public:
 	 */
 	void private_airship_request(std::string map_name, int item_id);
   
+	/*
+	 * 
+	 */
+	bool notify_resurrection(int32_t guid, int type);
+	bool notify_recovery(zc_notify_recovery_type type, int amount);
 protected:
 	uint32_t _npc_contact_guid{0};
 	UI::Chatroom _chat_room;

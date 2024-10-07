@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Mob.hpp"
@@ -32,8 +23,9 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
 #include "Server/Zone/Game/Units/Mob/Mob.hpp"
+#include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
-
+#include "Server/Zone/Definitions/UnitDefinitions.hpp"
 using namespace Horizon::Zone::Units;
 
 Mob::Mob(uint64_t uuid, unit_type type, unit_type_mask type_mask, std::shared_ptr<Map> map, MapCoords mcoords)
@@ -75,4 +67,8 @@ void Mob::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
 void Mob::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
 	Unit::on_killed(killer, with_drops, with_exp);
+
+	if (killer->type() == UNIT_PLAYER) {
+		killer->downcast<Player>()->remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
+	}
 }

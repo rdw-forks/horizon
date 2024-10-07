@@ -11,18 +11,9 @@
  *
  * Base Author - Sephus. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_TRANSMITTED_PACKETS_HPP
@@ -33314,7 +33305,7 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_MOVE() {}
 
-	void deliver(int32_t guid, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
+	void deliver(int32_t guid, int32_t time, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
 	ByteBuffer &serialize();
 
 /* Structure */
@@ -34360,7 +34351,7 @@ public:
 	{}
 	virtual ~ZC_NOTIFY_PLAYERMOVE() {}
 
-	void deliver(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
+	void deliver(int32_t time, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
 	ByteBuffer &serialize();
 
 /* Structure */
@@ -37658,7 +37649,7 @@ public:
 	{}
 	virtual ~ZC_PAR_CHANGE() {}
 
-	void deliver(status_point_type type, int16_t value);
+	void deliver(status_point_type type, int32_t value);
 	ByteBuffer &serialize();
 
 /* Structure */
@@ -39574,10 +39565,12 @@ public:
 	{}
 	virtual ~ZC_RECOVERY() {}
 
-	void deliver();
+	void deliver(int16_t type, int16_t amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _type{0};
+	int16_t _amount{0};
 };
 
 enum {
@@ -39614,10 +39607,12 @@ public:
 	{}
 	virtual ~ZC_RECOVERY2() {}
 
-	void deliver();
+	void deliver(int16_t type, int32_t amount);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int16_t _type{0};
+	int32_t _amount{0};
 };
 
 enum {
@@ -41365,10 +41360,12 @@ public:
 	{}
 	virtual ~ZC_RESURRECTION() {}
 
-	void deliver();
+	void deliver(int32_t guid, int16_t type);
 	ByteBuffer &serialize();
 
 /* Structure */
+	int32_t _guid{0};
+	int16_t _type{0};
 };
 
 enum {

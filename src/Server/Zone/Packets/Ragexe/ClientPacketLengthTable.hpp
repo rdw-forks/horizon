@@ -11,18 +11,9 @@
  *
  * Base Author - Sephus. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_CLIENT_PACKET_LENGTH_TABLE
@@ -11146,6 +11137,7 @@ public:
 		ADD_TPKT(0x0a0a, 57, ZC_ADD_ITEM_TO_STORE3);
 		ADD_TPKT(0x0add, 24, ZC_ITEM_FALL_ENTRY);
 		ADD_TPKT(0x009d, 19, ZC_ITEM_ENTRY);
+		ADD_TPKT(0x0a27, 8, ZC_RECOVERY2);
 #endif
 // Packet Version 20190109: 1 Packets
 #if PACKET_VERSION == 20190109

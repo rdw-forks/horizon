@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_TRAITS_ATTRIBUTESIMPL_HPP
@@ -45,11 +36,13 @@ class Unit;
 class Player;
 namespace Traits
 {
+	class Intelligence;
 	class StatusATK;
 	class EquipATK;
 	class StatusMATK;
 	class SoftDEF;
 	class SoftMDEF;
+	class HardMDEF;
 	class HIT;
 	class CRIT;
 	class FLEE;
@@ -75,36 +68,79 @@ namespace Traits
 	class AttackMotion;
 	class AttackDelay;
 	class DamageMotion;
+	class SoftDEF;
+	class HardDEF;
+	class BaseAttack;
+	class HPRegeneration;
+	class SPRegeneration;
+	class MaxHP;
+	class MaxSP;
 
 	class BaseLevel
 	: public Attribute,
-	  public ObservableStatus<BaseLevel *, StatusPoint *, NextBaseExperience *, StatusATK *, StatusMATK *, SoftMDEF *, HIT *, FLEE *, AttackSpeed *>
+	  public ObservableStatus<BaseLevel *, StatusPoint *, MaxHP *, MaxSP*, NextBaseExperience *, StatusATK *, StatusMATK *, SoftDEF *, SoftMDEF *, HIT *, FLEE *, AttackSpeed *, BaseAttack *>
 	{
 	public:
 		BaseLevel(std::weak_ptr<Unit> unit, int32_t base = 0)
 		: Attribute(unit, STATUS_BASELEVEL, base, 0, 0),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~BaseLevel() { };
 
 		void on_observable_changed(BaseExperience *wbexp);
 		void notify();
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -122,43 +158,211 @@ namespace Traits
 
 		void on_observable_changed(JobExperience *wjexp);
 		
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
 
 	class MaxHP
-	: public Attribute
+	: public Attribute,
+	  public ObservableStatus<MaxHP *, HPRegeneration *>
 	{
 	public:
 		MaxHP(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(unit, STATUS_MAXHP, base, equip, status)
+		: Attribute(unit, STATUS_MAXHP, base, equip, status),
+		  ObservableStatus(nullptr)
 		{ }
 		~MaxHP() { };
+
+		void on_observable_changed(BaseLevel *blvl) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+
+		void set_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
+			this->notify_observers();
+		}
+	private:
+		BaseLevel *_blvl;
 	};
 
 	class MaxSP
-	: public Attribute
+	: public Attribute,
+	  public ObservableStatus<MaxSP *, SPRegeneration *>
 	{
 	public:
 		MaxSP(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
-		: Attribute(unit, STATUS_MAXSP, base, equip, status)
+		: Attribute(unit, STATUS_MAXSP, base, equip, status),
+		  ObservableStatus(nullptr)
 		{ }
 		~MaxSP() { };
+
+		void on_observable_changed(BaseLevel *blvl) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Intelligence *int_) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_intelligence(Intelligence *int_) { _int = int_; }
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+
+		void set_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
+			this->notify_observers();
+		}
+	
+	private:
+		Intelligence *_int;
+		BaseLevel *_blvl;
 	};
 
 	class CurrentHP
@@ -206,115 +410,403 @@ namespace Traits
 		{ }
 		~SkillPoint() { };
 
-		virtual void set_base(int32_t val) override;
+		virtual void set_base(int32_t val, bool notify_client = true) override;
 		
 		void on_observable_changed(JobLevel *wjlvl);
 	};
 
 	class Strength
 	: public Attribute,
-	  public ObservableStatus<Strength *, StrengthPointCost *, MaxWeight *, StatusATK *, EquipATK *>
+	  public ObservableStatus<Strength *, StrengthPointCost *, MaxWeight *, StatusATK *, EquipATK *, BaseAttack *>
 	{
 	public:
 		Strength(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_STRENGTH, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Strength() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
 
 	class Agility
 	: public Attribute,
-	  public ObservableStatus<Agility *, AgilityPointCost *, FLEE *, AttackSpeed *>
+	  public ObservableStatus<Agility *, AgilityPointCost *, FLEE *, AttackSpeed *, SoftDEF *>
 	{
 	public:
 		Agility(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_AGILITY, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Agility() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
 
 	class Vitality
 	: public Attribute,
-	  public ObservableStatus<Vitality *, VitalityPointCost *, SoftDEF *, SoftMDEF *>
+	  public ObservableStatus<Vitality *, VitalityPointCost *, SoftDEF *, SoftMDEF *, HPRegeneration *>
 	{
 	public:
 		Vitality(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_VITALITY, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Vitality() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
 
 	class Intelligence
 	: public Attribute,
-	  public ObservableStatus<Intelligence *, IntelligencePointCost *, StatusMATK *, SoftMDEF *>
+	  public ObservableStatus<Intelligence *, IntelligencePointCost *, MaxSP *, StatusMATK *, SoftMDEF *, SPRegeneration *>
 	{
 	public:
 		Intelligence(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_INTELLIGENCE, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Intelligence() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
 
 	class Dexterity
 	: public Attribute,
-	  public ObservableStatus<Dexterity *, DexterityPointCost *, StatusATK *, EquipATK *, StatusMATK *, SoftMDEF *, HIT *, AttackSpeed *>
+	  public ObservableStatus<Dexterity *, DexterityPointCost *, StatusATK *, EquipATK *, StatusMATK *, SoftMDEF *, HIT *, AttackSpeed *, BaseAttack *>
 	{
 	public:
 		Dexterity(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_DEXTERITY, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Dexterity() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
 
 	class Luck
 	: public Attribute,
-	  public ObservableStatus<Luck *, LuckPointCost *, StatusATK *, StatusMATK *, HIT *, CRIT *, FLEE *>
+	  public ObservableStatus<Luck *, LuckPointCost *, StatusATK *, StatusMATK *, HIT *, CRIT *, FLEE *, BaseAttack *>
 	{
 	public:
 		Luck(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_LUCK, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Luck() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -402,21 +894,57 @@ namespace Traits
 		{ }
 		~BaseExperience() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -432,21 +960,57 @@ namespace Traits
 		{ }
 		~JobExperience() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_equip(int32_t val) override
+
+		void add_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_equip(val);
+			Attribute::add_base(val, notify_client);
 			this->notify_observers();
 		}
-		
-		void set_status(int32_t val) override
+
+		void sub_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_status(val);
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
 			this->notify_observers();
 		}
 	};
@@ -460,9 +1024,9 @@ namespace Traits
 		{ }
 		~Zeny() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -475,9 +1039,9 @@ namespace Traits
 		{ }
 		~Honor() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -490,9 +1054,9 @@ namespace Traits
 		{ }
 		~Manner() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -505,9 +1069,9 @@ namespace Traits
 		{ }
 		~Virtue() { };
 
-		void set_base(int32_t val) override
+		void set_base(int32_t val, bool notify_client = true) override
 		{
-			Attribute::set_base(val);
+			Attribute::set_base(val, notify_client);
 		}
 	};
 
@@ -542,9 +1106,8 @@ namespace Traits
 		MaxWeight(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_MAX_WEIGHT, base, equip, status)
 		{ }
-		~MaxWeight() { };
 
-		void on_observable_changed(Strength *wstr) { compute(); }
+		void on_observable_changed(Strength *wstr) { if (!is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -563,7 +1126,7 @@ namespace Traits
 		{ }
 		~MovementSpeed() { }
 
-		virtual void set_base(int32_t val) override;
+		virtual void set_base(int32_t val, bool notify_client = true) override;
 
 		int32_t get_with_cost(int cost) { return (total() * cost) / 10; };
 	};
@@ -579,20 +1142,18 @@ namespace Traits
 	};
 
 	class StatusATK
-	: public Attribute,
-	  public ObservableStatus<StatusATK *, Strength *, Dexterity *, Luck *, BaseLevel *>
+	: public Attribute
 	{
 	public:
 		StatusATK(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_STATUS_ATK),
-		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		: Attribute(unit, STATUS_STATUS_ATK)
 		{ }
 		~StatusATK() { }
 
-		void on_observable_changed(Strength *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Strength *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -600,7 +1161,7 @@ namespace Traits
 		void set_strength(Strength *str) { _str = str; }
 		void set_dexterity(Dexterity *dex) { _dex = dex; }
 		void set_luck(Luck *luk) { _luk = luk; }
-		void set_weapon_type(item_weapon_type type) { _weapon_type = type; compute(); }
+		void set_weapon_type(item_weapon_type type) { _weapon_type = type; if (is_compute_ready()) compute(); }
 
 	private:
 		BaseLevel *_blvl{nullptr};
@@ -611,19 +1172,17 @@ namespace Traits
 	};
 
 	class EquipATK
-	: public Attribute,
-	  public ObservableStatus<EquipATK *, Strength *, Dexterity *>
+	: public Attribute
 	{
 	public:
 		EquipATK(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_EQUIP_ATK),
-		ObservableStatus(nullptr, nullptr)
+		: Attribute(unit, STATUS_EQUIP_ATK)
 		{ }
 		~EquipATK() { }
 
-		void on_observable_changed(Strength *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_weapon_changed() { compute(); }
+		void on_observable_changed(Strength *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_weapon_changed() { if (is_compute_ready()) compute(); }
 
 		void set_strength(Strength *str) { _str = str; }
 		void set_dexterity(Dexterity *dex) { _dex = dex; }
@@ -645,21 +1204,34 @@ namespace Traits
 		int32_t _rhw_overupgrade{0};
 	};
 
-	class StatusMATK
+	class EquipMATK
 	: public Attribute,
-	  public ObservableStatus<StatusMATK *, Intelligence *, Dexterity *, Luck *, BaseLevel *>
+	  public AttributeVariance
+	{
+	public:
+		EquipMATK(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_EQUIP_MATK)
+		{ }
+		~EquipMATK() { }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+	};
+
+	class StatusMATK
+	: public Attribute
 	{
 	public:
 		StatusMATK(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_STATUS_MATK),
-		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		: Attribute(unit, STATUS_STATUS_MATK)
 		{ }
 		~StatusMATK() { }
 
-		void on_observable_changed(Intelligence *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Intelligence *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -675,42 +1247,58 @@ namespace Traits
 		Luck *_luk{nullptr};
 	};
 
+	// def1
 	class SoftDEF
-	: public Attribute,
-	  public ObservableStatus<SoftDEF *, Vitality *>
+	: public Attribute
 	{
 	public:
 		SoftDEF(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_SOFT_DEF),
-		ObservableStatus(nullptr)
+		: Attribute(unit, STATUS_SOFT_DEF)
 		{ }
-		~SoftDEF() { }
 
-		void on_observable_changed(Vitality *) { compute(); }
+		void on_observable_changed(Vitality *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
 		void set_vitality(Vitality *vit) { _vit = vit; }
+		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+		void set_agility(Agility *agi) { _agi = agi; }
 
 	private:
 		Vitality *_vit{nullptr};
+		BaseLevel *_blvl{nullptr};
+		Agility *_agi{nullptr};
 	};
 
+	class HardDEF
+	: public Attribute
+	{
+	public:
+		HardDEF(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
+		: Attribute(unit, STATUS_HARD_DEF, base, equip, status)
+		{ }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+	};
+
+
 	class SoftMDEF
-	: public Attribute,
-	  public ObservableStatus<SoftMDEF *, Intelligence *, Dexterity *, Vitality *, BaseLevel *>
+	: public Attribute
 	{
 	public:
 		SoftMDEF(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_SOFT_MDEF),
-		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		: Attribute(unit, STATUS_SOFT_MDEF)
 		{ }
 		~SoftMDEF() { }
 
-		void on_observable_changed(Intelligence *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Vitality *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Intelligence *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Vitality *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -726,20 +1314,31 @@ namespace Traits
 		Vitality *_vit{nullptr};
 	};
 
+	class HardMDEF
+	: public Attribute
+	{
+	public:
+		HardMDEF(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
+		: Attribute(unit, STATUS_HARD_MDEF, base, equip, status)
+		{ }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+	};
+
 	class HIT
-	: public Attribute,
-	  public ObservableStatus<HIT *, Dexterity *, Luck *, BaseLevel *>
+	: public Attribute
 	{
 	public:
 		HIT(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_HIT),
-		ObservableStatus(nullptr, nullptr, nullptr)
+		: Attribute(unit, STATUS_HIT)
 		{ }
 		~HIT() { }
 
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -754,17 +1353,15 @@ namespace Traits
 	};
 
 	class CRIT
-	: public Attribute,
-	  public ObservableStatus<CRIT *, Luck *>
+	: public Attribute
 	{
 	public:
 		CRIT(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_CRITICAL),
-		ObservableStatus(nullptr)
+		: Attribute(unit, STATUS_CRITICAL)
 		{ }
 		~CRIT() { }
 
-		void on_observable_changed(Luck *) { compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -775,19 +1372,17 @@ namespace Traits
 	};
 
 	class FLEE
-	: public Attribute,
-	  public ObservableStatus<FLEE *, Agility *, BaseLevel *, Luck *>
+	: public Attribute
 	{
 	public:
 		FLEE(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_FLEE),
-		ObservableStatus(nullptr, nullptr, nullptr)
+		: Attribute(unit, STATUS_FLEE)
 		{ }
 		~FLEE() { }
 
-		void on_observable_changed(Agility *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -800,28 +1395,126 @@ namespace Traits
 		BaseLevel *_blvl{nullptr};
 		Luck *_luk{nullptr};
 	};
+	
+	class HPRegeneration
+	: public Attribute
+	{
+	public:
+		HPRegeneration(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_HP_REGEN)
+		{ }
+		~HPRegeneration() { }
+
+		void on_observable_changed(Vitality *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MaxHP *) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_vitality(Vitality *vit) { _vit = vit; }
+		void set_max_hp(MaxHP *mhp) { _max_hp = mhp; }
+
+	private:
+		Vitality *_vit{nullptr};
+		MaxHP *_max_hp{nullptr};
+	};
+
+	class SPRegeneration
+	: public Attribute
+	{
+	public:
+		SPRegeneration(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_SP_REGEN)
+		{ }
+		~SPRegeneration() { }
+
+		void on_observable_changed(Intelligence *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MaxSP *) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_intelligence(Intelligence *int_) { _int = int_; }
+		void set_max_sp(MaxSP *msp) { _max_sp = msp; }
+
+	private:
+		Intelligence *_int{nullptr};
+		MaxSP *_max_sp{nullptr};
+	};
 
 	class AttackSpeed
 	: public Attribute,
-	  public ObservableStatus<AttackSpeed *, Agility *, Dexterity *, BaseLevel *>
+	  public ObservableStatus<AttackSpeed *, AttackDelay *>
 	{
 	public:
 		AttackSpeed(std::weak_ptr<Unit> unit)
 		: Attribute(unit, STATUS_ASPD),
-		ObservableStatus(nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr)
 		{ }
 		~AttackSpeed() { }
 
-		void on_observable_changed(Agility *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
-		void on_equipment_changed() { compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
 		void set_agility(Agility *agi) { _agi = agi; }
 		void set_dexterity(Dexterity *dex) { _dex = dex; }
 		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+
+		void set_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
+			this->notify_observers();
+		}
 
 	private:
 		Agility *_agi{nullptr};
@@ -838,72 +1531,40 @@ namespace Traits
 		{ }
 		~AttackRange() { }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
-	};
-
-	class AttackMotion
-	: public Attribute,
-	  public ObservableStatus<AttackMotion *, AttackSpeed *, Agility *>
-	{
-	public:
-		AttackMotion(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_AMOTION),
-		ObservableStatus(nullptr, nullptr)
-		{ }
-		~AttackMotion() { }
-
-		void on_observable_changed(AttackSpeed *) { compute(); }
-		void on_observable_changed(Agility *) { compute(); }
-
-		int32_t compute();
-
-		void on_equipment_changed() { compute(); }
-
-		void set_attack_speed(AttackSpeed *aspd) { _attack_speed = aspd; }
-		void set_agility(Agility *agi) { _agi = agi; }
-
-	private:
-		Agility *_agi{nullptr};
-		AttackSpeed *_attack_speed{nullptr};
 	};
 
 	class AttackDelay
-	: public Attribute,
-	  public ObservableStatus<AttackDelay *, AttackMotion *>
+	: public Attribute
 	{
 	public:
 		AttackDelay(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_ADELAY),
-		ObservableStatus(nullptr)
+		: Attribute(unit, STATUS_ADELAY)
 		{ }
 		~AttackDelay() { }
 
-		void on_observable_changed(AttackMotion *) { compute(); }
-		void on_equipment_changed() { compute(); }
+		void on_observable_changed(AttackSpeed *) { if (is_compute_ready()) compute(); }
 		
 		int32_t compute();
 
-		void set_attack_motion(AttackMotion *amotion) { _attack_motion = amotion; }
+		void set_attack_speed(AttackSpeed *aspd) { _aspd = aspd; }
 
 	private:
-		AttackMotion *_attack_motion{nullptr};
+		AttackSpeed *_aspd{nullptr};
 	};
 
-	class DamageMotion
-	: public Attribute,
-	  public ObservableStatus<DamageMotion *, Agility *>
+	class DamageWalkDelay
+	: public Attribute
 	{
 	public:
-		DamageMotion(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_DMOTION),
-		ObservableStatus(nullptr)
+		DamageWalkDelay(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_DMOTION)
 		{ }
-		~DamageMotion() { }
+		~DamageWalkDelay() { }
 
-		void on_observable_changed(Agility *) { compute(); }
-		void on_equipment_changed() { compute(); }
+		void on_observable_changed(Agility *) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -914,22 +1575,20 @@ namespace Traits
 	};
 
 	class BaseAttack
-	: public Attribute,
-	  public ObservableStatus<BaseAttack *, Strength *, Dexterity *, Luck *, BaseLevel *>
+	: public Attribute
 	{
 	public:
 		BaseAttack(std::weak_ptr<Unit> unit)
-		: Attribute(unit, STATUS_BASE_ATK),
-		ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		: Attribute(unit, STATUS_BASE_ATK)
 		{ }
 		~BaseAttack() { }
 
-		void on_observable_changed(Strength *) { compute(); }
-		void on_observable_changed(Dexterity *) { compute(); }
-		void on_observable_changed(Luck *) { compute(); }
-		void on_observable_changed(BaseLevel *) { compute(); }
+		void on_observable_changed(Strength *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Dexterity *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Luck *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel *) { if (is_compute_ready()) compute(); }
 
-		void on_equipment_changed() { compute(); }
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
@@ -943,6 +1602,168 @@ namespace Traits
 		Dexterity *_dex{nullptr};
 		Luck *_luk{nullptr};
 		BaseLevel *_blvl{nullptr};
+	};
+
+	class WeaponAttackCombined;
+
+	class WeaponAttackLeft
+	: public Attribute,
+	  public ObservableStatus<WeaponAttackLeft *, WeaponAttackCombined *>
+	{
+	public:
+		WeaponAttackLeft(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_WATK_LEFT),
+		ObservableStatus(nullptr)
+		{ }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
+			this->notify_observers();
+		}
+	};
+
+	class WeaponAttackRight
+	: public Attribute,
+	  public ObservableStatus<WeaponAttackRight *, WeaponAttackCombined *>
+	{
+	public:
+		WeaponAttackRight(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_WATK_RIGHT),
+		ObservableStatus(nullptr)
+		{ }
+
+		void on_equipment_changed() { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_base(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_base(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_equip(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_equip(val, notify_client);
+			this->notify_observers();
+		}
+
+		void set_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::set_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void add_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::add_status(val, notify_client);
+			this->notify_observers();
+		}
+
+		void sub_status(int32_t val, bool notify_client = true) override
+		{
+			Attribute::sub_status(val, notify_client);
+			this->notify_observers();
+		}
+	};
+
+	class WeaponAttackCombined
+	: public Attribute
+	{
+	public:
+		WeaponAttackCombined(std::weak_ptr<Unit> unit)
+		: Attribute(unit, STATUS_WATK_COMBINED)
+		{ }
+		~WeaponAttackCombined() { }
+
+		void on_observable_changed(WeaponAttackLeft *) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(WeaponAttackRight *) { if (is_compute_ready()) compute(); }
+
+		int32_t compute();
+
+		void set_weapon_attack_left(WeaponAttackLeft *watk) { _watk_left = watk; }
+		void set_weapon_attack_right(WeaponAttackRight *watk) { _watk_right = watk; }
+
+	private:
+		WeaponAttackLeft *_watk_left{nullptr};
+		WeaponAttackRight *_watk_right{nullptr};
 	};
 
 	class UnitSize
@@ -967,20 +1788,18 @@ namespace Traits
 
 	class MobAttackDamage
 		: public Attribute,
-		public ObservableStatus<MobAttackDamage*, Strength*, BaseLevel*, MobWeaponAttack*>,
 		public AttributeVariance
 	{
 	public:
 		MobAttackDamage(std::weak_ptr<Unit> unit)
 			: Attribute(unit, STATUS_CREATE_ATTACK_DAMAGE),
-			ObservableStatus(nullptr, nullptr, nullptr),
 			AttributeVariance()
 		{ }
 		~MobAttackDamage() { }
 
-		void on_observable_changed(Strength*) { compute(); }
-		void on_observable_changed(BaseLevel*) { compute(); }
-		void on_observable_changed(MobWeaponAttack*) { compute(); }
+		void on_observable_changed(Strength*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MobWeaponAttack*) { if (is_compute_ready()) compute(); }
 
 		void set_strength(Strength* str) { _str = str; }
 		void set_base_level(BaseLevel* blvl) { _blvl = blvl; }
@@ -996,20 +1815,18 @@ namespace Traits
 
 	class MobMagicAttackDamage
 		: public Attribute,
-		public ObservableStatus<MobMagicAttackDamage*, Intelligence*, BaseLevel*, MobWeaponAttack*>,
 		public AttributeVariance
 	{
 	public:
 		MobMagicAttackDamage(std::weak_ptr<Unit> unit)
 			: Attribute(unit, STATUS_MOB_MAGIC_ATTACK_DAMAGE),
-			ObservableStatus(nullptr, nullptr, nullptr),
 			AttributeVariance()
 		{ }
 		~MobMagicAttackDamage() { }
 
-		void on_observable_changed(Intelligence*) { compute(); }
-		void on_observable_changed(BaseLevel*) { compute(); }
-		void on_observable_changed(MobWeaponAttack*) { compute(); }
+		void on_observable_changed(Intelligence*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(BaseLevel*) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(MobWeaponAttack*) { if (is_compute_ready()) compute(); }
 
 		void set_intelligence(Intelligence* _intelligence) { _int = _intelligence; }
 		void set_base_level(BaseLevel* blvl) { _blvl = blvl; }

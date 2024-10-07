@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_TRAITS_OBSERVABLESTATUS_HPP
@@ -50,8 +41,9 @@ public:
 	template<std::size_t I = 0, typename... Tp>
 	inline typename std::enable_if<I < sizeof...(Tp), void>::type
 	notify(std::tuple<Tp...>& t)
-	{
-		std::get<I>(_observers)->on_observable_changed(_observable);
+	{	
+		if (std::get<I>(_observers) != nullptr)
+			std::get<I>(_observers)->on_observable_changed(_observable);
 		notify<I + 1, Tp...>(t);
 	}
 

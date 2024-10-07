@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_GAMELOGICPROCESS_HPP
@@ -79,7 +70,7 @@ private:
 };
 
 public:
-	GameLogicProcess();
+	GameLogicProcess(struct s_game_process_configuration config);
 	
     void initialize(int segment_number = 1) override;
     void finalize() override;
@@ -98,6 +89,8 @@ public:
 	
 	MonsterSpawnAgent &get_monster_spawn_agent() { return _monster_spawn_agent; }
 
+	struct s_game_process_configuration &game_config() { return _config; }
+
 protected:
     std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
@@ -115,6 +108,7 @@ private:
 	TaskScheduler _scheduler;
 	std::thread _thread;
 	std::map<std::string, map_data> _maps; // Temporary map cache asset holder until maps are loaded.
+	struct s_game_process_configuration _config;
 };
 }
 }

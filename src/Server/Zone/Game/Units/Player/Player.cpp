@@ -13,24 +13,15 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Player.hpp"
 
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
-
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Inventory.hpp"
 #include "Server/Zone/Game/Units/Player/Assets/Storage.hpp"
 #include "Server/Zone/Game/Map/Grid/Notifiers/GridNotifiers.hpp"
@@ -300,9 +291,9 @@ void Player::on_pathfinding_failure()
 	//HLog(debug) << "Player " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
-void Player::on_movement_begin()
+void Player::on_movement_begin(int32_t time)
 {
-	get_session()->clif()->notify_player_movement(map_coords(), dest_coords());
+	get_session()->clif()->notify_player_movement(time, map_coords(), dest_coords());
 }
 
 void Player::on_movement_end()
@@ -349,20 +340,16 @@ void Player::add_unit_to_viewport(std::shared_ptr<Unit> unit)
 	}
 	
 	_viewport_entities.push_back(unit);
-
-	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
-	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
-		if ((*it).expired())
-			continue;
-		HLog(debug) << "Unit:" << it->lock()->name() << " " << it->lock()->guid();
-	}
-	HLog(debug) << "--------------------";
 }
 
 void Player::remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport_notification_type type)
 {
-	if (!unit_is_in_viewport(unit))
+	if (is_dead()) {
+		get_session()->clif()->notify_viewport_remove_unit(unit, EVP_NOTIFY_DEAD);
 		return;
+	} else if (!unit_is_in_viewport(unit)) {
+		return;
+	}
 
 	_viewport_entities.erase(std::remove_if(_viewport_entities.begin(), _viewport_entities.end(),
 		[unit] (std::weak_ptr<Unit> wp_e) {
@@ -376,14 +363,6 @@ void Player::remove_unit_from_viewport(std::shared_ptr<Unit> unit, unit_viewport
 		get_session()->clif()->notify_item_removal_from_floor(unit->guid());
 	else
 		get_session()->clif()->notify_viewport_remove_unit(unit, type);
-
-	HLog(debug) << "------- VIEWPORT ENTITIES ----------";
-	for (auto it = _viewport_entities.begin(); it != _viewport_entities.end(); it++) {
-		if ((*it).expired())
-			continue;
-		HLog(debug) << "Unit:" << it->lock()->name() << " " << it->lock()->guid();
-	}
-	HLog(debug) << "--------------------";
 }
 
 bool Player::unit_is_in_viewport(std::shared_ptr<Unit> unit)
@@ -405,20 +384,21 @@ bool Player::unit_is_in_viewport(std::shared_ptr<Unit> unit)
 	return (it != _viewport_entities.end());
 }
 
-void Player::realize_unit_movement(std::shared_ptr<Unit> unit)
+void Player::realize_unit_movement(int32_t time, std::shared_ptr<Unit> unit)
 {
 	if (unit == nullptr)
 		return;
 
-	get_session()->clif()->notify_unit_move(unit->guid(), unit->map_coords(), unit->dest_coords());
+	get_session()->clif()->notify_unit_move(unit->guid(), time, unit->map_coords(), unit->dest_coords());
 }
 
-void Player::realize_unit_movement_entry(std::shared_ptr<Unit> unit)
+void Player::realize_unit_movement_entry(int32_t time, std::shared_ptr<Unit> unit)
 {
 	if (unit == nullptr)
 		return;
 
 	unit_viewport_entry entry = get_session()->clif()->create_viewport_entry(unit);
+	entry.move_start_time = time;
 	get_session()->clif()->notify_viewport_moving_unit(entry);
 }
 
@@ -436,7 +416,8 @@ bool Player::move_to_map(std::shared_ptr<Map> dest_map, MapCoords coords)
 	if (dest_map == nullptr)
 		return false;
 
-	force_movement_stop_internal(true);
+	if (is_walking())
+		force_movement_stop_internal(true);
 
 	std::shared_ptr<Player> myself = downcast<Player>();
 
@@ -577,6 +558,44 @@ void Player::on_map_enter()
 
 	// Notify learnt skill list.
 	get_session()->clif()->notify_learnt_skill_list();
+
+	if (is_dead()) {
+		remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
+	}
+}
+
+void Player::respawn(int hp_rate, int sp_rate)
+{
+	if (is_dead() == false)
+		return;
+	
+	
+	if (status()->current_hp()->total() <= 0)
+		status()->current_hp()->set_base(1);
+		
+	if (status()->current_sp()->total() <= 0)
+		status()->current_sp()->set_base(1);
+
+	if (hp_rate && hp_rate > 100) {
+		hp_rate = 100;
+		status()->current_hp()->set_base(status()->max_hp()->total() * hp_rate / 100);
+	}
+	if (sp_rate && sp_rate > 100) {
+		sp_rate = 100;
+		status()->current_sp()->set_base(status()->max_sp()->total() * sp_rate / 100);
+	}
+
+	int segment_number = sZone->get_segment_number_for_resource<Horizon::Zone::GameLogicProcess, RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(Horizon::System::RUNTIME_GAMELOGIC, character()._saved_map, nullptr);
+	if (segment_number > 0) {
+		std::shared_ptr<Map> map = sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC, segment_number)->get_resource_manager().template get_resource<RESOURCE_PRIORITY_PRIMARY, std::string, std::shared_ptr<Map>>(character()._saved_map, nullptr);
+		if (map == nullptr) {
+			get_session()->clif()->notify_resurrection(guid(), 0);
+			return;
+		}
+		move_to_map(map, MapCoords(character()._saved_x, character()._saved_y));
+	} else {
+		get_session()->clif()->notify_resurrection(guid(), 0);
+	}
 }
 
 void Player::on_status_effect_start(std::shared_ptr<status_change_entry> sce)
@@ -612,7 +631,7 @@ bool Player::job_change(int32_t job_id)
 	}
 
 	set_job_id(job_id);
-	status()->base_appearance()->set(job_id);
+	status()->on_job_changed(job_id);
 
 	return true;
 }
@@ -697,4 +716,10 @@ bool Player::stop_attack()
 		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_ATTACK));
 
 	return true;
+}
+
+void Player::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
+{
+	Unit::on_killed(killer, with_drops, with_exp);
+	remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
 }

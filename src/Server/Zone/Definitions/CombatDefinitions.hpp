@@ -12,18 +12,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_COMBAT_DEFINITIONS_HPP
@@ -110,9 +101,10 @@ struct combat_damage : public combat_structures {
     int amotion{0}, dmotion{0};
     int blewcount{0};
     combat_damage_type_mask damage_type{CBT_DMGMASK_NONE};
-    combat_retaliate_type ret_type{CBT_RET_NONE};
+    combat_retaliate_type result{CBT_RET_NONE};
     element_type ele_type{ELE_NEUTRAL};
     int8_t element_level{1};
+	bool is_critical{false};
 };
 
 struct combat_healing : public combat_structures  {

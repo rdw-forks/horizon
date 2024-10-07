@@ -13,21 +13,13 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Unit.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp"
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/NPC/NPC.hpp"
 #include "Server/Zone/Game/Units/Battle/Combat.hpp"
@@ -140,7 +132,7 @@ bool Unit::schedule_walk()
 	}
 
 	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	on_movement_begin();				 // 0us
+	on_movement_begin((int32_t) get_sys_time());				 // 0us
 	notify_nearby_players_of_movement(); // 3us
 	walk();								 // 3~6 us
 	return true;
@@ -161,7 +153,7 @@ void Unit::walk()
 		stop_attacking();
 
 	MapCoords c = _walk_path.at(0); // for the first step.
-
+	
 	map()->container()->getScheduler().Schedule(
 		Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(UNIT_SCHEDULE_WALK),
 		[this](TaskContext context)
@@ -204,8 +196,16 @@ void Unit::walk()
 				stop_walking();
 			}
 
+			std::chrono::milliseconds walk_delay = std::chrono::milliseconds(status()->movement_speed()->get_with_cost(c.move_cost()));
+			
+			if (has_damage_walk_delay() && is_dead() == false)
+				walk_delay += std::chrono::milliseconds(status()->damage_walk_delay()->total());
+
+			set_damage_walk_delay(false);
+
 			if (!_walk_path.empty())
-				context.Repeat(Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())));
+				context.Repeat(walk_delay);
+			
 		});
 }
 
@@ -447,6 +447,7 @@ void Unit::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
 
 void Unit::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
+	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 }
 
 bool Unit::stop_attacking()
@@ -471,30 +472,37 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 		Milliseconds(0), get_scheduler_task_id(UNIT_SCHEDULE_ATTACK),
 		[this, continuous, target](TaskContext context)
 		{
-			if (target == nullptr)
-			{
+			if (target == nullptr) {
 				on_attack_end();
 				return;
 			}
 
-			if (target->is_dead())
-			{
+			if (is_dead()) {
+				return;
+			}
+
+			if (target->is_dead()) {
 				on_attack_end();
 				return;
 			}
 
-			if (path_to(target)->size() == 0)
-			{
+			std::shared_ptr<AStar::CoordinateList> wp = path_to(target);
+			if (wp && (wp->size() == 0 || wp->size() > MAX_VIEW_RANGE)) {
 				on_attack_end();
 				return;
 			}
 
 			int range = this->status()->attack_range()->get_base();
 
+			// If target is not in range of the attacker when source is already attacking, stop attacking.
+			if (is_attacking() && !is_in_range_of(target, range)) {
+				on_attack_end();
+				return;
+			}
+
 			_attackable_time = status()->attack_delay()->total();
 
-			if (!is_in_range_of(target, range) && !is_walking())
-			{
+			if (!is_in_range_of(target, range) && !is_walking()) {
 
 				walk_to_unit(target);
 
@@ -504,8 +512,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 				return;
 			}
 
-			if (!is_in_range_of(target, range) && is_walking())
-			{
+			if (!is_in_range_of(target, range) && is_walking()) {
 				context.Repeat(Milliseconds(_attackable_time));
 				return;
 			}
@@ -516,7 +523,13 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 			if (!is_attacking())
 				set_attacking(true);
 
-			combat()->weapon_attack();
+			// Let the target start attacking back.
+			combat_retaliate_type result = combat()->weapon_attack();
+			if (result == CBT_RET_DEF && target->is_attacking() == false)
+				target->attack(shared_from_this(), true);
+			if (result == CBT_RET_DEF) {
+				target->set_damage_walk_delay(true);
+			}
 
 			if (continuous)
 				context.Repeat(Milliseconds(_attackable_time));
@@ -582,6 +595,8 @@ void Unit::update(uint64_t tick)
 {
 	if (_combat_registry != nullptr)
 		combat_registry()->process_queue();
-	if (status() != nullptr && status()->is_initialized() != false)
+	if (status() != nullptr && status()->is_initialized() != false) {
 		status()->status_registry()->process_queue();
+		status()->update(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
+	}
 }

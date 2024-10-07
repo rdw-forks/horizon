@@ -11,18 +11,9 @@
  *
  * Base Author - Sephus. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "TransmittedPackets.hpp"
@@ -2037,10 +2028,10 @@ ByteBuffer &ZC_NOTIFY_MAPPROPERTY2::serialize()
 /**
  * ZC_NOTIFY_MOVE
  */
-void ZC_NOTIFY_MOVE::deliver(int32_t guid, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
+void ZC_NOTIFY_MOVE::deliver(int32_t guid, int time, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
 {
 	_guid = guid;
-	_timestamp = (int32_t) get_sys_time();
+	_timestamp = time;
 	PackPosition((int8_t *) _packed_pos, from_x, from_y, to_x, to_y, 8, 8);
 
 	serialize();
@@ -2110,11 +2101,11 @@ ByteBuffer &ZC_NOTIFY_PLAYERCHAT::serialize()
 /**
  * ZC_NOTIFY_PLAYERMOVE
  */
-void ZC_NOTIFY_PLAYERMOVE::deliver(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
+void ZC_NOTIFY_PLAYERMOVE::deliver(int32_t time, int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
 {
 	//std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 	PackPosition(_packed_pos, from_x, from_y, to_x, to_y, 8, 8);
-	_timestamp = (int32_t) get_sys_time();
+	_timestamp = time;
 
 	serialize();
 	transmit();
@@ -2400,7 +2391,7 @@ ByteBuffer &ZC_OTHER_GUILD_LIST::serialize()
 /**
  * ZC_PAR_CHANGE
  */
-void ZC_PAR_CHANGE::deliver(status_point_type type, int16_t value)
+void ZC_PAR_CHANGE::deliver(status_point_type type, int32_t value)
 {
 	_type = type;
 	_value = value;
@@ -2552,9 +2543,19 @@ ByteBuffer &ZC_PROPERTY_PET::serialize()
 /**
  * ZC_RECOVERY
  */
-void ZC_RECOVERY::deliver() {}
+void ZC_RECOVERY::deliver(int16_t type, int16_t amount)
+{
+	_type = type;
+	_amount = amount;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_RECOVERY::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
+	buf() << _amount;
 	return buf();
 }
 /**
@@ -2783,9 +2784,20 @@ ByteBuffer &ZC_RESULT_MAKE_GUILD::serialize()
 /**
  * ZC_RESURRECTION
  */
-void ZC_RESURRECTION::deliver() {}
+void ZC_RESURRECTION::deliver(int32_t guid, int16_t type) 
+{
+	_guid = guid;
+	_type = type;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_RESURRECTION::serialize()
 {
+	buf() << _packet_id;
+	buf() << _guid;
+	buf() << _type;
+
 	return buf();
 }
 /**
@@ -5257,8 +5269,8 @@ void ZC_NOTIFY_MOVEENTRY11::deliver(unit_viewport_entry entry)
 ByteBuffer &ZC_NOTIFY_MOVEENTRY11::serialize()
 {
 	char packed_pos[6]{0};
-	
-	_entry.move_start_time = (int32_t) get_sys_time();
+
+	HLog(info) << "Packet[MoveStartTime]: " << _entry.move_start_time;
 	
 	buf() << _packet_id;
 #if (CLIENT_TYPE == 'M' && PACKET_VERSION >= 20181121) \
@@ -5994,9 +6006,19 @@ ByteBuffer &ZC_ACK_OPENSTORE2::serialize()
 /**
  * ZC_RECOVERY2
  */
-void ZC_RECOVERY2::deliver() {}
+void ZC_RECOVERY2::deliver(int16_t type, int32_t amount) 
+{
+	_type = type;
+	_amount = amount;
+
+	serialize();
+	transmit();
+}
 ByteBuffer &ZC_RECOVERY2::serialize()
 {
+	buf() << _packet_id;
+	buf() << _type;
+	buf() << _amount;
 	return buf();
 }
 /**

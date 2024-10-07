@@ -13,22 +13,14 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Monster.hpp"
 
+#include "Server/Zone/Game/GameLogicProcess.hpp" // map()->container()
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Zone/Game/Units/Traits/Status.hpp"
@@ -84,9 +76,6 @@ bool Monster::finalize()
 	if (has_valid_grid_reference())
 		remove_grid_reference();
 		
-	if (map()->container()->getScheduler().Count(get_scheduler_task_id(UNIT_SCHEDULE_AI_THINK)))
-		map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_AI_THINK));
-
 	return true;
 }
 
@@ -95,7 +84,8 @@ void Monster::behavior_passive()
 {
 	if (monster_config()->mode & MONSTER_MODE_MASK_CANMOVE 
 		&& (next_walk_time() - std::time(nullptr) < 0)
-		&& !is_walking()) {
+		&& !is_walking()
+		&& !is_attacking()) {
 	    try {
 			MapCoords move_c = map()->get_random_coordinates_in_walkable_range(map_coords().x(), map_coords().y(), 5, 7);
 			std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -150,7 +140,7 @@ void Monster::on_pathfinding_failure()
 	//HLog(debug) << "Monster " << name() << " has failed to find path from (" << map_coords().x() << "," << map_coords().y() << ") to (" << dest_coords().x() << ", " << dest_coords().y() << ").";
 }
 
-void Monster::on_movement_begin()
+void Monster::on_movement_begin(int32_t time)
 {
 
 }
@@ -193,8 +183,6 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 	if (md == nullptr)
 		return;
 
-	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
-
 	switch (killer->type())
 	{
 	case UNIT_PLAYER:
@@ -221,6 +209,5 @@ void Monster::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with
 	}
 
 	map()->container()->get_resource_manager().remove<RESOURCE_PRIORITY_TERTIARY>(uuid());
-
 	return;
 }

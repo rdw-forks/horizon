@@ -13,24 +13,16 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Status.hpp"
 #include "Server/Zone/Definitions/ItemDefinitions.hpp"
 #include "Server/Zone/Definitions/MonsterDefinitions.hpp"
 #include "Server/Common/Configuration/Horizon.hpp"
+#include "Server/Zone/Game/GameLogicProcess.hpp" // map()->container()
 #include "Server/Zone/Game/StaticDB/JobDB.hpp"
 #include "Server/Zone/Game/StaticDB/ExpDB.hpp"
 #include "Server/Zone/Game/Units/Traits/Appearance.hpp"
@@ -46,57 +38,184 @@
 using namespace Horizon::Zone::Traits;
 
 
-void Status::StatusRegistry::add_to_base(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::add_to_base(Attribute *attribute, uint32_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::subtract_from_base(Attribute *attribute, uint32_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::add_to_equip(Attribute *attribute, uint32_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::subtract_from_equip(Attribute *attribute, uint32_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::add_to_status(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::add_to_status(Attribute *attribute, uint32_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS, value, source);
 	_status_operation_queue.push(operation); 
 }
-void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint16_t value) 
+void Status::StatusRegistry::subtract_from_status(Attribute *attribute, uint32_t value, std::string source)
 { 
-	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS, value);
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS, value, source);
 	_status_operation_queue.push(operation); 
+}
+void Status::StatusRegistry::add_to_base_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_base_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_equip_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_equip_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_status_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_status_temporary(Attribute *attribute, uint32_t value, uint64_t duration, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_TEMPORARY, value, duration, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_base_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_BASE_INTERVAL, value, minmax, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_base_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL, value, minmax, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_equip_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL, value, minmax, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_equip_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL, value, minmax, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::add_to_status_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_ADD_TO_STATUS_INTERVAL, value, minmax, duration, interval, source);
+	_status_operation_queue.push(operation);
+}
+void Status::StatusRegistry::sub_from_status_interval(Attribute *attribute, uint32_t value, s_min_max minmax, uint64_t duration, uint64_t interval, std::string source)
+{ 
+	StatusOperation *operation = new StatusOperation(attribute, STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL, value, minmax, duration, interval, source);
+	_status_operation_queue.push(operation);
 }
 
 void Status::StatusRegistry::StatusOperation::execute()
 {
+	s_attribute_change_values attr;
+
 	switch (get_type()) {
 	case STATUS_OPERATION_ADD_TO_BASE:
-		_attribute->set_base(_attribute->get_base() + _value);
+		attr.set_base(_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_BASE:
-		_attribute->set_base(_attribute->get_base() - _value);
+		attr.set_base(-_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_ADD_TO_EQUIP:
-		_attribute->set_equip(_attribute->get_equip() + _value);
+		attr.set_equip(_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP:
-		_attribute->set_equip(_attribute->get_equip() - _value);
+		attr.set_equip(-_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_ADD_TO_STATUS:
-		_attribute->set_status(_attribute->get_status() + _value);
+		attr.set_status(_value);
+		_attribute->add_permanent_change(attr, get_source());
 		break;
 	case STATUS_OPERATION_SUBTRACT_FROM_STATUS:
-		_attribute->set_status(_attribute->get_status() - _value);
+		attr.set_status(-_value);
+		_attribute->add_permanent_change(attr, get_source());
+	case STATUS_OPERATION_ADD_TO_BASE_TEMPORARY:
+		attr.set_base(_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_BASE_TEMPORARY:
+		attr.set_base(-_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_EQUIP_TEMPORARY:
+		attr.set_equip(_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP_TEMPORARY:
+		attr.set_equip(-_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_STATUS_TEMPORARY:
+		attr.set_status(_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_STATUS_TEMPORARY:
+		attr.set_status(-_value);
+		_attribute->add_temporary_change(attr, _duration, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_BASE_INTERVAL:
+		attr.set_base(_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_BASE_INTERVAL:
+		attr.set_base(-_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_EQUIP_INTERVAL:
+		attr.set_equip(_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_EQUIP_INTERVAL:
+		attr.set_equip(-_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_ADD_TO_STATUS_INTERVAL:
+		attr.set_status(_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
+		break;
+	case STATUS_OPERATION_SUBTRACT_FROM_STATUS_INTERVAL:
+		attr.set_status(-_value);
+		attr.set_max(_minmax.get_max());
+		attr.set_min(_minmax.get_min());
+		_attribute->add_periodic_change(attr, _duration, _interval, get_source());
 		break;
 	}
 	
@@ -166,9 +285,17 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	status_matk()->set_luck(luck().get());
 	status_matk()->compute();
 
+	set_equip_matk(std::make_shared<EquipMATK>(_unit));
+	equip_matk()->compute();
+
 	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
+	soft_def()->set_base_level(base_level().get());
+	soft_def()->set_agility(agility().get());
 	soft_def()->compute();
+
+	set_hard_def(std::make_shared<HardDEF>(_unit));
+	hard_def()->compute();
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
@@ -199,6 +326,16 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	attack_speed()->set_dexterity(dexterity().get());
 	attack_speed()->compute();
 
+	set_hp_regeneration(std::make_shared<HPRegeneration>(_unit));
+	hp_regeneration()->set_vitality(vitality().get());
+	hp_regeneration()->set_max_hp(max_hp().get());
+	hp_regeneration()->compute();
+
+	set_sp_regeneration(std::make_shared<SPRegeneration>(_unit));
+	sp_regeneration()->set_intelligence(intelligence().get());
+	sp_regeneration()->set_max_sp(max_sp().get());
+	sp_regeneration()->compute();
+
 	// Register Status Observables
 	strength()->register_observable(strength().get());
 	agility()->register_observable(agility().get());
@@ -210,28 +347,38 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	job_experience()->register_observable(job_experience().get());
 	base_level()->register_observable(base_level().get());
 	job_level()->register_observable(job_level().get());
+	max_hp()->register_observable(max_hp().get());
+	max_sp()->register_observable(max_sp().get());
+	attack_speed()->register_observable(attack_speed().get());
+
+	set_base_attack(std::make_shared<BaseAttack>(_unit));
 
 	// Register Status Observers
 	strength()->register_observers(
 		strength_cost().get(),
 		max_weight().get(),
 		status_atk().get(),
-		equip_atk().get());
+		equip_atk().get(),
+		base_attack().get());
 
 	agility()->register_observers(
 		agility_cost().get(),
 		flee().get(),
-		attack_speed().get());
+		attack_speed().get(),
+		soft_def().get());
 
 	vitality()->register_observers(
 		vitality_cost().get(),
 		soft_def().get(),
-		soft_mdef().get());
+		soft_mdef().get(),
+		hp_regeneration().get());
 
 	intelligence()->register_observers(
 		intelligence_cost().get(),
+		max_sp().get(),
 		status_matk().get(),
-		soft_mdef().get());
+		soft_mdef().get(),
+		sp_regeneration().get());
 
 	dexterity()->register_observers(
 		dexterity_cost().get(),
@@ -240,7 +387,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		status_matk().get(),
 		soft_mdef().get(),
 		hit().get(),
-		attack_speed().get());
+		attack_speed().get(),
+		base_attack().get());
 
 	luck()->register_observers(
 		luck_cost().get(),
@@ -248,57 +396,92 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		status_matk().get(),
 		hit().get(),
 		crit().get(),
-		flee().get());
+		flee().get(),
+		base_attack().get());
 
 	base_level()->register_observers(
 		status_point().get(),
+		max_hp().get(),
+		max_sp().get(),
 		next_base_experience().get(),
 		status_atk().get(),
 		status_matk().get(),
+		soft_def().get(),
 		soft_mdef().get(),
 		hit().get(),
 		flee().get(),
-		attack_speed().get());
+		attack_speed().get(),
+		base_attack().get());
 
 	job_level()->register_observers(
 		skill_point().get(),
 		next_job_experience().get());
+
+	max_hp()->register_observers(
+		hp_regeneration().get());
+	
+	max_sp()->register_observers(
+		sp_regeneration().get());
 
 	base_experience()->register_observers(base_level().get());
 
 	job_experience()->register_observers(job_level().get());
 	
 	/* Combat Status Attributes */
-	set_attack_motion(std::make_shared<AttackMotion>(_unit));
-	attack_motion()->set_attack_speed(attack_speed().get());
-	attack_motion()->set_agility(agility().get());
-	attack_motion()->register_observable(attack_motion().get());
-	attack_motion()->register_observers(attack_speed().get(), agility().get());
-	attack_motion()->compute();
-
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
-	attack_delay()->set_attack_motion(attack_motion().get());
-	attack_delay()->register_observable(attack_delay().get());
-	attack_delay()->register_observers(attack_motion().get());
+	attack_delay()->set_attack_speed(attack_speed().get());
 	attack_delay()->compute();
+	
+	attack_speed()->register_observers(
+		attack_delay().get());
 
-	set_damage_motion(std::make_shared<DamageMotion>(_unit));
-	damage_motion()->set_agility(agility().get());
-	damage_motion()->register_observable(damage_motion().get());
-	damage_motion()->register_observers(agility().get());
-	damage_motion()->compute();
+	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
+	damage_walk_delay()->set_agility(agility().get());
+	damage_walk_delay()->compute();
 
-	set_base_attack(std::make_shared<BaseAttack>(_unit));
 	base_attack()->set_strength(strength().get());
 	base_attack()->set_dexterity(dexterity().get());
 	base_attack()->set_luck(luck().get());
 	base_attack()->set_base_level(base_level().get());
-	base_attack()->register_observable(base_attack().get());
-	base_attack()->register_observers(strength().get(), dexterity().get(), luck().get(), base_level().get());
+
+	set_weapon_attack_left(std::make_shared<WeaponAttackLeft>(_unit));
+	weapon_attack_left()->register_observable(weapon_attack_left().get());
+	
+	set_weapon_attack_right(std::make_shared<WeaponAttackRight>(_unit));
+	weapon_attack_right()->register_observable(weapon_attack_right().get());
+
+	set_weapon_attack_combined(std::make_shared<WeaponAttackCombined>(_unit));
+	weapon_attack_combined()->set_weapon_attack_left(weapon_attack_left().get());
+	weapon_attack_combined()->set_weapon_attack_right(weapon_attack_right().get());
+
+	weapon_attack_left()->register_observers(weapon_attack_combined().get());
+	weapon_attack_right()->register_observers(weapon_attack_combined().get());
+	
+	calculate(false);
 
 	player->get_session()->clif()->notify_initial_status();
 
 	set_initialized(true);
+
+	current_hp()->add_periodic_change(
+		s_attribute_change_values(hp_regeneration().get(), s_attribute_change_values::s_attribute_min_max(0, max_hp().get()), 
+			[player, this](s_attribute_change_values &this_) {
+				player->get_session()->clif()->notify_recovery(ZC_NOTIFY_RECOVERY_HP, this_.get_live_attribute().get_attribute()->total());
+			}
+		), 
+		0,
+		player->map()->container()->game_config().get_natural_heal_hp_interval(), 
+		"natural_hp_regen");
+		
+	current_sp()->add_periodic_change(
+		s_attribute_change_values(sp_regeneration().get(), s_attribute_change_values::s_attribute_min_max(0, max_sp().get()), 
+			[player, this](s_attribute_change_values &this_) {
+				player->get_session()->clif()->notify_recovery(ZC_NOTIFY_RECOVERY_SP, this_.get_live_attribute().get_attribute()->total());
+			}
+		), 
+		0,
+		player->map()->container()->game_config().get_natural_heal_sp_interval(), 
+		"natural_sp_regen");
 	return true;
 }
 
@@ -316,7 +499,54 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::NPC> npc)
 	set_robe_sprite(std::make_shared<RobeSprite>(_unit, 0));
 	set_base_appearance(std::make_shared<BaseAppearance>(_unit, npc->job_id()));
 
+	calculate(false);
+	
 	set_initialized(true);
+	return true;
+}
+
+void Status::calculate(bool notify)
+{
+	// calculate before initialize is set.
+	for (auto i : _attributes) {
+		i->apply();
+	}
+}
+
+bool Status::recalculate(bool notify)
+{
+	if (!is_initialized()) {
+		HLog(error) << "Status::recalculate: Status is not initialized.";
+		return false;
+	}
+
+	// Recalculate all attributes.
+	for (auto i : _attributes) {
+		i->reset();
+		i->apply(notify);
+	}
+	
+	return true;
+}
+
+bool Status::update(uint64_t delta)
+{
+	if (!is_initialized()) {
+		return false;
+	}
+
+	bool recalculate = false;
+	// Update all attributes in the list.
+	// When a change is made in the list of temporary, permanent and interval changes, the attribute requires a recalculation?
+	for (auto i : _attributes) {
+		i->update(delta);
+		if (i->needs_recalculation())
+			recalculate = true;
+	}
+
+	if (recalculate)
+		this->recalculate();
+
 	return true;
 }
 
@@ -352,7 +582,11 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 
 	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
+	soft_def()->set_base_level(base_level().get());
+	// Agility not used for monsters.
 	soft_def()->compute();
+
+	set_hard_def(std::make_shared<HardDEF>(_unit, md->defense));
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
@@ -380,14 +614,11 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
 
-	set_attack_motion(std::make_shared<AttackMotion>(_unit));
-	attack_motion()->compute();
-
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->compute();
 
-	set_damage_motion(std::make_shared<DamageMotion>(_unit));
-	damage_motion()->compute();
+	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
+	damage_walk_delay()->compute();
 
 	set_attack_range(std::make_shared<AttackRange>(_unit));
 	attack_range()->compute();
@@ -400,16 +631,12 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	creature_attack_damage()->set_base_level(base_level().get());
 	creature_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
 	creature_attack_damage()->compute();
-	creature_attack_damage()->register_observable(creature_attack_damage().get());
-	creature_attack_damage()->register_observers(strength().get(), base_level().get(), creature_weapon_attack().get());
 
 	set_creature_magic_attack_damage(std::make_shared<MobMagicAttackDamage>(_unit));
 	creature_magic_attack_damage()->set_intelligence(intelligence().get());
 	creature_magic_attack_damage()->set_base_level(base_level().get());
 	creature_magic_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
 	creature_magic_attack_damage()->compute();
-	creature_magic_attack_damage()->register_observable(creature_magic_attack_damage().get());
-	creature_magic_attack_damage()->register_observers(intelligence().get(), base_level().get(), creature_weapon_attack().get());
 
 	set_creature_view_range(std::make_shared<MobViewRange>(_unit, (int) md->view_range));
 	set_creature_chase_range(std::make_shared<MobChaseRange>(_unit, (int) md->chase_range));
@@ -418,6 +645,8 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	set_creature_element(std::make_shared<MobElement>(_unit, (int) md->element));
 	set_creature_element_level(std::make_shared<MobElementLevel>(_unit, (int) md->element_level));
 	set_creature_mode(std::make_shared<MobMode>(_unit, (int) md->mode));
+
+	calculate(false);
 
 	set_initialized(true);
 	return true;
@@ -483,18 +712,23 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Units::Player> pl)
 
 		set_current_hp(std::make_shared<CurrentHP>(_unit, uint32_t(r[9].as_uint64())));
 		set_current_sp(std::make_shared<CurrentSP>(_unit, uint32_t(r[10].as_uint64())));
-		set_max_hp(std::make_shared<MaxHP>(_unit, uint32_t(r[11].as_uint64())));
-		set_max_sp(std::make_shared<MaxSP>(_unit, uint32_t(r[12].as_uint64())));
 
-		uint32_t base_level = uint32_t(r[13].as_uint64());
+		uint32_t base_level_ = uint32_t(r[13].as_uint64());
 		uint32_t job_level = uint32_t(r[14].as_uint64());
 
-		set_base_level(std::make_shared<BaseLevel>(_unit, base_level));
+		set_base_level(std::make_shared<BaseLevel>(_unit, base_level_));
 		set_job_level(std::make_shared<JobLevel>(_unit, job_level));
+
+		// Max HP/SP calculated after base_level is set.
+		set_max_hp(std::make_shared<MaxHP>(_unit, uint32_t(r[11].as_uint64())));
+		max_hp()->set_base_level(base_level().get());
+		set_max_sp(std::make_shared<MaxSP>(_unit, uint32_t(r[12].as_uint64())));
+		max_sp()->set_intelligence(intelligence().get());
+		max_sp()->set_base_level(base_level().get());
 
 		set_base_experience(std::make_shared<BaseExperience>(_unit, uint64_t(r[15].as_uint64())));
 		set_job_experience(std::make_shared<JobExperience>(_unit, uint64_t(r[16].as_uint64())));
-		set_next_base_experience(std::make_shared<NextBaseExperience>(_unit, base_level == bexpg->max_level ? 0 : bexpg->exp[base_level - 1]));
+		set_next_base_experience(std::make_shared<NextBaseExperience>(_unit, base_level_ == bexpg->max_level ? 0 : bexpg->exp[base_level_ - 1]));
 		set_next_job_experience(std::make_shared<NextJobExperience>(_unit, job_level == jexpg->max_level ? 0 : jexpg->exp[job_level - 1]));
 		set_movement_speed(std::make_shared<MovementSpeed>(_unit, DEFAULT_MOVEMENT_SPEED));
 
@@ -576,14 +810,43 @@ void Status::on_equipment_changed(bool equipped, std::shared_ptr<const item_entr
 	if (item->type == IT_TYPE_WEAPON) {
 		status_atk()->set_weapon_type(equipped ? item->config->sub_type.weapon_t : IT_WT_FIST);
 		equip_atk()->on_weapon_changed();
+
+		weapon_attack_left()->on_equipment_changed();
+		weapon_attack_right()->on_equipment_changed();
+
+		if ((item->config->equip_location_mask & IT_EQPM_HAND_L) == IT_EQPM_HAND_L)
+			weapon_sprite()->set_left(equipped ? item->item_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HAND_R) == IT_EQPM_HAND_R)
+			weapon_sprite()->set(equipped ? item->item_id : 0);
+	} else if (item->type == IT_TYPE_ARMOR) {
+		if ((item->config->equip_location_mask & IT_EQPM_HEAD_TOP) == IT_EQPM_HEAD_TOP)
+			head_top_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HEAD_MID) == IT_EQPM_HEAD_MID)
+			head_mid_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HEAD_LOW) == IT_EQPM_HEAD_LOW)
+			head_bottom_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_HAND_L) == IT_EQPM_HAND_L)
+			shield_sprite()->set(equipped ? item->config->sprite_id : 0);
+		else if ((item->config->equip_location_mask & IT_EQPM_GARMENT) == IT_EQPM_GARMENT)
+			robe_sprite()->set(equipped ? item->config->sprite_id : 0);
 	}
 
 	attack_speed()->on_equipment_changed();
 	attack_range()->on_equipment_changed();
 	base_attack()->on_equipment_changed();
-	attack_motion()->on_equipment_changed();
-	attack_delay()->on_equipment_changed();
-	damage_motion()->on_equipment_changed();
+	equip_matk()->on_equipment_changed();
+}
+
+void Status::on_job_changed(uint32_t job_id)
+{
+	base_appearance()->set(job_id);
+	max_hp()->compute();
+	max_sp()->compute();
+	next_base_experience()->compute();
+	next_job_experience()->compute();
+	attack_speed()->compute();
+	base_level()->compute();
+	job_level()->compute();
 }
 
 uint32_t Status::get_required_statpoints(uint16_t from, uint16_t to)

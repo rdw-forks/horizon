@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_TRAITS_APPEARANCE_HPP
@@ -46,15 +37,20 @@ namespace Traits
 	class Appearance
 	{
 	public:
-		Appearance(std::weak_ptr<Unit> unit, unit_appearance_type type, uint32_t id = 0)
-		: _unit(unit), _type(type), _id(id)
+		Appearance(std::weak_ptr<Unit> unit, unit_appearance_type type, uint32_t id = 0, uint32_t id_left = 0)
+		: _unit(unit), _type(type), _id(id), _id_left(id_left)
 		{ }
 		~Appearance() { }
 
 		void set(uint32_t id) { _id = id; notify_update(); }
 		uint32_t get() { return _id; }
 
+		void set_left(uint32_t id) { _id_left = id; notify_update(); }
+		uint32_t get_left() { return _id_left; }
+
 		virtual void notify_update();
+
+		unit_appearance_type get_type() { return _type; }
 
 	protected:
 		std::shared_ptr<Unit> get_unit() { return _unit.lock(); }
@@ -63,13 +59,14 @@ namespace Traits
 		std::weak_ptr<Unit> _unit;
 		unit_appearance_type _type;
 		uint32_t _id{0};
+		uint32_t _id_left{0};
 	};
 
 	class BaseAppearance : public Appearance
 	{
 	public:
 		BaseAppearance(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_BASE, id)
+		: Appearance(unit, UAT_BASE, id)
 		{ }
 		~BaseAppearance() { }
 	};
@@ -78,7 +75,7 @@ namespace Traits
 	{
 	public:
 		HairColor(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HAIR_COLOR, id)
+		: Appearance(unit, UAT_HAIR_COLOR, id)
 		{ }
 		~HairColor() { }
 	};
@@ -87,7 +84,7 @@ namespace Traits
 	{
 	public:
 		ClothColor(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_CLOTH_COLOR, id)
+		: Appearance(unit, UAT_CLOTH_COLOR, id)
 		{ }
 		~ClothColor() { }
 	};
@@ -95,8 +92,8 @@ namespace Traits
 	class WeaponSprite : public Appearance
 	{
 	public:
-		WeaponSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_WEAPON_SPRITE, id)
+		WeaponSprite(std::weak_ptr<Unit> unit, uint32_t id = 0, uint32_t id_left = 0)
+		: Appearance(unit, UAT_WEAPON_SPRITE, id, id_left)
 		{ }
 		~WeaponSprite() { }
 	};
@@ -105,7 +102,7 @@ namespace Traits
 	{
 	public:
 		ShieldSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_SHIELD_SPRITE, id)
+		: Appearance(unit, UAT_SHIELD_SPRITE, id)
 		{ }
 		~ShieldSprite() { }
 	};
@@ -114,7 +111,7 @@ namespace Traits
 	{
 	public:
 		RobeSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_ROBE_SPRITE, id)
+		: Appearance(unit, UAT_ROBE_SPRITE, id)
 		{ }
 		~RobeSprite() { }
 	};
@@ -123,7 +120,7 @@ namespace Traits
 	{
 	public:
 		HeadTopSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HEAD_TOP_SPRITE, id)
+		: Appearance(unit, UAT_HEAD_TOP_SPRITE, id)
 		{ }
 		~HeadTopSprite() { }
 	};
@@ -132,7 +129,7 @@ namespace Traits
 	{
 	public:
 		HeadMidSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HEAD_MID_SPRITE, id)
+		: Appearance(unit, UAT_HEAD_MID_SPRITE, id)
 		{ }
 		~HeadMidSprite() { }
 	};
@@ -141,7 +138,7 @@ namespace Traits
 	{
 	public:
 		HeadBottomSprite(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HEAD_BOTTOM_SPRITE, id)
+		: Appearance(unit, UAT_HEAD_BOTTOM_SPRITE, id)
 		{ }
 		~HeadBottomSprite() { }
 	};
@@ -150,7 +147,7 @@ namespace Traits
 	{
 	public:
 		HairStyle(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_HAIR_STYLE, id)
+		: Appearance(unit, UAT_HAIR_STYLE, id)
 		{ }
 		~HairStyle() { }
 	};
@@ -159,7 +156,7 @@ namespace Traits
 	{
 	public:
 		BodyStyle(std::weak_ptr<Unit> unit, uint32_t id = 0)
-		: Appearance(unit, EAT_BODY_STYLE, id)
+		: Appearance(unit, UAT_BODY_STYLE, id)
 		{ }
 		~BodyStyle() { }
 	};

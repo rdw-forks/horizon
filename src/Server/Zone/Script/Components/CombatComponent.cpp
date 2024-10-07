@@ -12,18 +12,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "CombatComponent.hpp"
@@ -155,7 +146,7 @@ void CombatComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	config_4["dmotion"] = &combat_damage::dmotion;
 	config_4["blewcount"] = &combat_damage::blewcount;
 	config_4["damage_type"] = &combat_damage::damage_type;
-	config_4["ret_type"] = &combat_damage::ret_type;
+	config_4["result"] = &combat_damage::result;
 	config_4["ele_type"] = &combat_damage::ele_type;
 	config_4["element_level"] = &combat_damage::element_level;
 	config_4["skill_id"] = &combat_damage::skill_id;

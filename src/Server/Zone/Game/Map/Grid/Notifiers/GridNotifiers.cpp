@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "GridNotifiers.hpp"
@@ -99,7 +90,7 @@ void GridViewPortUpdater::update(GridRefManager<T> &m)
 
             std::shared_ptr<Horizon::Zone::Unit> vp_e = iter->source()->shared_from_this();
     
-            if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking())
+            if (pl->is_in_range_of(vp_e, MAX_VIEW_RANGE) && !vp_e->is_walking() && !vp_e->is_dead())
                 pl->add_unit_to_viewport(vp_e);
             else if (!pl->is_in_range_of(vp_e, MAX_VIEW_RANGE))
                 pl->remove_unit_from_viewport(vp_e, EVP_NOTIFY_OUT_OF_SIGHT);
@@ -233,9 +224,9 @@ void GridUnitMovementNotifier::notify(GridRefManager<T> &m)
             continue;
 
         if (_new_entry == true)
-            tpl->realize_unit_movement_entry(src_unit);
+            tpl->realize_unit_movement_entry((int32_t) get_sys_time(), src_unit);
         else
-            tpl->realize_unit_movement(src_unit);
+            tpl->realize_unit_movement((int32_t) get_sys_time(), src_unit);
     }
 }
 

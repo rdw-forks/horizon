@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Server/Zone/Game/Units/Mob/Hostile/Monster.hpp"
@@ -42,24 +33,227 @@
 using namespace Horizon::Zone;
 using namespace Horizon::Zone::Traits;
 
+void s_attribute_change_values::ApplyLiveAttribute::update_with_live_attribute(s_attribute_change_values *change)
+{
+	if (change->get_base() != _attr->get_base())
+		change->set_base(_attr->get_base());
+	if (change->get_equip() != _attr->get_equip())
+		change->set_equip(_attr->get_equip());
+	if (change->get_status() != _attr->get_status())
+		change->set_status(_attr->get_status());
 
-void Attribute::add_base(int32_t val) { 
-	unit()->status()->status_registry()->add_to_base(this, val);
+	assert(change->get_base() == _attr->get_base());
+	assert(change->get_equip() == _attr->get_equip());
+	assert(change->get_status() == _attr->get_status());
 }
-void Attribute::sub_base(int32_t val) { 
-	unit()->status()->status_registry()->subtract_from_base(this, std::min(_base_val, val));
+s_attribute_change_values::s_attribute_min_max::s_attribute_min_max(int32_t min, Attribute *attr) : s_min_max(0, attr->total()), _attr(attr) {}
+
+void s_attribute_change_values::s_attribute_min_max::update_with_live_attribute()
+{
+	if (get_max() != _attr->total())
+	{
+		set_max(_attr->total());
+	}
+
+	assert(get_max() == _attr->total());
 }
-void Attribute::add_equip(int32_t val) { 
-	unit()->status()->status_registry()->add_to_equip(this, val);
+
+void PermanentChanges::add_change(s_attribute_change_values change, std::string source)
+{
+	_changes.push_back({ change, source });
 }
-void Attribute::sub_equip(int32_t val) { 
-	unit()->status()->status_registry()->subtract_from_equip(this, std::min(_equip_val, val));
+
+void PermanentChanges::remove_change(std::string source)
+{
+	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_permanent_change const &change) { return change.source == source; }), _changes.end());
 }
-void Attribute::add_status(int32_t val) { 
-	unit()->status()->status_registry()->add_to_status(this, val);
+
+void PermanentChanges::apply(bool notify)
+{
+	for (auto &change : _changes)
+	{
+		if (change.change.get_base() > 0)
+			_attr->add_base(change.change.get_base(), notify);
+		else
+			_attr->sub_base(change.change.get_base(), notify);
+		
+		if (change.change.get_equip() > 0)
+			_attr->add_equip(change.change.get_equip(), notify);
+		else
+			_attr->sub_equip(change.change.get_equip(), notify);
+		
+		if (change.change.get_status() > 0)
+			_attr->add_status(change.change.get_status(), notify);
+		else
+			_attr->sub_status(change.change.get_status(), notify);
+	}
 }
-void Attribute::sub_status(int32_t val) { 
-	unit()->status()->status_registry()->subtract_from_status(this, std::min(_status_val, val));
+
+void TemporaryChanges::add_change(s_attribute_change_values change, uint64_t duration, std::string source)
+{
+	_changes.push_back({ change, duration, source });
+}
+
+void TemporaryChanges::remove_change(std::string source)
+{
+	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_temporary_change const &change) { return change.source == source; }), _changes.end());
+}
+
+void TemporaryChanges::apply(bool notify)
+{
+	for (auto &change : _changes)
+	{
+		if (change.change.get_base() > 0)
+			_attr->add_base(change.change.get_base(), notify);
+		else
+			_attr->sub_base(change.change.get_base(), notify);
+		
+		if (change.change.get_equip() > 0)
+			_attr->add_equip(change.change.get_equip(), notify);
+		else
+			_attr->sub_equip(change.change.get_equip(), notify);
+		
+		if (change.change.get_status() > 0)
+			_attr->add_status(change.change.get_status(), notify);
+		else
+			_attr->sub_status(change.change.get_status(), notify);
+	}
+}
+
+void TemporaryChanges::update(uint64_t delta)
+{
+	for (auto &change : _changes)
+	{
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.start_time.time_since_epoch() + std::chrono::milliseconds(change.duration)).count() < delta)
+		{
+			remove_change(change.source);
+			_attr->recalculate(true);
+			continue;
+		}
+	}
+}
+
+void PeriodicChanges::add_change(s_attribute_change_values change, uint64_t duration, uint64_t interval, std::string source)
+{
+	_changes.push_back({ change, duration, interval, source });
+}
+
+void PeriodicChanges::remove_change(std::string source)
+{
+	_changes.erase(std::remove_if(_changes.begin(), _changes.end(), [source](s_periodic_change const &change) { return change.source == source; }), _changes.end());
+}
+
+void PeriodicChanges::update(uint64_t delta)
+{
+	for (auto &change : _changes)
+	{
+		if (change.duration && std::chrono::duration_cast<std::chrono::milliseconds>(change.start_time.time_since_epoch() + std::chrono::milliseconds(change.duration)).count() < delta)
+		{
+			remove_change(change.source);
+			continue;
+		}
+
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.last_update.time_since_epoch() + std::chrono::milliseconds(change.interval)).count() < delta)
+		{
+			std::function<bool(int, int, int)> over_min = [](int attr, int change, int min) { return (attr - change) < min; };
+			std::function<bool(int, int, int)> over_max = [](int attr, int change, int max) { return (attr + change) > max; };
+
+			if (_attr->unit() && _attr->unit()->is_dead() == true)
+				return;
+
+			change.change.update_with_live_attribute();
+
+			bool changed = false;
+			if (change.change.get_base() > 0) {
+				if (!over_max(_attr->get_base(), change.change.get_base(), change.change.get_max())) {
+					_attr->add_base(change.change.get_base(), false);
+					changed = true;
+				} else {
+					_attr->add_base(change.change.get_max() - _attr->get_base(), false);
+					changed = (change.change.get_max() - _attr->get_base() > 0);
+				}
+			}
+			else if (change.change.get_base() < 0) {
+				if (!over_min(_attr->get_base(), change.change.get_base(), change.change.get_min())) {
+					_attr->sub_base(change.change.get_base(), false);
+					changed = true;
+				} else {
+					_attr->sub_base(_attr->get_base() - change.change.get_min(), false);
+					changed = (_attr->get_base() - change.change.get_min() > 0);
+				}
+			}
+
+			if (change.change.get_equip() > 0) {
+				if (!over_max(_attr->get_equip(), change.change.get_equip(), change.change.get_max())) {
+					_attr->add_equip(change.change.get_equip(), false);
+					changed = true;
+				} else {
+					_attr->add_equip(change.change.get_max() - _attr->get_equip(), false);
+					changed = (change.change.get_max() - _attr->get_equip()) > 0;
+				}
+			}
+			else if (change.change.get_equip() < 0) {
+				if (!over_min(_attr->get_equip(), change.change.get_equip(), change.change.get_min())) {
+					_attr->sub_equip(change.change.get_equip(), false);
+					changed = true;
+				} else {
+					_attr->sub_equip(_attr->get_equip() - change.change.get_min(), false);
+					changed = (_attr->get_equip() - change.change.get_min()) > 0;
+				}
+			}
+
+			if (change.change.get_status() > 0) {
+				if (!over_max(_attr->get_status(), change.change.get_status(), change.change.get_max())) {
+					_attr->add_status(change.change.get_status(), false);
+					changed = true;
+				} else {
+					_attr->add_status(change.change.get_max() - _attr->get_status(), false);
+					changed = (change.change.get_max() - _attr->get_status()) > 0;
+				}
+			}
+			else if (change.change.get_status() < 0) {
+				if (!over_min(_attr->get_status(), change.change.get_status(), change.change.get_min())) {
+					_attr->sub_status(change.change.get_status(), false);
+					changed = true;
+				} else {
+					_attr->sub_status(_attr->get_status() - change.change.get_min(), false);
+					changed = (_attr->get_status() - change.change.get_min()) > 0;
+				}
+			}
+
+			_attr->compute();
+
+			if (changed)
+				change.change.client_notify_function(change.change);
+
+			change.last_update = std::chrono::high_resolution_clock::now();
+		}
+	}
+}
+
+void Attribute::add_base(int32_t val, bool notify) { 
+	_base_val += val;
+	if (notify) this->notify();
+}
+void Attribute::sub_base(int32_t val, bool notify) { 
+	_base_val -= std::min(_base_val, val);
+	if (notify) this->notify();
+}
+void Attribute::add_equip(int32_t val, bool notify) { 
+	_equip_val += val;
+	if (notify) this->notify();
+}
+void Attribute::sub_equip(int32_t val, bool notify) { 
+	_equip_val -= std::min(_equip_val, val);
+	if (notify) this->notify();
+}
+void Attribute::add_status(int32_t val, bool notify) { 
+	_status_val += val;
+	if (notify) this->notify();
+}
+void Attribute::sub_status(int32_t val, bool notify) { 
+	_status_val -= std::min(_status_val, val);
+	if (notify) this->notify();
 }
 
 void Attribute::notify()
@@ -83,7 +277,6 @@ void Attribute::notify()
 	case STATUS_HIT:
 	case STATUS_FLEE:
 	case STATUS_PERFECT_DODGE:
-	case STATUS_CRITICAL:
 	case STATUS_MAXHP:    
 	case STATUS_MAXSP:        
 	case STATUS_CURRENTHP:
@@ -100,8 +293,13 @@ void Attribute::notify()
 	case STATUS_ZENY:
 	{
 		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_compound_attribute_update(_status_point_type, total());
-	}      
-	break;  
+	}
+	break;
+	case STATUS_CRITICAL: 
+	{
+		unit()->downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_compound_attribute_update(_status_point_type, total() / 10);
+	} 
+	break;
 	case STATUS_BASEEXP:
 	case STATUS_JOBEXP:
 	case STATUS_NEXTBASEEXP:
@@ -191,9 +389,12 @@ void BaseLevel::on_observable_changed(BaseExperience *bexp)
 	if (unit() == nullptr || bexp == nullptr)
 		return;
 
-	if (get_base() >= MAX_LEVEL)
-		return;
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
+	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
+	if (get_base() >= bexpg->max_level)
+		return;
+		
 	if (bexp->get_base() >= unit()->status()->next_base_experience()->get_base()) {
 		int carried_over = bexp->get_base() - unit()->status()->next_base_experience()->get_base();
 		add_base(1);
@@ -209,7 +410,7 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
 
-	if (unit()->status()->job_level()->get_base() >= jexpg->max_level)
+	if (get_base() >= jexpg->max_level)
 		return;
 
 	if (jexp->get_base() >= unit()->status()->next_job_experience()->get_base()) {
@@ -217,6 +418,63 @@ void JobLevel::on_observable_changed(JobExperience *jexp)
 		add_base(1);
 		jexp->set_base(carried_over);
 	}
+}
+
+int32_t MaxHP::compute()
+{
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
+	int val = 0;
+
+	if (job == nullptr)
+		return 0;
+
+	job_class_mask job_mask = JobDB->job_id_to_mask((job_class_type) job->id);
+	
+	int base_level = _blvl->total();
+	val += job->hp_table[base_level - 1];
+	
+	if ((job_mask & JMASK_EXPANDED) == JOB_SUPER_NOVICE && base_level >= 99)
+		val += 2000; //Supernovice lvl99 hp bonus.
+		
+	if ((job_mask & JMASK_EXPANDED_2_1) == JOB_SUPER_NOVICE_E && base_level >= 150)
+		val += 2000; //Extented Supernovice lvl150 hp bonus.
+
+	if ((job_mask & JMASK_TRANS) != 0)
+		val += val * 25 / 100; //Trans classes get a 25% hp bonus
+	else if ((job_mask & JMASK_BABY) != 0)
+		val = val * 70 / 100; //Baby classes get a 30% hp penalty
+
+	val += val * unit()->status()->vitality()->total() / 100; // +1% per each point of VIT
+
+	set_base(val);
+
+	return total();
+}
+
+int32_t MaxSP::compute()
+{
+	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
+	int val = 0;
+
+	if (job == nullptr)
+		return 0;
+
+	job_class_mask job_mask = JobDB->job_id_to_mask((job_class_type) job->id);
+	
+	int base_level = _blvl->total();
+
+	val += job->sp_table[base_level - 1];
+
+	if ((job_mask & JMASK_TRANS) != 0)
+		val += val * 25 / 100;
+	else if ((job_mask & JMASK_BABY) != 0)
+		val = val * 70 / 100;
+
+	val += val * _int->total() / 100;
+
+	set_base(val);
+
+	return total();
 }
 
 void CurrentHP::damage(int damage)
@@ -243,6 +501,9 @@ void NextBaseExperience::on_observable_changed(BaseLevel *blvl)
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> bexpg = ExpDB->get_exp_group(job->base_exp_group, EXP_GROUP_TYPE_BASE);
 
+	if (blvl->get_base() >= bexpg->max_level)
+		return;
+
 	set_base(bexpg->exp[blvl->get_base() - 1]);
 }
 
@@ -253,6 +514,9 @@ void NextJobExperience::on_observable_changed(JobLevel *jlvl)
 
 	std::shared_ptr<const job_config_data> job = JobDB->get_job_by_id(unit()->job_id());
 	std::shared_ptr<const exp_group_data> jexpg = ExpDB->get_exp_group(job->job_exp_group, EXP_GROUP_TYPE_JOB);
+
+	if (jlvl->get_base() >= jexpg->max_level)
+		return;
 
 	set_base(jexpg->exp[jlvl->get_base() - 1]);
 }
@@ -273,9 +537,9 @@ void SkillPoint::on_observable_changed(JobLevel *jlvl)
 	add_base(1);
 }
 
-void SkillPoint::set_base(int32_t val)
+void SkillPoint::set_base(int32_t val, bool notify_client)
 {
-	Attribute::set_base(val);
+	Attribute::set_base(val, notify_client);
 }
 
 int32_t MaxWeight::compute()
@@ -290,9 +554,9 @@ int32_t MaxWeight::compute()
 	return total();
 }
 
-void MovementSpeed::set_base(int32_t val)
+void MovementSpeed::set_base(int32_t val, bool notify_client)
 {
-	Attribute::set_base(val);
+	Attribute::set_base(val, notify_client);
 }
 
 int32_t StatusATK::compute()
@@ -314,9 +578,35 @@ int32_t StatusATK::compute()
 	// Ranged: floor[(BaseLevel ÷ 4) + (Str ÷ 5) + Dex + (Luk ÷ 3)]
 	if (((1ULL << _weapon_type) & IT_WTM_RANGED) & ~(1ULL<<IT_WT_FIST))
 		set_base(dex + (blvl / 4) + (str / 5) + (luk / 3));
+	else // Melee: floor[(BaseLevel ÷ 4) + Str + (Dex ÷ 5) + (Luk ÷ 3)]
+		set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
+	
+	return total();
+}
 
-	// Melee: floor[(BaseLevel ÷ 4) + Str + (Dex ÷ 5) + (Luk ÷ 3)]
-	set_base(str + (blvl / 4) + (dex / 5) + (luk / 3));
+int32_t EquipMATK::compute()
+{
+	if (unit() == nullptr || unit()->type() != UNIT_PLAYER)
+		return 0;
+
+	std::shared_ptr<Horizon::Zone::Units::Player> player = unit()->downcast<Horizon::Zone::Units::Player>();
+	EquipmentListType const &equipments = player->inventory()->equipments();
+	
+	std::shared_ptr<const item_entry_data> lhw = equipments[IT_EQPI_HAND_L].second.lock();
+	std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
+	
+	set_base(0, false);
+
+	if (lhw) add_base(lhw->config->magic_atk);
+	if (rhw) add_base(rhw->config->magic_atk);
+	
+	int variance = 0;
+	
+	if (rhw) 
+		variance = total() * rhw->config->level.weapon / 10;
+
+	set_min(total() - variance);
+	set_max(total() + variance);
 	
 	return total();
 }
@@ -350,9 +640,42 @@ int32_t SoftDEF::compute()
 	if (_vit != nullptr)
 		vit = _vit->total();
 
-	// (VIT ÷ 2) + Max[(VIT × 0.3), (VIT ^ 2 ÷ 150) − 1]
-	set_base((vit / 2) + std::max((vit * 0.3), (std::pow(vit, 2) / 150) - 1));
+	int32_t base_level = 1;
+
+	if (_blvl != nullptr)
+		base_level = _blvl->get_base();
+
+	int32_t agi = 1;
+
+	if (_agi != nullptr)
+		agi = _agi->total();
+
+	// /base level + (every 2 vit = +1 def) + (every 5 agi = +1 def)
+	set_base(((float)base_level + vit) / 2 + (unit()->type() == UNIT_PLAYER ? ((float)agi / 5) : 0));
 	
+	return total();
+}
+
+int32_t HardDEF::compute()
+{
+	if (unit()->type() == UNIT_PLAYER) {
+		std::shared_ptr<Horizon::Zone::Units::Player> player = unit()->downcast<Horizon::Zone::Units::Player>();
+		EquipmentListType const &equipments = player->inventory()->equipments();
+		set_base(0, false);
+		for (auto &equipment : equipments) {
+			std::shared_ptr<const item_entry_data> armor = equipment.second.lock();
+			if (armor != nullptr) {
+				// ArmorDef + ShieldDef + CardDef + RefineDef + OverUpgradeDef
+				add_base(armor->config->defense);
+			}
+		}
+	}
+
+	return total();
+}
+
+int32_t HardMDEF::compute()
+{
 	return total();
 }
 
@@ -405,7 +728,7 @@ int32_t CRIT::compute()
 		luk = _luk->total();
 
 	// LUK × 0.3 + Bonus
-	set_base(luk / 3);
+	set_base(10 + (luk * 10 / 3));
 	
 	return total();
 }
@@ -534,12 +857,37 @@ int32_t AttackSpeed::compute()
 #define ASPD_FROM_SKILLS 0
 		amotion = (int)(temp_aspd + ((float)((ASPD_FROM_STATUS_EFFECTS + ASPD_FROM_SKILLS) * _agi->get_base() / 200)) - std::min(amotion, 200));
 		amotion += (std::max(0xc3 - amotion, 2) * (ASPD_FROM_STATUS_EFFECTS)) / 100;
+		amotion = std::min(amotion, MAX_ATTACK_SPEED);
 		amotion = 10 * (200 - amotion);
 #undef ASPD_FROM_STATUS_EFFECTS
 #undef ASPD_FROM_SKILLS
 	}
 
- 	set_base(amotion);
+	set_base(amotion);
+
+	return total();
+}
+
+int32_t HPRegeneration::compute()
+{
+	if (unit()->type() == UNIT_PLAYER) {
+		int vit = _vit->total();
+		int max_hp = _max_hp->total();
+		set_base(1 + (vit/5) + (max_hp/200));
+	}
+
+	return total();
+}
+
+int32_t SPRegeneration::compute()
+{
+	if (unit()->type() == UNIT_PLAYER) {
+		int int_ = _int->total();
+		int max_sp = _max_sp->total();
+		set_base(1 + (int_/6) + (max_sp/100));
+		if (int_ >= 120)
+			add_base(((int_ - 120) >> 1) + 4);
+	}
 
 	return total();
 }
@@ -582,32 +930,53 @@ int32_t MobMagicAttackDamage::compute()
 	return std::rand() % (_max - _min + 1) + _min;
 }
 
-int32_t AttackMotion::compute()
-{
-	if (unit()->type() == UNIT_PLAYER)
-		set_base(_attack_speed->get_base());
-	else if (unit()->type() == UNIT_MONSTER)
-		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_motion);
-
-	return total();
-}
-
 int32_t AttackDelay::compute()
 {
 	if (unit()->type() == UNIT_PLAYER)
-		set_base(2 * _attack_motion->total());
+		set_base(2 * _aspd->total());
 	else if (unit()->type() == UNIT_MONSTER)
 		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->attack_delay);
 
 	return total();
 }
 
-int32_t DamageMotion::compute()
+int32_t DamageWalkDelay::compute()
 {
 	if (unit()->type() == UNIT_PLAYER)
 		set_base(800 - _agi->get_base() * 4);
 	else if (unit()->type() == UNIT_MONSTER)
 		set_base(unit()->downcast<Horizon::Zone::Units::Monster>()->monster_config()->damage_motion);
+
+	return total();
+}
+
+int32_t WeaponAttackLeft::compute()
+{
+	EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+	
+	if (equipments[IT_EQPI_HAND_L].second.expired() == true)
+		return 0;
+	
+	set_base(equipments[IT_EQPI_HAND_L].second.lock()->config->attack, false);
+
+	return total();
+}
+
+int32_t WeaponAttackCombined::compute()
+{
+	set_base(_watk_left->total() + _watk_right->total());
+
+	return total();
+}
+
+int32_t WeaponAttackRight::compute()
+{
+	EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
+	
+	if (equipments[IT_EQPI_HAND_R].second.expired() == true)
+		return 0;
+	
+	set_base(equipments[IT_EQPI_HAND_R].second.lock()->config->attack, false);
 
 	return total();
 }
@@ -637,6 +1006,7 @@ int32_t BaseAttack::compute()
 				break;
 			}
 		}
+		
 		set_base((melee ? _str->total() : _dex->total()) + (float) ((melee ? _dex->get_base() : _str->total()) / 5) + (float) (_luk->get_base() / 3) + (_blvl->get_base() / 4));
 	}
 	else if (unit()->type() == UNIT_MONSTER)

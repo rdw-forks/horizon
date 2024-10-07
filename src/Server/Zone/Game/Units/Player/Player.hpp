@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
@@ -108,8 +99,8 @@ public:
 	/**
 	 * Movement
 	 */
-	void realize_unit_movement(std::shared_ptr<Unit> unit);
-	void realize_unit_movement_entry(std::shared_ptr<Unit> unit);
+	void realize_unit_movement(int32_t time, std::shared_ptr<Unit> unit);
+	void realize_unit_movement_entry(int32_t time, std::shared_ptr<Unit> unit);
 	void realize_nearby_items(unit_viewport_notification_type notif_type);
 
 	void add_unit_to_viewport(std::shared_ptr<Unit> unit);
@@ -124,7 +115,7 @@ public:
 
 	void stop_movement() override;
 	void on_pathfinding_failure() override;
-	void on_movement_begin() override;
+	void on_movement_begin(int32_t time) override;
 	void on_movement_step() override;
 	void on_movement_end() override;
 
@@ -203,6 +194,10 @@ public:
     bool attack(std::shared_ptr<Unit> e, bool continuous = false) override;
     bool stop_attack();
 
+	virtual void on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp) override;
+
+	void respawn(int hp_rate, int sp_rate);
+	
 	std::shared_ptr<Assets::Storage> get_storage(int32_t storage_id);
 
 	int32_t get_current_storage_id() { return _current_storage_id; }

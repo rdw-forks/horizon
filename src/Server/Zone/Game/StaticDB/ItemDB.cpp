@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "ItemDB.hpp"
@@ -104,8 +95,93 @@ bool ItemDatabase::load()
 bool ItemDatabase::add_job_group_to_item(std::string const &group, item_config_data &id, bool enable, std::string const &file_path)
 {
 	if (group.compare("All") == 0) {
-		// This is left empty as an empty job_ids vector mean every job.
-		id.requirements.job_ids.clear();
+		id.requirements.job_ids.push_back(0);
+		for (int i = JOB_BASE_START; i < JOB_BASE_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_2_1_START; i < JOB_2_1_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_2_2_START; i < JOB_2_2_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_TRANS_BASE_START; i < JOB_TRANS_BASE_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_TRANS_2_1_START; i < JOB_TRANS_2_1_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		// generate code for the rest of the job groups
+		for (int i = JOB_TRANS_2_2_START; i < JOB_TRANS_2_2_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+
+		for (int i = JOB_BABY_BASE_START; i < JOB_BABY_BASE_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_BABY_2_1_START; i < JOB_BABY_2_1_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		} 
+		for (int i = JOB_3_1_START; i < JOB_3_1_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_3_2_START; i < JOB_3_2_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_TRANS_3_1_START; i < JOB_TRANS_3_1_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_TRANS_3_2_START; i < JOB_TRANS_3_2_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_BABY_3_1_START; i < JOB_BABY_3_1_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}
+		for (int i = JOB_BABY_3_2_START; i < JOB_BABY_3_2_END; i++) {
+			if (enable)
+				id.requirements.job_ids.push_back(i);
+			else
+				std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [i] (uint32_t id) { return i == id; });
+		}   
 		return true;
 	} else if (group.compare("NormalJobs") == 0) {
 		for (int i = JOB_BASE_START; i < JOB_BASE_END; i++) {
@@ -353,6 +429,8 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 					} else {
 						std::remove_if(id.requirements.job_ids.begin(), id.requirements.job_ids.end(), [job_id] (uint32_t id) { return job_id == id; });
 					}
+				} else if (!add_job_group_to_item("All", id, enable, file_path)) {
+					return;
 				}
 			});
 		} else if (maybe_job_tbl && maybe_job_tbl.value().get_type() == sol::type::string) {
@@ -361,6 +439,8 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 				return;
 		} else if (maybe_job_tbl && maybe_job_tbl.value().get_type() == sol::type::number) {
 			id.requirements.job_ids.push_back(maybe_job_tbl.value().as<uint32_t>());
+		} else if (!add_job_group_to_item("All", id, true, file_path)) {
+			return;
 		}
 
 		id.requirements.gender = (item_gender_type) tbl.get_or("Gender", (char) IT_GENDER_ANY);
@@ -507,7 +587,7 @@ int ItemDatabase::load_items(sol::table const &item_tbl, std::string file_path)
 
 		id.delay = tbl.get_or("Delay", 0);
 
-		id.sprite_id = tbl.get_or("Sprite", 0);
+		id.sprite_id = tbl.get_or("SpriteId", 0);
 
 		id.default_script = tbl.get_or("Script", std::string(""));
 		id.equip_script = tbl.get_or("OnEquipScript", std::string(""));

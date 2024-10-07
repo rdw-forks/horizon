@@ -13,18 +13,9 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "Appearance.hpp"
@@ -38,5 +29,5 @@ using namespace Horizon::Zone::Traits;
 void Appearance::notify_update()
 {
 	if (get_unit() != nullptr && get_unit()->type() == UNIT_PLAYER)
-		get_unit()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_appearance_update(_type, get(), 0);
+		get_unit()->template downcast<Horizon::Zone::Units::Player>()->get_session()->clif()->notify_appearance_update(_type, get(), get_left());
 }

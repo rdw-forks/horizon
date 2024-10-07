@@ -13,18 +13,9 @@
  *
  * Base Author - Sxyz <sagunxp@gmail.com>
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this library.  If not, see <http://www.gnu.org/licenses/>.
+ * This is proprietary software. Unauthorized copying,
+ * distribution, or modification of this file, via any
+ * medium, is strictly prohibited. All rights reserved.
  **************************************************/
 
 #include "GameLogicProcess.hpp"
@@ -43,7 +34,6 @@
 #include "Server/Zone/Game/Map/Map.hpp"
 #include "Server/Zone/Game/Units/Player/Player.hpp"
 #include "Server/Zone/Session/ZoneSession.hpp"
-#include "Server/Zone/Zone.hpp"
 
 #if WIN32
 	#include <windows.h>
@@ -55,13 +45,14 @@ using namespace Horizon::Zone;
 
 static std::atomic<bool> static_db_loaded = false;
 
-GameLogicProcess::GameLogicProcess()
+GameLogicProcess::GameLogicProcess(s_game_process_configuration config)
 : KernelComponent(sZone, Horizon::System::RUNTIME_GAMELOGIC),
 _resource_manager(
 	PrimaryResource(RESOURCE_PRIORITY_PRIMARY, std::make_shared<s_segment_storage<std::string, std::shared_ptr<Map>>>()),
 	SecondaryResource(RESOURCE_PRIORITY_SECONDARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Units::Player>>>()),
 	TertiaryResource(RESOURCE_PRIORITY_TERTIARY, std::make_shared<s_segment_storage<uint64_t, std::shared_ptr<Unit>>>())
-)
+),
+_config(config)
 {
 }
 
@@ -185,7 +176,7 @@ void GameLogicProcess::start_internal()
 
 	_thread = std::thread([this]() {
 		while (!sZone->general_conf().is_test_run_minimal() && get_shutdown_stage() == SHUTDOWN_NOT_STARTED) {
-			this->update(std::time(nullptr));
+			this->update(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 			std::this_thread::sleep_for(std::chrono::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		};
 	});
