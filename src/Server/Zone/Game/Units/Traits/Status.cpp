@@ -371,6 +371,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		vitality_cost().get(),
 		soft_def().get(),
 		soft_mdef().get(),
+		max_hp().get(),
 		hp_regeneration().get());
 
 	intelligence()->register_observers(
@@ -722,6 +723,7 @@ bool Status::load(std::shared_ptr<Horizon::Zone::Units::Player> pl)
 		// Max HP/SP calculated after base_level is set.
 		set_max_hp(std::make_shared<MaxHP>(_unit, uint32_t(r[11].as_uint64())));
 		max_hp()->set_base_level(base_level().get());
+		max_hp()->set_vitality(vitality().get());
 		set_max_sp(std::make_shared<MaxSP>(_unit, uint32_t(r[12].as_uint64())));
 		max_sp()->set_intelligence(intelligence().get());
 		max_sp()->set_base_level(base_level().get());

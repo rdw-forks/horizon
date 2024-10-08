@@ -36,6 +36,7 @@ class Unit;
 class Player;
 namespace Traits
 {
+	class Vitality;
 	class Intelligence;
 	class StatusATK;
 	class EquipATK;
@@ -225,10 +226,12 @@ namespace Traits
 		~MaxHP() { };
 
 		void on_observable_changed(BaseLevel *blvl) { if (is_compute_ready()) compute(); }
+		void on_observable_changed(Vitality *vit) { if (is_compute_ready()) compute(); }
 
 		int32_t compute();
 
 		void set_base_level(BaseLevel *blvl) { _blvl = blvl; }
+		void set_vitality(Vitality *vit) { _vit = vit; }
 
 		void set_base(int32_t val, bool notify_client = true) override
 		{
@@ -285,6 +288,7 @@ namespace Traits
 		}
 	private:
 		BaseLevel *_blvl;
+		Vitality *_vit;
 	};
 
 	class MaxSP
@@ -549,12 +553,12 @@ namespace Traits
 
 	class Vitality
 	: public Attribute,
-	  public ObservableStatus<Vitality *, VitalityPointCost *, SoftDEF *, SoftMDEF *, HPRegeneration *>
+	  public ObservableStatus<Vitality *, VitalityPointCost *, SoftDEF *, SoftMDEF *, MaxHP *, HPRegeneration *>
 	{
 	public:
 		Vitality(std::weak_ptr<Unit> unit, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: Attribute(unit, STATUS_VITALITY, base, equip, status),
-		  ObservableStatus(nullptr, nullptr, nullptr, nullptr)
+		  ObservableStatus(nullptr, nullptr, nullptr, nullptr, nullptr)
 		{ }
 		~Vitality() { };
 
