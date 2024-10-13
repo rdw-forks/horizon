@@ -377,6 +377,16 @@ public:
 		_is_initialized.exchange(true);
 	}
 
+	void reinitialize()
+	{
+		_connection.reset();
+		_ssl_ctx.reset();
+		_is_initialized.exchange(false);
+		_is_finalized.exchange(false);
+		if (_io_context != nullptr)	
+			initialize(*_io_context, get_segment_number(), _host, _port, _user, _pass, _database);
+	}
+
 	void initialize(boost::asio::io_context &io_context, int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
 
 	void finalize() override 
@@ -389,14 +399,20 @@ public:
 		_is_finalized.exchange(true);
 	}
 
-	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection() { return _connection; }
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection();
 
 	bool is_initialized() override { return _is_initialized.load(); }
 	bool is_finalized() override { return _is_finalized.load(); }
 
 protected:
+	boost::asio::io_context *_io_context;
 	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
     std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
+	std::string _host;
+	int _port;
+	std::string _user;
+	std::string _pass;
+	std::string _database;
 	std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
 };

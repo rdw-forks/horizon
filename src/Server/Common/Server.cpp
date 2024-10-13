@@ -242,18 +242,36 @@ void CommandLineProcess::cli_thread_start()
 	}
 }
 
+std::shared_ptr<boost::mysql::tcp_ssl_connection> DatabaseProcess::get_connection() { 
+	try {
+		boost::mysql::results results;
+		_connection->execute("SELECT 'Hello World!'", results);
+	} catch (const boost::mysql::error_with_diagnostics &e) {
+		HLog(error) << "Database connection error: " << e.what();
+		HLog(error) << "Reconnecting...";
+		reinitialize();
+	}
+	return _connection; 
+}
+
 void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
 {
 	set_segment_number(segment_number);
 	
 	try {
+		_io_context = &io_context;
 		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
-		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), *_ssl_ctx);
-		boost::asio::ip::tcp::resolver resolver(io_context.get_executor());
+		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_io_context->get_executor(), *_ssl_ctx);
+		boost::asio::ip::tcp::resolver resolver(_io_context->get_executor());
 		auto endpoints = resolver.resolve(host, std::to_string(port));
 		boost::mysql::handshake_params params(user, pass, database);
 		_connection->connect(*endpoints.begin(), params);
 		_is_initialized.exchange(true);
+		_host = host;
+		_port = port;
+		_user = user;
+		_pass = pass;
+		_database = database;
 #if WIN32
 		DWORD cpu = GetCurrentProcessorNumber();
 		if (get_thread_cpu_id() != (int) cpu) 

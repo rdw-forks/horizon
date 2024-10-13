@@ -40,7 +40,6 @@ void Horizon::Tools::MapCache::parse_exec_args(int argc, const char *argv[])
 		std::vector<std::string> separated_args;
 		boost::split(separated_args, arg, boost::is_any_of("="));
 
-		printf("Argument: %s\n", arg.c_str());
 		if (separated_args.at(0).compare("--grf-config") == 0) {
 			getLibrary().setGRFListPath(separated_args.at(1));
 		} else if (separated_args.at(0).compare("--config") == 0) {
