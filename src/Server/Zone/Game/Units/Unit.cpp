@@ -130,9 +130,7 @@ bool Unit::schedule_walk()
 		_dest_pos = {0, 0};
 		return false;
 	}
-
-	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
-	on_movement_begin((int32_t) get_sys_time());				 // 0us
+				 // 0us
 	notify_nearby_players_of_movement(); // 3us
 	walk();								 // 3~6 us
 	return true;
@@ -142,20 +140,24 @@ bool Unit::schedule_walk()
 // @NOTE This method is called when the unit is already in motion and a new destination is set.
 void Unit::walk()
 {
-	// Fixes the jumping walk bug that happens when the walk is invoked while unit is already walking.
-	if (type() == UNIT_PLAYER && map()->container()->getScheduler().Count(get_scheduler_task_id(UNIT_SCHEDULE_WALK)) > 0)
-		return;
-
+	map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_WALK));
+	
 	if (status() == nullptr || status()->movement_speed() == nullptr)
 		return;
 
 	if (is_attacking())
 		stop_attacking();
 
+	if (_walk_path.size() == 1)
+		return;
+
 	MapCoords c = _walk_path.at(0); // for the first step.
+
+	// @NOTE It is possible that at the time of begining movement, that a creature is not in the viewport of the player.
+	on_movement_begin((int32_t) get_sys_time());
 	
 	map()->container()->getScheduler().Schedule(
-		Milliseconds(status()->movement_speed()->get_with_cost(c.move_cost())), get_scheduler_task_id(UNIT_SCHEDULE_WALK),
+		Milliseconds(status()->movement_speed()->get_with_cost(_walk_path.at(1).move_cost())), get_scheduler_task_id(UNIT_SCHEDULE_WALK),
 		[this](TaskContext context)
 		{
 			if (_walk_path.size() == 0) // to fix the "invalid vector subscript" error.
@@ -191,12 +193,13 @@ void Unit::walk()
 				schedule_walk();
 				return;
 			}
-			else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.empty())
+			else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.size() == 1)
 			{
 				stop_walking();
+				return;
 			}
 
-			std::chrono::milliseconds walk_delay = std::chrono::milliseconds(status()->movement_speed()->get_with_cost(c.move_cost()));
+			std::chrono::milliseconds walk_delay = std::chrono::milliseconds(status()->movement_speed()->get_with_cost(_walk_path.at(1).move_cost()));
 			
 			if (has_damage_walk_delay() && is_dead() == false)
 				walk_delay += std::chrono::milliseconds(status()->damage_walk_delay()->total());

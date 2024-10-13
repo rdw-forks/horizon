@@ -81,10 +81,16 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain);
 
-	while(s_login->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS)
+	while(s_login->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
-	};
+	}
+
+	if (s_login->get_context_result() == Horizon::System::RUNTIME_CONTEXT_FAIL) {
+		ZC_ACK_REQ_DISCONNECT pkt(get_session());
+		pkt.deliver(0);
+		return false;
+	}
 
 	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_2 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_RUNTIME);
 
@@ -121,8 +127,14 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain_2);
 
-	while(s_login_response->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS) {
+	while(s_login_response->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE) {
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
+	}
+
+	if (s_login_response->get_context_result() == Horizon::System::RUNTIME_CONTEXT_FAIL) {
+		ZC_ACK_REQ_DISCONNECT pkt(get_session());
+		pkt.deliver(0);
+		return false;
 	}
 
 	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager());
