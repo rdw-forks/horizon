@@ -223,11 +223,28 @@ namespace Traits
 	class Attribute
 	{
 	public:
+    	// Default constructor
+    	Attribute() = default;
 
+   		// Parameterized constructor
 		Attribute(std::weak_ptr<Unit> unit, status_point_type st_type, int32_t base = 0, int32_t equip = 0, int32_t status = 0)
 		: _status_point_type(st_type), _unit(unit)
 		{
 			add_permanent_change({base, equip, status}, "initial");
+		}
+
+    	// Copy constructor
+    	Attribute(const Attribute &other)
+        : _unit(other._unit), _status_point_type(other._status_point_type), _base_val(other._base_val), _equip_val(other._equip_val), _status_val(other._status_val) 
+		{
+			add_permanent_change({other._base_val, other._equip_val, other._status_val}, "initial");
+		}
+
+    	// Move constructor
+    	Attribute(Attribute &&other) noexcept
+        : _unit(std::move(other._unit)), _status_point_type(other._status_point_type), _base_val(other._base_val), _equip_val(other._equip_val), _status_val(other._status_val) 
+		{
+			add_permanent_change({other._base_val, other._equip_val, other._status_val}, "initial");
 		}
 
 		std::shared_ptr<Unit> unit() { return _unit.lock(); }
@@ -299,6 +316,16 @@ namespace Traits
 		bool operator <= (Attribute const &right) { return total() <= right.total(); }
 
 		Attribute operator = (Attribute &right)
+		{
+			unit(right.unit());
+			set_base(right.get_base());
+			set_equip(right.get_equip());
+			set_status(right.get_status());
+
+			return *this;
+		}
+		
+		Attribute operator = (Attribute &&right)
 		{
 			unit(right.unit());
 			set_base(right.get_base());

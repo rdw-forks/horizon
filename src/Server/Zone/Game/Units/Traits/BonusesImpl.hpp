@@ -50,7 +50,7 @@ namespace Bonuses
 
 		// create copy and move constructors for Bonus
 		Bonus(Bonus &other) : Traits::Attribute(other), _parameter_1(other._parameter_1), _parameter_2(other._parameter_2), _parameter_3(other._parameter_3) { }
-		Bonus(Bonus &&other) : Traits::Attribute(std::move(other)), _parameter_1(other._parameter_1), _parameter_2(other._parameter_2), _parameter_3(other._parameter_3) { }
+		Bonus(Bonus &&other) noexcept : Traits::Attribute(std::move(other)), _parameter_1(other._parameter_1), _parameter_2(other._parameter_2), _parameter_3(other._parameter_3) { }
 
 		// create copy and move assignment operators for Bonus
 		Bonus& operator=(Bonus &other) { 
@@ -64,13 +64,13 @@ namespace Bonuses
 			}
 			return *this; 
 		}
-		Bonus& operator=(Bonus &&other) { 
+		Bonus& operator=(Bonus &&other) noexcept { 
 			if (this != &other) {
 				Traits::Attribute::operator=(std::move(other));
 				_parameter_1 = other._parameter_1;
 				_parameter_2 = other._parameter_2;
 				_parameter_3 = other._parameter_3;
-				_unit = other._unit;
+				_unit = std::move(other._unit);
 				_applied = other._applied;
 			}
 			return *this;
