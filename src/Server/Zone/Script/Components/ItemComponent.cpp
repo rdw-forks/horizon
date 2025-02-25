@@ -207,8 +207,6 @@ void ItemComponent::sync_definitions(std::shared_ptr<sol::state> state)
 
 void ItemComponent::sync_data_types(std::shared_ptr<sol::state> state)
 {
-
-	
 	state->new_usertype<item_entry_data::options>("item_options",
 		"index", sol::property(&item_entry_data::options::get_index, &item_entry_data::options::set_index),
 		"value", sol::property(&item_entry_data::options::get_value, &item_entry_data::options::set_value)

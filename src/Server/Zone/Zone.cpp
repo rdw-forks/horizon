@@ -44,9 +44,9 @@ ZoneKernel::~ZoneKernel()
 
 void ZoneKernel::initialize()
 {
-	_task_scheduler.Schedule(Seconds(60), [this] (TaskContext context) {
+	_task_scheduler.Schedule(Seconds(0), [this] (TaskContext context) {
 		verify_connected_sessions();
-		context.Repeat();
+		context.Repeat(Seconds(60));
 	});
 
 	Server::initialize();
@@ -64,8 +64,9 @@ void ZoneKernel::verify_connected_sessions()
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 	
 	try {
+		int64_t time = std::time(nullptr) - config().session_max_timeout();
 		boost::mysql::statement stmt = conn->prepare_statement("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?");
-		auto b1 = stmt.bind("Z", std::time(nullptr) - config().session_max_timeout());
+		auto b1 = stmt.bind("Z", time);
 		boost::mysql::results results;
 		conn->execute(b1, results);
 
@@ -73,6 +74,11 @@ void ZoneKernel::verify_connected_sessions()
 		auto b2 = stmt.bind("Z");
 		conn->execute(b2, results);
 
+		if (results.rows().empty()) {
+			HLog(info) << "There are no connected session(s).";
+			return;
+		}
+		
 		int32_t count = results.rows()[0][0].as_int64();
 
 		HLog(info) << count << " connected session(s).";
@@ -83,7 +89,7 @@ void ZoneKernel::verify_connected_sessions()
 }
 
 /**
- * Zone Main server constructor.
+ * Zone Main server constructor.	
  */
 ZoneServer::ZoneServer()
 : ZoneKernel(_zone_server_config), _update_timer(get_io_context())
@@ -205,6 +211,7 @@ void ZoneServer::update(int64_t diff)
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(boost::bind(&ZoneServer::update, this, std::time(nullptr)));
+		_task_scheduler.Update();
 	} else {	
 		for (auto i = _components.begin(); i != _components.end(); i++) {
 			HLog(info) << "Kernel component '" << i->second.ptr->get_type_string()  << " (" << i->second.segment_number << ")': " << (i->second.ptr->is_finalized() == true ? "Offline" : "Online (Shutting Down)") << " { CPU: " << i->second.ptr->get_thread_cpu_id() << " , uuid: " << i->first << " }";

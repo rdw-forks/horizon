@@ -249,14 +249,14 @@ public:
 	{
 		_update_count++;
 
-        // Update thread update rate every second to determine the number of updates per second
-        auto current_time = std::chrono::steady_clock::now();
-        auto diff_time = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - _last_thread_update_rate_time).count();
-        if (diff_time >= 1e9) {
-            double update_rate = _update_count / (diff_time / 1e9);
-            set_thread_update_rate(update_rate);
-            _update_count = 0;
-            _last_thread_update_rate_time = current_time;
+		// Update thread update rate every second to determine the number of updates per second
+		auto current_time = std::chrono::steady_clock::now();
+		auto diff_time = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - _last_thread_update_rate_time).count();
+		if (diff_time >= 1e9) {
+			double update_rate = _update_count / (diff_time / 1e9);
+			set_thread_update_rate(update_rate);
+			_update_count = 0;
+			_last_thread_update_rate_time = current_time;
 		}
 	}
 

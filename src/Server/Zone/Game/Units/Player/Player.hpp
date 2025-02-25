@@ -92,6 +92,12 @@ public:
 	void set_initialized(bool val) { _is_initialized = val; }
 
 	/**
+	 * Unit functions
+	 */
+	void on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage) override;
+	virtual void on_killed(std::shared_ptr<Unit> killer, bool with_drops = false, bool with_exp = false) override;
+
+	/**
 	 * Grid applications
 	 */
 	void update_viewport();
@@ -193,8 +199,6 @@ public:
 
     bool attack(std::shared_ptr<Unit> e, bool continuous = false) override;
     bool stop_attack();
-
-	virtual void on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp) override;
 
 	void respawn(int hp_rate, int sp_rate);
 	

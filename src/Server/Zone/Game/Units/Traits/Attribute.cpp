@@ -153,6 +153,9 @@ void PeriodicChanges::update(uint64_t delta)
 			continue;
 		}
 
+		// Temporary changes are applied to the base attribute which is first calculated via the compute() function where set_base is called to set the initial value.
+		// Post the initial value, the temporary changes are applied to the base value of the attribute.
+		// The base value is again reset if compute is called, so we don't use compute() in this function as it is not required.
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(change.last_update.time_since_epoch() + std::chrono::milliseconds(change.interval)).count() < delta)
 		{
 			std::function<bool(int, int, int)> over_min = [](int attr, int change, int min) { return (attr - change) < min; };
@@ -220,8 +223,6 @@ void PeriodicChanges::update(uint64_t delta)
 					changed = (_attr->get_status() - change.change.get_min()) > 0;
 				}
 			}
-
-			_attr->compute();
 
 			if (changed)
 				change.change.client_notify_function(change.change);
@@ -897,13 +898,17 @@ int32_t AttackRange::compute()
 	if (unit()->type() == UNIT_PLAYER) {
 		EquipmentListType const &equipments = unit()->downcast<Horizon::Zone::Units::Player>()->inventory()->equipments();
 		
-		if (equipments[IT_EQPI_HAND_R].second.expired() == true)
-			return 1;
+		if (equipments[IT_EQPI_HAND_R].second.expired() == true) {
+			set_base(1);
+			return total();
+		}
 
 		std::shared_ptr<const item_entry_data> rhw = equipments[IT_EQPI_HAND_R].second.lock();
 		
-		if (rhw == nullptr || rhw->config == nullptr)
-			return 1;
+		if (rhw == nullptr || rhw->config == nullptr) {
+			set_base(1);
+			return total();
+		}
 
 		set_base(rhw->config->attack_range);
 

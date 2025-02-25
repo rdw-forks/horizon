@@ -61,6 +61,49 @@ struct s_game_process_configuration
 
 struct s_zone_server_configuration
 {
+	// create copy and move constructors for s_zone_server_configuration
+	s_zone_server_configuration() = default;
+
+	s_zone_server_configuration &operator=(const s_zone_server_configuration &other)
+	{
+		if (this != &other)
+		{
+			_static_db_path = other._static_db_path;
+			_mapcache_path = other._mapcache_path;
+			_session_max_timeout = other._session_max_timeout;
+			_script_root_path = other._script_root_path;
+			_max_network_threads = other._max_network_threads;
+			_max_game_logic_threads = other._max_game_logic_threads;
+			_max_persistence_threads = other._max_persistence_threads;
+			_max_script_vm_threads = other._max_script_vm_threads;
+		}
+		return *this;
+	}
+
+	s_zone_server_configuration(s_zone_server_configuration &&other)
+	{
+		_static_db_path = std::move(other._static_db_path);
+		_mapcache_path = std::move(other._mapcache_path);
+		_session_max_timeout = other._session_max_timeout;
+		_script_root_path = std::move(other._script_root_path);
+		_max_network_threads = other._max_network_threads;
+		_max_game_logic_threads = other._max_game_logic_threads;
+		_max_persistence_threads = other._max_persistence_threads;
+		_max_script_vm_threads = other._max_script_vm_threads;
+	}
+
+	s_zone_server_configuration(const s_zone_server_configuration &other)
+	{
+		_static_db_path = other._static_db_path;
+		_mapcache_path = other._mapcache_path;
+		_session_max_timeout = other._session_max_timeout;
+		_script_root_path = other._script_root_path;
+		_max_network_threads = other._max_network_threads;
+		_max_game_logic_threads = other._max_game_logic_threads;
+		_max_persistence_threads = other._max_persistence_threads;
+		_max_script_vm_threads = other._max_script_vm_threads;
+	}
+
 	boost::filesystem::path &get_mapcache_path() { return _mapcache_path; }
 	void set_mapcache_path(boost::filesystem::path p) { _mapcache_path = p; }
 	
@@ -105,6 +148,7 @@ public:
 	void finalize();
 	
 	s_zone_server_configuration &config() { return _config; }
+	void set_config(s_zone_server_configuration &config) { _config = config; }
 
 	TaskScheduler &getScheduler() { return _task_scheduler; }
 

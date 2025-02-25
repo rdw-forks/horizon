@@ -564,6 +564,18 @@ void Player::on_map_enter()
 	}
 }
 
+
+void Player::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
+{
+	Unit::on_damage_received(damage_dealer, damage);
+
+	if (status()->current_hp()->total() <= damage) {
+		status()->current_hp()->set_base(0);
+		on_killed(damage_dealer);
+		return;
+	}
+}
+
 void Player::respawn(int hp_rate, int sp_rate)
 {
 	if (is_dead() == false)

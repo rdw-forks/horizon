@@ -221,6 +221,7 @@ public:
 	virtual bool attack(std::shared_ptr<Unit> target, bool continuous = false);
 	virtual bool stop_attacking();
 
+	bool target_is_attackable(std::shared_ptr<Unit> target);
 	void set_attacking(bool attacking) { _is_attacking = attacking; }
 	bool is_attacking() { return _is_attacking; }
 	void on_attack_end();
@@ -252,9 +253,27 @@ public:
 	bool has_damage_walk_delay() { return _damage_walk_delay; }
 	void set_damage_walk_delay(bool delay) { _damage_walk_delay = delay; }
 
+	/**
+	 * Lockon after walk completed.
+	 */
+	void set_lockon_after_walk_completed(uint64_t target_guid, bool continuous = false)
+	{
+		_lockon_after_walk_completed.target_guid = target_guid;
+		_lockon_after_walk_completed.continuous = continuous;
+	}
+	void clear_lockon_after_walk_completed() { _lockon_after_walk_completed.target_guid = 0; }
+	uint64_t lockon_after_walk_completed_target_guid() { return _lockon_after_walk_completed.target_guid; }
+
 private:
 	bool _is_initialized{false}, _jump_walk_stop{false}, _is_finalized{ false };
 	bool _is_attacking{false};
+
+	struct s_lockon_after_walk_completed
+	{
+		uint64_t target_guid{0};
+		bool continuous{false};
+	} _lockon_after_walk_completed{0, false};
+
 	uint64_t _uuid{0};
 	unit_uuid _s_uuid{ 0 };
 	unit_type _type{UNIT_UNKNOWN};

@@ -208,11 +208,11 @@ inline void Horizon::Zone::Map::visit(GridCoords const &lower_bound, GridCoords 
 	// This ensures that the entities are visited in the container in the same order as they are stored in the map
 	// We visit all ranges - 0,0 to maximum grids in a map 
 	// (the upper range as well, i.e. if the map is 10x10 grids, we visit 0,0 to 10,10 and not 9x9)
-	for (int y = upper_bound.y(); y >= lower_bound.y(); y--) {
-		for (int x = lower_bound.x(); x <= upper_bound.x(); x++) {
-			visit(x, y, visitor);
-		}
-	}
+    for (int y = lower_bound.y(); y <= upper_bound.y(); y++) {
+        for (int x = lower_bound.x(); x <= upper_bound.x(); x++) {
+            visit(x, y, visitor);
+        }
+    }
 }
 
 #endif /* HORIZON_ZONE_GAME_MAP_HPP */

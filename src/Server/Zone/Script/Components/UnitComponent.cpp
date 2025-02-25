@@ -702,6 +702,812 @@ void UnitComponent::sync_data_types(std::shared_ptr<sol::state> state)
 	config_2["target_y"] = &s_unit_skill_use_notifier_config::target_y;
 	config_2["element"] = &s_unit_skill_use_notifier_config::element;
 	config_2["cast_time"] = &s_unit_skill_use_notifier_config::cast_time;
+
+	
+    sol::usertype<Horizon::Zone::Bonuses::Bonus> config_31 = state->new_usertype<Horizon::Zone::Bonuses::Bonus>("Bonus",
+		sol::constructors<Horizon::Zone::Bonuses::Bonus(std::shared_ptr<Unit>, status_point_type, int)>());
+    config_31["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::Bonus> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+    config_31["get"] = &Horizon::Zone::Bonuses::Bonus::get;
+    config_31["set"] = &Horizon::Zone::Bonuses::Bonus::set;
+	config_31["get_parameter_1"] = &Horizon::Zone::Bonuses::Bonus::get_parameter_1;
+	config_31["get_parameter_2"] = &Horizon::Zone::Bonuses::Bonus::get_parameter_2;
+	config_31["get_parameter_3"] = &Horizon::Zone::Bonuses::Bonus::get_parameter_3;
+	config_31["set_parameter_1"] = &Horizon::Zone::Bonuses::Bonus::set_parameter_1;
+	config_31["set_parameter_2"] = &Horizon::Zone::Bonuses::Bonus::set_parameter_2;
+	config_31["set_parameter_3"] = &Horizon::Zone::Bonuses::Bonus::set_parameter_3;
+	config_31["is_applied"] = &Horizon::Zone::Bonuses::Bonus::is_applied;
+	config_31["set_applied"] = &Horizon::Zone::Bonuses::Bonus::set_applied;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAllStatus> config_35 = state->new_usertype<Horizon::Zone::Bonuses::BonusAllStatus>("BonusAllStatus",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAllStatus(std::shared_ptr<Unit>, int value)>());
+	config_35["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAllStatus> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_35["get"] = &Horizon::Zone::Bonuses::BonusAllStatus::get;
+	config_35["set"] = &Horizon::Zone::Bonuses::BonusAllStatus::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackElement> config_36 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackElement>("BonusAttackElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAllStatus(std::shared_ptr<Unit>, int)>());
+	config_36["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackElement> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_36["get"] = &Horizon::Zone::Bonuses::BonusAttackElement::get;
+	config_36["set"] = &Horizon::Zone::Bonuses::BonusAttackElement::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusDefenseElement> config_37 = state->new_usertype<Horizon::Zone::Bonuses::BonusDefenseElement>("BonusDefenseElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusDefenseElement(std::shared_ptr<Unit>, int)>());
+	config_37["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusDefenseElement> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_37["get"] = &Horizon::Zone::Bonuses::BonusDefenseElement::get;
+	config_37["set"] = &Horizon::Zone::Bonuses::BonusDefenseElement::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCastPercent> config_38 = state->new_usertype<Horizon::Zone::Bonuses::BonusCastPercent>("BonusCastPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCastPercent(std::shared_ptr<Unit>, int)>());
+	config_38["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusCastPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_38["get"] = &Horizon::Zone::Bonuses::BonusCastPercent::get;
+	config_38["set"] = &Horizon::Zone::Bonuses::BonusCastPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMaxHPPercent> config_39 = state->new_usertype<Horizon::Zone::Bonuses::BonusMaxHPPercent>("BonusMaxHPPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMaxHPPercent(std::shared_ptr<Unit>, int)>());
+	config_39["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMaxHPPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_39["get"] = &Horizon::Zone::Bonuses::BonusMaxHPPercent::get;
+	config_39["set"] = &Horizon::Zone::Bonuses::BonusMaxHPPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMaxSPPercent> config_40 = state->new_usertype<Horizon::Zone::Bonuses::BonusMaxSPPercent>("BonusMaxSPPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMaxSPPercent(std::shared_ptr<Unit>, int)>());
+	config_40["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMaxSPPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_40["get"] = &Horizon::Zone::Bonuses::BonusMaxSPPercent::get;
+	config_40["set"] = &Horizon::Zone::Bonuses::BonusMaxSPPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackRange> config_41 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackRange>("BonusAttackRange",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAttackRange(std::shared_ptr<Unit>, int)>());
+	config_41["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackRange> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_41["get"] = &Horizon::Zone::Bonuses::BonusAttackRange::get;
+	config_41["set"] = &Horizon::Zone::Bonuses::BonusAttackRange::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackRangePercent> config_42 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackRangePercent>("BonusAttackRangePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAttackRangePercent(std::shared_ptr<Unit>, int)>());
+	config_42["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackRangePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_42["get"] = &Horizon::Zone::Bonuses::BonusAttackRangePercent::get;
+	config_42["set"] = &Horizon::Zone::Bonuses::BonusAttackRangePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddMovementSpeedPercent> config_43 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddMovementSpeedPercent>("BonusAddMovementSpeedPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddMovementSpeedPercent(std::shared_ptr<Unit>, int)>());
+	config_43["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAddMovementSpeedPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_43["get"] = &Horizon::Zone::Bonuses::BonusAddMovementSpeedPercent::get;
+	config_43["set"] = &Horizon::Zone::Bonuses::BonusAddMovementSpeedPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackSpeedPercent> config_44 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackSpeedPercent>("BonusAttackSpeedPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAttackSpeedPercent(std::shared_ptr<Unit>, int)>());
+	config_44["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackSpeedPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_44["get"] = &Horizon::Zone::Bonuses::BonusAttackSpeedPercent::get;
+	config_44["set"] = &Horizon::Zone::Bonuses::BonusAttackSpeedPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHPRecoveryPercent> config_45 = state->new_usertype<Horizon::Zone::Bonuses::BonusHPRecoveryPercent>("BonusHPRecoveryPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHPRecoveryPercent(std::shared_ptr<Unit>, int)>());
+	config_45["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHPRecoveryPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_45["get"] = &Horizon::Zone::Bonuses::BonusHPRecoveryPercent::get;
+	config_45["set"] = &Horizon::Zone::Bonuses::BonusHPRecoveryPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSPRecoveryPercent> config_46 = state->new_usertype<Horizon::Zone::Bonuses::BonusSPRecoveryPercent>("BonusSPRecoveryPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSPRecoveryPercent(std::shared_ptr<Unit>, int)>());
+	config_46["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSPRecoveryPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_46["get"] = &Horizon::Zone::Bonuses::BonusSPRecoveryPercent::get;
+	config_46["set"] = &Horizon::Zone::Bonuses::BonusSPRecoveryPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCriticalDefense> config_47 = state->new_usertype<Horizon::Zone::Bonuses::BonusCriticalDefense>("BonusCriticalDefense",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCriticalDefense(std::shared_ptr<Unit>, int)>());
+	config_47["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusCriticalDefense> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_47["get"] = &Horizon::Zone::Bonuses::BonusCriticalDefense::get;
+	config_47["set"] = &Horizon::Zone::Bonuses::BonusCriticalDefense::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMeleeDefense> config_48 = state->new_usertype<Horizon::Zone::Bonuses::BonusMeleeDefense>("BonusMeleeDefense",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMeleeDefense(std::shared_ptr<Unit>, int)>());
+	config_48["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMeleeDefense> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_48["get"] = &Horizon::Zone::Bonuses::BonusMeleeDefense::get;
+	config_48["set"] = &Horizon::Zone::Bonuses::BonusMeleeDefense::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusRangedDefense> config_49 = state->new_usertype<Horizon::Zone::Bonuses::BonusRangedDefense>("BonusRangedDefense",
+		sol::constructors<Horizon::Zone::Bonuses::BonusRangedDefense(std::shared_ptr<Unit>, int)>());
+	config_49["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusRangedDefense> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_49["get"] = &Horizon::Zone::Bonuses::BonusRangedDefense::get;
+	config_49["set"] = &Horizon::Zone::Bonuses::BonusRangedDefense::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusDoubleAttackPercent> config_50 = state->new_usertype<Horizon::Zone::Bonuses::BonusDoubleAttackPercent>("BonusDoubleAttackPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusDoubleAttackPercent(std::shared_ptr<Unit>, int)>());
+	config_50["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusDoubleAttackPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_50["get"] = &Horizon::Zone::Bonuses::BonusDoubleAttackPercent::get;
+	config_50["set"] = &Horizon::Zone::Bonuses::BonusDoubleAttackPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMagicAttackPercent> config_51 = state->new_usertype<Horizon::Zone::Bonuses::BonusMagicAttackPercent>("BonusMagicAttackPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMagicAttackPercent(std::shared_ptr<Unit>, int)>());
+	config_51["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMagicAttackPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_51["get"] = &Horizon::Zone::Bonuses::BonusMagicAttackPercent::get;
+	config_51["set"] = &Horizon::Zone::Bonuses::BonusMagicAttackPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackPercent> config_52 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackPercent>("BonusAttackPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAttackPercent(std::shared_ptr<Unit>, int)>());
+	config_52["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_52["get"] = &Horizon::Zone::Bonuses::BonusAttackPercent::get;
+	config_52["set"] = &Horizon::Zone::Bonuses::BonusAttackPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMagicDefensePercent> config_53 = state->new_usertype<Horizon::Zone::Bonuses::BonusMagicDefensePercent>("BonusMagicDefensePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMagicDefensePercent(std::shared_ptr<Unit>, int)>());
+	config_53["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMagicDefensePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_53["get"] = &Horizon::Zone::Bonuses::BonusMagicDefensePercent::get;
+	config_53["set"] = &Horizon::Zone::Bonuses::BonusMagicDefensePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMiscDefensePercent> config_55 = state->new_usertype<Horizon::Zone::Bonuses::BonusMiscDefensePercent>("BonusMiscDefensePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMiscDefensePercent(std::shared_ptr<Unit>, int)>());
+	config_55["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMiscDefensePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_55["get"] = &Horizon::Zone::Bonuses::BonusMiscDefensePercent::get;
+	config_55["set"] = &Horizon::Zone::Bonuses::BonusMiscDefensePercent::set;
+	
+	sol::usertype<Horizon::Zone::Bonuses::BonusPerfectHitPercent> config_56 = state->new_usertype<Horizon::Zone::Bonuses::BonusPerfectHitPercent>("BonusPerfectHitPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusPerfectHitPercent(std::shared_ptr<Unit>, int)>());
+	config_56["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusPerfectHitPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_56["get"] = &Horizon::Zone::Bonuses::BonusPerfectHitPercent::get;
+	config_56["set"] = &Horizon::Zone::Bonuses::BonusPerfectHitPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCriticalPercent> config_57 = state->new_usertype<Horizon::Zone::Bonuses::BonusCriticalPercent>("BonusCriticalPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCriticalPercent(std::shared_ptr<Unit>, int)>());
+	config_57["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusCriticalPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_57["get"] = &Horizon::Zone::Bonuses::BonusCriticalPercent::get;
+	config_57["set"] = &Horizon::Zone::Bonuses::BonusCriticalPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusGetZenyNum> config_58 = state->new_usertype<Horizon::Zone::Bonuses::BonusGetZenyNum>("BonusGetZenyNum",
+		sol::constructors<Horizon::Zone::Bonuses::BonusGetZenyNum(std::shared_ptr<Unit>, int)>());
+	config_58["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusGetZenyNum> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_58["get"] = &Horizon::Zone::Bonuses::BonusGetZenyNum::get;
+	config_58["set"] = &Horizon::Zone::Bonuses::BonusGetZenyNum::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForElement> config_59 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForElement>("BonusAttackOnDefenseRatioForElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForElement(std::shared_ptr<Unit>, int)>());
+	config_59["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForElement> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_59["get"] = &Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForElement::get;
+	config_59["set"] = &Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForElement::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForRace> config_60 = state->new_usertype<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForRace>("BonusAttackOnDefenseRatioForRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForRace(std::shared_ptr<Unit>, int)>());
+	config_60["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForRace> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_60["get"] = &Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForRace::get;
+	config_60["set"] = &Horizon::Zone::Bonuses::BonusAttackOnDefenseRatioForRace::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHitPercent> config_61 = state->new_usertype<Horizon::Zone::Bonuses::BonusHitPercent>("BonusHitPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHitPercent(std::shared_ptr<Unit>, int)>());
+	config_61["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHitPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_61["get"] = &Horizon::Zone::Bonuses::BonusHitPercent::get;
+	config_61["set"] = &Horizon::Zone::Bonuses::BonusHitPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusFleePercent> config_62 = state->new_usertype<Horizon::Zone::Bonuses::BonusFleePercent>("BonusFleePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusFleePercent(std::shared_ptr<Unit>, int)>());
+	config_62["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusFleePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_62["get"] = &Horizon::Zone::Bonuses::BonusFleePercent::get;
+	config_62["set"] = &Horizon::Zone::Bonuses::BonusFleePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusPerfectDodgePercent> config_63 = state->new_usertype<Horizon::Zone::Bonuses::BonusPerfectDodgePercent>("BonusPerfectDodgePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusPerfectDodgePercent(std::shared_ptr<Unit>, int)>());
+	config_63["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusPerfectDodgePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_63["get"] = &Horizon::Zone::Bonuses::BonusPerfectDodgePercent::get;
+	config_63["set"] = &Horizon::Zone::Bonuses::BonusPerfectDodgePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSoftDefensePercent> config_64 = state->new_usertype<Horizon::Zone::Bonuses::BonusSoftDefensePercent>("BonusSoftDefensePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSoftDefensePercent(std::shared_ptr<Unit>, int)>());
+	config_64["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSoftDefensePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_64["get"] = &Horizon::Zone::Bonuses::BonusSoftDefensePercent::get;
+	config_64["set"] = &Horizon::Zone::Bonuses::BonusSoftDefensePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHardDefensePercent> config_65 = state->new_usertype<Horizon::Zone::Bonuses::BonusHardDefensePercent>("BonusHardDefensePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHardDefensePercent(std::shared_ptr<Unit>, int)>());
+	config_65["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHardDefensePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_65["get"] = &Horizon::Zone::Bonuses::BonusHardDefensePercent::get;
+	config_65["set"] = &Horizon::Zone::Bonuses::BonusHardDefensePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSoftMagicalDefensePercent> config_66 = state->new_usertype<Horizon::Zone::Bonuses::BonusSoftMagicalDefensePercent>("BonusSoftMagicalDefensePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSoftMagicalDefensePercent(std::shared_ptr<Unit>, int)>());
+	config_66["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSoftMagicalDefensePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_66["get"] = &Horizon::Zone::Bonuses::BonusSoftMagicalDefensePercent::get;
+	config_66["set"] = &Horizon::Zone::Bonuses::BonusSoftMagicalDefensePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHardMagicalDefensePercent> config_67 = state->new_usertype<Horizon::Zone::Bonuses::BonusHardMagicalDefensePercent>("BonusHardMagicalDefensePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHardMagicalDefensePercent(std::shared_ptr<Unit>, int)>());
+	config_67["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHardMagicalDefensePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_67["get"] = &Horizon::Zone::Bonuses::BonusHardMagicalDefensePercent::get;
+	config_67["set"] = &Horizon::Zone::Bonuses::BonusHardMagicalDefensePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusRestartWithFullRecovery> config_68 = state->new_usertype<Horizon::Zone::Bonuses::BonusRestartWithFullRecovery>("BonusRestartWithFullRecovery",
+		sol::constructors<Horizon::Zone::Bonuses::BonusRestartWithFullRecovery(std::shared_ptr<Unit>, int)>());
+	config_68["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusRestartWithFullRecovery> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_68["get"] = &Horizon::Zone::Bonuses::BonusRestartWithFullRecovery::get;
+	config_68["set"] = &Horizon::Zone::Bonuses::BonusRestartWithFullRecovery::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCastCancelImmunity> config_69 = state->new_usertype<Horizon::Zone::Bonuses::BonusCastCancelImmunity>("BonusCastCancelImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCastCancelImmunity(std::shared_ptr<Unit>, int)>());
+	config_69["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusCastCancelImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_69["get"] = &Horizon::Zone::Bonuses::BonusCastCancelImmunity::get;
+	config_69["set"] = &Horizon::Zone::Bonuses::BonusCastCancelImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSizeModifierImmunity> config_70 = state->new_usertype<Horizon::Zone::Bonuses::BonusSizeModifierImmunity>("BonusSizeModifierImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSizeModifierImmunity(std::shared_ptr<Unit>, int)>());
+	config_70["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSizeModifierImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_70["get"] = &Horizon::Zone::Bonuses::BonusSizeModifierImmunity::get;
+	config_70["set"] = &Horizon::Zone::Bonuses::BonusSizeModifierImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMagicDamageImmunity> config_71 = state->new_usertype<Horizon::Zone::Bonuses::BonusMagicDamageImmunity>("BonusMagicDamageImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMagicDamageImmunity(std::shared_ptr<Unit>, int)>());
+	config_71["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMagicDamageImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_71["get"] = &Horizon::Zone::Bonuses::BonusMagicDamageImmunity::get;
+	config_71["set"] = &Horizon::Zone::Bonuses::BonusMagicDamageImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusWeaponDamageImmunity> config_72 = state->new_usertype<Horizon::Zone::Bonuses::BonusWeaponDamageImmunity>("BonusWeaponDamageImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusWeaponDamageImmunity(std::shared_ptr<Unit>, int)>());
+	config_72["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusWeaponDamageImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_72["get"] = &Horizon::Zone::Bonuses::BonusWeaponDamageImmunity::get;
+	config_72["set"] = &Horizon::Zone::Bonuses::BonusWeaponDamageImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusGemstoneImmunity> config_73 = state->new_usertype<Horizon::Zone::Bonuses::BonusGemstoneImmunity>("BonusGemstoneImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusGemstoneImmunity(std::shared_ptr<Unit>, int)>());
+	config_73["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusGemstoneImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_73["get"] = &Horizon::Zone::Bonuses::BonusGemstoneImmunity::get;
+	config_73["set"] = &Horizon::Zone::Bonuses::BonusGemstoneImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusGearFuelImmunity> config_74 = state->new_usertype<Horizon::Zone::Bonuses::BonusGearFuelImmunity>("BonusGearFuelImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusGearFuelImmunity(std::shared_ptr<Unit>, int)>());
+	config_74["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusGearFuelImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_74["get"] = &Horizon::Zone::Bonuses::BonusGearFuelImmunity::get;
+	config_74["set"] = &Horizon::Zone::Bonuses::BonusGearFuelImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusInfiniteEndure> config_75 = state->new_usertype<Horizon::Zone::Bonuses::BonusInfiniteEndure>("BonusInfiniteEndure",
+		sol::constructors<Horizon::Zone::Bonuses::BonusInfiniteEndure(std::shared_ptr<Unit>, int)>());
+	config_75["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusInfiniteEndure> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_75["get"] = &Horizon::Zone::Bonuses::BonusInfiniteEndure::get;
+	config_75["set"] = &Horizon::Zone::Bonuses::BonusInfiniteEndure::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusUnbreakableWeapon> config_76 = state->new_usertype<Horizon::Zone::Bonuses::BonusUnbreakableWeapon>("BonusUnbreakableWeapon",
+		sol::constructors<Horizon::Zone::Bonuses::BonusUnbreakableWeapon(std::shared_ptr<Unit>, int)>());
+	config_76["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusUnbreakableWeapon> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_76["get"] = &Horizon::Zone::Bonuses::BonusUnbreakableWeapon::get;
+	config_76["set"] = &Horizon::Zone::Bonuses::BonusUnbreakableWeapon::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusUnbreakableArmor> config_77 = state->new_usertype<Horizon::Zone::Bonuses::BonusUnbreakableArmor>("BonusUnbreakableArmor",
+		sol::constructors<Horizon::Zone::Bonuses::BonusUnbreakableArmor(std::shared_ptr<Unit>, int)>());
+	config_77["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusUnbreakableArmor> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_77["get"] = &Horizon::Zone::Bonuses::BonusUnbreakableArmor::get;
+	config_77["set"] = &Horizon::Zone::Bonuses::BonusUnbreakableArmor::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusUnbreakableHelm> config_78 = state->new_usertype<Horizon::Zone::Bonuses::BonusUnbreakableHelm>("BonusUnbreakableHelm",
+		sol::constructors<Horizon::Zone::Bonuses::BonusUnbreakableHelm(std::shared_ptr<Unit>, int)>());
+	config_78["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusUnbreakableHelm> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_78["get"] = &Horizon::Zone::Bonuses::BonusUnbreakableHelm::get;
+	config_78["set"] = &Horizon::Zone::Bonuses::BonusUnbreakableHelm::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusUnbreakableShield> config_79 = state->new_usertype<Horizon::Zone::Bonuses::BonusUnbreakableShield>("BonusUnbreakableShield",
+		sol::constructors<Horizon::Zone::Bonuses::BonusUnbreakableShield(std::shared_ptr<Unit>, int)>());
+	config_79["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusUnbreakableShield> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_79["get"] = &Horizon::Zone::Bonuses::BonusUnbreakableShield::get;
+	config_79["set"] = &Horizon::Zone::Bonuses::BonusUnbreakableShield::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSPGainOnMobKill> config_80 = state->new_usertype<Horizon::Zone::Bonuses::BonusSPGainOnMobKill>("BonusSPGainOnMobKill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSPGainOnMobKill(std::shared_ptr<Unit>, int)>());
+	config_80["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSPGainOnMobKill> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_80["get"] = &Horizon::Zone::Bonuses::BonusSPGainOnMobKill::get;
+	config_80["set"] = &Horizon::Zone::Bonuses::BonusSPGainOnMobKill::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHPGainOnMobKill> config_81 = state->new_usertype<Horizon::Zone::Bonuses::BonusHPGainOnMobKill>("BonusHPGainOnMobKill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHPGainOnMobKill(std::shared_ptr<Unit>, int)>());
+	config_81["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHPGainOnMobKill> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_81["get"] = &Horizon::Zone::Bonuses::BonusHPGainOnMobKill::get;
+	config_81["set"] = &Horizon::Zone::Bonuses::BonusHPGainOnMobKill::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusDamageSplashRange> config_82 = state->new_usertype<Horizon::Zone::Bonuses::BonusDamageSplashRange>("BonusDamageSplashRange",
+		sol::constructors<Horizon::Zone::Bonuses::BonusDamageSplashRange(std::shared_ptr<Unit>, int)>());
+	config_82["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusDamageSplashRange> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_82["get"] = &Horizon::Zone::Bonuses::BonusDamageSplashRange::get;
+	config_82["set"] = &Horizon::Zone::Bonuses::BonusDamageSplashRange::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf> config_83 = state->new_usertype<Horizon::Zone::Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf>("BonusMeleeWeaponDamageReflectPercentOnSelf",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf(std::shared_ptr<Unit>, int)>());
+	config_83["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_83["get"] = &Horizon::Zone::Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf::get;
+	config_83["set"] = &Horizon::Zone::Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf> config_84 = state->new_usertype<Horizon::Zone::Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf>("BonusRangedWeaponDamageReflectPercentOnSelf",
+		sol::constructors<Horizon::Zone::Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf(std::shared_ptr<Unit>, int)>());
+	config_84["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_84["get"] = &Horizon::Zone::Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf::get;
+	config_84["set"] = &Horizon::Zone::Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusWeaponBreakPercent> config_85 = state->new_usertype<Horizon::Zone::Bonuses::BonusWeaponBreakPercent>("BonusWeaponBreakPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusWeaponBreakPercent(std::shared_ptr<Unit>, int)>());
+	config_85["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusWeaponBreakPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_85["get"] = &Horizon::Zone::Bonuses::BonusWeaponBreakPercent::get;
+	config_85["set"] = &Horizon::Zone::Bonuses::BonusWeaponBreakPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusArmorBreakPercent> config_86 = state->new_usertype<Horizon::Zone::Bonuses::BonusArmorBreakPercent>("BonusArmorBreakPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusArmorBreakPercent(std::shared_ptr<Unit>, int)>());
+	config_86["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusArmorBreakPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_86["get"] = &Horizon::Zone::Bonuses::BonusArmorBreakPercent::get;
+	config_86["set"] = &Horizon::Zone::Bonuses::BonusArmorBreakPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddStealPercent> config_87 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddStealPercent>("BonusAddStealPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddStealPercent(std::shared_ptr<Unit>, int)>());
+	config_87["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAddStealPercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_87["get"] = &Horizon::Zone::Bonuses::BonusAddStealPercent::get;
+	config_87["set"] = &Horizon::Zone::Bonuses::BonusAddStealPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCriticalDamagePercent> config_88 = state->new_usertype<Horizon::Zone::Bonuses::BonusCriticalDamagePercent>("BonusCriticalDamagePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCriticalDamagePercent(std::shared_ptr<Unit>, int)>());
+	config_88["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusCriticalDamagePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_88["get"] = &Horizon::Zone::Bonuses::BonusCriticalDamagePercent::get;
+	config_88["set"] = &Horizon::Zone::Bonuses::BonusCriticalDamagePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusDisableHPRecovery> config_89 = state->new_usertype<Horizon::Zone::Bonuses::BonusDisableHPRecovery>("BonusDisableHPRecovery",
+		sol::constructors<Horizon::Zone::Bonuses::BonusDisableHPRecovery(std::shared_ptr<Unit>, int)>());
+	config_89["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusDisableHPRecovery> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_89["get"] = &Horizon::Zone::Bonuses::BonusDisableHPRecovery::get;
+	config_89["set"] = &Horizon::Zone::Bonuses::BonusDisableHPRecovery::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusDisableSPRecovery> config_90 = state->new_usertype<Horizon::Zone::Bonuses::BonusDisableSPRecovery>("BonusDisableSPRecovery",
+		sol::constructors<Horizon::Zone::Bonuses::BonusDisableSPRecovery(std::shared_ptr<Unit>, int)>());
+	config_90["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusDisableSPRecovery> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_90["get"] = &Horizon::Zone::Bonuses::BonusDisableSPRecovery::get;
+	config_90["set"] = &Horizon::Zone::Bonuses::BonusDisableSPRecovery::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMagicDamageReflectPercentOnSelf> config_91 = state->new_usertype<Horizon::Zone::Bonuses::BonusMagicDamageReflectPercentOnSelf>("BonusMagicDamageReflectPercentOnSelf",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMagicDamageReflectPercentOnSelf(std::shared_ptr<Unit>, int)>());
+	config_91["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusMagicDamageReflectPercentOnSelf> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_91["get"] = &Horizon::Zone::Bonuses::BonusMagicDamageReflectPercentOnSelf::get;
+	config_91["set"] = &Horizon::Zone::Bonuses::BonusMagicDamageReflectPercentOnSelf::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusShortWeaponDamagePercent> config_92 = state->new_usertype<Horizon::Zone::Bonuses::BonusShortWeaponDamagePercent>("BonusShortWeaponDamagePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusShortWeaponDamagePercent(std::shared_ptr<Unit>, int)>());
+	config_92["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusShortWeaponDamagePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_92["get"] = &Horizon::Zone::Bonuses::BonusShortWeaponDamagePercent::get;
+	config_92["set"] = &Horizon::Zone::Bonuses::BonusShortWeaponDamagePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusLongWeaponDamagePercent> config_93 = state->new_usertype<Horizon::Zone::Bonuses::BonusLongWeaponDamagePercent>("BonusLongWeaponDamagePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusLongWeaponDamagePercent(std::shared_ptr<Unit>, int)>());
+	config_93["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusLongWeaponDamagePercent> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_93["get"] = &Horizon::Zone::Bonuses::BonusLongWeaponDamagePercent::get;
+	config_93["set"] = &Horizon::Zone::Bonuses::BonusLongWeaponDamagePercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusItemUsageImmunity> config_94 = state->new_usertype<Horizon::Zone::Bonuses::BonusItemUsageImmunity>("BonusItemUsageImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusItemUsageImmunity(std::shared_ptr<Unit>, int)>());
+	config_94["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusItemUsageImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_94["get"] = &Horizon::Zone::Bonuses::BonusItemUsageImmunity::get;
+	config_94["set"] = &Horizon::Zone::Bonuses::BonusItemUsageImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusKnockBackImmunity> config_95 = state->new_usertype<Horizon::Zone::Bonuses::BonusKnockBackImmunity>("BonusKnockbackImmunity",
+		sol::constructors<Horizon::Zone::Bonuses::BonusKnockBackImmunity(std::shared_ptr<Unit>, int)>());
+	config_95["attribute"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusKnockBackImmunity> t) { return std::static_pointer_cast<Horizon::Zone::Traits::Attribute>(t); };
+	config_95["get"] = &Horizon::Zone::Bonuses::BonusKnockBackImmunity::get;
+	config_95["set"] = &Horizon::Zone::Bonuses::BonusKnockBackImmunity::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement> config_96 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement>("BonusAddAttackPercentageToElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement(std::shared_ptr<Unit>)>());
+	config_96["get"] = &Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement::get;
+	config_96["set"] = &Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement::set;
+	config_96["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement::clear);
+	config_96["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddAttackPercentageToElement::clear);
+	
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace> config_97 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace>("BonusAddAttackPercentageToRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace(std::shared_ptr<Unit>)>());
+	config_97["get"] = &Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace::get;
+	config_97["set"] = &Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace::set;
+	config_97["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace::clear);
+	config_97["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddAttackPercentageToRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize> config_98 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize>("BonusAddAttackPercentageToSize",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize(std::shared_ptr<Unit>)>());
+	config_98["get"] = &Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize::get;
+	config_98["set"] = &Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize::set;
+	config_98["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize::clear);
+	config_98["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddAttackPercentageToSize::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement> config_99 = state->new_usertype<Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement>("BonusSubAttackPercentageFromElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement(std::shared_ptr<Unit>)>());
+	config_99["get"] = &Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement::get;
+	config_99["set"] = &Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement::set;
+	config_99["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement::clear);
+	config_99["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSubAttackPercentageFromElement::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace> config_100 = state->new_usertype<Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace>("BonusSubAttackPercentageFromRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace(std::shared_ptr<Unit>)>());
+	config_100["get"] = &Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace::get;
+	config_100["set"] = &Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace::set;
+	config_100["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace::clear);
+	config_100["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSubAttackPercentageFromRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::s_add_effect> config_104 = state->new_usertype<Horizon::Zone::Bonuses::s_add_effect>("s_add_effect");
+	config_104["eff_id"] = &Horizon::Zone::Bonuses::s_add_effect::eff_id;
+	config_104["rate"] = &Horizon::Zone::Bonuses::s_add_effect::rate;
+	config_104["arrow_rate"] = &Horizon::Zone::Bonuses::s_add_effect::arrow_rate;
+	config_104["tigger_type"] = &Horizon::Zone::Bonuses::s_add_effect::tigger_type;
+	config_104["duration"] = &Horizon::Zone::Bonuses::s_add_effect::duration;
+	
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddEffectOnDamage> config_101 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddEffectOnDamage>("BonusAddEffectOnDamage",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddEffectOnDamage(std::shared_ptr<Unit>)>());
+	config_101["get"] = &Horizon::Zone::Bonuses::BonusAddEffectOnDamage::get;
+	config_101["set"] = &Horizon::Zone::Bonuses::BonusAddEffectOnDamage::set;
+	config_101["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddEffectOnDamage::clear);
+	config_101["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddEffectOnDamage::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged> config_102 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged>("BonusAddEffectWhenDamaged",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged(std::shared_ptr<Unit>)>());
+	config_102["get"] = &Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged::get;
+	config_102["set"] = &Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged::set;
+	config_102["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged::clear);
+	config_102["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddEffectWhenDamaged::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusRessistEffect> config_103 = state->new_usertype<Horizon::Zone::Bonuses::BonusRessistEffect>("BonusRessistEffect",
+		sol::constructors<Horizon::Zone::Bonuses::BonusRessistEffect(std::shared_ptr<Unit>)>());
+	config_103["get"] = &Horizon::Zone::Bonuses::BonusRessistEffect::get;
+	config_103["set"] = &Horizon::Zone::Bonuses::BonusRessistEffect::set;
+	config_103["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusRessistEffect::clear);
+	config_103["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusRessistEffect::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement> config_105 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement>("BonusAddMagicAttackPercentageToElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement(std::shared_ptr<Unit>)>());
+	config_105["get"] = &Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement::get;
+	config_105["set"] = &Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement::set;
+	config_105["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement::clear);
+	config_105["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToElement::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace> config_106 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace>("BonusAddMagicAttackPercentageToRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace(std::shared_ptr<Unit>)>());
+	config_106["get"] = &Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace::get;
+	config_106["set"] = &Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace::set;
+	config_106["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace::clear);
+	config_106["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize> config_107 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize>("BonusAddMagicAttackPercentageToSize",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize(std::shared_ptr<Unit>)>());
+	config_107["get"] = &Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize::get;
+	config_107["set"] = &Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize::set;
+	config_107["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize::clear);
+	config_107["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddMagicAttackPercentageToSize::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack> config_108 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack>("BonusAddEffectOnMagicAttack",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack(std::shared_ptr<Unit>)>());
+	config_108["get"] = &Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack::get;
+	config_108["set"] = &Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack::set;
+	config_108["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack::clear);
+	config_108["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddEffectOnMagicAttack::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace> config_109 = state->new_usertype<Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace>("BonusResistMagicAttackFromRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace(std::shared_ptr<Unit>)>());
+	config_109["get"] = &Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace::get;
+	config_109["set"] = &Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace::set;
+	config_109["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace::clear);
+	config_109["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusResistMagicAttackFromRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddDamageToClass> config_110 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddDamageToClass>("BonusAddDamageToClass",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddDamageToClass(std::shared_ptr<Unit>)>());
+	config_110["get"] = &Horizon::Zone::Bonuses::BonusAddDamageToClass::get;
+	config_110["set"] = &Horizon::Zone::Bonuses::BonusAddDamageToClass::set;
+	config_110["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddDamageToClass::clear);
+	config_110["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddDamageToClass::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddMagicDamageToClass> config_111 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddMagicDamageToClass>("BonusAddMagicDamageToClass",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddMagicDamageToClass(std::shared_ptr<Unit>)>());
+	config_111["get"] = &Horizon::Zone::Bonuses::BonusAddMagicDamageToClass::get;
+	config_111["set"] = &Horizon::Zone::Bonuses::BonusAddMagicDamageToClass::set;
+	config_111["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddMagicDamageToClass::clear);
+	config_111["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddMagicDamageToClass::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddDefenseToClass> config_112 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddDefenseToClass>("BonusAddDefenseToClass",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddDefenseToClass(std::shared_ptr<Unit>)>());
+	config_112["get"] = &Horizon::Zone::Bonuses::BonusAddDefenseToClass::get;
+	config_112["set"] = &Horizon::Zone::Bonuses::BonusAddDefenseToClass::set;
+	config_112["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddDefenseToClass::clear);
+	config_112["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddDefenseToClass::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass> config_113 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass>("BonusAddMagicalDefenseToClass",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass(std::shared_ptr<Unit>)>());
+	config_113["get"] = &Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass::get;
+	config_113["set"] = &Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass::set;
+	config_113["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass::clear);
+	config_113["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddMagicalDefenseToClass::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHPDrainPercent> config_114 = state->new_usertype<Horizon::Zone::Bonuses::BonusHPDrainPercent>("BonusHPDrainPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHPDrainPercent(std::shared_ptr<Unit>, int, int)>());
+	config_114["get"] = &Horizon::Zone::Bonuses::BonusHPDrainPercent::get;
+	config_114["set"] = &Horizon::Zone::Bonuses::BonusHPDrainPercent::set;
+	config_114["get_parameter_1"] = &Horizon::Zone::Bonuses::BonusHPDrainPercent::get_parameter_1;
+	config_114["set_parameter_1"] = &Horizon::Zone::Bonuses::BonusHPDrainPercent::set_parameter_1;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHPDrainValue> config_115 = state->new_usertype<Horizon::Zone::Bonuses::BonusHPDrainValue>("BonusHPDrainValue",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHPDrainValue(std::shared_ptr<Unit>, int, int)>());
+	config_115["get"] = &Horizon::Zone::Bonuses::BonusHPDrainValue::get;
+	config_115["set"] = &Horizon::Zone::Bonuses::BonusHPDrainValue::set;
+	config_115["get_parameter_1"] = &Horizon::Zone::Bonuses::BonusHPDrainValue::get_parameter_1;
+	config_115["set_parameter_1"] = &Horizon::Zone::Bonuses::BonusHPDrainValue::set_parameter_1;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSPDrainPercent> config_116 = state->new_usertype<Horizon::Zone::Bonuses::BonusSPDrainPercent>("BonusSPDrainPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSPDrainPercent(std::shared_ptr<Unit>, int, int)>());
+	config_116["get"] = &Horizon::Zone::Bonuses::BonusSPDrainPercent::get;
+	config_116["set"] = &Horizon::Zone::Bonuses::BonusSPDrainPercent::set;
+	config_116["get_parameter_1"] = &Horizon::Zone::Bonuses::BonusSPDrainPercent::get_parameter_1;
+	config_116["set_parameter_1"] = &Horizon::Zone::Bonuses::BonusSPDrainPercent::set_parameter_1;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSPDrainValue> config_117 = state->new_usertype<Horizon::Zone::Bonuses::BonusSPDrainValue>("BonusSPDrainValue",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSPDrainValue(std::shared_ptr<Unit>, int, int)>());
+	config_117["get"] = &Horizon::Zone::Bonuses::BonusSPDrainValue::get;
+	config_117["set"] = &Horizon::Zone::Bonuses::BonusSPDrainValue::set;
+	config_117["get_parameter_1"] = &Horizon::Zone::Bonuses::BonusSPDrainValue::get_parameter_1;
+	config_117["set_parameter_1"] = &Horizon::Zone::Bonuses::BonusSPDrainValue::set_parameter_1;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToElement> config_118 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToElement>("BonusAddWeaponComaToElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddWeaponComaToElement(std::shared_ptr<Unit>)>());
+	config_118["get"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToElement::get;
+	config_118["set"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToElement::set;
+	config_118["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToElement::clear);
+	config_118["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToElement::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToRace> config_119 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToRace>("BonusAddWeaponComaToRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddWeaponComaToRace(std::shared_ptr<Unit>)>());
+	config_119["get"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToRace::get;
+	config_119["set"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToRace::set;
+	config_119["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToRace::clear);
+	config_119["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement> config_121 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement>("BonusAddWeaponComaToSubElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement(std::shared_ptr<Unit>)>());
+	config_121["get"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement::get;
+	config_121["set"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement::set;
+	config_121["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement::clear);
+	config_121["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToSubElement::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace> config_122 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace>("BonusAddWeaponComaToSubRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace(std::shared_ptr<Unit>)>());
+	config_122["get"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace::get;
+	config_122["set"] = &Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace::set;
+	config_122["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace::clear);
+	config_122["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddWeaponComaToSubRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddAttack> config_123 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddAttack>("BonusAddAttack",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddAttack(std::shared_ptr<Unit>)>());
+	config_123["get"] = &Horizon::Zone::Bonuses::BonusAddAttack::get;
+	config_123["set"] = &Horizon::Zone::Bonuses::BonusAddAttack::set;
+	config_123["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddAttack::clear);
+	config_123["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddAttack::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddAttackPercent> config_124 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddAttackPercent>("BonusAddAttackPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddAttackPercent(std::shared_ptr<Unit>)>());
+	config_124["get"] = &Horizon::Zone::Bonuses::BonusAddAttackPercent::get;
+	config_124["set"] = &Horizon::Zone::Bonuses::BonusAddAttackPercent::set;
+	config_124["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddAttackPercent::clear);
+	config_124["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddAttackPercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCriticalRace> config_125 = state->new_usertype<Horizon::Zone::Bonuses::BonusCriticalRace>("BonusCriticalRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCriticalRace(std::shared_ptr<Unit>)>());
+	config_125["get"] = &Horizon::Zone::Bonuses::BonusCriticalRace::get;
+	config_125["set"] = &Horizon::Zone::Bonuses::BonusCriticalRace::set;
+	config_125["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusCriticalRace::clear);
+	config_125["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusCriticalRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusCriticalRacePercent> config_126 = state->new_usertype<Horizon::Zone::Bonuses::BonusCriticalRacePercent>("BonusCriticalRacePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusCriticalRacePercent(std::shared_ptr<Unit>)>());
+	config_126["get"] = &Horizon::Zone::Bonuses::BonusCriticalRacePercent::get;
+	config_126["set"] = &Horizon::Zone::Bonuses::BonusCriticalRacePercent::set;
+	config_126["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusCriticalRacePercent::clear);
+	config_126["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusCriticalRacePercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize> config_127 = state->new_usertype<Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize>("BonusDamageReductionAgainstSize",
+		sol::constructors<Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize(std::shared_ptr<Unit>)>());
+	config_127["get"] = &Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize::get;
+	config_127["set"] = &Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize::set;
+	config_127["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize::clear);
+	config_127["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusDamageReductionAgainstSize::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize> config_128 = state->new_usertype<Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize>("BonusMagicDamageReductionAgainstSize",
+		sol::constructors<Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize(std::shared_ptr<Unit>)>());
+	config_128["get"] = &Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize::get;
+	config_128["set"] = &Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize::set;
+	config_128["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize::clear);
+	config_128["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusMagicDamageReductionAgainstSize::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusExpPercentPerRace> config_129 = state->new_usertype<Horizon::Zone::Bonuses::BonusExpPercentPerRace>("BonusExpPercentPerRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusExpPercentPerRace(std::shared_ptr<Unit>)>());
+	config_129["get"] = &Horizon::Zone::Bonuses::BonusExpPercentPerRace::get;
+	config_129["set"] = &Horizon::Zone::Bonuses::BonusExpPercentPerRace::set;
+	config_129["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusExpPercentPerRace::clear);
+	config_129["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusExpPercentPerRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusJobPercentPerRace> config_130 = state->new_usertype<Horizon::Zone::Bonuses::BonusJobPercentPerRace>("BonusJobPercentPerRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusJobPercentPerRace(std::shared_ptr<Unit>)>());
+	config_130["get"] = &Horizon::Zone::Bonuses::BonusJobPercentPerRace::get;
+	config_130["set"] = &Horizon::Zone::Bonuses::BonusJobPercentPerRace::set;
+	config_130["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusJobPercentPerRace::clear);
+	config_130["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusJobPercentPerRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSkillAttack> config_131 = state->new_usertype<Horizon::Zone::Bonuses::BonusSkillAttack>("BonusSkillAttack",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSkillAttack(std::shared_ptr<Unit>)>());
+	config_131["get"] = &Horizon::Zone::Bonuses::BonusSkillAttack::get;
+	config_131["set"] = &Horizon::Zone::Bonuses::BonusSkillAttack::set;
+	config_131["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSkillAttack::clear);
+	config_131["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSkillAttack::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent> config_132 = state->new_usertype<Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent>("BonusReduceSPConsumptionOfSkillByPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent(std::shared_ptr<Unit>)>());
+	config_132["get"] = &Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent::get;
+	config_132["set"] = &Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent::set;
+	config_132["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent::clear);
+	config_132["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkillByPercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill> config_133 = state->new_usertype<Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill>("BonusReduceSPConsumptionOfSkill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill(std::shared_ptr<Unit>)>());
+	config_133["get"] = &Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill::get;
+	config_133["set"] = &Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill::set;
+	config_133["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill::clear);
+	config_133["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusReduceSPConsumptionOfSkill::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusLearnedSkillHeal> config_134 = state->new_usertype<Horizon::Zone::Bonuses::BonusLearnedSkillHeal>("BonusLearnedSkillHeal",
+		sol::constructors<Horizon::Zone::Bonuses::BonusLearnedSkillHeal(std::shared_ptr<Unit>)>());
+	config_134["get"] = &Horizon::Zone::Bonuses::BonusLearnedSkillHeal::get;
+	config_134["set"] = &Horizon::Zone::Bonuses::BonusLearnedSkillHeal::set;
+	config_134["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusLearnedSkillHeal::clear);
+	config_134["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusLearnedSkillHeal::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf> config_135 = state->new_usertype<Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf>("BonusHealOfSkillCastedOnSelf",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf(std::shared_ptr<Unit>)>());
+	config_135["get"] = &Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf::get;
+	config_135["set"] = &Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf::set;
+	config_135["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf::clear);
+	config_135["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusHealOfSkillCastedOnSelf::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSkillKnockback> config_136 = state->new_usertype<Horizon::Zone::Bonuses::BonusSkillKnockback>("BonusSkillKnockback",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSkillKnockback(std::shared_ptr<Unit>)>());
+	config_136["get"] = &Horizon::Zone::Bonuses::BonusSkillKnockback::get;
+	config_136["set"] = &Horizon::Zone::Bonuses::BonusSkillKnockback::set;
+	config_136["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSkillKnockback::clear);
+	config_136["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSkillKnockback::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSkillCastPercent> config_137 = state->new_usertype<Horizon::Zone::Bonuses::BonusSkillCastPercent>("BonusSkillCastPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSkillCastPercent(std::shared_ptr<Unit>)>());
+	config_137["get"] = &Horizon::Zone::Bonuses::BonusSkillCastPercent::get;
+	config_137["set"] = &Horizon::Zone::Bonuses::BonusSkillCastPercent::set;
+	config_137["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSkillCastPercent::clear);
+	config_137["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSkillCastPercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSkillCooldown> config_138 = state->new_usertype<Horizon::Zone::Bonuses::BonusSkillCooldown>("BonusSkillCooldown",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSkillCooldown(std::shared_ptr<Unit>)>());
+	config_138["get"] = &Horizon::Zone::Bonuses::BonusSkillCooldown::get;
+	config_138["set"] = &Horizon::Zone::Bonuses::BonusSkillCooldown::set;
+	config_138["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSkillCooldown::clear);
+	config_138["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSkillCooldown::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSkillFixCastPercent> config_139 = state->new_usertype<Horizon::Zone::Bonuses::BonusSkillFixCastPercent>("BonusSkillFixCastPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSkillFixCastPercent(std::shared_ptr<Unit>)>());
+	config_139["get"] = &Horizon::Zone::Bonuses::BonusSkillFixCastPercent::get;
+	config_139["set"] = &Horizon::Zone::Bonuses::BonusSkillFixCastPercent::set;
+	config_139["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSkillFixCastPercent::clear);
+	config_139["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSkillFixCastPercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSkillVariableCastPercent> config_140 = state->new_usertype<Horizon::Zone::Bonuses::BonusSkillVariableCastPercent>("BonusSkillVariableCastPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSkillVariableCastPercent(std::shared_ptr<Unit>)>());
+	config_140["get"] = &Horizon::Zone::Bonuses::BonusSkillVariableCastPercent::get;
+	config_140["set"] = &Horizon::Zone::Bonuses::BonusSkillVariableCastPercent::set;
+	config_140["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusSkillVariableCastPercent::clear);
+	config_140["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusSkillVariableCastPercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusResistSkillDamagePercent> config_141 = state->new_usertype<Horizon::Zone::Bonuses::BonusResistSkillDamagePercent>("BonusResistSkillDamagePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusResistSkillDamagePercent(std::shared_ptr<Unit>)>());
+	config_141["get"] = &Horizon::Zone::Bonuses::BonusResistSkillDamagePercent::get;
+	config_141["set"] = &Horizon::Zone::Bonuses::BonusResistSkillDamagePercent::set;
+	config_141["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusResistSkillDamagePercent::clear);
+	config_141["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusResistSkillDamagePercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement> config_142 = state->new_usertype<Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement>("BonusIgnoreDefenseFromElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement(std::shared_ptr<Unit>)>());
+	config_142["get"] = &Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement::get;
+	config_142["set"] = &Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement::set;
+	config_142["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement::clear);
+	config_142["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusIgnoreDefenseFromElement::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace> config_143 = state->new_usertype<Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace>("BonusIgnoreDefenseFromRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace(std::shared_ptr<Unit>)>());
+	config_143["get"] = &Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace::get;
+	config_143["set"] = &Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace::set;
+	config_143["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace::clear);
+	config_143["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusIgnoreDefenseFromRace::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement> config_144 = state->new_usertype<Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement>("BonusIgnoreMagicDefenseFromElement",
+		sol::constructors<Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement(std::shared_ptr<Unit>)>());
+	config_144["get"] = &Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement::get;
+	config_144["set"] = &Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement::set;
+	config_144["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement::clear);
+	config_144["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromElement::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace> config_145 = state->new_usertype<Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace>("BonusIgnoreMagicDefenseFromRace",
+		sol::constructors<Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace(std::shared_ptr<Unit>)>());
+	config_145["get"] = &Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace::get;
+	config_145["set"] = &Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace::set;
+	config_145["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace::clear);
+	config_145["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusIgnoreMagicDefenseFromRace::clear);
+	
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent> config_146 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent>("BonusAddEleWeaponDamagePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent(std::shared_ptr<Unit>)>());
+	config_146["get"] = &Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent::get;
+	config_146["set"] = &Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent::set;
+	config_146["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent::clear);
+	config_146["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddEleWeaponDamagePercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent> config_147 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent>("BonusAddEleMagicDamagePercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent(std::shared_ptr<Unit>)>());
+	config_147["get"] = &Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent::get;
+	config_147["set"] = &Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent::set;
+	config_147["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent::clear);
+	config_147["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAddEleMagicDamagePercent::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::s_autospell> config_148 = state->new_usertype<Horizon::Zone::Bonuses::s_autospell>("s_autospell");
+	config_148["lv"] = &Horizon::Zone::Bonuses::s_autospell::lv;
+	config_148["id"] = &Horizon::Zone::Bonuses::s_autospell::id;
+	config_148["rate"] = &Horizon::Zone::Bonuses::s_autospell::rate;
+	config_148["flag"] = &Horizon::Zone::Bonuses::s_autospell::flag;
+	config_148["card_id"] = &Horizon::Zone::Bonuses::s_autospell::card_id;
+	config_148["skill"] = &Horizon::Zone::Bonuses::s_autospell::skill;
+	config_148["count"] = &Horizon::Zone::Bonuses::s_autospell::count;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnSkill> config_149 = state->new_usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnSkill>("BonusAutoSpellOnSkill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAutoSpellOnSkill(std::shared_ptr<Unit>)>());
+	config_149["get"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnSkill::get;
+	config_149["set"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnSkill::set;
+	config_149["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAutoSpellOnSkill::clear);
+	config_149["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAutoSpellOnSkill::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnAttack> config_150 = state->new_usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnAttack>("BonusAutoSpellOnAttack",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAutoSpellOnAttack(std::shared_ptr<Unit>)>());
+	config_150["get"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnAttack::get;
+	config_150["set"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnAttack::set;
+	config_150["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAutoSpellOnAttack::clear);
+	config_150["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAutoSpellOnAttack::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage> config_151 = state->new_usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage>("BonusAutoSpellOnReceiveDamage",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage(std::shared_ptr<Unit>)>());
+	config_151["get"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage::get;
+	config_151["set"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage::set;
+	config_151["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage::clear);
+	config_151["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAutoSpellOnReceiveDamage::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnSelf> config_152 = state->new_usertype<Horizon::Zone::Bonuses::BonusAutoSpellOnSelf>("BonusAutoSpellOnSelf",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAutoSpellOnSelf(std::shared_ptr<Unit>)>());
+	config_152["get"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnSelf::get;
+	config_152["set"] = &Horizon::Zone::Bonuses::BonusAutoSpellOnSelf::set;
+	config_152["clear"] = sol::resolve<void()>(&Horizon::Zone::Bonuses::BonusAutoSpellOnSelf::clear);
+	config_152["clear_single"] = sol::resolve<void(int)>(&Horizon::Zone::Bonuses::BonusAutoSpellOnSelf::clear);
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHPVanishPercent> config_153 = state->new_usertype<Horizon::Zone::Bonuses::BonusHPVanishPercent>("BonusHPVanishPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHPVanishPercent(std::shared_ptr<Unit>, int, int, int)>());
+    config_31["bonus"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHPVanishPercent> t) { return std::static_pointer_cast<Horizon::Zone::Bonuses::Bonus>(t); };
+	config_153["get"] = &Horizon::Zone::Bonuses::BonusHPVanishPercent::get;
+	config_153["set"] = &Horizon::Zone::Bonuses::BonusHPVanishPercent::set;
+	
+	sol::usertype<Horizon::Zone::Bonuses::BonusSPVanishPercent> config_154 = state->new_usertype<Horizon::Zone::Bonuses::BonusSPVanishPercent>("BonusSPVanishPercent",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSPVanishPercent(std::shared_ptr<Unit>, int, int, int)>());
+	config_31["bonus"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSPVanishPercent> t) { return std::static_pointer_cast<Horizon::Zone::Bonuses::Bonus>(t); };
+	config_154["get"] = &Horizon::Zone::Bonuses::BonusSPVanishPercent::get;
+	config_154["set"] = &Horizon::Zone::Bonuses::BonusSPVanishPercent::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusRaise> config_155 = state->new_usertype<Horizon::Zone::Bonuses::BonusRaise>("BonusRaise",
+		sol::constructors<Horizon::Zone::Bonuses::BonusRaise(std::shared_ptr<Unit>, int, int, int)>());
+	config_31["bonus"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusRaise> t) { return std::static_pointer_cast<Horizon::Zone::Bonuses::Bonus>(t); };
+	config_155["get"] = &Horizon::Zone::Bonuses::BonusRaise::get;
+	config_155["set"] = &Horizon::Zone::Bonuses::BonusRaise::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusAddItemDropOnMonsterKill> config_156 = state->new_usertype<Horizon::Zone::Bonuses::BonusAddItemDropOnMonsterKill>("BonusAddItemDropOnMonsterKill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusAddItemDropOnMonsterKill(std::shared_ptr<Unit>, int, int, int)>());
+	config_31["bonus"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusAddItemDropOnMonsterKill> t) { return std::static_pointer_cast<Horizon::Zone::Bonuses::Bonus>(t); };
+	config_156["get"] = &Horizon::Zone::Bonuses::BonusAddItemDropOnMonsterKill::get;
+	config_156["set"] = &Horizon::Zone::Bonuses::BonusAddItemDropOnMonsterKill::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusHPDrainOnMonsterKill> config_157 = state->new_usertype<Horizon::Zone::Bonuses::BonusHPDrainOnMonsterKill>("BonusHPDrainOnMonsterKill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusHPDrainOnMonsterKill(std::shared_ptr<Unit>, int, int, int)>());
+	config_31["bonus"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusHPDrainOnMonsterKill> t) { return std::static_pointer_cast<Horizon::Zone::Bonuses::Bonus>(t); };
+	config_157["get"] = &Horizon::Zone::Bonuses::BonusHPDrainOnMonsterKill::get;
+	config_157["set"] = &Horizon::Zone::Bonuses::BonusHPDrainOnMonsterKill::set;
+
+	sol::usertype<Horizon::Zone::Bonuses::BonusSPDrainOnMonsterKill> config_158 = state->new_usertype<Horizon::Zone::Bonuses::BonusSPDrainOnMonsterKill>("BonusSPDrainOnMonsterKill",
+		sol::constructors<Horizon::Zone::Bonuses::BonusSPDrainOnMonsterKill(std::shared_ptr<Unit>, int, int, int)>());
+	config_31["bonus"] = [](std::shared_ptr<Horizon::Zone::Bonuses::BonusSPDrainOnMonsterKill> t) { return std::static_pointer_cast<Horizon::Zone::Bonuses::Bonus>(t); };
+	config_158["get"] = &Horizon::Zone::Bonuses::BonusSPDrainOnMonsterKill::get;
+	config_158["set"] = &Horizon::Zone::Bonuses::BonusSPDrainOnMonsterKill::set;
+
 }
 
 void UnitComponent::sync_functions(std::shared_ptr<sol::state> state)

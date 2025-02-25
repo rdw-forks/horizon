@@ -40,6 +40,10 @@
 #define MAX_STATUS_POINTS 400
 #define MAX_ATTACK_SPEED 199
 
+#define MAX_STATUS_EFFECT_BONUSES 10
+#define MAX_PC_BONUSES_PER_GROUP 10
+#define MAX_AUTOSPELL 16
+
 /* Maximum Character Slots (in multiples of 3) */
 #define MAX_CHARACTER_SLOTS 9
 #define DEFAULT_MOVEMENT_SPEED 150

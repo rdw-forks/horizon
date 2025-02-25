@@ -376,6 +376,10 @@ void CombatRegistry::AttributeOperation::execute() const
 	CombatRegistry::AttributeOperation::AttributeOperand *operand = dynamic_cast<CombatRegistry::AttributeOperation::AttributeOperand *>(get_operand());
 	CombatRegistry::CombatValueInteger *integer = dynamic_cast<CombatRegistry::CombatValueInteger*>(get_operation_value());
 	int value = integer->get_value();
+
+	if (value == 0)
+		return;
+		
 	switch (get_operation_sub_type())
 	{
 		case ATTRIBUTE_OPERATION_ADD_TO_BASE:

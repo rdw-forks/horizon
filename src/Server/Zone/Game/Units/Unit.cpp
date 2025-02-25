@@ -102,6 +102,7 @@ bool Unit::schedule_walk()
 	{
 		// HLog(error) << "Reference to map object has been lost for unit " << (void *) this << ".";
 		_dest_pos = {0, 0};
+		if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:2: Map object has been lost.";
 		return false;
 	}
 
@@ -115,6 +116,7 @@ bool Unit::schedule_walk()
 	{
 		// HLog(warning) << "Unit::schedule_walk: Destination was a collision, no walk path available.";
 		_dest_pos = {0, 0};
+		if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:3: Destination was a collision.";
 		return false;
 	}
 
@@ -128,6 +130,7 @@ bool Unit::schedule_walk()
 		on_pathfinding_failure();
 		// HLog(warning) << "Unit::schedule_walk: Path too short or empty, failed to schedule movement.";
 		_dest_pos = {0, 0};
+		if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:4: Path too short or empty.";
 		return false;
 	}
 				 // 0us
@@ -142,14 +145,16 @@ void Unit::walk()
 {
 	map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_WALK));
 	
-	if (status() == nullptr || status()->movement_speed() == nullptr)
+	if (status() == nullptr || status()->movement_speed() == nullptr) {
+		if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:5: Status or movement speed is null.";	
 		return;
+	}
 
-	if (is_attacking())
-		stop_attacking();
-
-	if (_walk_path.size() == 1)
+	if (_walk_path.size() == 1) {
+		stop_walking();
+		if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:6: Walk path size is 1.";
 		return;
+	}
 
 	MapCoords c = _walk_path.at(0); // for the first step.
 
@@ -160,8 +165,10 @@ void Unit::walk()
 		Milliseconds(status()->movement_speed()->get_with_cost(_walk_path.at(1).move_cost())), get_scheduler_task_id(UNIT_SCHEDULE_WALK),
 		[this](TaskContext context)
 		{
-			if (_walk_path.size() == 0) // to fix the "invalid vector subscript" error.
+			if (_walk_path.size() == 0) { // to fix the "invalid vector subscript" error.
+				if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:7:1: Walk path size is 0.";
 				return;
+			}
 
 			MapCoords c = _walk_path.at(0);
 
@@ -173,6 +180,7 @@ void Unit::walk()
 			{
 				stop_walking(true);
 				force_movement_stop_internal(false);
+				if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:7:2: Jump walk stop.";
 				return;
 			}
 
@@ -190,25 +198,36 @@ void Unit::walk()
 			if (_changed_dest_pos != MapCoords(0, 0))
 			{
 				_dest_pos = _changed_dest_pos;
+				_changed_dest_pos = {0, 0};
 				schedule_walk();
+				if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:7:3: Destination changed, rescheduling...";
 				return;
 			}
 			else if (_dest_pos == MapCoords(c.x(), c.y()) || _walk_path.size() == 1)
 			{
 				stop_walking();
+				if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:7:4: Destination reached.";
+				if (lockon_after_walk_completed_target_guid() > 0)
+				{
+					std::shared_ptr<Unit> target = get_nearby_unit(lockon_after_walk_completed_target_guid());
+					if (target_is_attackable(target))
+					{
+						attack(target, _lockon_after_walk_completed.continuous);
+						clear_lockon_after_walk_completed();
+					}
+				}
 				return;
 			}
 
-			std::chrono::milliseconds walk_delay = std::chrono::milliseconds(status()->movement_speed()->get_with_cost(_walk_path.at(1).move_cost()));
+			// std::chrono::milliseconds walk_delay = std::chrono::milliseconds(status()->movement_speed()->get_with_cost(_walk_path.at(1).move_cost()));
 			
-			if (has_damage_walk_delay() && is_dead() == false)
-				walk_delay += std::chrono::milliseconds(status()->damage_walk_delay()->total());
+			// if (has_damage_walk_delay() && is_dead() == false)
+			// 	walk_delay += std::chrono::milliseconds(status()->damage_walk_delay()->total());
 
-			set_damage_walk_delay(false);
+			// set_damage_walk_delay(false);
 
 			if (!_walk_path.empty())
-				context.Repeat(walk_delay);
-			
+				context.Repeat();
 		});
 }
 
@@ -234,7 +253,8 @@ bool Unit::stop_walking(bool cancel, bool notify)
 
 void Unit::on_attack_end()
 {
-	set_attacking(false);
+	stop_attacking();
+	stop_walking(true, false);
 }
 
 bool Unit::walk_to_coordinates(int16_t x, int16_t y)
@@ -242,6 +262,7 @@ bool Unit::walk_to_coordinates(int16_t x, int16_t y)
 	if (_dest_pos.x() != 0 && _dest_pos.y() != 0 && _dest_pos.x() != x && _dest_pos.y() != y)
 	{
 		_changed_dest_pos = {x, y};
+		if (_type == UNIT_PLAYER) HLog(debug) << "Unit::walking:1: Destination changed to (" << x << ", " << y << ").";
 		return true;
 	}
 
@@ -250,12 +271,7 @@ bool Unit::walk_to_coordinates(int16_t x, int16_t y)
 
 	_dest_pos = {x, y};
 
-	if (schedule_walk() == false)
-	{
-		// HLog(warning) << "Unit (" << guid() << ") could not schedule movement.";
-		return false;
-	}
-	return true;
+	return schedule_walk();
 }
 
 bool Unit::walk_to_unit(std::shared_ptr<Unit> unit)
@@ -450,6 +466,8 @@ void Unit::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
 
 void Unit::on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp)
 {
+	stop_walking();
+	stop_attacking();
 	notify_nearby_players_of_existence(EVP_NOTIFY_DEAD);
 }
 
@@ -464,10 +482,32 @@ bool Unit::stop_attacking()
 	return true;
 }
 
+bool Unit::target_is_attackable(std::shared_ptr<Unit> target)
+{
+	if (target == nullptr) {
+		HLog(debug) << "Unit::attack:1: Attack target is null.";
+		return false;
+	}
+
+	if (is_dead()) {
+		HLog(debug) << "Unit::attack:2: Attacker is dead.";
+		return false;
+	}
+
+	if (target->is_dead()) {
+		HLog(debug) << "Unit::attack:3: Target is dead.";
+		return false;
+	}
+
+	return true;
+}
 bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 {
-	if (target == nullptr)
+	if (target == nullptr) {
+		HLog(debug) << "Unit::attack:4: target is null.";
+		on_attack_end();
 		return false;
+	}
 
 	set_combat(std::make_shared<Combat>(shared_from_this(), target));
 
@@ -475,16 +515,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 		Milliseconds(0), get_scheduler_task_id(UNIT_SCHEDULE_ATTACK),
 		[this, continuous, target](TaskContext context)
 		{
-			if (target == nullptr) {
-				on_attack_end();
-				return;
-			}
-
-			if (is_dead()) {
-				return;
-			}
-
-			if (target->is_dead()) {
+			if (!target_is_attackable(target)) {
 				on_attack_end();
 				return;
 			}
@@ -492,33 +523,29 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 			std::shared_ptr<AStar::CoordinateList> wp = path_to(target);
 			if (wp && (wp->size() == 0 || wp->size() > MAX_VIEW_RANGE)) {
 				on_attack_end();
+				HLog(debug) << "Unit::attack:5: Path to target is invalid.";
 				return;
 			}
 
 			int range = this->status()->attack_range()->get_base();
 
-			// If target is not in range of the attacker when source is already attacking, stop attacking.
-			if (is_attacking() && !is_in_range_of(target, range)) {
-				on_attack_end();
-				return;
-			}
-
 			_attackable_time = status()->attack_delay()->total();
-
-			if (!is_in_range_of(target, range) && !is_walking()) {
-
+			
+			// If target is not in range of the attacker when source is already attacking, repeat the attack.
+			if (!is_in_range_of(target, range)) {
+				if (is_attacking()) {
+					stop_attacking();
+				}
+				set_lockon_after_walk_completed(target->guid(), continuous);
 				walk_to_unit(target);
-
-				if (continuous)
-					context.Repeat(Milliseconds(_attackable_time));
-
+				HLog(debug) << "Unit::attack:6: Target is out of range, stopped attacking and walking to target.";
 				return;
 			}
 
-			if (!is_in_range_of(target, range) && is_walking()) {
-				context.Repeat(Milliseconds(_attackable_time));
-				return;
-			}
+			//if (!is_in_range_of(target, range) && is_walking()) {
+			//	context.Repeat(Milliseconds(_attackable_time));
+			//	return;
+			//}
 
 			if (is_in_range_of(target, range) && is_walking())
 				stop_walking();

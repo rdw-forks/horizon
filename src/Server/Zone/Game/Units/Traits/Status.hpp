@@ -23,6 +23,7 @@
 
 #include "Server/Zone/Game/Units/Traits/Attribute.hpp"
 #include "Server/Zone/Game/Units/Traits/AttributesImpl.hpp"
+#include "Server/Zone/Game/Units/Traits/BonusesImpl.hpp"
 #include "Server/Zone/Game/Units/Traits/Appearance.hpp"
 #include "Server/Zone/Definitions/UnitDefinitions.hpp"
 
@@ -771,6 +772,1006 @@ public:
 	bool recalculate(bool notify = true);
 	bool update(uint64_t delta);
 	
+	void add_bonus(std::shared_ptr<Bonuses::Bonus> bonus) { _bonuses.push_back(bonus); }
+	void remove_bonus(std::shared_ptr<Bonuses::Bonus> bonus)
+	{
+		_bonuses.erase(std::remove(_bonuses.begin(), _bonuses.end(), bonus), _bonuses.end());
+	}
+	std::shared_ptr<Bonuses::Bonus> get_bonus(status_point_type type)
+	{
+		for (auto &bonus : _bonuses)
+		{
+			if (bonus->get_type() == type)
+				return bonus;
+		}
+
+		return nullptr;
+	}
+
+	std::shared_ptr<Bonuses::BonusAllStatus> bonus_all_status() { return _bonus->_all_status; }
+	void set_bonus_all_status(std::shared_ptr<Bonuses::BonusAllStatus> b) {
+		if (_bonus->_all_status != nullptr)
+			remove_bonus(_bonus->_all_status);
+		add_bonus(b);
+		_bonus->_all_status = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackElement> bonus_attack_element() { return _bonus->_attack_element; }
+	void set_bonus_attack_element(std::shared_ptr<Bonuses::BonusAttackElement> b) {
+		if (_bonus->_attack_element != nullptr)
+			remove_bonus(_bonus->_attack_element);
+		add_bonus(b);
+		_bonus->_attack_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusDefenseElement> bonus_defense_element() { return _bonus->_defense_element; }
+	void set_bonus_defense_element(std::shared_ptr<Bonuses::BonusDefenseElement> b) {
+		if (_bonus->_defense_element != nullptr)
+			remove_bonus(_bonus->_defense_element);
+		add_bonus(b);
+		_bonus->_defense_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCastPercent> bonus_cast_percent() { return _bonus->_cast_percent; }
+	void set_bonus_cast_percent(std::shared_ptr<Bonuses::BonusCastPercent> b) {
+		if (_bonus->_cast_percent != nullptr)
+			remove_bonus(_bonus->_cast_percent);
+		add_bonus(b);
+		_bonus->_cast_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMaxHPPercent> bonus_max_hp_percent() { return _bonus->_max_hp_percent; }
+	void set_bonus_max_hp_percent(std::shared_ptr<Bonuses::BonusMaxHPPercent> b) {
+		if (_bonus->_max_hp_percent != nullptr)
+			remove_bonus(_bonus->_max_hp_percent);
+		add_bonus(b);
+		_bonus->_max_hp_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMaxSPPercent> bonus_max_sp_percent() { return _bonus->_max_sp_percent; }
+	void set_bonus_max_sp_percent(std::shared_ptr<Bonuses::BonusMaxSPPercent> b) {
+		if (_bonus->_max_sp_percent != nullptr)
+			remove_bonus(_bonus->_max_sp_percent);
+		add_bonus(b);
+		_bonus->_max_sp_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPPercent> bonus_sp_percent() { return _bonus->_sp_percent; }
+	void set_bonus_sp_percent(std::shared_ptr<Bonuses::BonusSPPercent> b) {
+		if (_bonus->_sp_percent != nullptr)
+			remove_bonus(_bonus->_sp_percent);
+		add_bonus(b);
+		_bonus->_sp_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackRange> bonus_attack_range() { return _bonus->_attack_range; }
+	void set_bonus_attack_range(std::shared_ptr<Bonuses::BonusAttackRange> b) {
+		if (_bonus->_attack_range != nullptr)
+			remove_bonus(_bonus->_attack_range);
+		add_bonus(b);
+		_bonus->_attack_range = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackRangePercent> bonus_attack_range_percent() { return _bonus->_attack_range_percent; }
+	void set_bonus_attack_range_percent(std::shared_ptr<Bonuses::BonusAttackRangePercent> b) {
+		if (_bonus->_attack_range_percent != nullptr)
+			remove_bonus(_bonus->_attack_range_percent);
+		add_bonus(b);
+		_bonus->_attack_range_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddMovementSpeedPercent> bonus_add_movement_speed_percent() { return _bonus->_bonus_add_movement_speed_percent; }
+	void set_bonus_add_movement_speed_percent(std::shared_ptr<Bonuses::BonusAddMovementSpeedPercent> b) {
+		if (_bonus->_bonus_add_movement_speed_percent != nullptr)
+			remove_bonus(_bonus->_bonus_add_movement_speed_percent);
+		add_bonus(b);
+		_bonus->_bonus_add_movement_speed_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackSpeedPercent> bonus_attack_speed_percent() { return _bonus->_attack_speed_percent; }
+	void set_bonus_attack_speed_percent(std::shared_ptr<Bonuses::BonusAttackSpeedPercent> b) {
+		if (_bonus->_attack_speed_percent != nullptr)
+			remove_bonus(_bonus->_attack_speed_percent);
+		add_bonus(b);
+		_bonus->_attack_speed_percent = b;
+	}
+	
+	std::shared_ptr<Bonuses::BonusHPRecoveryPercent> bonus_hp_recovery_percent() { return _bonus->_hp_recovery_percent; }
+	void set_bonus_hp_recovery_percent(std::shared_ptr<Bonuses::BonusHPRecoveryPercent> b) {
+		if (_bonus->_hp_recovery_percent != nullptr)
+			remove_bonus(_bonus->_hp_recovery_percent);
+		add_bonus(b);
+		_bonus->_hp_recovery_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPRecoveryPercent> bonus_sp_recovery_percent() { return _bonus->_sp_recovery_percent; }
+	void set_bonus_sp_recovery_percent(std::shared_ptr<Bonuses::BonusSPRecoveryPercent> b) {
+		if (_bonus->_sp_recovery_percent != nullptr)
+			remove_bonus(_bonus->_sp_recovery_percent);
+		add_bonus(b);
+		_bonus->_sp_recovery_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCriticalDefense> bonus_critical_defense() { return _bonus->_critical_defense; }
+	void set_bonus_critical_defense(std::shared_ptr<Bonuses::BonusCriticalDefense> b) {
+		if (_bonus->_critical_defense != nullptr)
+			remove_bonus(_bonus->_critical_defense);
+		add_bonus(b);
+		_bonus->_critical_defense = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMeleeDefense> bonus_melee_defense() { return _bonus->_melee_defense; }
+	void set_bonus_melee_defense(std::shared_ptr<Bonuses::BonusMeleeDefense> b) {
+		if (_bonus->_melee_defense != nullptr)
+			remove_bonus(_bonus->_melee_defense);
+		add_bonus(b);
+		_bonus->_melee_defense = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusRangedDefense> bonus_ranged_defense() { return _bonus->_ranged_defense; }
+	void set_bonus_ranged_defense(std::shared_ptr<Bonuses::BonusRangedDefense> b) {
+		if (_bonus->_ranged_defense != nullptr)
+			remove_bonus(_bonus->_ranged_defense);
+		add_bonus(b);
+		_bonus->_ranged_defense = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusDoubleAttackPercent> bonus_double_attack_percent() { return _bonus->_double_attack_percent; }
+	void set_bonus_double_attack_percent(std::shared_ptr<Bonuses::BonusDoubleAttackPercent> b) {
+		if (_bonus->_double_attack_percent != nullptr)
+			remove_bonus(_bonus->_double_attack_percent);
+		add_bonus(b);
+		_bonus->_double_attack_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMagicAttackPercent> bonus_magic_attack_percent() { return _bonus->_magic_attack_percent; }
+	void set_bonus_magic_attack_percent(std::shared_ptr<Bonuses::BonusMagicAttackPercent> b) {
+		if (_bonus->_magic_attack_percent != nullptr)
+			remove_bonus(_bonus->_magic_attack_percent);
+		add_bonus(b);
+		_bonus->_magic_attack_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackPercent> bonus_attack_percent() { return _bonus->_attack_percent; }
+	void set_bonus_attack_percent(std::shared_ptr<Bonuses::BonusAttackPercent> b) {
+		if (_bonus->_attack_percent != nullptr)
+			remove_bonus(_bonus->_attack_percent);
+		add_bonus(b);
+		_bonus->_attack_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMagicDefensePercent> bonus_magic_defense_percent() { return _bonus->_magic_defense_percent; }
+	void set_bonus_magic_defense_percent(std::shared_ptr<Bonuses::BonusMagicDefensePercent> b) {
+		if (_bonus->_magic_defense_percent != nullptr)
+			remove_bonus(_bonus->_magic_defense_percent);
+		add_bonus(b);
+		_bonus->_magic_defense_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMiscDefensePercent> bonus_misc_defense_percent() { return _bonus->_misc_defense_percent; }
+	void set_bonus_misc_defense_percent(std::shared_ptr<Bonuses::BonusMiscDefensePercent> b) {
+		if (_bonus->_misc_defense_percent != nullptr)
+			remove_bonus(_bonus->_misc_defense_percent);
+		add_bonus(b);
+		_bonus->_misc_defense_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusPerfectHitPercent> bonus_perfect_hit_percent() { return _bonus->_perfect_hit_percent; }
+	void set_bonus_perfect_hit_percent(std::shared_ptr<Bonuses::BonusPerfectHitPercent> b) {
+		if (_bonus->_perfect_hit_percent != nullptr)
+			remove_bonus(_bonus->_perfect_hit_percent);
+		add_bonus(b);
+		_bonus->_perfect_hit_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCriticalPercent> bonus_critical_percent() { return _bonus->_critical_percent; }
+	void set_bonus_critical_percent(std::shared_ptr<Bonuses::BonusCriticalPercent> b) {
+		if (_bonus->_critical_percent != nullptr)
+			remove_bonus(_bonus->_critical_percent);
+		add_bonus(b);
+		_bonus->_critical_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusGetZenyNum> bonus_get_zeny_num() { return _bonus->_get_zeny_num; }
+	void set_bonus_get_zeny_num(std::shared_ptr<Bonuses::BonusGetZenyNum> b) {
+		if (_bonus->_get_zeny_num != nullptr)
+			remove_bonus(_bonus->_get_zeny_num);
+		add_bonus(b);
+		_bonus->_get_zeny_num = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackOnDefenseRatioForElement> bonus_attack_on_defense_ratio_for_element() { return _bonus->_attack_on_defense_ratio_for_element; }
+	void set_bonus_attack_on_defense_ratio_for_element(std::shared_ptr<Bonuses::BonusAttackOnDefenseRatioForElement> b) {
+		if (_bonus->_attack_on_defense_ratio_for_element != nullptr)
+			remove_bonus(_bonus->_attack_on_defense_ratio_for_element);
+		add_bonus(b);
+		_bonus->_attack_on_defense_ratio_for_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAttackOnDefenseRatioForRace> bonus_attack_on_defense_ratio_for_race() { return _bonus->_attack_on_defense_ratio_for_race; }
+	void set_bonus_attack_on_defense_ratio_for_race(std::shared_ptr<Bonuses::BonusAttackOnDefenseRatioForRace> b) {
+		if (_bonus->_attack_on_defense_ratio_for_race != nullptr)
+			remove_bonus(_bonus->_attack_on_defense_ratio_for_race);
+		add_bonus(b);
+		_bonus->_attack_on_defense_ratio_for_race = b;
+	};
+
+	std::shared_ptr<Bonuses::BonusHitPercent> bonus_hit_percent() { return _bonus->_hit_percent; }
+	void set_bonus_hit_percent(std::shared_ptr<Bonuses::BonusHitPercent> b) {
+		if (_bonus->_hit_percent != nullptr)
+			remove_bonus(_bonus->_hit_percent);
+		add_bonus(b);
+		_bonus->_hit_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusFleePercent> bonus_flee_percent() { return _bonus->_flee_percent; }
+	void set_bonus_flee_percent(std::shared_ptr<Bonuses::BonusFleePercent> b) {
+		if (_bonus->_flee_percent != nullptr)
+			remove_bonus(_bonus->_flee_percent);
+		add_bonus(b);
+		_bonus->_flee_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusPerfectDodgePercent> bonus_perfect_dodge_percent() { return _bonus->_perfect_dodge_percent; }
+	void set_bonus_perfect_dodge_percent(std::shared_ptr<Bonuses::BonusPerfectDodgePercent> b) {
+		if (_bonus->_perfect_dodge_percent != nullptr)
+			remove_bonus(_bonus->_perfect_dodge_percent);
+		add_bonus(b);
+		_bonus->_perfect_dodge_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSoftDefensePercent> bonus_soft_defense_percent() { return _bonus->_soft_defense_percent; }
+	void set_bonus_soft_defense_percent(std::shared_ptr<Bonuses::BonusSoftDefensePercent> b) {
+		if (_bonus->_soft_defense_percent != nullptr)
+			remove_bonus(_bonus->_soft_defense_percent);
+		add_bonus(b);
+		_bonus->_soft_defense_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHardDefensePercent> bonus_hard_defense_percent() { return _bonus->_hard_defense_percent; }
+	void set_bonus_hard_defense_percent(std::shared_ptr<Bonuses::BonusHardDefensePercent> b) {
+		if (_bonus->_hard_defense_percent != nullptr)
+			remove_bonus(_bonus->_hard_defense_percent);
+		add_bonus(b);
+		_bonus->_hard_defense_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSoftMagicalDefensePercent> bonus_soft_magical_defense_percent() { return _bonus->_soft_magical_defense_percent; }
+	void set_bonus_soft_magical_defense_percent(std::shared_ptr<Bonuses::BonusSoftMagicalDefensePercent> b) {
+		if (_bonus->_soft_magical_defense_percent != nullptr)
+			remove_bonus(_bonus->_soft_magical_defense_percent);
+		add_bonus(b);
+		_bonus->_soft_magical_defense_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHardMagicalDefensePercent> bonus_hard_magical_defense_percent() { return _bonus->_hard_magical_defense_percent; }
+	void set_bonus_hard_magical_defense_percent(std::shared_ptr<Bonuses::BonusHardMagicalDefensePercent> b) {
+		if (_bonus->_hard_magical_defense_percent != nullptr)
+			remove_bonus(_bonus->_hard_magical_defense_percent);
+		add_bonus(b);
+		_bonus->_hard_magical_defense_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusRestartWithFullRecovery> bonus_restart_with_full_recovery() { return _bonus->_restart_with_full_recovery; }
+	void set_bonus_restart_with_full_recovery(std::shared_ptr<Bonuses::BonusRestartWithFullRecovery> b) {
+		if (_bonus->_restart_with_full_recovery != nullptr)
+			remove_bonus(_bonus->_restart_with_full_recovery);
+		add_bonus(b);
+		_bonus->_restart_with_full_recovery = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCastCancelImmunity> bonus_cast_cancel_immunity() { return _bonus->_cast_cancel_immunity; }
+	void set_bonus_cast_cancel_immunity(std::shared_ptr<Bonuses::BonusCastCancelImmunity> b) {
+		if (_bonus->_cast_cancel_immunity != nullptr)
+			remove_bonus(_bonus->_cast_cancel_immunity);
+		add_bonus(b);
+		_bonus->_cast_cancel_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSizeModifierImmunity> bonus_size_modifier_immunity() { return _bonus->_size_modifier_immunity; }
+	void set_bonus_size_modifier_immunity(std::shared_ptr<Bonuses::BonusSizeModifierImmunity> b) {
+		if (_bonus->_size_modifier_immunity != nullptr)
+			remove_bonus(_bonus->_size_modifier_immunity);
+		add_bonus(b);
+		_bonus->_size_modifier_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMagicDamageImmunity> bonus_magic_damage_immunity() { return _bonus->_magic_damage_immunity; }
+	void set_bonus_magic_damage_immunity(std::shared_ptr<Bonuses::BonusMagicDamageImmunity> b) {
+		if (_bonus->_magic_damage_immunity != nullptr)
+			remove_bonus(_bonus->_magic_damage_immunity);
+		add_bonus(b);
+		_bonus->_magic_damage_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusWeaponDamageImmunity> bonus_weapon_damage_immunity() { return _bonus->_weapon_damage_immunity; }
+	void set_bonus_weapon_damage_immunity(std::shared_ptr<Bonuses::BonusWeaponDamageImmunity> b) {
+		if (_bonus->_weapon_damage_immunity != nullptr)
+			remove_bonus(_bonus->_weapon_damage_immunity);
+		add_bonus(b);
+		_bonus->_weapon_damage_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusGemstoneImmunity> bonus_gemstone_immunity() { return _bonus->_gemstone_immunity; }
+	void set_bonus_gemstone_immunity(std::shared_ptr<Bonuses::BonusGemstoneImmunity> b) {
+		if (_bonus->_gemstone_immunity != nullptr)
+			remove_bonus(_bonus->_gemstone_immunity);
+		add_bonus(b);
+		_bonus->_gemstone_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusGearFuelImmunity> bonus_gear_fuel_immunity() { return _bonus->_gear_fuel_immunity; }
+	void set_bonus_gear_fuel_immunity(std::shared_ptr<Bonuses::BonusGearFuelImmunity> b) {
+		if (_bonus->_gear_fuel_immunity != nullptr)
+			remove_bonus(_bonus->_gear_fuel_immunity);
+		add_bonus(b);
+		_bonus->_gear_fuel_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusInfiniteEndure> bonus_infinite_endure() { return _bonus->_infinite_endure; }
+	void set_bonus_infinite_endure(std::shared_ptr<Bonuses::BonusInfiniteEndure> b) {
+		if (_bonus->_infinite_endure != nullptr)
+			remove_bonus(_bonus->_infinite_endure);
+		add_bonus(b);
+		_bonus->_infinite_endure = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusUnbreakableWeapon> bonus_unbreakable_weapon() { return _bonus->_unbreakable_weapon; }
+	void set_bonus_unbreakable_weapon(std::shared_ptr<Bonuses::BonusUnbreakableWeapon> b) {
+		if (_bonus->_unbreakable_weapon != nullptr)
+			remove_bonus(_bonus->_unbreakable_weapon);
+		add_bonus(b);
+		_bonus->_unbreakable_weapon = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusUnbreakableArmor> bonus_unbreakable_armor() { return _bonus->_unbreakable_armor; }
+	void set_bonus_unbreakable_armor(std::shared_ptr<Bonuses::BonusUnbreakableArmor> b) {
+		if (_bonus->_unbreakable_armor != nullptr)
+			remove_bonus(_bonus->_unbreakable_armor);
+		add_bonus(b);
+		_bonus->_unbreakable_armor = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusUnbreakableHelm> bonus_unbreakable_helm() { return _bonus->_unbreakable_helm; }
+	void set_bonus_unbreakable_helm(std::shared_ptr<Bonuses::BonusUnbreakableHelm> b) {
+		if (_bonus->_unbreakable_helm != nullptr)
+			remove_bonus(_bonus->_unbreakable_helm);
+		add_bonus(b);
+		_bonus->_unbreakable_helm = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusUnbreakableShield> bonus_unbreakable_shield() { return _bonus->_unbreakable_shield; }
+	void set_bonus_unbreakable_shield(std::shared_ptr<Bonuses::BonusUnbreakableShield> b) {
+		if (_bonus->_unbreakable_shield != nullptr)
+			remove_bonus(_bonus->_unbreakable_shield);
+		add_bonus(b);
+		_bonus->_unbreakable_shield = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPGainOnMobKill> bonus_sp_gain_on_mob_kill() { return _bonus->_sp_gain_on_mob_kill; }
+	void set_bonus_sp_gain_on_mob_kill(std::shared_ptr<Bonuses::BonusSPGainOnMobKill> b) {
+		if (_bonus->_sp_gain_on_mob_kill != nullptr)
+			remove_bonus(_bonus->_sp_gain_on_mob_kill);
+		add_bonus(b);
+		_bonus->_sp_gain_on_mob_kill = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHPGainOnMobKill> bonus_hp_gain_on_mob_kill() { return _bonus->_hp_gain_on_mob_kill; }
+	void set_bonus_hp_gain_on_mob_kill(std::shared_ptr<Bonuses::BonusHPGainOnMobKill> b) {
+		if (_bonus->_hp_gain_on_mob_kill != nullptr)
+			remove_bonus(_bonus->_hp_gain_on_mob_kill);
+		add_bonus(b);
+		_bonus->_hp_gain_on_mob_kill = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusDamageSplashRange> bonus_damage_splash_range() { return _bonus->_damage_splash_range; }
+	void set_bonus_damage_splash_range(std::shared_ptr<Bonuses::BonusDamageSplashRange> b) {
+		if (_bonus->_damage_splash_range != nullptr)
+			remove_bonus(_bonus->_damage_splash_range);
+		add_bonus(b);
+		_bonus->_damage_splash_range = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf> bonus_melee_weapon_damage_reflect_percent_on_self() { return _bonus->_melee_weapon_damage_reflect_percent_on_self; }
+	void set_bonus_melee_weapon_damage_reflect_percent_on_self(std::shared_ptr<Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf> b) {
+		if (_bonus->_melee_weapon_damage_reflect_percent_on_self != nullptr)
+			remove_bonus(_bonus->_melee_weapon_damage_reflect_percent_on_self);
+		add_bonus(b);
+		_bonus->_melee_weapon_damage_reflect_percent_on_self = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf> bonus_ranged_weapon_damage_reflect_percent_on_self() { return _bonus->_ranged_weapon_damage_reflect_percent_on_self; }
+	void set_bonus_ranged_weapon_damage_reflect_percent_on_self(std::shared_ptr<Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf> b) {
+		if (_bonus->_ranged_weapon_damage_reflect_percent_on_self != nullptr)
+			remove_bonus(_bonus->_ranged_weapon_damage_reflect_percent_on_self);
+		add_bonus(b);
+		_bonus->_ranged_weapon_damage_reflect_percent_on_self = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusWeaponBreakPercent> bonus_weapon_break_percent() { return _bonus->_weapon_break_percent; }
+	void set_bonus_weapon_break_percent(std::shared_ptr<Bonuses::BonusWeaponBreakPercent> b) {
+		if (_bonus->_weapon_break_percent != nullptr)
+			remove_bonus(_bonus->_weapon_break_percent);
+		add_bonus(b);
+		_bonus->_weapon_break_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusArmorBreakPercent> bonus_armor_break_percent() { return _bonus->_armor_break_percent; }
+	void set_bonus_armor_break_percent(std::shared_ptr<Bonuses::BonusArmorBreakPercent> b) {
+		if (_bonus->_armor_break_percent != nullptr)
+			remove_bonus(_bonus->_armor_break_percent);
+		add_bonus(b);
+		_bonus->_armor_break_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddStealPercent> bonus_add_steal_percent() { return _bonus->_add_steal_percent; }
+	void set_bonus_add_steal_percent(std::shared_ptr<Bonuses::BonusAddStealPercent> b) {
+		if (_bonus->_add_steal_percent != nullptr)
+			remove_bonus(_bonus->_add_steal_percent);
+		add_bonus(b);
+		_bonus->_add_steal_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCriticalDamagePercent> bonus_critical_damage_percent() { return _bonus->_critical_damage_percent; }
+	void set_bonus_critical_damage_percent(std::shared_ptr<Bonuses::BonusCriticalDamagePercent> b) {
+		if (_bonus->_critical_damage_percent != nullptr)
+			remove_bonus(_bonus->_critical_damage_percent);
+		add_bonus(b);
+		_bonus->_critical_damage_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusDisableHPRecovery> bonus_disable_hp_recovery() { return _bonus->_disable_hp_recovery; }
+	void set_bonus_disable_hp_recovery(std::shared_ptr<Bonuses::BonusDisableHPRecovery> b) {
+		if (_bonus->_disable_hp_recovery != nullptr)
+			remove_bonus(_bonus->_disable_hp_recovery);
+		add_bonus(b);
+		_bonus->_disable_hp_recovery = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusDisableSPRecovery> bonus_disable_sp_recovery() { return _bonus->_disable_sp_recovery; }
+	void set_bonus_disable_sp_recovery(std::shared_ptr<Bonuses::BonusDisableSPRecovery> b) {
+		if (_bonus->_disable_sp_recovery != nullptr)
+			remove_bonus(_bonus->_disable_sp_recovery);
+		add_bonus(b);
+		_bonus->_disable_sp_recovery = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMagicDamageReflectPercentOnSelf> bonus_magic_damage_reflect_percent_on_self() { return _bonus->_magic_damage_reflect_percent_on_self; }
+	void set_bonus_magic_damage_reflect_percent_on_self(std::shared_ptr<Bonuses::BonusMagicDamageReflectPercentOnSelf> b) {
+		if (_bonus->_magic_damage_reflect_percent_on_self != nullptr)
+			remove_bonus(_bonus->_magic_damage_reflect_percent_on_self);
+		add_bonus(b);
+		_bonus->_magic_damage_reflect_percent_on_self = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusShortWeaponDamagePercent> bonus_short_weapon_damage_percent() { return _bonus->_short_weapon_damage_percent; }
+	void set_bonus_short_weapon_damage_percent(std::shared_ptr<Bonuses::BonusShortWeaponDamagePercent> b) {
+		if (_bonus->_short_weapon_damage_percent != nullptr)
+			remove_bonus(_bonus->_short_weapon_damage_percent);
+		add_bonus(b);
+		_bonus->_short_weapon_damage_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusLongWeaponDamagePercent> bonus_long_weapon_damage_percent() { return _bonus->_long_weapon_damage_percent; }
+	void set_bonus_long_weapon_damage_percent(std::shared_ptr<Bonuses::BonusLongWeaponDamagePercent> b) {
+		if (_bonus->_long_weapon_damage_percent != nullptr)
+			remove_bonus(_bonus->_long_weapon_damage_percent);
+		add_bonus(b);
+		_bonus->_long_weapon_damage_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusItemUsageImmunity> bonus_item_usage_immunity() { return _bonus->_item_usage_immunity; }
+	void set_bonus_item_usage_immunity(std::shared_ptr<Bonuses::BonusItemUsageImmunity> b) {
+		if (_bonus->_item_usage_immunity != nullptr)
+			remove_bonus(_bonus->_item_usage_immunity);
+		add_bonus(b);
+		_bonus->_item_usage_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusKnockBackImmunity> bonus_knock_back_immunity() { return _bonus->_knockback_immunity; }
+	void set_bonus_knock_back_immunity(std::shared_ptr<Bonuses::BonusKnockBackImmunity> b) {
+		if (_bonus->_knockback_immunity != nullptr)
+			remove_bonus(_bonus->_knockback_immunity);
+		add_bonus(b);
+		_bonus->_knockback_immunity = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHPVanishPercent> bonus_hp_vanish_percent() { return _bonus->_hp_vanish_percent; }
+	void set_bonus_hp_vanish_percent(std::shared_ptr<Bonuses::BonusHPVanishPercent> b) {
+		if (_bonus->_hp_vanish_percent != nullptr)
+			remove_bonus(_bonus->_hp_vanish_percent);
+		add_bonus(b);
+		_bonus->_hp_vanish_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPVanishPercent> bonus_sp_vanish_percent() { return _bonus->_sp_vanish_percent; }
+	void set_bonus_sp_vanish_percent(std::shared_ptr<Bonuses::BonusSPVanishPercent> b) {
+		if (_bonus->_sp_vanish_percent != nullptr)
+			remove_bonus(_bonus->_sp_vanish_percent);
+		add_bonus(b);
+		_bonus->_sp_vanish_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusRaise> bonus_raise() { return _bonus->_raise; }
+	void set_bonus_raise(std::shared_ptr<Bonuses::BonusRaise> b) {
+		if (_bonus->_raise != nullptr)
+			remove_bonus(_bonus->_raise);
+		add_bonus(b);
+		_bonus->_raise = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddItemDropOnMonsterKill> bonus_add_item_drop_on_monster_kill() { return _bonus->_add_item_drop_on_monster_kill; }
+	void set_bonus_add_item_drop_on_monster_kill(std::shared_ptr<Bonuses::BonusAddItemDropOnMonsterKill> b) {
+		if (_bonus->_add_item_drop_on_monster_kill != nullptr)
+			remove_bonus(_bonus->_add_item_drop_on_monster_kill);
+		add_bonus(b);
+		_bonus->_add_item_drop_on_monster_kill = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHPDrainOnMonsterKill> bonus_hp_drain_on_monster_kill() { return _bonus->_hp_drain_on_monster_kill; }
+	void set_bonus_hp_drain_on_monster_kill(std::shared_ptr<Bonuses::BonusHPDrainOnMonsterKill> b) {
+		if (_bonus->_hp_drain_on_monster_kill != nullptr)
+			remove_bonus(_bonus->_hp_drain_on_monster_kill);
+		add_bonus(b);
+		_bonus->_hp_drain_on_monster_kill = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPDrainOnMonsterKill> bonus_sp_drain_on_monster_kill() { return _bonus->_sp_drain_on_monster_kill; }
+	void set_bonus_sp_drain_on_monster_kill(std::shared_ptr<Bonuses::BonusSPDrainOnMonsterKill> b) {
+		if (_bonus->_sp_drain_on_monster_kill != nullptr)
+			remove_bonus(_bonus->_sp_drain_on_monster_kill);
+		add_bonus(b);
+		_bonus->_sp_drain_on_monster_kill = b;
+	}
+
+	void add_bonus(std::shared_ptr<Bonuses::IBonusArray> ba) { _bonus_arrays.push_back(ba); }
+	void remove_bonus(std::shared_ptr<Bonuses::IBonusArray> ba)
+	{
+		_bonus_arrays.erase(std::remove(_bonus_arrays.begin(), _bonus_arrays.end(), ba), _bonus_arrays.end());
+	}
+	std::shared_ptr<Bonuses::IBonusArray> get_bonus_array(status_point_type type)
+	{
+		for (auto &ba : _bonus_arrays)
+		{
+			if (ba->get_type() == type)
+				return ba;
+		}
+
+		return nullptr;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddAttackPercentageToElement> bonus_add_attack_percentage_to_element() { return _bonus->_add_attack_percentage_to_element; }
+	void set_bonus_add_attack_percentage_to_element(std::shared_ptr<Bonuses::BonusAddAttackPercentageToElement> b) {
+		if (_bonus->_add_attack_percentage_to_element != nullptr)
+			remove_bonus(_bonus->_add_attack_percentage_to_element);
+		add_bonus(b);
+		_bonus->_add_attack_percentage_to_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddAttackPercentageToRace> bonus_add_attack_percentage_to_race() { return _bonus->_add_attack_percentage_to_race; }
+	void set_bonus_add_attack_percentage_to_race(std::shared_ptr<Bonuses::BonusAddAttackPercentageToRace> b) {
+		if (_bonus->_add_attack_percentage_to_race != nullptr)
+			remove_bonus(_bonus->_add_attack_percentage_to_race);
+		add_bonus(b);
+		_bonus->_add_attack_percentage_to_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddAttackPercentageToSize> bonus_add_attack_percentage_to_size() { return _bonus->_add_attack_percentage_to_size; }
+	void set_bonus_add_attack_percentage_to_size(std::shared_ptr<Bonuses::BonusAddAttackPercentageToSize> b) {
+		if (_bonus->_add_attack_percentage_to_size != nullptr)
+			remove_bonus(_bonus->_add_attack_percentage_to_size);
+		add_bonus(b);
+		_bonus->_add_attack_percentage_to_size = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSubAttackPercentageFromElement> bonus_sub_attack_percentage_from_element() { return _bonus->_sub_attack_percentage_from_element; }
+	void set_bonus_sub_attack_percentage_from_element(std::shared_ptr<Bonuses::BonusSubAttackPercentageFromElement> b) {
+		if (_bonus->_sub_attack_percentage_from_element != nullptr)
+			remove_bonus(_bonus->_sub_attack_percentage_from_element);
+		add_bonus(b);
+		_bonus->_sub_attack_percentage_from_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSubAttackPercentageFromRace> bonus_sub_attack_percentage_from_race() { return _bonus->_sub_attack_percentage_from_race; }
+	void set_bonus_sub_attack_percentage_from_race(std::shared_ptr<Bonuses::BonusSubAttackPercentageFromRace> b) {
+		if (_bonus->_sub_attack_percentage_from_race != nullptr)
+			remove_bonus(_bonus->_sub_attack_percentage_from_race);
+		add_bonus(b);
+		_bonus->_sub_attack_percentage_from_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddEffectOnDamage> bonus_add_effect_on_damage() { return _bonus->_add_effect_on_damage; }
+	void set_bonus_add_effect_on_damage(std::shared_ptr<Bonuses::BonusAddEffectOnDamage> b) {
+		if (_bonus->_add_effect_on_damage != nullptr)
+			remove_bonus(_bonus->_add_effect_on_damage);
+		add_bonus(b);
+		_bonus->_add_effect_on_damage = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddEffectWhenDamaged> bonus_add_effect_when_damaged() { return _bonus->_add_effect_when_damaged; }
+	void set_bonus_add_effect_when_damaged(std::shared_ptr<Bonuses::BonusAddEffectWhenDamaged> b) {
+		if (_bonus->_add_effect_when_damaged != nullptr)
+			remove_bonus(_bonus->_add_effect_when_damaged);
+		add_bonus(b);
+		_bonus->_add_effect_when_damaged = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusRessistEffect> bonus_ressist_effect() { return _bonus->_ressist_effect; }
+	void set_bonus_ressist_effect(std::shared_ptr<Bonuses::BonusRessistEffect> b) {
+		if (_bonus->_ressist_effect != nullptr)
+			remove_bonus(_bonus->_ressist_effect);
+		add_bonus(b);
+		_bonus->_ressist_effect = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToElement> bonus_add_magic_attack_percentage_to_element() { return _bonus->_add_magic_attack_percentage_to_element; }
+	void set_bonus_add_magic_attack_percentage_to_element(std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToElement> b) {
+		if (_bonus->_add_magic_attack_percentage_to_element != nullptr)
+			remove_bonus(_bonus->_add_magic_attack_percentage_to_element);
+		add_bonus(b);
+		_bonus->_add_magic_attack_percentage_to_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToRace> bonus_add_magic_attack_to_Race() { return _bonus->_add_magic_attack_percentage_to_race; }
+	void set_bonus_add_magic_attack_percentage_to_race(std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToRace> b) {
+		if (_bonus->_add_magic_attack_percentage_to_race != nullptr)
+			remove_bonus(_bonus->_add_magic_attack_percentage_to_race);
+		add_bonus(b);
+		_bonus->_add_magic_attack_percentage_to_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToSize> bonus_add_magic_attack_percentage_to_size() { return _bonus->_add_magic_attack_percentage_to_size; }
+	void set_bonus_add_magic_attack_percentage_to_size(std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToSize> b) {
+		if (_bonus->_add_magic_attack_percentage_to_size != nullptr)
+			remove_bonus(_bonus->_add_magic_attack_percentage_to_size);
+		add_bonus(b);
+		_bonus->_add_magic_attack_percentage_to_size = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddEffectOnMagicAttack> bonus_add_effect_on_magic_attack() { return _bonus->_add_effect_on_magic_attack; }
+	void set_bonus_add_effect_on_magic_attack(std::shared_ptr<Bonuses::BonusAddEffectOnMagicAttack> b) {
+		if (_bonus->_add_effect_on_magic_attack != nullptr)
+			remove_bonus(_bonus->_add_effect_on_magic_attack);
+		add_bonus(b);
+		_bonus->_add_effect_on_magic_attack = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusResistMagicAttackFromRace> bonus_resist_magic_attack_from_race() { return _bonus->_resist_magic_attack_from_race; }
+	void set_bonus_resist_magic_attack_from_race(std::shared_ptr<Bonuses::BonusResistMagicAttackFromRace> b) {
+		if (_bonus->_resist_magic_attack_from_race != nullptr)
+			remove_bonus(_bonus->_resist_magic_attack_from_race);
+		add_bonus(b);
+		_bonus->_resist_magic_attack_from_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddDamageToClass> bonus_add_damage_to_class() { return _bonus->_add_damage_to_class; }
+	void set_bonus_add_damage_to_class(std::shared_ptr<Bonuses::BonusAddDamageToClass> b) {
+		if (_bonus->_add_damage_to_class != nullptr)
+			remove_bonus(_bonus->_add_damage_to_class);
+		add_bonus(b);
+		_bonus->_add_damage_to_class = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddMagicDamageToClass> bonus_add_magic_damage_to_class() { return _bonus->_add_magic_damage_to_class; }
+	void set_bonus_add_magic_damage_to_class(std::shared_ptr<Bonuses::BonusAddMagicDamageToClass> b) {
+		if (_bonus->_add_magic_damage_to_class != nullptr)
+			remove_bonus(_bonus->_add_magic_damage_to_class);
+		add_bonus(b);
+		_bonus->_add_magic_damage_to_class = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddDefenseToClass> bonus_add_defense_to_class() { return _bonus->_add_defense_to_class; }
+	void set_bonus_add_defense_to_class(std::shared_ptr<Bonuses::BonusAddDefenseToClass> b) {
+		if (_bonus->_add_defense_to_class != nullptr)
+			remove_bonus(_bonus->_add_defense_to_class);
+		add_bonus(b);
+		_bonus->_add_defense_to_class = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddMagicalDefenseToClass> bonus_add_magical_defense_to_class() { return _bonus->_add_magical_defense_to_class; }
+	void set_bonus_add_magical_defense_to_class(std::shared_ptr<Bonuses::BonusAddMagicalDefenseToClass> b) {
+		if (_bonus->_add_magical_defense_to_class != nullptr)
+			remove_bonus(_bonus->_add_magical_defense_to_class);
+		add_bonus(b);
+		_bonus->_add_magical_defense_to_class = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHPDrainPercent> bonus_hp_drain_percent() { return _bonus->_hp_drain_percent; }
+	void set_bonus_hp_drain_percent(std::shared_ptr<Bonuses::BonusHPDrainPercent> b) {
+		if (_bonus->_hp_drain_percent != nullptr)
+			remove_bonus(_bonus->_hp_drain_percent);
+		add_bonus(b);
+		_bonus->_hp_drain_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHPDrainValue> bonus_hp_drain_value() { return _bonus->_hp_drain_value; }
+	void set_bonus_hp_drain_value(std::shared_ptr<Bonuses::BonusHPDrainValue> b) {
+		if (_bonus->_hp_drain_value != nullptr)
+			remove_bonus(_bonus->_hp_drain_value);
+		add_bonus(b);
+		_bonus->_hp_drain_value = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPDrainPercent> bonus_sp_drain_percent() { return _bonus->_sp_drain_percent; }
+	void set_bonus_sp_drain_percent(std::shared_ptr<Bonuses::BonusSPDrainPercent> b) {
+		if (_bonus->_sp_drain_percent != nullptr)
+			remove_bonus(_bonus->_sp_drain_percent);
+		add_bonus(b);
+		_bonus->_sp_drain_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSPDrainValue> bonus_sp_drain_value() { return _bonus->_bonus_sp_drain_value; }
+	void set_bonus_sp_drain_value(std::shared_ptr<Bonuses::BonusSPDrainValue> b) {
+		if (_bonus->_bonus_sp_drain_value != nullptr)
+			remove_bonus(_bonus->_bonus_sp_drain_value);
+		add_bonus(b);
+		_bonus->_bonus_sp_drain_value = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddWeaponComaToElement> bonus_add_weapon_coma_to_element() { return _bonus->_add_weapon_coma_to_element; }
+	void set_bonus_add_weapon_coma_to_element(std::shared_ptr<Bonuses::BonusAddWeaponComaToElement> b) {
+		if (_bonus->_add_weapon_coma_to_element != nullptr)
+			remove_bonus(_bonus->_add_weapon_coma_to_element);
+		add_bonus(b);
+		_bonus->_add_weapon_coma_to_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddWeaponComaToRace> bonus_add_weapon_coma_to_race() { return _bonus->_add_weapon_coma_to_race; }
+	void set_bonus_add_weapon_coma_to_race(std::shared_ptr<Bonuses::BonusAddWeaponComaToRace> b) {
+		if (_bonus->_add_weapon_coma_to_race != nullptr)
+			remove_bonus(_bonus->_add_weapon_coma_to_race);
+		add_bonus(b);
+		_bonus->_add_weapon_coma_to_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddWeaponComaToSubElement> bonus_add_weapon_coma_to_sub_element() { return _bonus->_add_weapon_coma_to_sub_element; }
+	void set_bonus_add_weapon_coma_to_sub_element(std::shared_ptr<Bonuses::BonusAddWeaponComaToSubElement> b) {
+		if (_bonus->_add_weapon_coma_to_sub_element != nullptr)
+			remove_bonus(_bonus->_add_weapon_coma_to_sub_element);
+		add_bonus(b);
+		_bonus->_add_weapon_coma_to_sub_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddWeaponComaToSubRace> bonus_add_weapon_coma_to_sub_race() { return _bonus->_add_weapon_coma_to_sub_race; }
+	void set_bonus_add_weapon_coma_to_sub_race(std::shared_ptr<Bonuses::BonusAddWeaponComaToSubRace> b) {
+		if (_bonus->_add_weapon_coma_to_sub_race != nullptr)
+			remove_bonus(_bonus->_add_weapon_coma_to_sub_race);
+		add_bonus(b);
+		_bonus->_add_weapon_coma_to_sub_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddAttack> bonus_add_attack() { return _bonus->_add_attack; }
+	void set_bonus_add_attack(std::shared_ptr<Bonuses::BonusAddAttack> b) {
+		if (_bonus->_add_attack != nullptr)
+			remove_bonus(_bonus->_add_attack);
+		add_bonus(b);
+		_bonus->_add_attack = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddAttackPercent> bonus_add_attack_percent() { return _bonus->_add_attack_percent; }
+	void set_bonus_add_attack_percent(std::shared_ptr<Bonuses::BonusAddAttackPercent> b) {
+		if (_bonus->_add_attack_percent != nullptr)
+			remove_bonus(_bonus->_add_attack_percent);
+		add_bonus(b);
+		_bonus->_add_attack_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCriticalRace> bonus_critical_race() { return _bonus->_critical_race; }
+	void set_bonus_critical_race(std::shared_ptr<Bonuses::BonusCriticalRace> b) {
+		if (_bonus->_critical_race != nullptr)
+			remove_bonus(_bonus->_critical_race);
+		add_bonus(b);
+		_bonus->_critical_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusCriticalRacePercent> bonus_critical_race_percent() { return _bonus->_critical_race_percent; }
+	void set_bonus_critical_race_percent(std::shared_ptr<Bonuses::BonusCriticalRacePercent> b) {
+		if (_bonus->_critical_race_percent != nullptr)
+			remove_bonus(_bonus->_critical_race_percent);
+		add_bonus(b);
+		_bonus->_critical_race_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusDamageReductionAgainstSize> bonus_damage_reduction_against_size() { return _bonus->_damage_reduction_against_size; }
+	void set_bonus_damage_reduction_against_size(std::shared_ptr<Bonuses::BonusDamageReductionAgainstSize> b) {
+		if (_bonus->_damage_reduction_against_size != nullptr)
+			remove_bonus(_bonus->_damage_reduction_against_size);
+		add_bonus(b);
+		_bonus->_damage_reduction_against_size = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusMagicDamageReductionAgainstSize> bonus_magic_damage_reduction_against_size() { return _bonus->_magic_damage_reduction_against_size; }
+	void set_bonus_magic_damage_reduction_against_size(std::shared_ptr<Bonuses::BonusMagicDamageReductionAgainstSize> b) {
+		if (_bonus->_magic_damage_reduction_against_size != nullptr)
+			remove_bonus(_bonus->_magic_damage_reduction_against_size);
+		add_bonus(b);
+		_bonus->_magic_damage_reduction_against_size = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusExpPercentPerRace> bonus_exp_percent_per_race() { return _bonus->_exp_percent_per_race; }
+	void set_bonus_exp_percent_per_race(std::shared_ptr<Bonuses::BonusExpPercentPerRace> b) {
+		if (_bonus->_exp_percent_per_race != nullptr)
+			remove_bonus(_bonus->_exp_percent_per_race);
+		add_bonus(b);
+		_bonus->_exp_percent_per_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusJobPercentPerRace> bonus_job_percent_per_race() { return _bonus->_job_percent_per_race; }
+	void set_bonus_job_percent_per_race(std::shared_ptr<Bonuses::BonusJobPercentPerRace> b) {
+		if (_bonus->_job_percent_per_race != nullptr)
+			remove_bonus(_bonus->_job_percent_per_race);
+		add_bonus(b);
+		_bonus->_job_percent_per_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSkillAttack> bonus_skill_attack() { return _bonus->_skill_attack; }
+	void set_bonus_skill_attack(std::shared_ptr<Bonuses::BonusSkillAttack> b) {
+		if (_bonus->_skill_attack != nullptr)
+			remove_bonus(_bonus->_skill_attack);
+		add_bonus(b);
+		_bonus->_skill_attack = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusReduceSPConsumptionOfSkillByPercent> bonus_reduce_sp_consumption_of_skill_by_percent() { return _bonus->_reduce_sp_consumption_of_skill_by_percent; }
+	void set_bonus_reduce_sp_consumption_of_skill_by_percent(std::shared_ptr<Bonuses::BonusReduceSPConsumptionOfSkillByPercent> b) {
+		if (_bonus->_reduce_sp_consumption_of_skill_by_percent != nullptr)
+			remove_bonus(_bonus->_reduce_sp_consumption_of_skill_by_percent);
+		add_bonus(b);
+		_bonus->_reduce_sp_consumption_of_skill_by_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusReduceSPConsumptionOfSkill> bonus_reduce_sp_consumption_of_skill() { return _bonus->_reduce_sp_consumption_of_skill; }
+	void set_bonus_reduce_sp_consumption_of_skill(std::shared_ptr<Bonuses::BonusReduceSPConsumptionOfSkill> b) {
+		if (_bonus->_reduce_sp_consumption_of_skill != nullptr)
+			remove_bonus(_bonus->_reduce_sp_consumption_of_skill);
+		add_bonus(b);
+		_bonus->_reduce_sp_consumption_of_skill = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusLearnedSkillHeal> bonus_learned_skill_heal() { return _bonus->_learned_skill_heal; }
+	void set_bonus_learned_skill_heal(std::shared_ptr<Bonuses::BonusLearnedSkillHeal> b) {
+		if (_bonus->_learned_skill_heal != nullptr)
+			remove_bonus(_bonus->_learned_skill_heal);
+		add_bonus(b);
+		_bonus->_learned_skill_heal = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusHealOfSkillCastedOnSelf> bonus_heal_of_skill_casted_on_self() { return _bonus->_heal_of_skill_casted_on_self; }
+	void set_bonus_heal_of_skill_casted_on_self(std::shared_ptr<Bonuses::BonusHealOfSkillCastedOnSelf> b) {
+		if (_bonus->_heal_of_skill_casted_on_self != nullptr)
+			remove_bonus(_bonus->_heal_of_skill_casted_on_self);
+		add_bonus(b);
+		_bonus->_heal_of_skill_casted_on_self = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSkillKnockback> bonus_skill_knockback() { return _bonus->_skill_knockback; }
+	void set_bonus_skill_knockback(std::shared_ptr<Bonuses::BonusSkillKnockback> b) {
+		if (_bonus->_skill_knockback != nullptr)
+			remove_bonus(_bonus->_skill_knockback);
+		add_bonus(b);
+		_bonus->_skill_knockback = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSkillCastPercent> bonus_skill_cast_percent() { return _bonus->_skill_cast_percent; }
+	void set_bonus_skill_cast_percent(std::shared_ptr<Bonuses::BonusSkillCastPercent> b) {
+		if (_bonus->_skill_cast_percent != nullptr)
+			remove_bonus(_bonus->_skill_cast_percent);
+		add_bonus(b);
+		_bonus->_skill_cast_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSkillCooldown> bonus_skill_cooldown() { return _bonus->_skill_cooldown; }
+	void set_bonus_skill_cooldown(std::shared_ptr<Bonuses::BonusSkillCooldown> b) {
+		if (_bonus->_skill_cooldown != nullptr)
+			remove_bonus(_bonus->_skill_cooldown);
+		add_bonus(b);
+		_bonus->_skill_cooldown = b;
+	}
+	
+	std::shared_ptr<Bonuses::BonusSkillFixCastPercent> bonus_skill_fix_cast_percent() { return _bonus->_skill_fix_cast_percent; }
+	void set_bonus_skill_fix_cast_percent(std::shared_ptr<Bonuses::BonusSkillFixCastPercent> b) {
+		if (_bonus->_skill_fix_cast_percent != nullptr)
+			remove_bonus(_bonus->_skill_fix_cast_percent);
+		add_bonus(b);
+		_bonus->_skill_fix_cast_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusSkillVariableCastPercent> bonus_skill_variable_cast_percent() { return _bonus->_skill_variable_cast_percent; }
+	void set_bonus_skill_variable_cast_percent(std::shared_ptr<Bonuses::BonusSkillVariableCastPercent> b) {
+		if (_bonus->_skill_variable_cast_percent != nullptr)
+			remove_bonus(_bonus->_skill_variable_cast_percent);
+		add_bonus(b);
+		_bonus->_skill_variable_cast_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusResistSkillDamagePercent> bonus_resist_skill_damage_percent() { return _bonus->_resist_skill_damage_percent; }
+	void set_bonus_resist_skill_damage_percent(std::shared_ptr<Bonuses::BonusResistSkillDamagePercent> b) {
+		if (_bonus->_resist_skill_damage_percent != nullptr)
+			remove_bonus(_bonus->_resist_skill_damage_percent);
+		add_bonus(b);
+		_bonus->_resist_skill_damage_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusIgnoreDefenseFromElement> bonus_ignore_defense_from_element() { return _bonus->_ignore_defense_from_element; }
+	void set_bonus_ignore_defense_from_element(std::shared_ptr<Bonuses::BonusIgnoreDefenseFromElement> b) {
+		if (_bonus->_ignore_defense_from_element != nullptr)
+			remove_bonus(_bonus->_ignore_defense_from_element);
+		add_bonus(b);
+		_bonus->_ignore_defense_from_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusIgnoreDefenseFromRace> bonus_ignore_defense_from_race() { return _bonus->_ignore_defense_from_race; }
+	void set_bonus_ignore_defense_from_race(std::shared_ptr<Bonuses::BonusIgnoreDefenseFromRace> b) {
+		if (_bonus->_ignore_defense_from_race != nullptr)
+			remove_bonus(_bonus->_ignore_defense_from_race);
+		add_bonus(b);
+		_bonus->_ignore_defense_from_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusIgnoreMagicDefenseFromElement> bonus_ignore_magic_defense_from_element() { return _bonus->_ignore_magic_defense_from_element; }
+	void set_bonus_ignore_magic_defense_from_element(std::shared_ptr<Bonuses::BonusIgnoreMagicDefenseFromElement> b) {
+		if (_bonus->_ignore_magic_defense_from_element != nullptr)
+			remove_bonus(_bonus->_ignore_magic_defense_from_element);
+		add_bonus(b);
+		_bonus->_ignore_magic_defense_from_element = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusIgnoreMagicDefenseFromRace> bonus_ignore_magic_defense_from_race() { return _bonus->_ignore_magic_defense_from_race; }
+	void set_bonus_ignore_magic_defense_from_race(std::shared_ptr<Bonuses::BonusIgnoreMagicDefenseFromRace> b) {
+		if (_bonus->_ignore_magic_defense_from_race != nullptr)
+			remove_bonus(_bonus->_ignore_magic_defense_from_race);
+		add_bonus(b);
+		_bonus->_ignore_magic_defense_from_race = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddEleWeaponDamagePercent> bonus_add_ele_weapon_damage_percent() { return _bonus->_add_ele_weapon_damage_percent; }
+	void set_bonus_add_ele_weapon_damage_percent(std::shared_ptr<Bonuses::BonusAddEleWeaponDamagePercent> b) {
+		if (_bonus->_add_ele_weapon_damage_percent != nullptr)
+			remove_bonus(_bonus->_add_ele_weapon_damage_percent);
+		add_bonus(b);
+		_bonus->_add_ele_weapon_damage_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAddEleMagicDamagePercent> bonus_add_ele_magic_damage_percent() { return _bonus->_add_ele_magic_damage_percent; }
+	void set_bonus_add_ele_magic_damage_percent(std::shared_ptr<Bonuses::BonusAddEleMagicDamagePercent> b) {
+		if (_bonus->_add_ele_magic_damage_percent != nullptr)
+			remove_bonus(_bonus->_add_ele_magic_damage_percent);
+		add_bonus(b);
+		_bonus->_add_ele_magic_damage_percent = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAutoSpellOnSkill> bonus_auto_spell_on_skill() { return _bonus->_auto_spell_on_skill; }
+	void set_bonus_auto_spell_on_skill(std::shared_ptr<Bonuses::BonusAutoSpellOnSkill> b) {
+		if (_bonus->_auto_spell_on_skill != nullptr)
+			remove_bonus(_bonus->_auto_spell_on_skill);
+		add_bonus(b);
+		_bonus->_auto_spell_on_skill = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAutoSpellOnAttack> bonus_auto_spell_on_attack() { return _bonus->_auto_spell_on_attack; }
+	void set_bonus_auto_spell_on_attack(std::shared_ptr<Bonuses::BonusAutoSpellOnAttack> b) {
+		if (_bonus->_auto_spell_on_attack != nullptr)
+			remove_bonus(_bonus->_auto_spell_on_attack);
+		add_bonus(b);
+		_bonus->_auto_spell_on_attack = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAutoSpellOnReceiveDamage> bonus_auto_spell_on_receive_damage() { return _bonus->_auto_spell_on_receive_damage; }
+	void set_bonus_auto_spell_on_receive_damage(std::shared_ptr<Bonuses::BonusAutoSpellOnReceiveDamage> b) {
+		if (_bonus->_auto_spell_on_receive_damage != nullptr)
+			remove_bonus(_bonus->_auto_spell_on_receive_damage);
+		add_bonus(b);
+		_bonus->_auto_spell_on_receive_damage = b;
+	}
+
+	std::shared_ptr<Bonuses::BonusAutoSpellOnSelf> bonus_auto_spell_on_self() { return _bonus->_auto_spell_on_self; }
+	void set_bonus_auto_spell_on_self(std::shared_ptr<Bonuses::BonusAutoSpellOnSelf> b) {
+		if (_bonus->_auto_spell_on_self != nullptr)
+			remove_bonus(_bonus->_auto_spell_on_self);
+		add_bonus(b);
+		_bonus->_auto_spell_on_self = b;
+	}
+
 protected:
 	std::shared_ptr<Unit> unit() { return _unit.lock(); }
 	unit_type _type{ UNIT_PLAYER };
@@ -863,6 +1864,137 @@ private:
 
 	std::vector<std::shared_ptr<Attribute>> _attributes;
 	std::vector<std::shared_ptr<Appearance>> _appearances;
+	std::vector<std::shared_ptr<Bonuses::Bonus>> _bonuses;
+	std::vector<std::shared_ptr<Bonuses::IBonusArray>> _bonus_arrays;
+
+	struct bonuses {
+		// Bonuses
+		std::shared_ptr<Bonuses::BonusAllStatus> _all_status;
+		std::shared_ptr<Bonuses::BonusAttackElement> _attack_element;
+		std::shared_ptr<Bonuses::BonusDefenseElement> _defense_element;
+		std::shared_ptr<Bonuses::BonusCastPercent> _cast_percent;
+		std::shared_ptr<Bonuses::BonusMaxHPPercent> _max_hp_percent;
+		std::shared_ptr<Bonuses::BonusMaxSPPercent> _max_sp_percent;
+		std::shared_ptr<Bonuses::BonusSPPercent> _sp_percent;
+		std::shared_ptr<Bonuses::BonusAttackRange> _attack_range;
+		std::shared_ptr<Bonuses::BonusAttackRangePercent> _attack_range_percent;
+		std::shared_ptr<Bonuses::BonusAddMovementSpeedPercent>	_bonus_add_movement_speed_percent;
+		std::shared_ptr<Bonuses::BonusAttackSpeedPercent> _attack_speed_percent;
+		std::shared_ptr<Bonuses::BonusHPRecoveryPercent> _hp_recovery_percent;
+		std::shared_ptr<Bonuses::BonusSPRecoveryPercent> _sp_recovery_percent;
+		std::shared_ptr<Bonuses::BonusCriticalDefense> _critical_defense;
+		std::shared_ptr<Bonuses::BonusMeleeDefense> _melee_defense;
+		std::shared_ptr<Bonuses::BonusRangedDefense> _ranged_defense;
+		std::shared_ptr<Bonuses::BonusDoubleAttackPercent> _double_attack_percent;
+		std::shared_ptr<Bonuses::BonusMagicAttackPercent> _magic_attack_percent;
+		std::shared_ptr<Bonuses::BonusAttackPercent> _attack_percent;
+		std::shared_ptr<Bonuses::BonusMagicDefensePercent> _magic_defense_percent;
+		std::shared_ptr<Bonuses::BonusMiscDefensePercent> _misc_defense_percent;
+		std::shared_ptr<Bonuses::BonusPerfectHitPercent> _perfect_hit_percent;
+		std::shared_ptr<Bonuses::BonusCriticalPercent> _critical_percent;
+		std::shared_ptr<Bonuses::BonusGetZenyNum> _get_zeny_num;
+		std::shared_ptr<Bonuses::BonusAttackOnDefenseRatioForElement> _attack_on_defense_ratio_for_element;
+		std::shared_ptr<Bonuses::BonusAttackOnDefenseRatioForRace> _attack_on_defense_ratio_for_race;
+		std::shared_ptr<Bonuses::BonusHitPercent> _hit_percent;
+		std::shared_ptr<Bonuses::BonusFleePercent> _flee_percent;
+		std::shared_ptr<Bonuses::BonusPerfectDodgePercent> _perfect_dodge_percent;
+		std::shared_ptr<Bonuses::BonusSoftDefensePercent> _soft_defense_percent;
+		std::shared_ptr<Bonuses::BonusHardDefensePercent> _hard_defense_percent;
+		std::shared_ptr<Bonuses::BonusSoftMagicalDefensePercent> _soft_magical_defense_percent;
+		std::shared_ptr<Bonuses::BonusHardMagicalDefensePercent> _hard_magical_defense_percent;
+		std::shared_ptr<Bonuses::BonusRestartWithFullRecovery> _restart_with_full_recovery;
+		std::shared_ptr<Bonuses::BonusCastCancelImmunity> _cast_cancel_immunity;
+		std::shared_ptr<Bonuses::BonusSizeModifierImmunity> _size_modifier_immunity;
+		std::shared_ptr<Bonuses::BonusMagicDamageImmunity> _magic_damage_immunity;
+		std::shared_ptr<Bonuses::BonusWeaponDamageImmunity> _weapon_damage_immunity;
+		std::shared_ptr<Bonuses::BonusGemstoneImmunity> _gemstone_immunity;
+		std::shared_ptr<Bonuses::BonusGearFuelImmunity> _gear_fuel_immunity;
+		std::shared_ptr<Bonuses::BonusInfiniteEndure> _infinite_endure;
+		std::shared_ptr<Bonuses::BonusUnbreakableWeapon> _unbreakable_weapon;
+		std::shared_ptr<Bonuses::BonusUnbreakableArmor> _unbreakable_armor;
+		std::shared_ptr<Bonuses::BonusUnbreakableHelm> _unbreakable_helm;
+		std::shared_ptr<Bonuses::BonusUnbreakableShield> _unbreakable_shield;
+		std::shared_ptr<Bonuses::BonusSPGainOnMobKill> _sp_gain_on_mob_kill;
+		std::shared_ptr<Bonuses::BonusHPGainOnMobKill> _hp_gain_on_mob_kill;
+		std::shared_ptr<Bonuses::BonusDamageSplashRange> _damage_splash_range;
+		std::shared_ptr<Bonuses::BonusMeleeWeaponDamageReflectPercentOnSelf> _melee_weapon_damage_reflect_percent_on_self;
+		std::shared_ptr<Bonuses::BonusRangedWeaponDamageReflectPercentOnSelf> _ranged_weapon_damage_reflect_percent_on_self;
+		std::shared_ptr<Bonuses::BonusWeaponBreakPercent> _weapon_break_percent;
+		std::shared_ptr<Bonuses::BonusArmorBreakPercent> _armor_break_percent;
+		std::shared_ptr<Bonuses::BonusAddStealPercent> _add_steal_percent;
+		std::shared_ptr<Bonuses::BonusCriticalDamagePercent> _critical_damage_percent;
+		std::shared_ptr<Bonuses::BonusDisableHPRecovery> _disable_hp_recovery;
+		std::shared_ptr<Bonuses::BonusDisableSPRecovery> _disable_sp_recovery;
+		std::shared_ptr<Bonuses::BonusMagicDamageReflectPercentOnSelf> _magic_damage_reflect_percent_on_self;
+		std::shared_ptr<Bonuses::BonusShortWeaponDamagePercent> _short_weapon_damage_percent;
+		std::shared_ptr<Bonuses::BonusLongWeaponDamagePercent> _long_weapon_damage_percent;
+		std::shared_ptr<Bonuses::BonusItemUsageImmunity> _item_usage_immunity; 
+		std::shared_ptr<Bonuses::BonusKnockBackImmunity> _knockback_immunity;
+		// Bonus2
+		std::shared_ptr<Bonuses::BonusAddAttackPercentageToElement> _add_attack_percentage_to_element;
+		std::shared_ptr<Bonuses::BonusAddAttackPercentageToRace> _add_attack_percentage_to_race;
+		std::shared_ptr<Bonuses::BonusAddAttackPercentageToSize> _add_attack_percentage_to_size;
+		std::shared_ptr<Bonuses::BonusSubAttackPercentageFromElement> _sub_attack_percentage_from_element;
+		std::shared_ptr<Bonuses::BonusSubAttackPercentageFromRace> _sub_attack_percentage_from_race;
+		std::shared_ptr<Bonuses::BonusAddEffectOnDamage> _add_effect_on_damage;
+		std::shared_ptr<Bonuses::BonusAddEffectWhenDamaged> _add_effect_when_damaged;
+		std::shared_ptr<Bonuses::BonusRessistEffect> _ressist_effect;
+		std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToElement> _add_magic_attack_percentage_to_element;
+		std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToRace> _add_magic_attack_percentage_to_race;
+		std::shared_ptr<Bonuses::BonusAddMagicAttackPercentageToSize> _add_magic_attack_percentage_to_size;
+		std::shared_ptr<Bonuses::BonusAddEffectOnMagicAttack> _add_effect_on_magic_attack;
+		std::shared_ptr<Bonuses::BonusResistMagicAttackFromRace> _resist_magic_attack_from_race;
+		std::shared_ptr<Bonuses::BonusAddDamageToClass> _add_damage_to_class;
+		std::shared_ptr<Bonuses::BonusAddMagicDamageToClass> _add_magic_damage_to_class;
+		std::shared_ptr<Bonuses::BonusAddDefenseToClass> _add_defense_to_class;
+		std::shared_ptr<Bonuses::BonusAddMagicalDefenseToClass> _add_magical_defense_to_class;
+		std::shared_ptr<Bonuses::BonusHPDrainPercent> _hp_drain_percent;
+		std::shared_ptr<Bonuses::BonusHPDrainValue> _hp_drain_value;
+		std::shared_ptr<Bonuses::BonusSPDrainPercent> _sp_drain_percent;
+		std::shared_ptr<Bonuses::BonusSPDrainValue>	 _bonus_sp_drain_value;
+		std::shared_ptr<Bonuses::BonusAddWeaponComaToElement> _add_weapon_coma_to_element;
+		std::shared_ptr<Bonuses::BonusAddWeaponComaToRace> _add_weapon_coma_to_race;
+		std::shared_ptr<Bonuses::BonusAddWeaponComaToSubElement> _add_weapon_coma_to_sub_element;
+		std::shared_ptr<Bonuses::BonusAddWeaponComaToSubRace> _add_weapon_coma_to_sub_race;
+		std::shared_ptr<Bonuses::BonusAddAttack> _add_attack;
+		std::shared_ptr<Bonuses::BonusAddAttackPercent>	_add_attack_percent;
+		std::shared_ptr<Bonuses::BonusCriticalRace>	_critical_race;
+		std::shared_ptr<Bonuses::BonusCriticalRacePercent> _critical_race_percent;
+		std::shared_ptr<Bonuses::BonusDamageReductionAgainstSize> _damage_reduction_against_size;
+		std::shared_ptr<Bonuses::BonusMagicDamageReductionAgainstSize> _magic_damage_reduction_against_size;
+		std::shared_ptr<Bonuses::BonusExpPercentPerRace> _exp_percent_per_race;
+		std::shared_ptr<Bonuses::BonusJobPercentPerRace> _job_percent_per_race;
+		std::shared_ptr<Bonuses::BonusSkillAttack> _skill_attack;
+		std::shared_ptr<Bonuses::BonusReduceSPConsumptionOfSkillByPercent> _reduce_sp_consumption_of_skill_by_percent;
+		std::shared_ptr<Bonuses::BonusReduceSPConsumptionOfSkill> _reduce_sp_consumption_of_skill;
+		std::shared_ptr<Bonuses::BonusLearnedSkillHeal> _learned_skill_heal;
+		std::shared_ptr<Bonuses::BonusHealOfSkillCastedOnSelf> _heal_of_skill_casted_on_self;
+		std::shared_ptr<Bonuses::BonusSkillKnockback> _skill_knockback;
+		std::shared_ptr<Bonuses::BonusSkillCastPercent> _skill_cast_percent;
+		std::shared_ptr<Bonuses::BonusSkillCooldown> _skill_cooldown;
+		std::shared_ptr<Bonuses::BonusSkillFixCastPercent> _skill_fix_cast_percent;
+		std::shared_ptr<Bonuses::BonusSkillVariableCastPercent> _skill_variable_cast_percent;
+		std::shared_ptr<Bonuses::BonusResistSkillDamagePercent> _resist_skill_damage_percent;
+		std::shared_ptr<Bonuses::BonusIgnoreDefenseFromElement> _ignore_defense_from_element;
+		std::shared_ptr<Bonuses::BonusIgnoreDefenseFromRace> _ignore_defense_from_race;
+		std::shared_ptr<Bonuses::BonusIgnoreMagicDefenseFromElement> _ignore_magic_defense_from_element;
+		std::shared_ptr<Bonuses::BonusIgnoreMagicDefenseFromRace> _ignore_magic_defense_from_race;
+		std::shared_ptr<Bonuses::BonusAddEleWeaponDamagePercent> _add_ele_weapon_damage_percent;
+		std::shared_ptr<Bonuses::BonusAddEleMagicDamagePercent> _add_ele_magic_damage_percent;
+		std::shared_ptr<Bonuses::BonusAutoSpellOnSkill> _auto_spell_on_skill;
+		std::shared_ptr<Bonuses::BonusAutoSpellOnAttack> _auto_spell_on_attack;
+		std::shared_ptr<Bonuses::BonusAutoSpellOnReceiveDamage> _auto_spell_on_receive_damage;
+		std::shared_ptr<Bonuses::BonusAutoSpellOnSelf> _auto_spell_on_self;
+		// Bonus3
+		std::shared_ptr<Bonuses::BonusHPVanishPercent> _hp_vanish_percent;
+		std::shared_ptr<Bonuses::BonusSPVanishPercent> _sp_vanish_percent;
+		std::shared_ptr<Bonuses::BonusRaise> _raise;
+		std::shared_ptr<Bonuses::BonusAddItemDropOnMonsterKill> _add_item_drop_on_monster_kill;
+		std::shared_ptr<Bonuses::BonusHPDrainOnMonsterKill> _hp_drain_on_monster_kill;
+		std::shared_ptr<Bonuses::BonusSPDrainOnMonsterKill> _sp_drain_on_monster_kill;
+	};
+
+	std::shared_ptr<bonuses> _bonus;
 };
 }
 }

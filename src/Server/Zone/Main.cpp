@@ -23,6 +23,8 @@ int main(int argc, const char * argv[])
 	if (!sZone->read_config())
 		exit(1); // Stop process if the file can't be read.
 
+	sZone->set_config(sZone->config());
+
 	/**
 	 * Initialize the Common Core
 	 */

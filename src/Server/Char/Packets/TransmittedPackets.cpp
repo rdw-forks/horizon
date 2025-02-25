@@ -213,8 +213,8 @@ void HC_ACCEPT_MAKECHAR::deliver(uint32_t char_id, uint32_t start_zeny, std::str
 	_c._status_points = 48;
 	_c._hp = 40;
 	_c._maximum_hp = 40;
-	_c._sp = 40;
-	_c._maximum_sp = 40;
+	_c._sp = 11; // Maximum SP set to 11 for novice because some clients crash if it exceeds 11.
+	_c._maximum_sp = 11;
 	_c._walk_speed = DEFAULT_MOVEMENT_SPEED;
 	_c._job_id = job_class;
 	_c._hair_view_id = hair_style;

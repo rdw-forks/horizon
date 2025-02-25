@@ -221,38 +221,41 @@ bool ZoneClientInterface::disconnect(int8_t type)
 	//sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
-bool ZoneClientInterface::update_session(int32_t account_id)
+bool ZoneClientInterface::update_session(int32_t account_id, bool first)
 {
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 
-	boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `id` = ?");
-	auto b1 = stmt.bind(account_id);
-	boost::mysql::results results;
-	conn->execute(b1, results);
-	
-	HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
+	if (first == true) {
+		boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `id` = ?");
+		auto b1 = stmt.bind(account_id);
+		boost::mysql::results results;
+		conn->execute(b1, results);
+		
+		HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
 
-	if (results.rows().empty()) {
-		ZC_ACK_REQ_DISCONNECT pkt(get_session());
-		HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
-		pkt.deliver(0);
-		return false;
+		if (results.rows().empty()) {
+			ZC_ACK_REQ_DISCONNECT pkt(get_session());
+			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
+			pkt.deliver(0);
+			return false;
+		}
+
+		auto r = results.rows()[0];
+
+		std::string current_server = r[0].as_string();
+
+		if (current_server.compare("C") != 0) {
+			ZC_ACK_REQ_DISCONNECT pkt(get_session());
+			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
+			pkt.deliver(0);
+			return false;
+		}
 	}
 
-	auto r = results.rows()[0];
-
-	std::string current_server = r[0].as_string();
-
-	if (current_server.compare("C") != 0) {
-		ZC_ACK_REQ_DISCONNECT pkt(get_session());
-		HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
-		pkt.deliver(0);
-		return false;
-	}
-	
-	stmt = conn->prepare_statement("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?");
-	auto b2 = stmt.bind(account_id, std::time(nullptr));
-	conn->execute(b2, results);
+	boost::mysql::statement stmt_update_session = conn->prepare_statement("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?");
+	auto b2 = stmt_update_session.bind(std::time(nullptr), account_id);
+	boost::mysql::results results_update_session;
+	conn->execute(b2, results_update_session);
 
 	return true;
 }
@@ -288,6 +291,7 @@ bool ZoneClientInterface::notify_time()
 {
 	ZC_NOTIFY_TIME pkt(get_session());
 	pkt.deliver();
+	get_session()->clif()->update_session(get_session()->player()->account()._account_id, false);
 	return true;
 }
 
@@ -1232,6 +1236,11 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 		{
 			std::shared_ptr<Unit> target = get_session()->player()->get_nearby_unit(target_guid);
 			
+			if (target == nullptr)
+			{
+				HLog(error) << "Target not found.";
+				return;
+			}
 			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config config;
 			config.continuous = continuous;
 			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand *operand = new CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand(get_session()->player(), target, config);

@@ -47,8 +47,12 @@ struct auth_config_type {
 	int max_network_threads() { return _max_network_threads; }
 	void set_max_network_threads(int threads) { _max_network_threads = threads; }
 
+	int session_max_timeout() { return _session_max_timeout; }
+	void set_session_max_timeout(int timeout) { _session_max_timeout = timeout; }
+	
     std::vector<char_server> _char_servers;
 	int _max_network_threads{1};
+	int _session_max_timeout{60};
 };
 
 const int SALT_LEN = 16;
@@ -91,6 +95,8 @@ public:
 	bool clicmd_reload_config(std::string /*cmd*/);
 	bool clicmd_create_new_account(std::string /*cmd*/);
 	bool clicmd_reset_password(std::string /*cmd*/);
+
+	void verify_connected_sessions();
 
 	/* Task Scheduler */
 	TaskScheduler &getScheduler() { return _task_scheduler; }

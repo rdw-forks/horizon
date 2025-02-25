@@ -68,6 +68,7 @@ public:
 		Networking::NetworkThread<ZoneSocket>::run();
 	}
 
+	// This routine is overriden from base NetworkThread::update
 	void update() override
 	{
 		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();

@@ -50,8 +50,8 @@ bool Horizon::Zone::SCENARIO_LOGIN::Login::execute()
 		return false;
 	}
 
-	stmt = conn->prepare_statement("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?");
-	auto b2 = stmt.bind("Z", _request.account_id, _request.auth_code);
+	stmt = conn->prepare_statement("UPDATE `session_data` SET `current_server` = ?, `last_update` = ? WHERE `game_account_id` = ? AND `auth_code` = ?");
+	auto b2 = stmt.bind("Z", std::time(nullptr), _request.account_id, _request.auth_code);
 	conn->execute(b2, results);
 	
 	stmt = conn->prepare_statement("SELECT `id`, `account_id`, `current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?");
