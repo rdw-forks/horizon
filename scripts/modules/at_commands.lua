@@ -297,7 +297,9 @@ local at_commands = {
 		["skillpoint"] = skillpoint,
 		["resetskillpoints"] = resetskillpoints,
 		["go"] = go,
-		["zeny"] = zeny
+		["zeny"] = zeny,
+		["storage"] = storage,
+		["heal"] = heal
 	}
 }
 

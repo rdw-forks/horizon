@@ -49,12 +49,28 @@ namespace Bonuses
 		_parameter_1(parameter_1), _parameter_2(parameter_2), _parameter_3(parameter_3) { }
 
 		// create copy and move constructors for Bonus
-		Bonus(const Bonus &other) : Traits::Attribute(other), _parameter_1(other._parameter_1), _parameter_2(other._parameter_2), _parameter_3(other._parameter_3) { }
+		Bonus(Bonus &other) : Traits::Attribute(other), _parameter_1(other._parameter_1), _parameter_2(other._parameter_2), _parameter_3(other._parameter_3) { }
 		Bonus(Bonus &&other) : Traits::Attribute(std::move(other)), _parameter_1(other._parameter_1), _parameter_2(other._parameter_2), _parameter_3(other._parameter_3) { }
 
 		// create copy and move assignment operators for Bonus
-		Bonus& operator=(const Bonus &other) { Traits::Attribute::operator=(static_cast<Traits::Attribute>(other)); _parameter_1 = other._parameter_1; _parameter_2 = other._parameter_2; _parameter_3 = other._parameter_3; return *this; }
-		Bonus& operator=(Bonus &&other) { Traits::Attribute::operator=(std::move(static_cast<Traits::Attribute>(other))); _parameter_1 = other._parameter_1; _parameter_2 = other._parameter_2; _parameter_3 = other._parameter_3; return *this; }
+		Bonus& operator=(Bonus &other) { 
+			if (this != &other) {
+				Traits::Attribute::operator=(std::move(other));
+            	_parameter_1 = other._parameter_1;
+            	_parameter_2 = other._parameter_2;
+            	_parameter_3 = other._parameter_3;
+			}
+			return *this; 
+		}
+		Bonus& operator=(Bonus &&other) { 
+			if (this != &other) {
+				Traits::Attribute::operator=(std::move(other));
+				_parameter_1 = other._parameter_1;
+				_parameter_2 = other._parameter_2;
+				_parameter_3 = other._parameter_3;
+			}
+			return *this;
+		}
 
 		int32_t get() { return get_equip(); }
 		void set(int bonus, bool notify_client = true) { set_equip(bonus, notify_client); }
@@ -117,7 +133,7 @@ namespace Bonuses
 		const BONUSTYPE& operator[](int type) const { return _types[type]; }
 
 		BONUSTYPE get(int type) { return _types[type]; }
-		void set(int type, BONUSTYPE bonus) { _types[type] = bonus; }
+		void set(int type, BONUSTYPE bonus) { _types[type] = std::move(bonus); }
 
 		void clear()
 		{
@@ -130,7 +146,6 @@ namespace Bonuses
 			_types[type] = BONUSTYPE();
 		}
 		
-	private:
 		std::array<BONUSTYPE, TYPEMAX> _types;
 	};
 
@@ -510,30 +525,40 @@ namespace Bonuses
 	{
 	public:
 		BonusAddAttackPercentageToElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_ADDATKELE) { }
+		
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddAttackPercentageToRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusAddAttackPercentageToRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_ADDATKRACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddAttackPercentageToSize : public BonusArray<Bonus, ESZ_MAX>
 	{
 	public:
 		BonusAddAttackPercentageToSize(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ESZ_MAX>(unit, STATUS_ADDSIZE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSubAttackPercentageFromElement : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusSubAttackPercentageFromElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_SUBELE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSubAttackPercentageFromRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusSubAttackPercentageFromRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_SUBRACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	struct s_add_effect
@@ -559,72 +584,96 @@ namespace Bonuses
 	{
 	public:
 		BonusAddEffectOnDamage(std::shared_ptr<Unit> unit) : BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>(unit, STATUS_ADDEFF) { }
+	
+		void set(int type, s_add_effect bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusAddEffectWhenDamaged : public BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>
 	{
 	public:
 		BonusAddEffectWhenDamaged(std::shared_ptr<Unit> unit) : BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>(unit, STATUS_ADDEFF2) { }
+	
+		void set(int type, s_add_effect bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusRessistEffect : public BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>
 	{
 	public:
 		BonusRessistEffect(std::shared_ptr<Unit> unit) : BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>(unit, STATUS_RESEFF) { }
+	
+		void set(int type, s_add_effect bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusAddMagicAttackPercentageToElement : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusAddMagicAttackPercentageToElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_MAGIC_ADDELE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddMagicAttackPercentageToRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusAddMagicAttackPercentageToRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_MAGIC_ADDRACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddMagicAttackPercentageToSize : public BonusArray<Bonus, ESZ_MAX>
 	{
 	public:
 		BonusAddMagicAttackPercentageToSize(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ESZ_MAX>(unit, STATUS_MAGIC_ADDSIZE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 	
 	class BonusAddEffectOnMagicAttack : public BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>
 	{
 	public:
 		BonusAddEffectOnMagicAttack(std::shared_ptr<Unit> unit) : BonusArray<s_add_effect, MAX_STATUS_EFFECT_BONUSES>(unit, STATUS_ADDEFFMAGIC) { }
+	
+		void set(int type, s_add_effect bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusResistMagicAttackFromRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusResistMagicAttackFromRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_MAGIC_SUBRACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddDamageToClass : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusAddDamageToClass(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_ADD_DAMAGE_CLASS) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddMagicDamageToClass : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusAddMagicDamageToClass(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_ADD_MAGIC_DAMAGE_CLASS) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddDefenseToClass : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusAddDefenseToClass(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_ADD_DEF_CLASS) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddMagicalDefenseToClass : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusAddMagicalDefenseToClass(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_ADD_MDEF_CLASS) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusHPDrainPercent : public Bonus
@@ -655,174 +704,232 @@ namespace Bonuses
 	{
 	public:
 		BonusAddWeaponComaToElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_WEAPON_COMA_ELE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddWeaponComaToRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusAddWeaponComaToRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_WEAPON_COMA_RACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddWeaponComaToSubElement : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusAddWeaponComaToSubElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_WEAPON_COMA_ELE2) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddWeaponComaToSubRace : public BonusArray<Bonus, MONSTER_RACE2_MAX>
 	{
 	public:
 		BonusAddWeaponComaToSubRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE2_MAX>(unit, STATUS_WEAPON_COMA_RACE2) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddAttack : public BonusArray<Bonus, IT_WT_MAX_WEAPON_TYPE>
 	{
 	public:
 		BonusAddAttack(std::shared_ptr<Unit> unit) : BonusArray<Bonus, IT_WT_MAX_WEAPON_TYPE>(unit, STATUS_WEAPON_ATK) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddAttackPercent : public BonusArray<Bonus, IT_WT_MAX_WEAPON_TYPE>
 	{
 	public:
 		BonusAddAttackPercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, IT_WT_MAX_WEAPON_TYPE>(unit, STATUS_WEAPON_ATK_RATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusCriticalRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusCriticalRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_CRITICALRACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusCriticalRacePercent : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusCriticalRacePercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_CRITICALRACERATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusDamageReductionAgainstSize : public BonusArray<Bonus, ESZ_MAX>
 	{
 	public:
 		BonusDamageReductionAgainstSize(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ESZ_MAX>(unit, STATUS_SUB_SIZE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusMagicDamageReductionAgainstSize : public BonusArray<Bonus, ESZ_MAX>
 	{
 	public:
 		BonusMagicDamageReductionAgainstSize(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ESZ_MAX>(unit, STATUS_MAGIC_SUB_SIZE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusExpPercentPerRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusExpPercentPerRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_EXP_RATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusJobPercentPerRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusJobPercentPerRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_JOB_RATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSkillAttack : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusSkillAttack(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_ATK) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusReduceSPConsumptionOfSkillByPercent : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusReduceSPConsumptionOfSkillByPercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_USESPRATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusReduceSPConsumptionOfSkill : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusReduceSPConsumptionOfSkill(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_USESP) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusLearnedSkillHeal : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusLearnedSkillHeal(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_LEARNED_HEAL) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusHealOfSkillCastedOnSelf : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusHealOfSkillCastedOnSelf(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_HEALPOWER_OF_SKILL) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSkillKnockback : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusSkillKnockback(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_BLOWN) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSkillCastPercent : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusSkillCastPercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_CAST) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSkillCooldown : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusSkillCooldown(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_COOLDOWN) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSkillFixCastPercent : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusSkillFixCastPercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_FIXCAST) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusSkillVariableCastPercent : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusSkillVariableCastPercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_VARCAST) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusResistSkillDamagePercent : public BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>
 	{
 	public:
 		BonusResistSkillDamagePercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MAX_PC_BONUSES_PER_GROUP>(unit, STATUS_SKILL_RESIST) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusIgnoreDefenseFromElement : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusIgnoreDefenseFromElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_IGNORE_DEF_ELE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusIgnoreDefenseFromRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusIgnoreDefenseFromRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_IGNORE_DEF_RACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusIgnoreMagicDefenseFromElement : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusIgnoreMagicDefenseFromElement(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_IGNORE_MDEF_ELE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusIgnoreMagicDefenseFromRace : public BonusArray<Bonus, MONSTER_RACE_MAX>
 	{
 	public:
 		BonusIgnoreMagicDefenseFromRace(std::shared_ptr<Unit> unit) : BonusArray<Bonus, MONSTER_RACE_MAX>(unit, STATUS_IGNORE_MDEF_RACE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddEleWeaponDamagePercent : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusAddEleWeaponDamagePercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_ADD_ELEWEAPONDAMAGE_RATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	class BonusAddEleMagicDamagePercent : public BonusArray<Bonus, ELE_MAX>
 	{
 	public:
 		BonusAddEleMagicDamagePercent(std::shared_ptr<Unit> unit) : BonusArray<Bonus, ELE_MAX>(unit, STATUS_ADD_ELEMAGICDAMAGE_RATE) { }
+	
+		void set(int type, int bonus, bool notify_client = true) { _types[type].set(bonus, notify_client); }
 	};
 
 	struct s_autospell
@@ -840,24 +947,32 @@ namespace Bonuses
 	{
 	public:
 		BonusAutoSpellOnSkill(std::shared_ptr<Unit> unit) : BonusArray<s_autospell, MAX_AUTOSPELL>(unit, STATUS_AUTOSPELL) { }
+	
+		void set(int type, s_autospell bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusAutoSpellOnAttack : public BonusArray<s_autospell, MAX_AUTOSPELL>
 	{
 	public:
 		BonusAutoSpellOnAttack(std::shared_ptr<Unit> unit) : BonusArray<s_autospell, MAX_AUTOSPELL>(unit, STATUS_AUTOSPELLONATK) { }
+	
+		void set(int type, s_autospell bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusAutoSpellOnReceiveDamage : public BonusArray<s_autospell, MAX_AUTOSPELL>
 	{
 	public:
 		BonusAutoSpellOnReceiveDamage(std::shared_ptr<Unit> unit) : BonusArray<s_autospell, MAX_AUTOSPELL>(unit, STATUS_AUTOSPELLHIT) { }
+	
+		void set(int type, s_autospell bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 	class BonusAutoSpellOnSelf : public BonusArray<s_autospell, MAX_AUTOSPELL>
 	{
 	public:
 		BonusAutoSpellOnSelf(std::shared_ptr<Unit> unit) : BonusArray<s_autospell, MAX_AUTOSPELL>(unit, STATUS_AUTOSPELLONSELF) { }
+	
+		void set(int type, s_autospell bonus, bool notify_client = true) { _types[type] = bonus; }
 	};
 
 
