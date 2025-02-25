@@ -55,19 +55,23 @@ namespace Bonuses
 		// create copy and move assignment operators for Bonus
 		Bonus& operator=(Bonus &other) { 
 			if (this != &other) {
-				Traits::Attribute::operator=(std::move(static_cast<Traits::Attribute&>(other)));
+				Traits::Attribute::operator=(other);
             	_parameter_1 = other._parameter_1;
             	_parameter_2 = other._parameter_2;
             	_parameter_3 = other._parameter_3;
+				_unit = other._unit;
+				_applied = other._applied;
 			}
 			return *this; 
 		}
 		Bonus& operator=(Bonus &&other) { 
 			if (this != &other) {
-				Traits::Attribute::operator=(std::move(static_cast<Traits::Attribute&>(other)));
+				Traits::Attribute::operator=(std::move(other));
 				_parameter_1 = other._parameter_1;
 				_parameter_2 = other._parameter_2;
 				_parameter_3 = other._parameter_3;
+				_unit = other._unit;
+				_applied = other._applied;
 			}
 			return *this;
 		}
