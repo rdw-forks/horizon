@@ -1,8 +1,8 @@
 -- At command functions!
 local function heal(player, args)
 	status = player:unit():status()
-	status:hp():set(status:max_hp(), true)
-	status:sp():set(status:max_sp(), true)
+	status:current_hp():set(status:max_hp():get(), true)
+	status:current_sp():set(status:max_sp():get(), true)
 end
 
 -- @storage
