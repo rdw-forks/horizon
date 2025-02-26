@@ -359,8 +359,8 @@ BOOST_AUTO_TEST_CASE(SystemRoutinesSynchronizationTest)
     std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_1 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm, Horizon::System::RUNTIME_SYNC_NONE);
 	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_2 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_gl, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
 	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_3 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_p, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_4 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_s, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
-	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_5 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_n, Horizon::System::RUNTIME_SYNC_WAIT_NO_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_4 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_s, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
+	std::shared_ptr<Horizon::System::RuntimeRoutineContext> routine_5 = std::make_shared<Horizon::System::RuntimeRoutineContext>(srm_n, Horizon::System::RUNTIME_SYNC_WAIT_CHECK_STATE);
     work_request req;
     
 	auto work = std::make_shared<TestWork>(routine_1);
