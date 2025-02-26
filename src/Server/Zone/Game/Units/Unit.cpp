@@ -476,6 +476,7 @@ bool Unit::stop_attacking()
 	if (!is_attacking())
 		return false;
 
+	set_attacking(false);
 	map()->container()->getScheduler().CancelGroup(get_scheduler_task_id(UNIT_SCHEDULE_ATTACK));
 	combat().reset();
 
@@ -555,7 +556,7 @@ bool Unit::attack(std::shared_ptr<Unit> target, bool continuous)
 
 			// Let the target start attacking back.
 			combat_retaliate_type result = combat()->weapon_attack();
-			if (result == CBT_RET_DEF && target->is_attacking() == false)
+			if (target->type() == UNIT_MONSTER && result == CBT_RET_DEF && target->is_attacking() == false)
 				target->attack(shared_from_this(), true);
 			if (result == CBT_RET_DEF) {
 				target->set_damage_walk_delay(true);

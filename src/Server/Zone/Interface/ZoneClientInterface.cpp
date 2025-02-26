@@ -271,6 +271,11 @@ bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t di
 		if (session->player() == nullptr)
 			return;
 
+		// This is done here because this is the only place where we can identify that the player has sent a walk request to the server.
+		// It is required to stop the player from attacking when they initiate a walking action.
+		if (session->player()->is_attacking())
+			session->player()->stop_attacking();
+			
 		session->player()->walk_to_coordinates(x, y);
 	});
 	s_task->push(w_task);
