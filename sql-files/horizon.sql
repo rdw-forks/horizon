@@ -9,10 +9,6 @@
 # Copyright (c) 2018 Horizon Dev Team.
 #
 # Base Author - Sagun K. (sagunxp@gmail.com)
-#
-# This is proprietary software. Unauthorized copying,
-# distribution, or modification of this file, via any
-# medium, is strictly prohibited. All rights reserved.
 ######################################################
 
 CREATE TABLE `game_accounts` (
