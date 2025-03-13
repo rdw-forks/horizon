@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 #include "Auth.hpp"
 
@@ -100,6 +109,15 @@ bool AuthServer::read_config()
 		get_auth_config().set_max_network_threads(tbl.get<int>("max_network_threads"));
 	} else {
 		horizon_config_error("max_network_threads", 1);
+	}
+
+	try {
+		int32_t session_max_timeout = tbl.get_or("session_max_timeout", 60);
+		get_auth_config().set_session_max_timeout(session_max_timeout);
+		HLog(info) << "Session maximum timeout set to '" << get_auth_config().session_max_timeout() << "',"
+			<< " sessions surpassing this time limit will be disconnected.";
+	} catch (sol::error &err) {
+		HLog(error) << "Error for setting session_max_timeout:" << err.what();
 	}
 
 	HLog(info) << "Max Network Threads set to '" << get_auth_config().max_network_threads() << "'.";
@@ -242,6 +260,37 @@ void AuthServer::initialize_cli_commands()
 	get_component_of_type<CommandLineProcess>(Horizon::System::RUNTIME_COMMANDLINE)->add_function("reset-password", std::bind(&AuthServer::clicmd_reset_password, this, std::placeholders::_1));
 }
 
+void AuthServer::verify_connected_sessions()
+{	
+	try {
+		std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sAuth->get_database_connection();
+		boost::mysql::statement stmt = conn->prepare_statement("DELETE FROM `session_data` WHERE `current_server` = ? AND `last_update` < ?");
+		auto b = stmt.bind("A", std::time(nullptr) - get_auth_config().session_max_timeout());
+		boost::mysql::results results;
+		conn->execute(b, results);
+
+		stmt = conn->prepare_statement("SELECT COUNT(`game_account_id`) FROM `session_data` WHERE `current_server` = ?");
+		auto b2 = stmt.bind("A");
+		conn->execute(b2, results);
+
+		if (results.rows().empty()) {
+			HLog(info) << "There are no connected session(s).";
+			return;
+		}
+
+		int32_t count = results.rows()[0][0].as_int64();
+
+		HLog(info) << count << " connected session(s).";
+
+	}
+	catch (boost::mysql::error_with_diagnostics &error) {
+		HLog(error) << error.what();
+	}
+	catch (std::exception& error) {
+		HLog(error) << error.what();
+	}
+}
+
 /**
  * Signal Handler from the main thread.
  * @param ioServiceRef
@@ -269,6 +318,7 @@ void AuthServer::update(uint64_t time)
 	if (get_shutdown_stage() == SHUTDOWN_NOT_STARTED && !general_conf().is_test_run_minimal()) {
 		_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 		_update_timer.async_wait(std::bind(&AuthServer::update, this, std::time(nullptr)));
+		_task_scheduler.Update();
 	} else {
 	
 		for (auto i = _components.begin(); i != _components.end(); i++) {
@@ -316,6 +366,11 @@ void AuthServer::initialize()
 		
 	_update_timer.expires_from_now(boost::posix_time::microseconds(MAX_CORE_UPDATE_INTERVAL));
 	_update_timer.async_wait(std::bind(&AuthServer::update, this, MAX_CORE_UPDATE_INTERVAL));
+
+	_task_scheduler.Schedule(Seconds(0), [this] (TaskContext context) {
+		verify_connected_sessions();
+		context.Repeat(Seconds(60));
+	});
 
 	// Run the io_context until stop is called from the internal, finalizing thread.
 	// After stopping, execution will continue through the next line onwards.

@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #include "Server.hpp"
@@ -242,18 +251,36 @@ void CommandLineProcess::cli_thread_start()
 	}
 }
 
+std::shared_ptr<boost::mysql::tcp_ssl_connection> DatabaseProcess::get_connection() { 
+	try {
+		boost::mysql::results results;
+		_connection->execute("SELECT 'Hello World!'", results);
+	} catch (const boost::mysql::error_with_diagnostics &e) {
+		HLog(error) << "Database connection error: " << e.what();
+		HLog(error) << "Reconnecting...";
+		reinitialize();
+	}
+	return _connection; 
+}
+
 void DatabaseProcess::initialize(boost::asio::io_context &io_context, int segment_number, std::string host, int port, std::string user, std::string pass, std::string database)
 {
 	set_segment_number(segment_number);
 	
 	try {
+		_io_context = &io_context;
 		_ssl_ctx = std::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tls_client);
-		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(io_context.get_executor(), *_ssl_ctx);
-		boost::asio::ip::tcp::resolver resolver(io_context.get_executor());
+		_connection = std::make_shared<boost::mysql::tcp_ssl_connection>(_io_context->get_executor(), *_ssl_ctx);
+		boost::asio::ip::tcp::resolver resolver(_io_context->get_executor());
 		auto endpoints = resolver.resolve(host, std::to_string(port));
 		boost::mysql::handshake_params params(user, pass, database);
 		_connection->connect(*endpoints.begin(), params);
 		_is_initialized.exchange(true);
+		_host = host;
+		_port = port;
+		_user = user;
+		_pass = pass;
+		_database = database;
 #if WIN32
 		DWORD cpu = GetCurrentProcessorNumber();
 		if (get_thread_cpu_id() != (int) cpu) 

@@ -11,9 +11,18 @@
  *
  * Base Author - Sagun Khosla. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #include "ZoneClientInterface.hpp"
@@ -81,10 +90,16 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain);
 
-	while(s_login->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS)
+	while(s_login->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE)
 	{
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
-	};
+	}
+
+	if (s_login->get_context_result() == Horizon::System::RUNTIME_CONTEXT_FAIL) {
+		ZC_ACK_REQ_DISCONNECT pkt(get_session());
+		pkt.deliver(0);
+		return false;
+	}
 
 	std::shared_ptr<Horizon::System::RuntimeContextChain> chain_2 = std::make_shared<Horizon::System::RuntimeContextChain>(Horizon::System::RUNTIME_RUNTIME);
 
@@ -121,8 +136,14 @@ bool ZoneClientInterface::login(uint32_t account_id, uint32_t char_id, uint32_t 
 
 	sZone->get_component_of_type<Horizon::Zone::ZoneRuntime>(Horizon::System::RUNTIME_RUNTIME)->get_system_routine_manager().push(chain_2);
 
-	while(s_login_response->get_context_result() != Horizon::System::RUNTIME_CONTEXT_PASS) {
+	while(s_login_response->get_context_result() == Horizon::System::RUNTIME_CONTEXT_NO_STATE) {
 		std::this_thread::sleep_for(std::chrono::microseconds(100));
+	}
+
+	if (s_login_response->get_context_result() == Horizon::System::RUNTIME_CONTEXT_FAIL) {
+		ZC_ACK_REQ_DISCONNECT pkt(get_session());
+		pkt.deliver(0);
+		return false;
 	}
 
 	std::shared_ptr<Horizon::Zone::SCENARIO_GENERIC_TASK> s_task = std::make_shared<Horizon::Zone::SCENARIO_GENERIC_TASK>(sZone->get_component_of_type<Horizon::Zone::GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_system_routine_manager());
@@ -209,38 +230,41 @@ bool ZoneClientInterface::disconnect(int8_t type)
 	//sZone->get_component_of_type<GameLogicProcess>(Horizon::System::RUNTIME_GAMELOGIC)->get_map_process().manage_session_in_map(SESSION_ACTION_LOGOUT_AND_REMOVE, get_session()->get_map_name(), get_session());
 	return true;
 }
-bool ZoneClientInterface::update_session(int32_t account_id)
+bool ZoneClientInterface::update_session(int32_t account_id, bool first)
 {
 	std::shared_ptr<boost::mysql::tcp_ssl_connection> conn = sZone->get_database_connection();
 
-	boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `id` = ?");
-	auto b1 = stmt.bind(account_id);
-	boost::mysql::results results;
-	conn->execute(b1, results);
-	
-	HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
+	if (first == true) {
+		boost::mysql::statement stmt = conn->prepare_statement("SELECT `current_server` FROM `session_data` WHERE `id` = ?");
+		auto b1 = stmt.bind(account_id);
+		boost::mysql::results results;
+		conn->execute(b1, results);
+		
+		HLog(debug) << "Updating session from I.P. address " << get_session()->get_socket()->remote_ip_address();
 
-	if (results.rows().empty()) {
-		ZC_ACK_REQ_DISCONNECT pkt(get_session());
-		HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
-		pkt.deliver(0);
-		return false;
+		if (results.rows().empty()) {
+			ZC_ACK_REQ_DISCONNECT pkt(get_session());
+			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
+			pkt.deliver(0);
+			return false;
+		}
+
+		auto r = results.rows()[0];
+
+		std::string current_server = r[0].as_string();
+
+		if (current_server.compare("C") != 0) {
+			ZC_ACK_REQ_DISCONNECT pkt(get_session());
+			HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
+			pkt.deliver(0);
+			return false;
+		}
 	}
 
-	auto r = results.rows()[0];
-
-	std::string current_server = r[0].as_string();
-
-	if (current_server.compare("C") != 0) {
-		ZC_ACK_REQ_DISCONNECT pkt(get_session());
-		HLog(warning) << "Invalid connection for account with ID " << account_id << ", session wasn't found.";
-		pkt.deliver(0);
-		return false;
-	}
-	
-	stmt = conn->prepare_statement("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?");
-	auto b2 = stmt.bind(account_id, std::time(nullptr));
-	conn->execute(b2, results);
+	boost::mysql::statement stmt_update_session = conn->prepare_statement("UPDATE `session_data` SET `last_update` = ? WHERE `game_account_id` = ?");
+	auto b2 = stmt_update_session.bind(std::time(nullptr), account_id);
+	boost::mysql::results results_update_session;
+	conn->execute(b2, results_update_session);
 
 	return true;
 }
@@ -256,6 +280,11 @@ bool ZoneClientInterface::walk_to_coordinates(uint16_t x, uint16_t y, uint8_t di
 		if (session->player() == nullptr)
 			return;
 
+		// This is done here because this is the only place where we can identify that the player has sent a walk request to the server.
+		// It is required to stop the player from attacking when they initiate a walking action.
+		if (session->player()->is_attacking())
+			session->player()->stop_attacking();
+			
 		session->player()->walk_to_coordinates(x, y);
 	});
 	s_task->push(w_task);
@@ -276,6 +305,7 @@ bool ZoneClientInterface::notify_time()
 {
 	ZC_NOTIFY_TIME pkt(get_session());
 	pkt.deliver();
+	get_session()->clif()->update_session(get_session()->player()->account()._account_id, false);
 	return true;
 }
 
@@ -1220,6 +1250,11 @@ void ZoneClientInterface::action_request(int32_t target_guid, player_action_type
 		{
 			std::shared_ptr<Unit> target = get_session()->player()->get_nearby_unit(target_guid);
 			
+			if (target == nullptr)
+			{
+				HLog(error) << "Target not found.";
+				return;
+			}
 			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand::s_melee_execution_operation_config config;
 			config.continuous = continuous;
 			CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand *operand = new CombatRegistry::MeleeExecutionOperation::MeleeExecutionOperand(get_session()->player(), target, config);

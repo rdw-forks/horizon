@@ -11,9 +11,18 @@
  *
  * Base Author - Sephus. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #include "TransmittedPackets.hpp"
@@ -213,8 +222,8 @@ void HC_ACCEPT_MAKECHAR::deliver(uint32_t char_id, uint32_t start_zeny, std::str
 	_c._status_points = 48;
 	_c._hp = 40;
 	_c._maximum_hp = 40;
-	_c._sp = 40;
-	_c._maximum_sp = 40;
+	_c._sp = 11; // Maximum SP set to 11 for novice because some clients crash if it exceeds 11.
+	_c._maximum_sp = 11;
 	_c._walk_speed = DEFAULT_MOVEMENT_SPEED;
 	_c._job_id = job_class;
 	_c._hair_view_id = hair_style;

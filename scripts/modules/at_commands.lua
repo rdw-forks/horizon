@@ -1,4 +1,9 @@
 -- At command functions!
+local function heal(player, args)
+	status = player:unit():status()
+	status:current_hp():set(status:max_hp():get(), true)
+	status:current_sp():set(status:max_sp():get(), true)
+end
 
 -- @storage
 local function storage(player, args)
@@ -9,22 +14,22 @@ end
 -- @zeny
 local function zeny(player, args)
 	status = player:unit():status()
-	status:zeny():set(tonumber(args[2]))
+	status:zeny():set(tonumber(args[2]), true)
 end
 -- @statpoint
 local function statpoint(player, args)
 	status = player:unit():status()
-	status:status_point():set(tonumber(args[2]))
+	status:status_point():set(tonumber(args[2]), true)
 end
 -- @skillpoint
 local function skillpoint(player, args)
 	status = player:unit():status()
-	status:skill_point():set(tonumber(args[2]))
+	status:skill_point():set(tonumber(args[2]), true)
 end
 -- @resetskillpoints
 local function resetskillpoints(player, args)
 	status = player:unit():status()
-	status:skill_point():set(0)
+	status:skill_point():set(0, true)
 end
 -- @job
 local function job(player, args)
@@ -292,7 +297,9 @@ local at_commands = {
 		["skillpoint"] = skillpoint,
 		["resetskillpoints"] = resetskillpoints,
 		["go"] = go,
-		["zeny"] = zeny
+		["zeny"] = zeny,
+		["storage"] = storage,
+		["heal"] = heal
 	}
 }
 

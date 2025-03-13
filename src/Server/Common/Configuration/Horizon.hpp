@@ -12,9 +12,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #ifndef HORIZON_HORIZON_HPP
@@ -39,6 +48,10 @@
 #define MAX_LEVEL 175
 #define MAX_STATUS_POINTS 400
 #define MAX_ATTACK_SPEED 199
+
+#define MAX_STATUS_EFFECT_BONUSES 10
+#define MAX_PC_BONUSES_PER_GROUP 10
+#define MAX_AUTOSPELL 16
 
 /* Maximum Character Slots (in multiples of 3) */
 #define MAX_CHARACTER_SLOTS 9

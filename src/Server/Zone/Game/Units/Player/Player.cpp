@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #include "Player.hpp"
@@ -561,6 +570,18 @@ void Player::on_map_enter()
 
 	if (is_dead()) {
 		remove_unit_from_viewport(shared_from_this(), EVP_NOTIFY_DEAD);
+	}
+}
+
+
+void Player::on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage)
+{
+	Unit::on_damage_received(damage_dealer, damage);
+
+	if (status()->current_hp()->total() <= damage) {
+		status()->current_hp()->set_base(0);
+		on_killed(damage_dealer);
+		return;
 	}
 }
 

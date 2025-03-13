@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_MAP_HPP
@@ -208,11 +217,11 @@ inline void Horizon::Zone::Map::visit(GridCoords const &lower_bound, GridCoords 
 	// This ensures that the entities are visited in the container in the same order as they are stored in the map
 	// We visit all ranges - 0,0 to maximum grids in a map 
 	// (the upper range as well, i.e. if the map is 10x10 grids, we visit 0,0 to 10,10 and not 9x9)
-	for (int y = upper_bound.y(); y >= lower_bound.y(); y--) {
-		for (int x = lower_bound.x(); x <= upper_bound.x(); x++) {
-			visit(x, y, visitor);
-		}
-	}
+    for (int y = lower_bound.y(); y <= upper_bound.y(); y++) {
+        for (int x = lower_bound.x(); x <= upper_bound.x(); x++) {
+            visit(x, y, visitor);
+        }
+    }
 }
 
 #endif /* HORIZON_ZONE_GAME_MAP_HPP */

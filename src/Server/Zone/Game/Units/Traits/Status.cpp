@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #include "Status.hpp"
@@ -257,11 +266,9 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	}
 
 	set_attack_range(std::make_shared<AttackRange>(_unit));
-	attack_range()->compute();
 
 	set_max_weight(std::make_shared<MaxWeight>(_unit, job->max_weight));
 	max_weight()->set_strength(strength().get());
-	max_weight()->compute();
 
 	// Calculated when inventory is synced.
 	set_current_weight(std::make_shared<CurrentWeight>(_unit, 0));
@@ -271,70 +278,56 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	status_atk()->set_strength(strength().get());
 	status_atk()->set_dexterity(dexterity().get());
 	status_atk()->set_luck(luck().get());
-	status_atk()->compute();
 
 	set_equip_atk(std::make_shared<EquipATK>(_unit));
 	equip_atk()->set_strength(strength().get());
 	equip_atk()->set_dexterity(dexterity().get());
-	equip_atk()->compute();
 
 	set_status_matk(std::make_shared<StatusMATK>(_unit));
 	status_matk()->set_base_level(base_level().get());
 	status_matk()->set_intelligence(intelligence().get());
 	status_matk()->set_dexterity(dexterity().get());
 	status_matk()->set_luck(luck().get());
-	status_matk()->compute();
 
 	set_equip_matk(std::make_shared<EquipMATK>(_unit));
-	equip_matk()->compute();
-
 	set_soft_def(std::make_shared<SoftDEF>(_unit));
 	soft_def()->set_vitality(vitality().get());
 	soft_def()->set_base_level(base_level().get());
 	soft_def()->set_agility(agility().get());
-	soft_def()->compute();
 
 	set_hard_def(std::make_shared<HardDEF>(_unit));
-	hard_def()->compute();
 
 	set_soft_mdef(std::make_shared<SoftMDEF>(_unit));
 	soft_mdef()->set_base_level(base_level().get());
 	soft_mdef()->set_intelligence(intelligence().get());
 	soft_mdef()->set_dexterity(dexterity().get());
 	soft_mdef()->set_vitality(vitality().get());
-	soft_mdef()->compute();
 
 	set_hit(std::make_shared<HIT>(_unit));
 	hit()->set_base_level(base_level().get());
 	hit()->set_dexterity(dexterity().get());
 	hit()->set_luck(luck().get());
-	hit()->compute();
 
 	set_crit(std::make_shared<CRIT>(_unit));
 	crit()->set_luck(luck().get());
-	crit()->compute();
 
 	set_flee(std::make_shared<FLEE>(_unit));
 	flee()->set_base_level(base_level().get());
 	flee()->set_agility(agility().get());
 	flee()->set_luck(luck().get());
-	flee()->compute();
 
 	set_attack_speed(std::make_shared<AttackSpeed>(_unit));
 	attack_speed()->set_base_level(base_level().get());
 	attack_speed()->set_agility(agility().get());
 	attack_speed()->set_dexterity(dexterity().get());
-	attack_speed()->compute();
 
 	set_hp_regeneration(std::make_shared<HPRegeneration>(_unit));
 	hp_regeneration()->set_vitality(vitality().get());
 	hp_regeneration()->set_max_hp(max_hp().get());
-	hp_regeneration()->compute();
 
 	set_sp_regeneration(std::make_shared<SPRegeneration>(_unit));
 	sp_regeneration()->set_intelligence(intelligence().get());
 	sp_regeneration()->set_max_sp(max_sp().get());
-	sp_regeneration()->compute();
 
 	// Register Status Observables
 	strength()->register_observable(strength().get());
@@ -431,14 +424,12 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 	/* Combat Status Attributes */
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
 	attack_delay()->set_attack_speed(attack_speed().get());
-	attack_delay()->compute();
 	
 	attack_speed()->register_observers(
 		attack_delay().get());
 
 	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
 	damage_walk_delay()->set_agility(agility().get());
-	damage_walk_delay()->compute();
 
 	base_attack()->set_strength(strength().get());
 	base_attack()->set_dexterity(dexterity().get());
@@ -483,6 +474,7 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Player> player)
 		0,
 		player->map()->container()->game_config().get_natural_heal_sp_interval(), 
 		"natural_sp_regen");
+
 	return true;
 }
 
@@ -510,7 +502,7 @@ void Status::calculate(bool notify)
 {
 	// calculate before initialize is set.
 	for (auto i : _attributes) {
-		i->apply();
+		i->apply(notify);
 	}
 }
 
@@ -585,7 +577,6 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	soft_def()->set_vitality(vitality().get());
 	soft_def()->set_base_level(base_level().get());
 	// Agility not used for monsters.
-	soft_def()->compute();
 
 	set_hard_def(std::make_shared<HardDEF>(_unit, md->defense));
 
@@ -594,35 +585,27 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	soft_mdef()->set_intelligence(intelligence().get());
 	soft_mdef()->set_dexterity(dexterity().get());
 	soft_mdef()->set_vitality(vitality().get());
-	soft_mdef()->compute();
 
 	set_hit(std::make_shared<HIT>(_unit));
 	hit()->set_base_level(base_level().get());
 	hit()->set_dexterity(dexterity().get());
 	hit()->set_luck(luck().get());
-	hit()->compute();
 
 	set_crit(std::make_shared<CRIT>(_unit));
 	crit()->set_luck(luck().get());
-	crit()->compute();
 
 	set_flee(std::make_shared<FLEE>(_unit));
 	flee()->set_base_level(base_level().get());
 	flee()->set_agility(agility().get());
 	flee()->set_luck(luck().get());
-	flee()->compute();
 
 	set_attack_range(std::make_shared<AttackRange>(_unit));
-	attack_range()->compute();
 
 	set_attack_delay(std::make_shared<AttackDelay>(_unit));
-	attack_delay()->compute();
 
 	set_damage_walk_delay(std::make_shared<DamageWalkDelay>(_unit));
-	damage_walk_delay()->compute();
 
 	set_attack_range(std::make_shared<AttackRange>(_unit));
-	attack_range()->compute();
 
 	set_creature_weapon_attack(std::make_shared<MobWeaponAttack>(_unit, md->attack_damage[0]));
 	set_creature_weapon_attack_magic(std::make_shared<MobWeaponAttack>(_unit, md->attack_damage[1]));
@@ -631,13 +614,11 @@ bool Status::initialize(std::shared_ptr<Horizon::Zone::Units::Mob> creature, std
 	creature_attack_damage()->set_strength(strength().get());
 	creature_attack_damage()->set_base_level(base_level().get());
 	creature_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
-	creature_attack_damage()->compute();
 
 	set_creature_magic_attack_damage(std::make_shared<MobMagicAttackDamage>(_unit));
 	creature_magic_attack_damage()->set_intelligence(intelligence().get());
 	creature_magic_attack_damage()->set_base_level(base_level().get());
 	creature_magic_attack_damage()->set_creature_weapon_attack(creature_weapon_attack_magic().get());
-	creature_magic_attack_damage()->compute();
 
 	set_creature_view_range(std::make_shared<MobViewRange>(_unit, (int) md->view_range));
 	set_creature_chase_range(std::make_shared<MobChaseRange>(_unit, (int) md->chase_range));

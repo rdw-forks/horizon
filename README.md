@@ -1,7 +1,7 @@
 # HorizonXYZ/Horizon
 
 [![CMake](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml/badge.svg)](https://github.com/horizonxyz/horizon/actions/workflows/cmake.yml)
-[![Proprietary license](https://img.shields.io/badge/License-Proprietary-blue.svg)](https://github.com/horizonxyz/horizon/tree/master?tab=License-1-ov-file)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 [![CMake](https://img.shields.io/badge/CMake-3.17-blue?logo=cmake)](https://cmake.org/) [![C++](https://img.shields.io/badge/C++-17-blue?logo=c%2B%2B)](https://isocpp.org/) [![Lua](https://img.shields.io/badge/Lua-5.4-blue?logo=lua)](https://www.lua.org/) [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql&logoColor=white)](https://www.mysql.com/) [![Boost](https://img.shields.io/badge/Boost-1.85.0-blue)](https://www.boost.org/) [![sol2](https://img.shields.io/badge/sol2-3.2.3-blue.svg)](https://github.com/ThePhD/sol2)
 

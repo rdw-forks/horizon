@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #ifndef HORIZON_ZONE_GAME_ENTITIES_PLAYER_HPP
@@ -90,6 +99,12 @@ public:
 	bool initialize();
 	bool is_initialized() { return _is_initialized; }
 	void set_initialized(bool val) { _is_initialized = val; }
+
+	/**
+	 * Unit functions
+	 */
+	void on_damage_received(std::shared_ptr<Unit> damage_dealer, int damage) override;
+	virtual void on_killed(std::shared_ptr<Unit> killer, bool with_drops = false, bool with_exp = false) override;
 
 	/**
 	 * Grid applications
@@ -193,8 +208,6 @@ public:
 
     bool attack(std::shared_ptr<Unit> e, bool continuous = false) override;
     bool stop_attack();
-
-	virtual void on_killed(std::shared_ptr<Unit> killer, bool with_drops, bool with_exp) override;
 
 	void respawn(int hp_rate, int sp_rate);
 	

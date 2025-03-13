@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #include "ZoneSystem.hpp"
@@ -50,8 +59,8 @@ bool Horizon::Zone::SCENARIO_LOGIN::Login::execute()
 		return false;
 	}
 
-	stmt = conn->prepare_statement("UPDATE `session_data` SET `current_server` = ? WHERE `game_account_id` = ? AND `auth_code` = ?");
-	auto b2 = stmt.bind("Z", _request.account_id, _request.auth_code);
+	stmt = conn->prepare_statement("UPDATE `session_data` SET `current_server` = ?, `last_update` = ? WHERE `game_account_id` = ? AND `auth_code` = ?");
+	auto b2 = stmt.bind("Z", std::time(nullptr), _request.account_id, _request.auth_code);
 	conn->execute(b2, results);
 	
 	stmt = conn->prepare_statement("SELECT `id`, `account_id`, `current_map`, `current_x`, `current_y` FROM `characters` WHERE id = ?");

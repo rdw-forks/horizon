@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #ifndef HORIZON_SERVER_HPP
@@ -249,14 +258,14 @@ public:
 	{
 		_update_count++;
 
-        // Update thread update rate every second to determine the number of updates per second
-        auto current_time = std::chrono::steady_clock::now();
-        auto diff_time = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - _last_thread_update_rate_time).count();
-        if (diff_time >= 1e9) {
-            double update_rate = _update_count / (diff_time / 1e9);
-            set_thread_update_rate(update_rate);
-            _update_count = 0;
-            _last_thread_update_rate_time = current_time;
+		// Update thread update rate every second to determine the number of updates per second
+		auto current_time = std::chrono::steady_clock::now();
+		auto diff_time = std::chrono::duration_cast<std::chrono::nanoseconds>(current_time - _last_thread_update_rate_time).count();
+		if (diff_time >= 1e9) {
+			double update_rate = _update_count / (diff_time / 1e9);
+			set_thread_update_rate(update_rate);
+			_update_count = 0;
+			_last_thread_update_rate_time = current_time;
 		}
 	}
 
@@ -377,6 +386,16 @@ public:
 		_is_initialized.exchange(true);
 	}
 
+	void reinitialize()
+	{
+		_connection.reset();
+		_ssl_ctx.reset();
+		_is_initialized.exchange(false);
+		_is_finalized.exchange(false);
+		if (_io_context != nullptr)	
+			initialize(*_io_context, get_segment_number(), _host, _port, _user, _pass, _database);
+	}
+
 	void initialize(boost::asio::io_context &io_context, int segment_number, std::string host, int port, std::string user, std::string pass, std::string database);
 
 	void finalize() override 
@@ -389,14 +408,20 @@ public:
 		_is_finalized.exchange(true);
 	}
 
-	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection() { return _connection; }
+	std::shared_ptr<boost::mysql::tcp_ssl_connection> get_connection();
 
 	bool is_initialized() override { return _is_initialized.load(); }
 	bool is_finalized() override { return _is_finalized.load(); }
 
 protected:
+	boost::asio::io_context *_io_context;
 	std::shared_ptr<boost::asio::ssl::context> _ssl_ctx{nullptr};
     std::shared_ptr<boost::mysql::tcp_ssl_connection> _connection{nullptr};
+	std::string _host;
+	int _port;
+	std::string _user;
+	std::string _pass;
+	std::string _database;
 	std::atomic<bool> _is_initialized{false};
 	std::atomic<bool> _is_finalized{false};
 };

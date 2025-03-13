@@ -13,9 +13,18 @@
  *
  * Base Author - Sagun K. (sagunxp@gmail.com)
  *
- * This is proprietary software. Unauthorized copying,
- * distribution, or modification of this file, via any
- * medium, is strictly prohibited. All rights reserved.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************/
 
 #ifndef HORIZON_AUTH_HPP
@@ -47,8 +56,12 @@ struct auth_config_type {
 	int max_network_threads() { return _max_network_threads; }
 	void set_max_network_threads(int threads) { _max_network_threads = threads; }
 
+	int session_max_timeout() { return _session_max_timeout; }
+	void set_session_max_timeout(int timeout) { _session_max_timeout = timeout; }
+	
     std::vector<char_server> _char_servers;
 	int _max_network_threads{1};
+	int _session_max_timeout{60};
 };
 
 const int SALT_LEN = 16;
@@ -91,6 +104,8 @@ public:
 	bool clicmd_reload_config(std::string /*cmd*/);
 	bool clicmd_create_new_account(std::string /*cmd*/);
 	bool clicmd_reset_password(std::string /*cmd*/);
+
+	void verify_connected_sessions();
 
 	/* Task Scheduler */
 	TaskScheduler &getScheduler() { return _task_scheduler; }
